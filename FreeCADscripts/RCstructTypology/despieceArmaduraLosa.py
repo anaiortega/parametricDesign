@@ -673,7 +673,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('4S','4I','5S','5I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('11S','9I','10I','12S','12I','13S','13I','14S','14I')
 for i in range (0,len(idArmaSec)):
@@ -688,7 +688,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('4S','4I','5S','5I','15S','15I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('11S','9I','10I','12S','12I','13S','13I','14S','14I','17')
 for i in range (0,len(idArmaSec)):
@@ -703,7 +703,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('4S','4I','5S','5I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('11S','9I','10I','12S','12I','13S','13I','14S','14I')
 for i in range (0,len(idArmaSec)):
@@ -720,7 +720,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('3S','3I','6S','6I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('11S','9I','10I','13S','13I','14S','14I')
 for i in range (0,len(idArmaSec)):
@@ -735,7 +735,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('2S','2I','6S','6I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('8S','8I','9S','9I','10S','10I','13S','13I','14S','14I')
 for i in range (0,len(idArmaSec)):
@@ -752,7 +752,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('2S','2I','7')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('8S','8I','9S','9I','10S','10I','13S','13I')
 for i in range (0,len(idArmaSec)):
@@ -767,7 +767,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('1S','1I','7','16S','16I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('8S','8I','9S','9I','13S','13I','R1S','18')
 for i in range (0,len(idArmaSec)):
@@ -784,7 +784,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('1S','1I','7')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('8S','8I','9S','9I','13S','13I','R1S')
 for i in range (0,len(idArmaSec)):
@@ -803,7 +803,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('14S','14I','18')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('5S','5I','6S','6I','16S','16I')
 for i in range (0,len(idArmaSec)):
@@ -818,7 +818,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('13S','13I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('5S','5I','6S','6I','7')
 for i in range (0,len(idArmaSec)):
@@ -833,7 +833,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('12S','12I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('4S','4I')
 for i in range (0,len(idArmaSec)):
@@ -848,7 +848,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('11S','10S','10I')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('4S','4I','3S','3I','2S','2I')
 for i in range (0,len(idArmaSec)):
@@ -863,7 +863,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('11S','9S','9I','R1S')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('4S','4I','3S','3I','2S','2I','1S','1I')
 for i in range (0,len(idArmaSec)):
@@ -880,7 +880,7 @@ FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
 
 idArmad=('8S','8I','17')
 for i in range (0,len(idArmad)):
-    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
+    familiasArmad[idArmad[i]]['listaPtosArm']=Arma2d.armadura(identificador=familiasArmad[idArmad[i]]['identificador'],diametro=familiasArmad[idArmad[i]]['diametro'],separacion=familiasArmad[idArmad[i]]['separacion'],nBarras=0,listaPtos=familiasArmad[idArmad[i]]['listaPtos'],listaRec=familiasArmad[idArmad[i]]['listaRec'],lado=familiasArmad[idArmad[i]]['lado'],radioDob=familiasArmad[idArmad[i]]['radioDob'],gapIni=familiasArmad[idArmad[i]]['gapIni'],gapFin=familiasArmad[idArmad[i]]['gapFin'],vectorLRef=familiasArmad[idArmad[i]]['vectorLRef'],hTexto=familiasArmad[idArmad[i]]['hTexto'])
 
 idArmaSec=('2S','2I','1S','1I','15S','15I')
 for i in range (0,len(idArmaSec)):
