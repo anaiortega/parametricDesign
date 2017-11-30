@@ -235,9 +235,12 @@ def monoArmadura(ptoCent,listaPtosArm,htexto,listaLong=[8]*10):
     xptosMono=[0]
     yptosMono=[0]
     posTextosMono=[]
+    lTxt=list()
+    format="%.2f"
     for i in range (0,npuntos-1):
         vaux=listaPtosArm[0][i+1].sub(listaPtosArm[0][i])
         lSegm.append(vaux.Length)
+        lTxt.append(str(format %lSegm[i]))
         lTotal=lTotal+lSegm[i]
         paux=ptosMono[i].add(vaux.normalize().multiply(listaLong[i]))
         ptosMono.append(paux)
@@ -249,14 +252,19 @@ def monoArmadura(ptoCent,listaPtosArm,htexto,listaLong=[8]*10):
     xmax=max(xptosMono)
     ymin=min(yptosMono)
     ymax=max(yptosMono)
+    if len(listaPtosArm[1])>0:
+        for i in range (0,npuntos-1):
+            vaux=listaPtosArm[1][i+1].sub(listaPtosArm[1][i])
+            ls=vaux.Length
+            if abs(ls-lSegm[i])>0.01:
+               lTxt[i]+='..'+str(format %ls)
     vtrasl=ptoCent.sub(Base.Vector((xmin+xmax)/2.0,(ymin+ymax)/2.0))
     for i in range (0,npuntos):
         ptosMono[i]+=vtrasl
     w=Draft.makeWire(ptosMono)
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = (0.00,1.00,0.00)
-    format="%.2f"
     for i in range (0,npuntos-1):
-        tx=Draft.makeText(str(format %lSegm[i]),posTextosMono[i].add(vtrasl))
+        tx=Draft.makeText(lTxt[i],posTextosMono[i].add(vtrasl))
         ang=(ptosMono[i+1].sub(ptosMono[i])).getAngle(Base.Vector(1,0))
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = htexto
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Center"
@@ -355,13 +363,20 @@ def cuadroDespiece(anchoColumnas,hFilas,hTexto,listafamiliasArmad):
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
         pLbarra=pLinea.add(Base.Vector(anchoColumnas[0]+anchoColumnas[1]+anchoColumnas[2]+anchoColumnas[3]+anchoColumnas[4]-hTexto/2.0,-hTexto/2.0))
         Lbarra=0
+        Lbarra2=0
         for j in range(0,len(rbFam.listaPtosArm[0])-1):
             Lbarra += (rbFam.listaPtosArm[0][j+1].sub(rbFam.listaPtosArm[0][j])).Length
-        tx=Draft.makeText(str(format %Lbarra),pLbarra)
+        txtLbarra=str(format %Lbarra)
+        if len(rbFam.listaPtosArm[1])>0:
+            for j in range(0,len(rbFam.listaPtosArm[1])-1):
+                Lbarra2 += (rbFam.listaPtosArm[1][j+1].sub(rbFam.listaPtosArm[1][j])).Length
+            txtLbarra+='..'+str(format %Lbarra2)
+#        tx=Draft.makeText(str(format %Lbarra),pLbarra)
+        tx=Draft.makeText(txtLbarra,pLbarra)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hTexto
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
         pPeso=pLinea.add(Base.Vector(anchoColumnas[0]+anchoColumnas[1]+anchoColumnas[2]+anchoColumnas[3]+anchoColumnas[4]+anchoColumnas[5]-hTexto/2.0,-hTexto/2.0))
-        peso=nBar*Lbarra*math.pi*diamArm**2.0/4*7850
+        peso=nBar*(Lbarra+Lbarra2)/2.0*math.pi*diamArm**2.0/4*7850
         tx=Draft.makeText(str(format %peso),pPeso)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hTexto
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
