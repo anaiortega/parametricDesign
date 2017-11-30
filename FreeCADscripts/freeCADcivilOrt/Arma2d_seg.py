@@ -6,107 +6,130 @@ from FreeCAD import Base
 import FreeCADGui
 import math
 
-
-def armaSec(identificador,diametro,separacion,recubrimiento,reclateral,ptosExtension,ladoDibSec,vectorLRefSec,hTexto):
-    # Definición de armadura bolinches
-    # identificador: identificador de la armadura
-    # diametro: diámetro de la armadura (en unidades coherentes)
-    # separacion: distancia entre ejes de barras (en unidades coherentes)
-    # recubrimiento: recubrimiento (en unidades coherentes)
-    # reclateral: recubrimiento mínimo en los extremos para colocar la familia
-    # ptosExtension: ptos. inicial y final entre los que se desarrolla la familia
-    # ladoDibSec: lado hacia el cual se dará el recubrimiento (i para lado izquierdo, d para lado derecho)
-    # vectorLRef: primer tramo de la linea de referencia para rotulación de la armadura
-    # hTexto: altura del texto
-
-    vaux=ptosExtension[1].sub(ptosExtension[0])
-    Laux=vaux.Length
-    nesp=int((Laux-2.0*reclateral-diametro)/separacion)
-    vaux.normalize()
-    if ladoDibSec == 'i':
-        vauxn=Base.Vector(-vaux.y,vaux.x)
-    else:
-        vauxn=Base.Vector(vaux.y,-vaux.x)
-    vauxn.normalize()
-    incrini=vaux.multiply((Laux-nesp*separacion)/2.0).add(vauxn.multiply(recubrimiento+diametro/2.0))
-    cent=FreeCAD.Placement()
-    cent.move(ptosExtension[0].add(incrini))
-    ptoIniEtiq=ptosExtension[0].add(incrini)
-    textoArmadura(ptoIniEtiq,vectorLRefSec,identificador,diametro,separacion,0,hTexto)
-    vaux.normalize()
-    incr=vaux.multiply(separacion)
-    for i in range(0,nesp+1):
-        c=Draft.makeCircle(diametro/2.0,cent,False)
-        FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = (1.00,0.00,0.00)
-        cent.move(incr)
-    p1=ptoIniEtiq.add(vectorLRefSec)
-    vaux.normalize()
-    p2=p1.add(vaux.multiply(separacion*nesp)).sub(vectorLRefSec)
-    w=Draft.makeWire([p1,p2])
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = (1.00,1.00,0.00)
-    return
-
-def armadura(identificador,diametro,separacion,nBarras,listaPtos,listaRec,lado,radioDob,gapIni,gapFin,vectorLRef,hTexto):
-    # identificador: identificador de la armadura
-    # diámetro: diámetro de la armadura (en unidades coherentes)
-    # separacion: distancia entre ejes de barras (en unidades coherentes).
-    # Si damos el nº de barras en
-    # lugar de la separación entonces separacion=0
-    # nBarras: nº de barras a disponer. Sólo lo considera cuando separacion=0
-    # listaPtos: lista de ptos (vectores) a partir de los cuales se genera la barra
-    # listaRec: lista de recubrimientos respecto a los segmentos definidos por los puntos anteriores (en unidades coherentes)
-    # lado: lado hacia el cual se dará el recubrimiento (i para lado izquierdo, d para lado derecho)
-    # radioDob: radio para doblado de la armadura (en unidades coherentes)
-    # gapIni: incremento (decremento si gapIni<0) de longitud de la armadura en su extremo inicial
-    # gapFin: incremento (decremento si gapFin<0) de longitud de la armadura en su extremo final
-    #vectorLRef: primer tramo de la linea de referencia para rotulación de la armadura
-    #hTexto: altura del texto
-
-    npuntos=len(listaPtos)
-    lstPtosAux=[]
-    for i in range (0,npuntos):
-        lstPtosAux.append(listaPtos[i])
+class rebarFamily(object):
+    '''Family of reinforcement bars
+    '''
+    def __init__(self,identificador,diametro,separacion,listaPtos,listaRec,lado,radioDob,gapIni,gapFin,vectorLRef,hTexto,ptosExtension,recSec,recLateral,ladoDibSec,vectorLRefSec):
+        self.identificador=identificador 
+        self.diametro=diametro
+        self.separacion=separacion 
+        self.listaPtos=listaPtos 
+        self.listaRec= listaRec
+        self.lado=lado 
+        self.radioDob= radioDob
+        self.gapIni= gapIni
+        self.gapFin= gapFin
+        self.vectorLRef= vectorLRef
+        self.hTexto= hTexto
+        self.ptosExtension= ptosExtension
+        self.recSec= recSec
+        self.recLateral=recLateral 
+        self.ladoDibSec= ladoDibSec
+        self.vectorLRefSec=vectorLRefSec
+        self.listaPtosArm=list()
+        self.nBarras=0
+      
     
-    vaux=lstPtosAux[0].sub(lstPtosAux[1])
-    vaux.normalize().multiply(gapIni)
-    lstPtosAux[0]=lstPtosAux[0].add(vaux)
-    vaux=lstPtosAux[npuntos-1].sub(lstPtosAux[npuntos-2])
-    vaux.normalize().multiply(gapFin)
-    lstPtosAux[npuntos-1]=lstPtosAux[npuntos-1].add(vaux)
-    listaaux=[]
-    for i in range (0,npuntos-1):
-        vaux=lstPtosAux[i+1].sub(lstPtosAux[i])
-        if lado == 'i':
+    def armaSec(self):
+        # Definición de armadura bolinches
+        # identificador: identificador de la armadura
+        # diametro: diámetro de la armadura (en unidades coherentes)
+        # separacion: distancia entre ejes de barras (en unidades coherentes)
+        # recubrimiento: recubrimiento (en unidades coherentes)
+        # reclateral: recubrimiento mínimo en los extremos para colocar la familia
+        # ptosExtension: ptos. inicial y final entre los que se desarrolla la familia
+        # ladoDibSec: lado hacia el cual se dará el recubrimiento (i para lado izquierdo, d para lado derecho)
+        # vectorLRef: primer tramo de la linea de referencia para rotulación de la armadura
+        # hTexto: altura del texto
+
+        vaux=self.ptosExtension[1].sub(self.ptosExtension[0])
+        Laux=vaux.Length
+        nesp=int((Laux-2.0*self.recLateral-self.diametro)/self.separacion)
+        vaux.normalize()
+        if self.ladoDibSec == 'i':
             vauxn=Base.Vector(-vaux.y,vaux.x)
         else:
             vauxn=Base.Vector(vaux.y,-vaux.x)
         vauxn.normalize()
-        vauxn.multiply(listaRec[i]+diametro/2.0)
-        listaaux.append(lstPtosAux[i].add(vauxn))
-        listaaux.append(lstPtosAux[i+1].add(vauxn))
-                
-    listaPtosArm=[listaaux[0]]
-    for i in range (1,npuntos-1):
-        pint=int2rectas(listaaux[2*(i-1)],listaaux[2*(i-1)+1],listaaux[2*i],listaaux[2*i+1])
-        listaPtosArm.append(pint)
-    
-    listaPtosArm.append(listaaux[2*(npuntos-1)-1])
-    # arma=Part.makePolygon(listaPtosArm)
-    # armad=arma.makeFillet(radioDob,arma.Edges)
-    # Part.show(armad)
-    
-    w=Draft.makeWire(listaPtosArm)
-    #flechas en extremos de barra
-    vaux=listaPtosArm[1].sub(listaPtosArm[0]).normalize().multiply(hTexto/2.0)
-    Draft.rotate(Draft.makeLine(listaPtosArm[0],listaPtosArm[0].add(vaux)),15,listaPtosArm[0])
-    vaux=listaPtosArm[npuntos-2].sub(listaPtosArm[npuntos-1]).normalize().multiply(hTexto/2.0)
-    Draft.rotate(Draft.makeLine(listaPtosArm[npuntos-1],listaPtosArm[npuntos-1].add(vaux)),15,listaPtosArm[npuntos-1])
+        incrini=vaux.multiply((Laux-nesp*self.separacion)/2.0).add(vauxn.multiply(self.recSec+self.diametro/2.0))
+        cent=FreeCAD.Placement()
+        cent.move(self.ptosExtension[0].add(incrini))
+        ptoIniEtiq=self.ptosExtension[0].add(incrini)
+        textoArmadura(ptoIniEtiq,self.vectorLRefSec,self.identificador,self.diametro,self.separacion,0,self.hTexto)
+        vaux.normalize()
+        incr=vaux.multiply(self.separacion)
+        for i in range(0,nesp+1):
+            c=Draft.makeCircle(self.diametro/2.0,cent,False)
+            FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = (1.00,0.00,0.00)
+            cent.move(incr)
+        p1=ptoIniEtiq.add(self.vectorLRefSec)
+        vaux.normalize()
+        p2=p1.add(vaux.multiply(self.separacion*nesp)).sub(self.vectorLRefSec)
+        w=Draft.makeWire([p1,p2])
+        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = (1.00,1.00,0.00)
+        return
 
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = (0.00,0.00,1.00)
-    # rotulación
-    ptoIniEtiq=listaPtosArm[int(npuntos/2.0)-1].add((listaPtosArm[int(npuntos/2.0)].sub(listaPtosArm[int(npuntos/2.0)-1])).multiply(0.5))
-    textoArmadura(ptoIniEtiq,vectorLRef,identificador,diametro,separacion,nBarras,hTexto)
-    return listaPtosArm
+    def armadura(self):
+        # identificador: identificador de la armadura
+        # diámetro: diámetro de la armadura (en unidades coherentes)
+        # separacion: distancia entre ejes de barras (en unidades coherentes). Si damos el nº de barras en
+        # lugar de la separación entonces separacion=0
+        # nBarras: nº de barras a disponer. Sólo lo considera cuando separacion=0
+        # listaPtos: lista de ptos (vectores) a partir de los cuales se genera la barra
+        # listaRec: lista de recubrimientos respecto a los segmentos definidos por los puntos anteriores (en unidades coherentes)
+        # lado: lado hacia el cual se dará el recubrimiento (i para lado izquierdo, d para lado derecho)
+        # radioDob: radio para doblado de la armadura (en unidades coherentes)
+        # gapIni: incremento (decremento si gapIni<0) de longitud de la armadura en su extremo inicial
+        # gapFin: incremento (decremento si gapFin<0) de longitud de la armadura en su extremo final
+        #vectorLRef: primer tramo de la linea de referencia para rotulación de la armadura
+        #hTexto: altura del texto
+
+        npuntos=len(self.listaPtos)
+        lstPtosAux=[]
+        for i in range (0,npuntos):
+            lstPtosAux.append(self.listaPtos[i])
+
+        vaux=lstPtosAux[0].sub(lstPtosAux[1])
+        vaux.normalize().multiply(self.gapIni)
+        lstPtosAux[0]=lstPtosAux[0].add(vaux)
+        vaux=lstPtosAux[npuntos-1].sub(lstPtosAux[npuntos-2])
+        vaux.normalize().multiply(self.gapFin)
+        lstPtosAux[npuntos-1]=lstPtosAux[npuntos-1].add(vaux)
+        listaaux=[]
+        for i in range (0,npuntos-1):
+            vaux=lstPtosAux[i+1].sub(lstPtosAux[i])
+            if self.lado == 'i':
+                vauxn=Base.Vector(-vaux.y,vaux.x)
+            else:
+                vauxn=Base.Vector(vaux.y,-vaux.x)
+            vauxn.normalize()
+            vauxn.multiply(self.listaRec[i]+self.diametro/2.0)
+            listaaux.append(lstPtosAux[i].add(vauxn))
+            listaaux.append(lstPtosAux[i+1].add(vauxn))
+
+        listaPtosArm=[listaaux[0]]
+        for i in range (1,npuntos-1):
+            pint=int2rectas(listaaux[2*(i-1)],listaaux[2*(i-1)+1],listaaux[2*i],listaaux[2*i+1])
+            listaPtosArm.append(pint)
+
+        listaPtosArm.append(listaaux[2*(npuntos-1)-1])
+        # arma=Part.makePolygon(listaPtosArm)
+        # armad=arma.makeFillet(radioDob,arma.Edges)
+        # Part.show(armad)
+
+        w=Draft.makeWire(listaPtosArm)
+        #flechas en extremos de barra
+        vaux=listaPtosArm[1].sub(listaPtosArm[0]).normalize().multiply(self.hTexto/2.0)
+        Draft.rotate(Draft.makeLine(listaPtosArm[0],listaPtosArm[0].add(vaux)),15,listaPtosArm[0])
+        vaux=listaPtosArm[npuntos-2].sub(listaPtosArm[npuntos-1]).normalize().multiply(self.hTexto/2.0)
+        Draft.rotate(Draft.makeLine(listaPtosArm[npuntos-1],listaPtosArm[npuntos-1].add(vaux)),15,listaPtosArm[npuntos-1])
+
+        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = (0.00,0.00,1.00)
+        # rotulación
+        ptoIniEtiq=listaPtosArm[int(npuntos/2.0)-1].add((listaPtosArm[int(npuntos/2.0)].sub(listaPtosArm[int(npuntos/2.0)-1])).multiply(0.5))
+        textoArmadura(ptoIniEtiq,self.vectorLRef,self.identificador,self.diametro,self.separacion,self.nBarras,self.hTexto)
+        self.listaPtosArm=listaPtosArm
+        return 
                         
                         
                         
@@ -239,15 +262,15 @@ def monoArmadura(ptoCent,listaPtosArm,htexto,listaLong=[8]*10):
 #Para que se cree es necesario que todas las armaduras previamente se hayan
 #dibujado (aunque sea en una sección ficticea) con la rutina armadura
 
-def cuadroDespiece(anchoColumnas,hFilas,hTexto,familiasArmad):
+def cuadroDespiece(anchoColumnas,hFilas,hTexto,listafamiliasArmad):
     # Cuadro de despiece de la armadura
     # anchoColumnas: ancho de las columnas de cuadro de despiece (corresponden a posición, esquema, diam. y separac., No. de barras y longitud de cada barra)
     # hFilas: altura de las filas
     # hTexto: altura textos
     # familiasArmad: datos de las armaduras
 
-    listafamiliasArmad=familiasArmad.items() #creamos una lista a partir del diccionario para poder ordenar los valores
-    listafamiliasArmad.sort()
+#    listafamiliasArmad=familiasArmad.items() #creamos una lista a partir del diccionario para poder ordenar los valores
+#    listafamiliasArmad.sort()
     
     anchoTotal=0
     for i in anchoColumnas:
@@ -297,18 +320,18 @@ def cuadroDespiece(anchoColumnas,hFilas,hTexto,familiasArmad):
     # iterElem=familiasArmad.iterkeys()
     format="%.2f"
     pesoTotal=0
-    for i in range(0,len(listafamiliasArmad)):
+    for rbFam in listafamiliasArmad:
         #identf=iterElem.next()
-        identf=listafamiliasArmad[i][0]
+#        identf=listafamiliasArmad[i][0]
         pPos=pLinea.add(Base.Vector(hTexto/2.0,-hTexto/2.0))
-        tx=Draft.makeText(familiasArmad[identf]['identificador'],pPos)
+        tx=Draft.makeText(rbFam.identificador,pPos)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hTexto
         pEsq=pLinea.add(Base.Vector(anchoColumnas[0]+anchoColumnas[1]/2.0,0))
-        ptosArm=familiasArmad[identf]['listaPtosArm']
+        ptosArm=rbFam.listaPtosArm
         monoArmadura(pEsq,ptosArm,hTexto,)
         pFiSep=pLinea.add(Base.Vector(anchoColumnas[0]+anchoColumnas[1]+hTexto/2.0,-hTexto/2.0))
-        diamArm=familiasArmad[identf]['diametro']
-        sepArm=familiasArmad[identf]['separacion']
+        diamArm=rbFam.diametro
+        sepArm=rbFam.separacion
         if sepArm ==0:
             tx=Draft.makeText('%%C' + str(int(1000*diamArm)) ,pFiSep)
         else:
@@ -316,11 +339,11 @@ def cuadroDespiece(anchoColumnas,hFilas,hTexto,familiasArmad):
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hTexto
         pNbarras=pLinea.add(Base.Vector(anchoColumnas[0]+anchoColumnas[1]+anchoColumnas[2]+anchoColumnas[3]-hTexto/2.0,-hTexto/2.0))
         if sepArm == 0:
-            nBar=familiasArmad[identf]['nBarras']
+            nBar=rbFam.nBarras
         else:
-            vaux=familiasArmad[identf]['ptosExtension'][1].sub(familiasArmad[identf]['ptosExtension'][0])
+            vaux=rbFam.ptosExtension[1].sub(rbFam.ptosExtension[0])
             Laux=vaux.Length
-            nesp=int((Laux-2.0*familiasArmad[identf]['recLateral']-diamArm)/sepArm)
+            nesp=int((Laux-2.0*rbFam.recLateral-diamArm)/sepArm)
             nBar=nesp+1
         tx=Draft.makeText(str(nBar),pNbarras)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hTexto

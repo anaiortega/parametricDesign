@@ -49,8 +49,7 @@ def armaSec(identificador,diametro,separacion,recubrimiento,reclateral,ptosExten
 def armadura(identificador,diametro,separacion,nBarras,listaPtos,listaRec,lado,radioDob,gapIni,gapFin,vectorLRef,hTexto):
     # identificador: identificador de la armadura
     # diámetro: diámetro de la armadura (en unidades coherentes)
-    # separacion: distancia entre ejes de barras (en unidades coherentes).
-    # Si damos el nº de barras en
+    # separacion: distancia entre ejes de barras (en unidades coherentes). Si damos el nº de barras en
     # lugar de la separación entonces separacion=0
     # nBarras: nº de barras a disponer. Sólo lo considera cuando separacion=0
     # listaPtos: lista de ptos (vectores) a partir de los cuales se genera la barra
