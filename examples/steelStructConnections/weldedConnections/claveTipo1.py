@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil
+from freeCAD_civil import geometry_3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Clave de pórtico con viga de arriostramiento soldada
@@ -20,15 +20,15 @@ from Draft import *
 #Vigas del pórtico
 tipoPerfilVPort='W'        
 idPerfilVPort='30x108'
-cantoPerfilVPort=PerfilesMetalicos.W[idPerfilVPort]['h']
-eAlmaPerfilVPort=PerfilesMetalicos.W[idPerfilVPort]['e']
-eAlaPerfilVPort=PerfilesMetalicos.W[idPerfilVPort]['e1']
+cantoPerfilVPort=metallic_profiles.W[idPerfilVPort]['h']
+eAlmaPerfilVPort=metallic_profiles.W[idPerfilVPort]['e']
+eAlaPerfilVPort=metallic_profiles.W[idPerfilVPort]['e1']
 #Viga riostra
 tipoPerfilVRiost='W'        
 idPerfilVRiost='18x46'
-cantoPerfilVRiost=PerfilesMetalicos.W[idPerfilVRiost]['h']
-eAlmaPerfilVRiost=PerfilesMetalicos.W[idPerfilVRiost]['e']
-eAlaPerfilVRiost=PerfilesMetalicos.W[idPerfilVRiost]['e1']
+cantoPerfilVRiost=metallic_profiles.W[idPerfilVRiost]['h']
+eAlmaPerfilVRiost=metallic_profiles.W[idPerfilVRiost]['e']
+eAlaPerfilVRiost=metallic_profiles.W[idPerfilVRiost]['e1']
 #general
 ptePort=0.2                   #pendiente del pórtico en tanto por 1
 LVPort=500                    #longitud (dirección Y) de la viga del pórtico a representar
@@ -47,7 +47,7 @@ tamPerfil=idPerfilVPort
 incrIni=0
 incrFin=LVPort
 giroSec=0
-vport=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vport=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 aux=Part.makeBox(2*cantoPerfilVPort,2*cantoPerfilVPort,2*cantoPerfilVPort,Base.Vector(-cantoPerfilVPort,0,-cantoPerfilVPort))
 pieza=vport.cut(aux)
 vport.rotate(Base.Vector(0,0,0),Base.Vector(0,0,1),180)
@@ -63,7 +63,7 @@ tamPerfil=idPerfilVRiost
 incrIni=0
 incrFin=0
 giroSec=0
-vriost=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vriost=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(vriost)
 ptoIni=Base.Vector(-eAlmaPerfilVPort/2,0,0)
 ptoFin=Base.Vector(-LVRiost,0,0)
@@ -72,7 +72,7 @@ tamPerfil=idPerfilVRiost
 incrIni=0
 incrFin=0
 giroSec=0
-vriost=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vriost=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(vriost)
 
 
@@ -83,12 +83,12 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=pieza
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistasIsom(App,escala,Pieza)
+geometry_3D.vistasIsom(App,escala,Pieza)
 ocultas='s'
 SupInf='Sup'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
 AntPost='Ant'
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
 IzqDer='Der'
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
 

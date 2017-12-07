@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil 
+from freeCAD_civil  import geometry_3D
+from freeCAD_civil  import metallic_profiles
+from freeCAD_civil  import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Empalme atornillado entre 2 tramos del mismo perfil. El eje longitudinal del perfil
@@ -18,9 +18,9 @@ from Draft import *
 #****Datos****
 tipoPerfil='HEB'
 idPerfil='500'
-cantoPerfil=PerfilesMetalicos.HEB[idPerfil]['h']
-eAlmaPerfil=PerfilesMetalicos.HEB[idPerfil]['e']
-eAlaPerfil=PerfilesMetalicos.HEB[idPerfil]['e1']
+cantoPerfil=metallic_profiles.HEB[idPerfil]['h']
+eAlmaPerfil=metallic_profiles.HEB[idPerfil]['e']
+eAlaPerfil=metallic_profiles.HEB[idPerfil]['e1']
 holguraJunta=2
 espCubrejAlas=15               #espesor de los cubrejuntas de las alas
 dimYCubrejAlas=500             #largo de los cubrejuntas de las alas
@@ -55,7 +55,7 @@ tamPerfil=idPerfil
 incrIni=0
 incrFin=-holguraJunta/2
 giroSec=0
-corr1=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+corr1=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=corr1
 ptoIni=Base.Vector(0,0,0)
 ptoFin=Base.Vector(0,Lpieza/2,0)
@@ -64,7 +64,7 @@ tamPerfil=idPerfil
 incrIni=-holguraJunta/2
 incrFin=0
 giroSec=0
-corr2=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+corr2=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(corr2)
 #Cubrejuntas ala superior
 vOrigenL=Base.Vector(0,0,cantoPerfil/2)
@@ -73,7 +73,7 @@ vDirYL=Base.Vector(0,1,0)
 vDirZL=Base.Vector(0,0,1)
 listaCoordL=[[-dimXCubrejAlas/2,-dimYCubrejAlas/2],[dimXCubrejAlas/2,-dimYCubrejAlas/2],[dimXCubrejAlas/2,dimYCubrejAlas/2],[-dimXCubrejAlas/2,dimYCubrejAlas/2]]
 altura=espCubrejAlas
-cubrjAlaSup=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
+cubrjAlaSup=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
 pieza=pieza.fuse(cubrjAlaSup)
 #Cubrejuntas ala inferior
 vOrigenL=Base.Vector(0,0,-cantoPerfil/2-espCubrejAlas)
@@ -82,7 +82,7 @@ vDirYL=Base.Vector(0,1,0)
 vDirZL=Base.Vector(0,0,1)
 listaCoordL=[[-dimXCubrejAlas/2,-dimYCubrejAlas/2],[dimXCubrejAlas/2,-dimYCubrejAlas/2],[dimXCubrejAlas/2,dimYCubrejAlas/2],[-dimXCubrejAlas/2,dimYCubrejAlas/2]]
 altura=espCubrejAlas
-cubrjAlaInf=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
+cubrjAlaInf=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
 pieza=pieza.fuse(cubrjAlaInf)
 #Cubrejuntas alma dorsal 
 vOrigenL=Base.Vector(-eAlmaPerfil/2,0,0)
@@ -91,7 +91,7 @@ vDirYL=Base.Vector(0,0,1)
 vDirZL=Base.Vector(-1,0,0)
 listaCoordL=[[-dimYCubrejAlma/2,-dimZCubrejAlma/2],[dimYCubrejAlma/2,-dimZCubrejAlma/2],[dimYCubrejAlma/2,dimZCubrejAlma/2],[-dimYCubrejAlma/2,dimZCubrejAlma/2]]
 altura=espCubrejAlma
-cubrjAlmaDrs=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
+cubrjAlmaDrs=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
 pieza=pieza.fuse(cubrjAlmaDrs)
 #Cubrejuntas alma frontal
 vOrigenL=Base.Vector(eAlmaPerfil/2,0,0)
@@ -100,7 +100,7 @@ vDirYL=Base.Vector(0,0,1)
 vDirZL=Base.Vector(1,0,0)
 listaCoordL=[[-dimYCubrejAlma/2,-dimZCubrejAlma/2],[dimYCubrejAlma/2,-dimZCubrejAlma/2],[dimYCubrejAlma/2,dimZCubrejAlma/2],[-dimYCubrejAlma/2,dimZCubrejAlma/2]]
 altura=espCubrejAlma
-cubrjAlmaFr=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
+cubrjAlmaFr=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
 pieza=pieza.fuse(cubrjAlmaFr)
 
 #Agujeros en ala inferior
@@ -118,7 +118,7 @@ for i in range(0,nXFilasTAla):
         centro=[xLinic+math.fsum(dXFilasTAla[0:i]),yLinic+math.fsum(dYFilasTAla[0:j])]
         listaCoordCentrosL.append(centro)
 
-agujAlaInf=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+agujAlaInf=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(agujAlaInf)
 
 #Agujeros en ala superior
@@ -136,7 +136,7 @@ for i in range(0,nXFilasTAla):
         centro=[xLinic+math.fsum(dXFilasTAla[0:i]),yLinic+math.fsum(dYFilasTAla[0:j])]
         listaCoordCentrosL.append(centro)
 
-agujAlaSup=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+agujAlaSup=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(agujAlaSup)
 
 #Agujeros en alma
@@ -154,7 +154,7 @@ for i in range(0,nYFilasTAlma):
         centro=[xLinic+math.fsum(dYFilasTAlma[0:i]),yLinic+math.fsum(dZFilasTAlma[0:j])]
         listaCoordCentrosL.append(centro)
 
-agujAlma=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+agujAlma=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(agujAlma)
 
 Part.show(pieza)
@@ -164,15 +164,15 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=pieza
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistaIsoAnterosup(App,escala,Pieza)
-Geometria3D.vistaIsoAnteroinf(App,escala,Pieza)
-Geometria3D.vistaIsoPosterosup(App,escala,Pieza)
-Geometria3D.vistaIsoPosteroinf(App,escala,Pieza)
+geometry_3D.vistaIsoAnterosup(App,escala,Pieza)
+geometry_3D.vistaIsoAnteroinf(App,escala,Pieza)
+geometry_3D.vistaIsoPosterosup(App,escala,Pieza)
+geometry_3D.vistaIsoPosteroinf(App,escala,Pieza)
 
 ocultas='s'
 SupInf='Sup'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
 AntPost='Ant'
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
 IzqDer='Der'
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)

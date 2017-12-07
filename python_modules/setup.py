@@ -53,6 +53,14 @@ setup(name='freeCAD_civil',
       version='0.9.0',
       description='Tool library for civil work with FreeCAD (RC and metallic structures)',
       author='Ana Ortega',
-      author_email='ana.ortega@xcengienering.xyz',
+      author_email='ana.ortega@xcengineering.xyz',
       packages=['freeCAD_civil'],
+     )
+
+setup(name='setting_out_work',
+      version='0.9.0',
+      description='Tools for setting-out works',
+      author='Ana Ortega',
+      author_email='ana.ortega@xcengineering.xyz',
+      packages=['setting_out'],
      )

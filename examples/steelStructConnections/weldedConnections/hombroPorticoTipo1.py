@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil
+from freeCAD_civil import geometry_3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Hombro de pórtico soldado con viga de arriostramiento
@@ -20,22 +20,22 @@ from Draft import *
 #Pilar del pórtico
 tipoPerfilPilar='W'        
 idPerfilPilar='30x173'
-cantoPerfilPilar=PerfilesMetalicos.W[idPerfilPilar]['h']
-anchoPerfilPilar=PerfilesMetalicos.W[idPerfilPilar]['b']
-eAlmaPerfilPilar=PerfilesMetalicos.W[idPerfilPilar]['e']
-eAlaPerfilPilar=PerfilesMetalicos.W[idPerfilPilar]['e1']
+cantoPerfilPilar=metallic_profiles.W[idPerfilPilar]['h']
+anchoPerfilPilar=metallic_profiles.W[idPerfilPilar]['b']
+eAlmaPerfilPilar=metallic_profiles.W[idPerfilPilar]['e']
+eAlaPerfilPilar=metallic_profiles.W[idPerfilPilar]['e1']
 #Viga del pórtico
 tipoPerfilVPort='W'        
 idPerfilVPort='30x90'
-cantoPerfilVPort=PerfilesMetalicos.W[idPerfilVPort]['h']
-eAlmaPerfilVPort=PerfilesMetalicos.W[idPerfilVPort]['e']
-eAlaPerfilVPort=PerfilesMetalicos.W[idPerfilVPort]['e1']
+cantoPerfilVPort=metallic_profiles.W[idPerfilVPort]['h']
+eAlmaPerfilVPort=metallic_profiles.W[idPerfilVPort]['e']
+eAlaPerfilVPort=metallic_profiles.W[idPerfilVPort]['e1']
 #Viga riostra
 tipoPerfilVRiost='W'        
 idPerfilVRiost='16x31'
-cantoPerfilVRiost=PerfilesMetalicos.W[idPerfilVRiost]['h']
-eAlmaPerfilVRiost=PerfilesMetalicos.W[idPerfilVRiost]['e']
-eAlaPerfilVRiost=PerfilesMetalicos.W[idPerfilVRiost]['e1']
+cantoPerfilVRiost=metallic_profiles.W[idPerfilVRiost]['h']
+eAlmaPerfilVRiost=metallic_profiles.W[idPerfilVRiost]['e']
+eAlaPerfilVRiost=metallic_profiles.W[idPerfilVRiost]['e1']
 #Rigidizadores
 eRig=16                       #espesor de los rigidizadores
 #general
@@ -59,7 +59,7 @@ tamPerfil=idPerfilPilar
 incrIni=0
 incrFin=cantoPerfilVPort
 giroSec=0
-pilar=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+pilar=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 aux=Part.makeBox(2*cantoPerfilPilar,2*anchoPerfilPilar,2*cantoPerfilPilar,Pto1,Base.Vector(0,1,ptePort))
 pilar=pilar.cut(aux)
 pieza=pilar
@@ -72,7 +72,7 @@ tamPerfil=idPerfilVPort
 incrIni=0
 incrFin=0
 giroSec=0
-vport=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vport=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 aux=Part.makeBox(cantoPerfilPilar,cantoPerfilPilar,4*cantoPerfilPilar,Base.Vector(-cantoPerfilPilar/2.0,-cantoPerfilPilar/2.0,-2*cantoPerfilPilar))
 vport=vport.cut(aux)
 pieza=pieza.fuse(vport)
@@ -85,7 +85,7 @@ tamPerfil=idPerfilVRiost
 incrIni=0
 incrFin=0
 giroSec=0
-vriost=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vriost=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(vriost)
 ptoIni=Base.Vector(-eAlmaPerfilVPort/2.0,0,0)
 ptoFin=Base.Vector(-LVRiost,0,0)
@@ -94,7 +94,7 @@ tamPerfil=idPerfilVRiost
 incrIni=0
 incrFin=0
 giroSec=0
-vriost=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vriost=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(vriost)
 
 #Rigidizadores
@@ -106,7 +106,7 @@ listaCoordChapaL=[[0,0],[anchoPerfilPilar,0],[anchoPerfilPilar,haux3],[0,haux3]]
 listaCoordAgujL=[]
 espesorChapa=eRig
 diamAguj=0
-rig1=Metalicas.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
+rig1=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
 rig1=rig1.cut(pilar)
 pieza=pieza.fuse(rig1)
 vOrigenL=Pto1.add(Base.Vector(0,0,-hVigaAux))
@@ -117,7 +117,7 @@ listaCoordChapaL=[[0,0],[anchoPerfilPilar,0],[anchoPerfilPilar,haux3],[0,haux3]]
 listaCoordAgujL=[]
 espesorChapa=eRig
 diamAguj=0
-rig2=Metalicas.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
+rig2=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
 rig2=rig2.cut(pilar)
 pieza=pieza.fuse(rig2)
 
@@ -128,12 +128,12 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=pieza
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistasIsom(App,escala,Pieza)
+geometry_3D.vistasIsom(App,escala,Pieza)
 ocultas='s'
 SupInf='Sup'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
 AntPost='Ant'
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
 IzqDer='Der'
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
 

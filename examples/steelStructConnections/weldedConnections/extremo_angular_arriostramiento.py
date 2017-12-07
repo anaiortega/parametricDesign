@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil
+from freeCAD_civil import geometry_3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Unión dúctil soldada de un angular simple L (de lados iguales) en su extremo
@@ -22,9 +22,9 @@ alfa=32                         #ángulo que forma la diagonal con la vertical
 #Diagonal 
 tipoPerfilDiag='L'        
 idPerfilDiag='40x4'             # se escoge el espesor del perfil de forma que sea 1/10 la dimensión del lado de la L
-ladoDiag=PerfilesMetalicos.L[idPerfilDiag]['a']  #lado de la L
-espDiag=PerfilesMetalicos.L[idPerfilDiag]['e']   #espesor del perfil
-cdgDiag=PerfilesMetalicos.L[idPerfilDiag]['cx']  #distancia del eje de la diagonal a las caras exteriores
+ladoDiag=metallic_profiles.L[idPerfilDiag]['a']  #lado de la L
+espDiag=metallic_profiles.L[idPerfilDiag]['e']   #espesor del perfil
+cdgDiag=metallic_profiles.L[idPerfilDiag]['cx']  #distancia del eje de la diagonal a las caras exteriores
 #Dimensiones cartela
 ZCartela=100
 YCartela=150
@@ -46,7 +46,7 @@ tamPerfil=idPerfilDiag
 incrIni=0
 incrFin=0
 giroSec=90
-diag=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+diag=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=diag
 #Part.show(pieza)
 
@@ -87,9 +87,9 @@ pieza=pieza.fuse(cartela)
 #soldaduras
 P8=Base.Vector(0,aux3*math.cos(alfarad),-aux3*math.sin(alfarad))
 P9=Base.Vector(0,-cdgDiag*math.cos(alfarad),cdgDiag*math.sin(alfarad))
-sold1=Metalicas.soldadura2Ptos(pieza,pieza,0.4*ladoDiag/10,P4.add(Base.Vector(espCartela,0,0)),P8.add(Base.Vector(espCartela,0,0)))
+sold1=metallic_struct.soldadura2Ptos(pieza,pieza,0.4*ladoDiag/10,P4.add(Base.Vector(espCartela,0,0)),P8.add(Base.Vector(espCartela,0,0)))
 pieza=pieza.fuse(sold1)
-sold2=Metalicas.soldadura2Ptos(pieza,pieza,0.7*ladoDiag/10,P5.add(Base.Vector(espCartela,0,0)),P9.add(Base.Vector(espCartela,0,0)))
+sold2=metallic_struct.soldadura2Ptos(pieza,pieza,0.7*ladoDiag/10,P5.add(Base.Vector(espCartela,0,0)),P9.add(Base.Vector(espCartela,0,0)))
 pieza=pieza.fuse(sold2)
 
 Part.show(pieza)
@@ -99,12 +99,12 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=pieza
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistasIsom(App,escala,Pieza)
+geometry_3D.vistasIsom(App,escala,Pieza)
 ocultas='s'
 SupInf='Sup'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
 AntPost='Ant'
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
 IzqDer='Der'
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
 

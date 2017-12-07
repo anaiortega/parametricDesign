@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil
+from freeCAD_civil import geometry_3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Placa base tipo 1
@@ -20,11 +20,11 @@ from Draft import *
 #Pilar
 tipoPerfil='IPE'            #Perfil del pilar
 idPerfil='450'              #tama?el perfil del pilar
-cantoPerfil=PerfilesMetalicos.IPE[idPerfil]['h']
-eAlmaPerfil=PerfilesMetalicos.IPE[idPerfil]['e']
-eAlaPerfil=PerfilesMetalicos.IPE[idPerfil]['e1']
-bAlaPerfil=PerfilesMetalicos.IPE[idPerfil]['b']
-radioPerfil=PerfilesMetalicos.IPE[idPerfil]['r']
+cantoPerfil=metallic_profiles.IPE[idPerfil]['h']
+eAlmaPerfil=metallic_profiles.IPE[idPerfil]['e']
+eAlaPerfil=metallic_profiles.IPE[idPerfil]['e1']
+bAlaPerfil=metallic_profiles.IPE[idPerfil]['b']
+radioPerfil=metallic_profiles.IPE[idPerfil]['r']
 #Placa
 dimXPlaca=270               #ancho de la placa base (direcci?)
 dimYPlaca=720               #largo de la placa base (direcci?)
@@ -58,7 +58,7 @@ tamPerfil=idPerfil
 incrIni=0
 incrFin=0
 giroSec=0
-pilar=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+pilar=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pilar
 
 #Placa base
@@ -68,7 +68,7 @@ vDirYL=Base.Vector(0,1,0)
 vDirZL=Base.Vector(0,0,1)
 listaCoordL=[[0,0],[dimXPlaca,0],[dimXPlaca,dimYPlaca],[0,dimYPlaca]]
 altura=ePlaca
-placa=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
+placa=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
 pieza=pieza.fuse(placa)
 
 #Soldaduras
@@ -79,35 +79,35 @@ eGarganta=eGargantaAlas
 longitud=bAlaPerfil
 centroArista=Base.Vector(0,-cantoPerfil/2,ePlaca)
 vDireccion=Base.Vector(1,0,0)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 centroArista=Base.Vector(0,cantoPerfil/2,ePlaca)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 longitud=(bAlaPerfil-eAlmaPerfil)/2-radioPerfil
 centroArista=Base.Vector(bAlaPerfil/2-longitud/2,cantoPerfil/2-eAlaPerfil,ePlaca)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 centroArista=Base.Vector(bAlaPerfil/2-longitud/2,-cantoPerfil/2+eAlaPerfil,ePlaca)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 centroArista=Base.Vector(-bAlaPerfil/2+longitud/2,cantoPerfil/2-eAlaPerfil,ePlaca)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 centroArista=Base.Vector(-bAlaPerfil/2+longitud/2,-cantoPerfil/2+eAlaPerfil,ePlaca)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 eGarganta=eGargantaAlas
 longitud=bAlaPerfil
 centroArista=Base.Vector(0,-cantoPerfil/2,ePlaca)
 vDireccion=Base.Vector(1,0,0)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 ##de almas
@@ -115,11 +115,11 @@ eGarganta=eGargantaAlma
 longitud=cantoPerfil-2*eAlaPerfil-2*radioPerfil
 centroArista=Base.Vector(eAlmaPerfil/2,0,ePlaca)
 vDireccion=Base.Vector(0,1,0)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 centroArista=Base.Vector(-eAlmaPerfil/2,0,ePlaca)
-sold=Metalicas.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
+sold=metallic_struct.soldadura(pieza1,pieza2,eGarganta,longitud,centroArista,vDireccion)
 pieza=pieza.fuse(sold)
 
 #Agujeros en placa base
@@ -137,7 +137,7 @@ for i in range(0,nXFilasAg):
         centro=[xLinic+math.fsum(dXFilasAg[0:i]),yLinic+math.fsum(dYFilasAg[0:j])]
         listaCoordCentrosL.append(centro)
 
-aguj=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+aguj=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(aguj)
 
 #****Representación en planos
@@ -145,8 +145,8 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=pieza
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistasIsom(App,escala,Pieza)
+geometry_3D.vistasIsom(App,escala,Pieza)
 ocultas='s'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,'Sup')
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,'Ant')
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,'Izq')
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,'Sup')
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,'Ant')
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,'Izq')

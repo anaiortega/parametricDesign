@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil
+from freeCAD_civil import geometry_3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Placa base tipo 2
@@ -20,11 +20,11 @@ from Draft import *
 #Pilar
 tipoPerfil='W'                 #Perfil del pilar
 idPerfil='30x173'              #tamaño del perfil del pilar
-cantoPerfil=PerfilesMetalicos.W[idPerfil]['h']
-eAlmaPerfil=PerfilesMetalicos.W[idPerfil]['e']
-eAlaPerfil=PerfilesMetalicos.W[idPerfil]['e1']
-bAlaPerfil=PerfilesMetalicos.W[idPerfil]['b']
-radioPerfil=PerfilesMetalicos.W[idPerfil]['r']
+cantoPerfil=metallic_profiles.W[idPerfil]['h']
+eAlmaPerfil=metallic_profiles.W[idPerfil]['e']
+eAlaPerfil=metallic_profiles.W[idPerfil]['e1']
+bAlaPerfil=metallic_profiles.W[idPerfil]['b']
+radioPerfil=metallic_profiles.W[idPerfil]['r']
 #Placa
 dimXPlaca=475               #ancho de la placa base (dirección X)
 dimYPlaca=1200              #largo de la placa base (dirección Y)
@@ -40,10 +40,10 @@ xminAg=-(dXFilasAg[0]/2.0)                #coord. X del centro del agujero con X
 yminAg=-160/2.0-160         #coord. Y del centro del agujero con Y mímima
 fiAguj=18                   #diámetro de los agujeros
 
-#arriostramiento (ver figura relativa a la rutina Metalicas.arriostr1Tubo)
+#arriostramiento (ver figura relativa a la rutina metallic_struct.arriostr1Tubo)
 tipoPerfilArr='huecoCuad'      #tipo de perfil de la diagonal del arriostramiento
 idPerfilArr='140.8' 
-anchoPerfilArr=PerfilesMetalicos.huecoCuad[idPerfilArr]['a']
+anchoPerfilArr=metallic_profiles.huecoCuad[idPerfilArr]['a']
 hOrigenArr=600                 #distancia vertical entre el lado horizontal de la cartela y el punto de
                                #intersección de eje de la diagonal con el plano de inicio de la misma
 eCartArr=19                    #espesor de la cartela del arriostramiento
@@ -75,7 +75,7 @@ tamPerfil=idPerfil
 incrIni=0
 incrFin=0
 giroSec=0
-pilar=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+pilar=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pilar
 
 #Placa base
@@ -85,7 +85,7 @@ vDirYL=Base.Vector(0,1,0)
 vDirZL=Base.Vector(0,0,1)
 listaCoordL=[[0,0],[dimXPlaca,0],[dimXPlaca,dimYPlaca],[0,dimYPlaca]]
 altura=ePlaca
-placa=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
+placa=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
 pieza=pieza.fuse(placa)
 
 
@@ -104,7 +104,7 @@ for i in range(0,nXFilasAg):
         centro=[xLinic+math.fsum(dXFilasAg[0:i]),yLinic+math.fsum(dYFilasAg[0:j])]
         listaCoordCentrosL.append(centro)
 
-aguj=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+aguj=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(aguj)
 
 #Rigidizador vertical
@@ -124,7 +124,7 @@ vDirYL=Base.Vector(0,0,1)
 vDirZL=Base.Vector(0,1,0)
 listaCoordL=[[0,0],[dimXRig,0],[dimXRig,dimZRig],[0,dimZRig]]
 altura=eRig
-rig=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
+rig=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura)
 pieza=pieza.fuse(rig)
 
 #arriostramiento
@@ -142,7 +142,7 @@ alfa2=ang2
 VPte=VPteArr
 HPte=HPteArr
 LPerf=LArr
-todo=Metalicas.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
+todo=metallic_struct.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
 todo.add(pieza)
 
 Part.show(todo)
@@ -151,12 +151,12 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=todo
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistaIsoAnterosup(App,escala,Pieza)
-Geometria3D.vistaIsoAnteroinf(App,escala,Pieza)
-Geometria3D.vistaIsoPosterosup(App,escala,Pieza)
-Geometria3D.vistaIsoPosteroinf(App,escala,Pieza)
+geometry_3D.vistaIsoAnterosup(App,escala,Pieza)
+geometry_3D.vistaIsoAnteroinf(App,escala,Pieza)
+geometry_3D.vistaIsoPosterosup(App,escala,Pieza)
+geometry_3D.vistaIsoPosteroinf(App,escala,Pieza)
 
 ocultas='s'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,'Sup')
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,'Ant')
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,'Izq')
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,'Sup')
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,'Ant')
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,'Izq')

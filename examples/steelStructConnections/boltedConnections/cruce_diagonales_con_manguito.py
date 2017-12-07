@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil 
+from freeCAD_civil  import geometry_3D
+from freeCAD_civil  import metallic_profiles
+from freeCAD_civil  import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Cruce de diagonales con manguito (ver página 298 del libro publicado por APTA
@@ -20,12 +20,12 @@ from Draft import *
 #Diagonal 1 (se representa por detrás)
 tipoPerfilDiag1='L'        
 idPerfilDiag1='40x4'
-cdgDiag1=PerfilesMetalicos.L[idPerfilDiag1]['cy']
+cdgDiag1=metallic_profiles.L[idPerfilDiag1]['cy']
 angVertDiag1=45                 #ángulo que forma la diagonal 1 con la vertical
 #Diagonal 2 (se representa por delante de la diagonal 1)
 tipoPerfilDiag2='L'        
 idPerfilDiag2='40x4'
-cdgDiag2=PerfilesMetalicos.L[idPerfilDiag2]['cy']
+cdgDiag2=metallic_profiles.L[idPerfilDiag2]['cy']
 angVertDiag2=45                 #ángulo que forma la diagonal 2 con la vertical
 #Manguito
 eCartelasExtremas=6             #espesor de las cartelas en extremos de la diagonal
@@ -46,7 +46,7 @@ tamPerfil=idPerfilDiag1
 incrIni=0
 incrFin=0
 giroSec=180
-diag1=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+diag1=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=diag1
 #Diagonal 2
 ptoIni=Base.Vector(eCartelasExtremas/2+cdgDiag2,-LDiag2/2*math.sin(math.radians(angVertDiag2)),-LDiag2/2*math.cos(math.radians(angVertDiag2)))
@@ -56,7 +56,7 @@ tamPerfil=idPerfilDiag2
 incrIni=0
 incrFin=0
 giroSec=0
-diag2=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+diag2=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(diag2)
 
 #Agujero para manguito
@@ -68,12 +68,12 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=pieza
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistasIsom(App,escala,Pieza)
+geometry_3D.vistasIsom(App,escala,Pieza)
 ocultas='s'
 SupInf='Sup'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
 AntPost='Ant'
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
 IzqDer='Der'
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
 

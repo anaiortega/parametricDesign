@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil
+from freeCAD_civil import geometry_3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 
@@ -16,22 +16,22 @@ from Draft import *
 #Viga
 tipoPerfilViga='W'        
 idPerfilViga='18x35'
-cantoPerfilViga=PerfilesMetalicos.W[idPerfilViga]['h']
-anchoPerfilViga=PerfilesMetalicos.W[idPerfilViga]['b']
-eAlmaPerfilViga=PerfilesMetalicos.W[idPerfilViga]['e']
-eAlaPerfilViga=PerfilesMetalicos.W[idPerfilViga]['e1']
+cantoPerfilViga=metallic_profiles.W[idPerfilViga]['h']
+anchoPerfilViga=metallic_profiles.W[idPerfilViga]['b']
+eAlmaPerfilViga=metallic_profiles.W[idPerfilViga]['e']
+eAlaPerfilViga=metallic_profiles.W[idPerfilViga]['e1']
 #Arriostramiento izquierdo
 tipoPerfilArrI='huecoCuad'        
 idPerfilArrI='140.8'
-cantoPerfilArrI=PerfilesMetalicos.huecoCuad[idPerfilArrI]['a']
-anchoPerfilArrI=PerfilesMetalicos.huecoCuad[idPerfilArrI]['a']
-ePerfilArrI=PerfilesMetalicos.W[idPerfilArrI]['e']
+cantoPerfilArrI=metallic_profiles.huecoCuad[idPerfilArrI]['a']
+anchoPerfilArrI=metallic_profiles.huecoCuad[idPerfilArrI]['a']
+ePerfilArrI=metallic_profiles.W[idPerfilArrI]['e']
 #Arriostramiento derecho
 tipoPerfilArrD='huecoCuad'        
 idPerfilArrD='140.8'
-cantoPerfilArrD=PerfilesMetalicos.huecoCuad[idPerfilArrI]['a']
-anchoPerfilArrD=PerfilesMetalicos.huecoCuad[idPerfilArrI]['a']
-ePerfilArrD=PerfilesMetalicos.W[idPerfilArrI]['e']
+cantoPerfilArrD=metallic_profiles.huecoCuad[idPerfilArrI]['a']
+anchoPerfilArrD=metallic_profiles.huecoCuad[idPerfilArrI]['a']
+ePerfilArrD=metallic_profiles.W[idPerfilArrI]['e']
 #Cartela
 pteArrI=4445.0/2550.0          #tangente del ángulo que forma al arriostramiento
                                #izquierdo con la horizontal (zI/yI)
@@ -71,7 +71,7 @@ tamPerfil=idPerfilViga
 incrIni=0
 incrFin=0
 giroSec=0
-viga=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+viga=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=viga
 
 #Cartela
@@ -83,7 +83,7 @@ listaCoordChapaL=[[-bCartI,0],[-bCartI,hCart-zCorteI],[-(bCartI-yCorteI),hCart],
 listaCoordAgujL=[]
 espesorChapa=eCart
 diamAguj=0
-cartela=Metalicas.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
+cartela=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
 pieza=pieza.fuse(cartela)
 
 #Arriostramiento izquierdo
@@ -94,7 +94,7 @@ tamPerfil=idPerfilArrI
 incrIni=slpArrCart
 incrFin=0
 giroSec=0
-arrI=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+arrI=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 arrI=arrI.cut(cartela)
 
 #Arriostramiento derecho
@@ -105,7 +105,7 @@ tamPerfil=idPerfilArrD
 incrIni=slpArrCart
 incrFin=0
 giroSec=0
-arriostr=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+arriostr=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 arriostr.add(arrI)
 arriostr.add(pieza)
 
@@ -115,12 +115,12 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=arriostr
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistasIsom(App,escala,Pieza)
+geometry_3D.vistasIsom(App,escala,Pieza)
 ocultas='s'
 SupInf='Sup'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
 AntPost='Ant'
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
 IzqDer='Der'
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
 

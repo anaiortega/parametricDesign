@@ -4,10 +4,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import Geometria3D
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Metalicas
+import freeCAD_civil 
+from freeCAD_civil  import geometry_3D
+from freeCAD_civil  import metallic_profiles
+from freeCAD_civil  import metallic_struct
 from FreeCAD import Base
 from Draft import *
 #Embrochalamiento articulado de una viga secundaria en la viga principal con doble
@@ -20,20 +20,20 @@ from Draft import *
 #Viga principal
 tipoPerfilVPrinc='IPE'        
 idPerfilVPrinc='500'
-cantoPerfilVPrinc=PerfilesMetalicos.IPE[idPerfilVPrinc]['h']
-eAlmaPerfilVPrinc=PerfilesMetalicos.IPE[idPerfilVPrinc]['e']
-eAlaPerfilVPrinc=PerfilesMetalicos.IPE[idPerfilVPrinc]['e1']
+cantoPerfilVPrinc=metallic_profiles.IPE[idPerfilVPrinc]['h']
+eAlmaPerfilVPrinc=metallic_profiles.IPE[idPerfilVPrinc]['e']
+eAlaPerfilVPrinc=metallic_profiles.IPE[idPerfilVPrinc]['e1']
 #Viga secundaria
 tipoPerfilVSec='IPE'        
 idPerfilVSec='300'
-cantoPerfilVSec=PerfilesMetalicos.IPE[idPerfilVSec]['h']
-eAlmaPerfilVSec=PerfilesMetalicos.IPE[idPerfilVSec]['e']
-eAlaPerfilVSec=PerfilesMetalicos.IPE[idPerfilVSec]['e1']
+cantoPerfilVSec=metallic_profiles.IPE[idPerfilVSec]['h']
+eAlmaPerfilVSec=metallic_profiles.IPE[idPerfilVSec]['e']
+eAlaPerfilVSec=metallic_profiles.IPE[idPerfilVSec]['e1']
 #Casquillo de angular
 tipoPerfilCasq='L'
 idPerfilCasq='120x10'
-ePerfilCasq=PerfilesMetalicos.L[idPerfilCasq]['e']
-dcdgCasq=PerfilesMetalicos.L[idPerfilCasq]['cx']
+ePerfilCasq=metallic_profiles.L[idPerfilCasq]['e']
+dcdgCasq=metallic_profiles.L[idPerfilCasq]['cx']
 dimZCasq=240                    #dimensión Z (altura) del casquillo
 #Tornillos
 nFilasTorn=3                    #nº de filas de tornillos
@@ -59,7 +59,7 @@ tamPerfil=idPerfilVPrinc
 incrIni=0
 incrFin=0
 giroSec=0
-vprinc=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vprinc=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=vprinc
 #Viga secundaria
 ptoIni=Base.Vector(eAlmaPerfilVPrinc/2,0,0)
@@ -69,7 +69,7 @@ tamPerfil=idPerfilVSec
 incrIni=0
 incrFin=0
 giroSec=0
-vsec=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vsec=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(vsec)
 #Casquillos de angular
 ptoIni=Base.Vector(eAlmaPerfilVPrinc/2+dcdgCasq,eAlmaPerfilVSec/2+dcdgCasq,-dimZCasq/2)
@@ -79,7 +79,7 @@ tamPerfil=idPerfilCasq
 incrIni=0
 incrFin=0
 giroSec=180
-casq1=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+casq1=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(casq1)
 
 ptoIni=Base.Vector(eAlmaPerfilVPrinc/2+dcdgCasq,-eAlmaPerfilVSec/2-dcdgCasq,-dimZCasq/2)
@@ -89,7 +89,7 @@ tamPerfil=idPerfilCasq
 incrIni=0
 incrFin=0
 giroSec=90
-casq1=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+casq1=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(casq1)
 
 #Agujeros sobre viga principal
@@ -106,7 +106,7 @@ for i in range(0,nFilasTorn):
     centro=[xLinic,yLinic-math.fsum(dFilasTorn[0:i])]
     listaCoordCentrosL.append(centro)
 
-agujAlmaP1=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+agujAlmaP1=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(agujAlmaP1)
 
 listaCoordCentrosL=[]
@@ -115,7 +115,7 @@ for i in range(0,nFilasTorn):
     centro=[xLinic,yLinic-math.fsum(dFilasTorn[0:i])]
     listaCoordCentrosL.append(centro)
 
-agujAlmaP2=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+agujAlmaP2=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(agujAlmaP2)
 
 #Agujeros en viga secundaria
@@ -132,7 +132,7 @@ for i in range(0,nFilasTorn):
     centro=[xLinic,yLinic-math.fsum(dFilasTorn[0:i])]
     listaCoordCentrosL.append(centro)
 
-agujAlmaS=Geometria3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
+agujAlmaS=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(agujAlmaS)
 
 Part.show(pieza)
@@ -142,15 +142,15 @@ Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
 Pieza.Shape=pieza
 FreeCADGui.Selection.addSelection(Pieza)
 
-Geometria3D.vistaIsoAnterosup(App,escala,Pieza)
-Geometria3D.vistaIsoAnteroinf(App,escala,Pieza)
-Geometria3D.vistaIsoPosterosup(App,escala,Pieza)
-Geometria3D.vistaIsoPosteroinf(App,escala,Pieza)
+geometry_3D.vistaIsoAnterosup(App,escala,Pieza)
+geometry_3D.vistaIsoAnteroinf(App,escala,Pieza)
+geometry_3D.vistaIsoPosterosup(App,escala,Pieza)
+geometry_3D.vistaIsoPosteroinf(App,escala,Pieza)
 
 ocultas='s'
 SupInf='Sup'
-Geometria3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
+geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
 AntPost='Ant'
-Geometria3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
+geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
 IzqDer='Der'
-Geometria3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
