@@ -48,3 +48,11 @@ setup(name='landXMLToFreeCAD',
       author_email='l.pereztato@gmail.com',
       packages=['landXMLtoFreeCAD'],
      )
+
+setup(name='freeCAD_civil',
+      version='0.9.0',
+      description='Tool library for civil work with FreeCAD (RC and metallic structures)',
+      author='Ana Ortega',
+      author_email='ana.ortega@xcengienering.xyz',
+      packages=['freeCAD_civil'],
+     )

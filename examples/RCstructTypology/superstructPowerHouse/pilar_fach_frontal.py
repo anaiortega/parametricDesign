@@ -2,10 +2,10 @@
 
 import Part, FreeCAD, math, Drawing, FreeCADGui
 import Draft
-import libCivilFreeCAD
-from libCivilFreeCAD import Geometria3D
-from libCivilFreeCAD import PerfilesMetalicos
-from libCivilFreeCAD import Metalicas
+import freeCAD_civil
+from freeCAD_civil import geometry_3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 
@@ -18,29 +18,29 @@ dimZPilar=8.2e3          #dimensión del pilar en dirección Z (altura)
 #Bayoneta
 tipoPerfilBY='IPE'
 idPerfilBY='300'
-cantoBY=PerfilesMetalicos.IPE[idPerfilBY]['h']
-anchoBY=PerfilesMetalicos.IPE[idPerfilBY]['b']
-ealmaBY=PerfilesMetalicos.IPE[idPerfilBY]['e']
-ealaBY=PerfilesMetalicos.IPE[idPerfilBY]['e1']
+cantoBY=metallic_profiles.IPE[idPerfilBY]['h']
+anchoBY=metallic_profiles.IPE[idPerfilBY]['b']
+ealmaBY=metallic_profiles.IPE[idPerfilBY]['e']
+ealaBY=metallic_profiles.IPE[idPerfilBY]['e1']
 dimZBay=(13.534-8.20)*1e3              #altura bayoneta entre cabeza de pilar y su intersección con eje de la viga de cubierta
 
 #Viga atado
 tipoPerfilVA='UPN'
 idPerfilVA='300'
-cantoVA=PerfilesMetalicos.UPN[idPerfilVA]['h']
-anchoVA=PerfilesMetalicos.UPN[idPerfilVA]['b']
-ealmaVA=PerfilesMetalicos.UPN[idPerfilVA]['e']
-cdgVA=PerfilesMetalicos.UPN[idPerfilVA]['e2']
+cantoVA=metallic_profiles.UPN[idPerfilVA]['h']
+anchoVA=metallic_profiles.UPN[idPerfilVA]['b']
+ealmaVA=metallic_profiles.UPN[idPerfilVA]['e']
+cdgVA=metallic_profiles.UPN[idPerfilVA]['e2']
 
 #Vigas carrileras
 distYejesVCarr=11.8e3
 tipoPerfilVCarr='HEB'
 idPerfilVCarr='400'
-cantoVCarr=PerfilesMetalicos.HEB[idPerfilVCarr]['h']
-anchoVCarr=PerfilesMetalicos.HEB[idPerfilVCarr]['b']
-ealmaVCarr=PerfilesMetalicos.HEB[idPerfilVCarr]['e']
-ealaVCarr=PerfilesMetalicos.HEB[idPerfilVCarr]['e1']
-racuerdoVCarr=PerfilesMetalicos.HEB[idPerfilVCarr]['r']
+cantoVCarr=metallic_profiles.HEB[idPerfilVCarr]['h']
+anchoVCarr=metallic_profiles.HEB[idPerfilVCarr]['b']
+ealmaVCarr=metallic_profiles.HEB[idPerfilVCarr]['e']
+ealaVCarr=metallic_profiles.HEB[idPerfilVCarr]['e1']
+racuerdoVCarr=metallic_profiles.HEB[idPerfilVCarr]['r']
 
 #****Fin datos****
 
@@ -64,7 +64,7 @@ tamPerfil=idPerfilBY
 incrIni=0
 incrFin=0
 giroSec=90
-bayonet=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+bayonet=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 
 
 #Dibujo de la viga de atado 1
@@ -75,7 +75,7 @@ tamPerfil=idPerfilVA
 incrIni=0
 incrFin=0
 giroSec=180
-vigaAt1=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vigaAt1=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 
 #Dibujo de la viga de atado 2
 ptoIni=Base.Vector(-dimXPilar/2+20-ealaBY+cdgVA,-anchoBY/2,dimZPilar+cantoVA/2)
@@ -85,7 +85,7 @@ tamPerfil=idPerfilVA
 incrIni=0
 incrFin=0
 giroSec=180
-vigaAt2=Metalicas.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
+vigaAt2=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 
 
 todo=Part.makeCompound([pilar,bayonet,vigaAt1,vigaAt2])
