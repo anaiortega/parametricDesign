@@ -14,7 +14,7 @@ import numpy as np
 import math
 import sys
 sys.path.append('./tools')
-import sett_out_tools as too
+from setting_out import sett_out_tools as too
 from tabulate import tabulate
 
 # DATA
@@ -33,30 +33,18 @@ azimuthStruct=azimuthRoad-100
 # looking in the forward direction of PKs
 # Lleft=17.10
 # Lright=14.22
-Laleta1_2=14.22
-Laleta3_4=17.10
-# Clearance gauge (horizontal and vertical)
+LaxisNeg=14.22
+LaxisPos=17.10
+# Clearance gauge (horizontal)
 Hgauge=8.00
-# Walls thickness
+# Wall thickness
 thWall=0.70
 
 
 #END DATA
 
-
-azimuthStructRad=too.grads_to_rads(azimuthStruct)   # angle measured clockwise
-                  #between the north base line and the structure longitudinal
-                  #axis [rad]
-
-ptAxesInters=np.array([xAxesInters,yAxesInters])
-unitVectStrAxis=np.array([math.sin(azimuthStructRad),math.cos(azimuthStructRad)])
-unitVectOrtogStrAxis=np.array([math.sin(azimuthStructRad+math.pi/2.),math.cos(azimuthStructRad+math.pi/2.)])
-demiDimHor=Hgauge/2.0+thWall
-pt_start_aleta1=ptAxesInters-Laleta1_2*unitVectStrAxis-demiDimHor*unitVectOrtogStrAxis
-pt_start_aleta2=ptAxesInters-Laleta1_2*unitVectStrAxis+demiDimHor*unitVectOrtogStrAxis
-pt_start_aleta3=ptAxesInters+Laleta3_4*unitVectStrAxis+demiDimHor*unitVectOrtogStrAxis
-pt_start_aleta4=ptAxesInters+Laleta3_4*unitVectStrAxis-demiDimHor*unitVectOrtogStrAxis
-
+# Marco
+(pt_start_aleta1,pt_start_aleta2,pt_start_aleta3,pt_start_aleta4)=too.sett_out_marco(xAxesInters,yAxesInters,azimuthStruct,Hgauge,thWall,LaxisNeg,LaxisPos,skewAngle=0)
 
 #Aleta 1       
 start_point=pt_start_aleta1
@@ -70,6 +58,7 @@ widthsPuntera=[1.45,0.90]
 pt_end_aleta1=too.end_point_aleta(start_point,azimuthAleta,lengths)
 points_aleta1=too.sett_out_aleta(start_point,azimuthAleta,azimuthPuntera,wCoron,lengths,widths,widthsPuntera)
 
+quit()
 #Aleta 2       
 start_point=pt_start_aleta2
 azimuthAleta=azimuthStruct+200-too.degr_to_grads(30)
@@ -117,3 +106,20 @@ too.write_points_to_file(title='ALETA 2',pointsArr=points_aleta2,nDecimalP=3,fil
 too.write_points_to_file(title='ALETA 3',pointsArr=points_aleta3,nDecimalP=3,fileName='lst_underpass.txt',indPntChr=True)
 too.write_points_to_file(title='ALETA 4',pointsArr=points_aleta4,nDecimalP=3,fileName='lst_underpass.txt',indPntChr=True)
 
+
+#Plotting of results in FreeCAD
+import Part, FreeCAD, math
+from Draft import *
+from freeCAD_civil import plot_tools as plot
+App.newDocument("marco3")
+marco=plot.create_wire_lstPt(lstPoints=points_cuadr_repl[0:4],closed=True)
+#FreeCADGui.ActiveDocument.getObject(marco.Name).LineColor = (0.00,1.00,0.00)
+aleta1found=plot.create_wire_lstPt(lstPoints=points_aleta1,closed=True)
+aleta2found=plot.create_wire_lstPt(lstPoints=points_aleta2,closed=True)
+aleta3found=plot.create_wire_lstPt(lstPoints=points_aleta3,closed=True)
+aleta4found=plot.create_wire_lstPt(lstPoints=points_aleta4,closed=True)
+
+aleta1wall=plot.create_wire_lstPt(lstPoints=[pt_start_aleta1,pt_end_aleta1],closed=False)
+aleta2wall=plot.create_wire_lstPt(lstPoints=[pt_start_aleta2,pt_end_aleta2],closed=False)
+aleta3wall=plot.create_wire_lstPt(lstPoints=[pt_start_aleta3,pt_end_aleta3],closed=False)
+aleta4wall=plot.create_wire_lstPt(lstPoints=[pt_start_aleta4,pt_end_aleta4],closed=False)

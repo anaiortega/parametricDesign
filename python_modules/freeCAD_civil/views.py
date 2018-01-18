@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
+from __future__ import division
 
 import Part, FreeCAD, FreeCADGui, math, Drawing
-from __future__ import division
 
 
 def vistaSuperior(tamHoja,orientacion):

@@ -432,72 +432,47 @@ M1_8=reinf_bars.rebarFamily(
     vectorLRefSec=Base.Vector(-0.3,0.5),
     lstPtosConcrSect2=[Ph3_2,Ph_1,Ph3_4,Ph3_3]
 )
+# Added 16.01.2018
+#Generate the attributes wire for each family that represent the rebar
+#(if not generated here it will be generated while drawing the sections or
+# the bar schedule
+listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,M1_7,M1_8,M1_9]
+for fa in listafamiliasArmad:
+    fa.createRebar()
+# end  16.01.2018
 
+
+# Plan of sections
+App.newDocument("planRCsections")
 #SECCIONES TRANSVERSALES
 #sección A-A
-App.newDocument("secTR")
-l1=makeWire([Ptzap_1,Ptzap_2,Ptmur_1,Ptmur1_2,Ptmur1_3,Ptmur1_4,Ptzap_3,Ptzap_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
-l1=makeWire([Ptzap_1,Ptzap_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
-
-lstArmad=[Z1_1,Z1_2,M1_1,M1_2,M1_3,M1_5,M1_4]
-
-for rbFam in lstArmad:
-    rbFam.armadura()
-
-lstArmaSec=[Z1_3,Z1_4,Z1_7,Z1_8,M1_9,M1_7,M1_6,M1_8]
-for rbFam in lstArmaSec:
-   rbFam.armaSec()
+lstPtsConcrSect=[Ptzap_1,Ptzap_2,Ptmur_1,Ptmur1_2,Ptmur1_3,Ptmur1_4,Ptzap_3,Ptzap_4]
+lstShapeRebarFam=[Z1_1,Z1_2,M1_1,M1_2,M1_3,M1_5,M1_4]
+lstSectRebarFam=[Z1_3,Z1_4,Z1_7,Z1_8,M1_9,M1_7,M1_6,M1_8]
+reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
 
 #SECCIONES LONGITUDINALES
 #sección B-B
-App.newDocument("secLN")
-l1=makeWire([Plzap_1,Plzap_2,Plzap_3,Plzap_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
-l1=makeWire([Plzap_1,Plzap_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
-
-lstArmad=[Z1_3,Z1_4]
-
-for rbFam in lstArmad:
-    rbFam.armadura()
-
-lstArmaSec=[Z1_1,Z1_2]
-for rbFam in lstArmaSec:
-    rbFam.armaSec()
+lstPtsConcrSect=[Plzap_1,Plzap_2,Plzap_3,Plzap_4]
+lstShapeRebarFam=[Z1_3,Z1_4]
+lstSectRebarFam=[Z1_1,Z1_2]
+reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,5,0))
 
 #SECCIÓN HORIZONTAL POR LA BASE DEL MURO
-App.newDocument("secH1")
-l1=makeWire([Ph_1,Ph1_2,Ph1_3,Ph_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
-l1=makeWire([Ph_1,Ph_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
+lstPtsConcrSect=[Ph_1,Ph1_2,Ph1_3,Ph_4]
+lstShapeRebarFam=[M1_7,M1_9]
+lstSectRebarFam=[M1_3,M1_1,M1_4]
+reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))
 
-lstArmad=[M1_7,M1_9]
-for rbFam in lstArmad:
-    rbFam.armadura()
-
-lstArmaSec=[M1_3,M1_1,M1_4]
-for rbFam in lstArmaSec:
-    rbFam.armaSec()
 
 #SECCIÓN HORIZONTAL SUPERIOR
-App.newDocument("secH2")
-l1=makeWire([Ph_1,Ph2_2,Ph2_3,Ph_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
-l1=makeWire([Ph_1,Ph_4],False)
-FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
+lstPtsConcrSect=[Ph_1,Ph2_2,Ph2_3,Ph_4]
+lstShapeRebarFam=[M1_6,M1_8]
+lstSectRebarFam=[]
+reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,0,0))
 
-lstArmad=[M1_6,M1_8]
-for rbFam in lstArmad:
-    rbFam.armadura()
 
-# lstArmaSec=[M1_3,M1_4]
-# for rbFam in lstArmaSec:
-#     rbFam.armaSec()
-
-   #DESPIECE DE LA ARMADURA
+   #BAR SCHEDULE
 App.newDocument("despiece")
 #ancho de las columnas de cuadro de despiece (corresponden a posici'on, esquema, diam. y separac., No. de barras y longitud de cada barra)
 anchoColumnas=[14,30,25,10,15,15]
@@ -506,5 +481,6 @@ hFilas=10
 #altura textos
 hTexto=2.5
 listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,M1_7,M1_8,M1_9]
-reinf_bars.cuadroDespiece(anchoColumnas,hFilas,hTexto,listafamiliasArmad)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hTexto,hTextSketch=hTexto,decLengths=2,decSpacing=2)
+
 

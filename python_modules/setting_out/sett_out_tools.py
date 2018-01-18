@@ -3,7 +3,7 @@
 from __future__ import division
 
 __author__= "Ana Ortega (AO_O)"
-__cppyright__= "Copyright 2015, AO_O"
+__cppyright__= "Copyright 2017, AO_O"
 __license__= "GPL"
 __version__= "1.0"
 __email__= " l.pereztato@gmail.com"
@@ -35,13 +35,45 @@ def angle_between(v1, v2):
 
 def grads_to_rads(angle):
     '''Converts angle in grads (centesimal) into radians'''
-    return angle*2*math.pi/400.
+    return angle*math.pi/200.
 
 
 def degr_to_grads(angle):
     '''Converts angle in degrees (sexagesimal) into grads (centesimal) '''
     return angle*200/180.
 
+
+def sett_out_marco(xAxesInters,yAxesInters,azimuthStruct,Hgauge,thWall,LaxisNeg,LaxisPos,skewAngle=0):
+    '''Setting-out points of a box-section underpass.
+
+    :param xAxesInters: X-coordinate of the point of intersection of 
+                        the road axis with the structure axis.
+    :param yAxesInters: Y-coordinates of the point of intersection of 
+                        the road axis with the structure axis.
+    :param azimuthStructLax: azimuth of the structure longitudinal axis [grads] 
+                         (clockwise from the north line base).
+    :param Hgauge:       horizontal clearance gauge.
+    :param thWall:       wall thickness
+    :param LaxisNeg:     length of longitudinal axis from the axes intersection
+                         point towards aletas 1 and 2
+    :param LaxisPos:     length of longitudinal axis from the axes intersection
+                         point towards aletas 3 and 4
+    :param skewAngle:    skew angle [grads] (clockwise) (defaults to 0) 
+    '''
+    azimuthStructRad=grads_to_rads(azimuthStruct)
+    ptAxesInters=np.array([xAxesInters,yAxesInters])
+    unitVectStrAxis=np.array([math.sin(azimuthStructRad),math.cos(azimuthStructRad)])
+    unitVectOrtogStrAxis=np.array([math.sin(azimuthStructRad+math.pi/2.),math.cos(azimuthStructRad+math.pi/2.)])
+    demiDimHor=Hgauge/2.0+thWall
+    skewVect=demiDimHor*math.tan(grads_to_rads(skewAngle))*unitVectStrAxis
+    print skewVect                       
+    pt_start_aleta1=ptAxesInters-LaxisNeg*unitVectStrAxis-demiDimHor*unitVectOrtogStrAxis+skewVect
+    pt_start_aleta2=ptAxesInters-LaxisNeg*unitVectStrAxis+demiDimHor*unitVectOrtogStrAxis-skewVect
+    pt_start_aleta3=ptAxesInters+LaxisPos*unitVectStrAxis+demiDimHor*unitVectOrtogStrAxis-skewVect
+    pt_start_aleta4=ptAxesInters+LaxisPos*unitVectStrAxis-demiDimHor*unitVectOrtogStrAxis+skewVect
+    return (pt_start_aleta1,pt_start_aleta2,pt_start_aleta3,pt_start_aleta4)
+    
+    
 def end_point_aleta(start_point,azimuthAleta,lengths):
     unitVectAleta=np.array([math.sin(grads_to_rads(azimuthAleta)),math.cos(grads_to_rads(azimuthAleta))])
     totalLength=np.cumsum(lengths)[-1]
@@ -61,18 +93,27 @@ def sett_out_aleta(start_point,azimuthAleta,azimuthPuntera,wCoron,lengths,widths
     cumlengths=np.insert(cumlengths,0,0)
     #Points talón
     for i in range(len(lengths)):
+        print 'point talón:', 2*i
+        print 'L=', cumlengths[i]
+        print 'width=', wTalon[i]
         pointsTalon[2*i]=start_point+cumlengths[i]*unitVectAleta-wTalon[i]*unitVectPuntera
+        print 'point talón:', 2*i+1
+        print 'L=', cumlengths[i+1]
+        print 'width=', wTalon[i]
         pointsTalon[2*i+1]=start_point+cumlengths[i+1]*unitVectAleta-wTalon[i]*unitVectPuntera
+    print 'poinstTalon=',pointsTalon
     #Points puntera
     for i in range(len(lengths)):
         pointsPuntera[2*i]=start_point+cumlengths[i]*unitVectAleta+wPunt[i]*unitVectPuntera
         pointsPuntera[2*i+1]=start_point+cumlengths[i+1]*unitVectAleta+wPunt[i]*unitVectPuntera
-    #Arranging the points matrix
+    print 'pointsPuntera=',pointsPuntera
+    #Arranging the point matrix
     pointsAleta[0]=pointsPuntera[0]
     for i in range(2*len(lengths)):
         pointsAleta[i+1]=pointsTalon[i]
     for i in range(1,2*len(lengths)):
         pointsAleta[2*len(lengths)+i]=pointsPuntera[-i]
+    print 'pointsAleta=',pointsAleta
     return pointsAleta
 
 
@@ -105,7 +146,8 @@ def write_points_to_file(title,pointsArr,nDecimalP,fileName,indPntChr=False):
     df.to_csv(fileName,header=True, index=True,sep='\t',float_format='%.3f',mode='a')
     return
         
-    
+
+
 
 import numpy
 
