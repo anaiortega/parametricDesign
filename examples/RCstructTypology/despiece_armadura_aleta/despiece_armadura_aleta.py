@@ -4,7 +4,7 @@ import Part, FreeCAD, math
 import Draft
 import freeCAD_civil 
 from freeCAD_civil import reinf_bars
-from FreeCAD import Base
+from FreeCAD import Vector
 from Draft import *
 
 # Aleta 1, muro 1, PI+PF+OD 103.52
@@ -91,46 +91,46 @@ rdob_M1_8=0.03
 
 #Puntos sección longitudinal
 #    zapata
-Plzap_1=Base.Vector(0,0)
-Plzap_2=Base.Vector(0,eZap)
-Plzap_3=Base.Vector(lMur,eZap)
-Plzap_4=Base.Vector(lMur,0)
+Plzap_1=Vector(0,0)
+Plzap_2=Vector(0,eZap)
+Plzap_3=Vector(lMur,eZap)
+Plzap_4=Vector(lMur,0)
 #    muro
-Plmur_1=Base.Vector(0,eZap+hMurMax)
-Plmur_2=Base.Vector(lMur,eZap+hMurMin)
+Plmur_1=Vector(0,eZap+hMurMax)
+Plmur_2=Vector(lMur,eZap+hMurMin)
 
 
 #Puntos sección transversal vertical
 #    zapata
-Ptzap_1=Base.Vector(0,0)
-Ptzap_2=Base.Vector(0,eZap)
-Ptzap_3=Base.Vector(bZap,eZap)
-Ptzap_4=Base.Vector(bZap,0)
+Ptzap_1=Vector(0,0)
+Ptzap_2=Vector(0,eZap)
+Ptzap_3=Vector(bZap,eZap)
+Ptzap_4=Vector(bZap,0)
 #    muro: secciones de altura máxima (1) y mínima (2)
-Ptmur_0=Base.Vector(bPuntera,0)
-Ptmur_1=Base.Vector(bPuntera,eZap)
-Ptmur1_2=Base.Vector(bPuntera,eZap+hMurMax)
-Ptmur1_3=Base.Vector(bPuntera+bCoron,eZap+hMurMax)
-Ptmur1_3p=Base.Vector(bPuntera+bCoron+(hMurMax-hMurMin)*pendTrasdos,eZap+hMurMin)
-Ptmur1_4=Base.Vector(bPuntera+bCoron+hMurMax*pendTrasdos,eZap)
-Ptmur1_5=Base.Vector(bPuntera+bCoron+(hMurMax+eZap)*pendTrasdos,0)
+Ptmur_0=Vector(bPuntera,0)
+Ptmur_1=Vector(bPuntera,eZap)
+Ptmur1_2=Vector(bPuntera,eZap+hMurMax)
+Ptmur1_3=Vector(bPuntera+bCoron,eZap+hMurMax)
+Ptmur1_3p=Vector(bPuntera+bCoron+(hMurMax-hMurMin)*pendTrasdos,eZap+hMurMin)
+Ptmur1_4=Vector(bPuntera+bCoron+hMurMax*pendTrasdos,eZap)
+Ptmur1_5=Vector(bPuntera+bCoron+(hMurMax+eZap)*pendTrasdos,0)
 
-Ptmur2_2=Base.Vector(bPuntera,eZap+hMurMin)
-Ptmur2_3=Base.Vector(bPuntera+bCoron,eZap+hMurMin)
-Ptmur2_4=Base.Vector(bPuntera+bCoron+hMurMin*pendTrasdos,eZap)
-Ptmur2_5=Base.Vector(bPuntera+bCoron+(hMurMin+eZap)*pendTrasdos,0)
+Ptmur2_2=Vector(bPuntera,eZap+hMurMin)
+Ptmur2_3=Vector(bPuntera+bCoron,eZap+hMurMin)
+Ptmur2_4=Vector(bPuntera+bCoron+hMurMin*pendTrasdos,eZap)
+Ptmur2_5=Vector(bPuntera+bCoron+(hMurMin+eZap)*pendTrasdos,0)
 
 #Puntos secciones transversales horizonatales
-Ph_1=Base.Vector(0,0)
-Ph1_2=Base.Vector(0,bCoron+hMurMax*pendTrasdos)
-Ph1_3=Base.Vector(lMur,bCoron+hMurMin*pendTrasdos)
-Ph_4=Base.Vector(lMur,0)
-Ph2_2=Base.Vector(0,bCoron+(hMurMax-hMurMin)*pendTrasdos)
-Ph2_3=Base.Vector(lMur,bCoron)
+Ph_1=Vector(0,0)
+Ph1_2=Vector(0,bCoron+hMurMax*pendTrasdos)
+Ph1_3=Vector(lMur,bCoron+hMurMin*pendTrasdos)
+Ph_4=Vector(lMur,0)
+Ph2_2=Vector(0,bCoron+(hMurMax-hMurMin)*pendTrasdos)
+Ph2_3=Vector(lMur,bCoron)
 
-Ph3_2=Base.Vector(0,bCoron+0.2*pendTrasdos)
-Ph3_3=Base.Vector(lMur/(hMurMax-hMurMin)*0.2,bCoron)
-Ph3_4=Base.Vector(lMur/(hMurMax-hMurMin)*0.2,0)
+Ph3_2=Vector(0,bCoron+0.2*pendTrasdos)
+Ph3_3=Vector(lMur/(hMurMax-hMurMin)*0.2,bCoron)
+Ph3_4=Vector(lMur/(hMurMax-hMurMin)*0.2,0)
 
 
 # Armaduras zapata
@@ -145,13 +145,13 @@ Z1_1=reinf_bars.rebarFamily(
     radioDob=rdob_Z1_1,
     gapIni=-recNominal,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(0.5,-0.5),
+    vectorLRef=Vector(0.5,-0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Plzap_1,Plzap_4],
     recSec=recNominal,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(-0.3,0.3),
+    vectorLRefSec=Vector(-0.3,0.3),
 #    lstPtosConcrSect2=[Ptzap_2p,Ptzap_1,Ptzap_4,Ptzap_3p]
 )
 # armadura transversal superior
@@ -165,13 +165,13 @@ Z1_2=reinf_bars.rebarFamily(
     radioDob=rdob_Z1_2,
     gapIni=-recNominal,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(0.5,0.5),
+    vectorLRef=Vector(0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Plzap_2,Plzap_3],
     recSec=recNominal,
     recLateral=recNominal,
     ladoDibSec='d',
-    vectorLRefSec=Base.Vector(-0.3,0.3))
+    vectorLRefSec=Vector(-0.3,0.3))
 
 
 # armadura longitudinal inferior
@@ -185,13 +185,13 @@ Z1_3=reinf_bars.rebarFamily(
     radioDob=rdob_Z1_3,
     gapIni=-recNominal,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(0.5,-0.5),
+    vectorLRef=Vector(0.5,-0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptzap_1,Ptzap_4],
     recSec=recNominal+fi_Z1_1,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(-0.3,-0.3))
+    vectorLRefSec=Vector(-0.3,-0.3))
 # armadura longitudinal superior
 Z1_4=reinf_bars.rebarFamily(
     identificador='Z1/4',
@@ -203,13 +203,13 @@ Z1_4=reinf_bars.rebarFamily(
     radioDob=rdob_Z1_4,
     gapIni=-recNominal,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(0.5,0.5),
+    vectorLRef=Vector(0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptzap_2,Ptzap_3],
     recSec=recNominal+fi_Z1_2,
     recLateral=recNominal,
     ladoDibSec='d',
-    vectorLRefSec=Base.Vector(-0.3,0.3))
+    vectorLRefSec=Vector(-0.3,0.3))
 
 # armadura lateral puntera
 Z1_7=reinf_bars.rebarFamily(
@@ -222,13 +222,13 @@ Z1_7=reinf_bars.rebarFamily(
     radioDob=rdob_Z1_7,
     gapIni=-recNominal,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(0.5,0.5),
+    vectorLRef=Vector(0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptzap_1,Ptzap_2],
     recSec=recNominal+fi_Z1_1,
     recLateral=recNominal,
     ladoDibSec='d',
-    vectorLRefSec=Base.Vector(-0.3,0.3))
+    vectorLRefSec=Vector(-0.3,0.3))
 
 # armadura lateral talón
 Z1_8=reinf_bars.rebarFamily(
@@ -241,13 +241,13 @@ Z1_8=reinf_bars.rebarFamily(
     radioDob=rdob_Z1_8,
     gapIni=-recNominal,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(0.5,0.5),
+    vectorLRef=Vector(0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptzap_4,Ptzap_3],
     recSec=recNominal+fi_Z1_1,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(0.3,0.3))
+    vectorLRefSec=Vector(0.3,0.3))
 
 #Armadura muro
 # Esperas vertical trasdós
@@ -255,19 +255,19 @@ M1_2=reinf_bars.rebarFamily(
     identificador='M1/2',
     diametro=fi_M1_3,
     separacion=s_M1_3,
-    lstPtosConcrSect=[Ptmur_0+Base.Vector(-Lpatas,0),Ptmur_0,Ptmur_1],
+    lstPtosConcrSect=[Ptmur_0+Vector(-Lpatas,0),Ptmur_0,Ptmur_1],
     listaRec=[-recNominal,recNominal],
     lado='d',
     radioDob=rdob_M1_3,
     gapIni=0,
     gapFin=LsolapeTrasd,
-    vectorLRef=Base.Vector(-0.5,-0.5),
+    vectorLRef=Vector(-0.5,-0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ph_1,Ph_4],
     recSec=recNominal,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(0.3,0.3)
+    vectorLRefSec=Vector(0.3,0.3)
 )
 # Armadura vertical trasdós
 M1_3=reinf_bars.rebarFamily(
@@ -280,13 +280,13 @@ M1_3=reinf_bars.rebarFamily(
     radioDob=rdob_M1_3,
     gapIni=0,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(-0.5,0.5),
+    vectorLRef=Vector(-0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ph_1,Ph_4],
     recSec=recNominal,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(-0.3,-0.3),
+    vectorLRefSec=Vector(-0.3,-0.3),
     lstPtosConcrSect2=[Ptmur_1,Ptmur2_2,Ptmur2_3]
     )
 
@@ -295,19 +295,19 @@ M1_5=reinf_bars.rebarFamily(
     identificador='M1/5',
     diametro=fi_M1_4,
     separacion=s_M1_4,
-    lstPtosConcrSect=[Ptmur1_5+Base.Vector(Lpatas,0),Ptmur1_5,Ptmur1_4],
+    lstPtosConcrSect=[Ptmur1_5+Vector(Lpatas,0),Ptmur1_5,Ptmur1_4],
     listaRec=[-recNominal,recNominal],
     lado='i',
     radioDob=rdob_M1_4,
     gapIni=0,
     gapFin=LsolapeIntra,
-    vectorLRef=Base.Vector(-0.5,-0.5),
+    vectorLRef=Vector(-0.5,-0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ph1_2,Ph1_3],
     recSec=recNominal,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(0.3,0.3)
+    vectorLRefSec=Vector(0.3,0.3)
 )
 
 # Armadura vertical intradós
@@ -321,13 +321,13 @@ M1_4=reinf_bars.rebarFamily(
     radioDob=rdob_M1_4,
     gapIni=0,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(0.5,0.5),
+    vectorLRef=Vector(0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ph1_2,Ph1_3],
     recSec=recNominal,
     recLateral=recNominal,
     ladoDibSec='d',
-    vectorLRefSec=Base.Vector(-0.3,0.3),
+    vectorLRefSec=Vector(-0.3,0.3),
     lstPtosConcrSect2=[Ptmur2_4,Ptmur2_3,Ptmur2_2]    
 )
 
@@ -336,19 +336,19 @@ M1_1=reinf_bars.rebarFamily(
     identificador='M1/1',
     diametro=fi_M1_1,
     separacion=s_M1_1,
-    lstPtosConcrSect=[Ptmur1_5+Base.Vector(Lpatas,0),Ptmur1_5,Ptmur1_4],
+    lstPtosConcrSect=[Ptmur1_5+Vector(Lpatas,0),Ptmur1_5,Ptmur1_4],
     listaRec=[-recNominal,recNominal+fi_M1_4+fi_M1_7],
     lado='i',
     radioDob=rdob_M1_1,
     gapIni=0,
     gapFin=LrefIntra,
-    vectorLRef=Base.Vector(0.5,0.5),
+    vectorLRef=Vector(0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ph1_2,Ph1_3],
     recSec=recNominal+fi_M1_4+fi_M1_7,
     recLateral=recNominal,
     ladoDibSec='d',
-    vectorLRefSec=Base.Vector(-0.3,-0.3)
+    vectorLRefSec=Vector(-0.3,-0.3)
 )
 # Horizontal trasdós zona inferior
 M1_7=reinf_bars.rebarFamily(
@@ -361,13 +361,13 @@ M1_7=reinf_bars.rebarFamily(
     radioDob=rdob_M1_7,
     gapIni=0,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(-0.5,0.5),
+    vectorLRef=Vector(-0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptmur1_4,Ptmur1_3p],
     recSec=recNominal+fi_Z1_1,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(0.3,0.7),
+    vectorLRefSec=Vector(0.3,0.7),
     lstPtosConcrSect2=[Ph_1,Ph2_2,Ph2_3,Ph_4]
 )
 
@@ -376,19 +376,19 @@ M1_9=reinf_bars.rebarFamily(
     identificador='M1/9',
     diametro=fi_M1_9,
     separacion=s_M1_9,
-    lstPtosConcrSect=[Ph_1+Base.Vector(0,bCoron),Ph_1,Ph_4,Ph2_3],
+    lstPtosConcrSect=[Ph_1+Vector(0,bCoron),Ph_1,Ph_4,Ph2_3],
     listaRec=[recNominal,recNominal+fi_Z1_3,recNominal],
     lado='i',
     radioDob=rdob_M1_9,
     gapIni=0,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(-0.5,-0.5),
+    vectorLRef=Vector(-0.5,-0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptmur_1,Ptmur2_2],
     recSec=recNominal+fi_Z1_3,
     recLateral=recNominal,
     ladoDibSec='d',
-    vectorLRefSec=Base.Vector(-0.3,0.5),
+    vectorLRefSec=Vector(-0.3,0.5),
 )
 
 # Horizontal trasdós zona inferior
@@ -402,13 +402,13 @@ M1_6=reinf_bars.rebarFamily(
     radioDob=rdob_M1_6,
     gapIni=0,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(-0.5,0.5),
+    vectorLRef=Vector(-0.5,0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptmur1_3p,Ptmur1_3],
     recSec=recNominal+fi_Z1_1,
     recLateral=recNominal,
     ladoDibSec='i',
-    vectorLRefSec=Base.Vector(0.3,0.7),
+    vectorLRefSec=Vector(0.3,0.7),
     lstPtosConcrSect2=[Ph_1,Ph3_2,Ph3_3,Ph3_4]
 )
 
@@ -423,13 +423,13 @@ M1_8=reinf_bars.rebarFamily(
     radioDob=rdob_M1_8,
     gapIni=0,
     gapFin=-recNominal,
-    vectorLRef=Base.Vector(-0.5,-0.5),
+    vectorLRef=Vector(-0.5,-0.5),
     hTexto=hTextosArmados,
     ptosExtension=[Ptmur2_2,Ptmur1_2],
     recSec=recNominal+fi_Z1_3,
     recLateral=recNominal,
     ladoDibSec='d',
-    vectorLRefSec=Base.Vector(-0.3,0.5),
+    vectorLRefSec=Vector(-0.3,0.5),
     lstPtosConcrSect2=[Ph3_2,Ph_1,Ph3_4,Ph3_3]
 )
 # Added 16.01.2018
@@ -446,27 +446,27 @@ for fa in listafamiliasArmad:
 App.newDocument("planRCsections")
 #SECCIONES TRANSVERSALES
 #sección A-A
-lstPtsConcrSect=[Ptzap_1,Ptzap_2,Ptmur_1,Ptmur1_2,Ptmur1_3,Ptmur1_4,Ptzap_3,Ptzap_4]
+lstPtsConcrSect=[[Ptzap_1,Ptzap_2,Ptmur_1,Ptmur1_2,Ptmur1_3,Ptmur1_4,Ptzap_3,Ptzap_4,Ptzap_1]]
 lstShapeRebarFam=[Z1_1,Z1_2,M1_1,M1_2,M1_3,M1_5,M1_4]
 lstSectRebarFam=[Z1_3,Z1_4,Z1_7,Z1_8,M1_9,M1_7,M1_6,M1_8]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
 
 #SECCIONES LONGITUDINALES
 #sección B-B
-lstPtsConcrSect=[Plzap_1,Plzap_2,Plzap_3,Plzap_4]
+lstPtsConcrSect=[[Plzap_1,Plzap_2,Plzap_3,Plzap_4,Plzap_1]]
 lstShapeRebarFam=[Z1_3,Z1_4]
 lstSectRebarFam=[Z1_1,Z1_2]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,5,0))
 
 #SECCIÓN HORIZONTAL POR LA BASE DEL MURO
-lstPtsConcrSect=[Ph_1,Ph1_2,Ph1_3,Ph_4]
+lstPtsConcrSect=[[Ph_1,Ph1_2,Ph1_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[M1_7,M1_9]
 lstSectRebarFam=[M1_3,M1_1,M1_4]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))
 
 
 #SECCIÓN HORIZONTAL SUPERIOR
-lstPtsConcrSect=[Ph_1,Ph2_2,Ph2_3,Ph_4]
+lstPtsConcrSect=[[Ph_1,Ph2_2,Ph2_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[M1_6,M1_8]
 lstSectRebarFam=[]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,0,0))

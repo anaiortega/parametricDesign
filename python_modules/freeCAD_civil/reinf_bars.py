@@ -437,10 +437,11 @@ def int2rectas(P1,P2,P3,P4):
     return Pinters
 
 
-def drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0)):
+def drawRCSection(lstOfLstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0)):
     '''Draw a reinforced concrete section in the FreeCAD active document
 
-    :param lstPtsConcrSect: ordered list of points to draw the concrete section
+    :param lstPtsConcrSect: list of ordered lists of points to draw the 
+           concrete section. Each list of points originates an open wire.
     :param lstShapeRebarFam: list of rebar families that are going to be 
            drawn with their true shape.
     :param lstSectRebarFam: list of rebar families that are going to be 
@@ -449,13 +450,11 @@ def drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=
            It facilitates the adding of several RC-sections to the same sheet of
            FreeCAD.
     '''
-    if vTranslation!=Vector(0,0,0):
-        lstPtsConcrSect=[pt.add(vTranslation) for pt in lstPtsConcrSect]
     #draw the concrete section
-    l1=Draft.makeWire(lstPtsConcrSect,False)
-    l2=Draft.makeWire([lstPtsConcrSect[0],lstPtsConcrSect[-1]],False)
-    FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = (0.00,1.00,0.00)
-    FreeCADGui.ActiveDocument.getObject(l2.Name).LineColor = (0.00,1.00,0.00)
+    for lp in lstOfLstPtsConcrSect:
+        l=Part.makePolygon(lp)
+        l.translate(vTranslation)
+        Part.show(l)
     #draw the rebars in their true shape
     for rbFam in lstShapeRebarFam:
         rbFam.drawRebar(vTranslation)
