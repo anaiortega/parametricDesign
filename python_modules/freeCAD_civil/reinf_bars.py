@@ -17,20 +17,19 @@ class rebarFamily(object):
     '''Family of reinforcement bars
 
     :ivar identificador: identificador de la armadura
-    :ivar diámetro: diámetro de la armadura (en unidades coherentes)
-    :ivar separacion: distancia entre ejes de barras (en unidades 
-    coherentes). Si damos el nº de barras en lugar de la separación 
+    :ivar diámetro: diámetro de la armadura [m]
+    :ivar separacion: distancia entre ejes de barras [m].
+    Si damos el nº de barras en lugar de la separación 
     entonces separacion=0
     :ivar nBarras: nº de barras a disponer. Sólo lo considera cuando 
     separacion=0
     :ivar lstPtosConcrSect: lista de ptos (vectores) a partir de los 
     cuales se genera la barra
     :ivar listaRec: lista de recubrimientos respecto a los segmentos 
-    definidos por los puntos anteriores (en unidades coherentes)
+    definidos por los puntos anteriores [m]
     :ivar lado: lado hacia el cual se dará el recubrimiento (i para 
     lado izquierdo, d para lado derecho)
-    :ivar radioDob: radio para doblado de la armadura (en unidades 
-    coherentes)
+    :ivar radioDob: radio para doblado de la armadura [m]
     :ivar gapIni: incremento (decremento si gapIni<0) de longitud de la 
     armadura en su extremo inicial
     :ivar gapFin: incremento (decremento si gapFin<0) de longitud de la 
@@ -49,9 +48,12 @@ class rebarFamily(object):
     :ivar wireSect: FreeCAD object of type wire that represents the rebar at
                     section 2 when the shape of rebars in the family varies 
                     uniformily from section 1 to section 2.
+    :ivar decLengths: decimal positions to calculate and express lengths and
+                      their derivated magnitudes, like weight  (defaults to 2).
+    :param decSpacing: decimal positions to express the spacing (defaults to 2).
 
     '''
-    def __init__(self,identificador,diametro,separacion,lstPtosConcrSect,listaRec,lado,radioDob,gapIni,gapFin,vectorLRef,hTexto,ptosExtension,recSec,recLateral,ladoDibSec,vectorLRefSec,lstPtosConcrSect2=[]):
+    def __init__(self,identificador,diametro,separacion,lstPtosConcrSect,listaRec,lado,radioDob,gapIni,gapFin,vectorLRef,hTexto,ptosExtension,recSec,recLateral,ladoDibSec,vectorLRefSec,lstPtosConcrSect2=[],decLengths=2,decSpacing=2):
         self.identificador=identificador 
         self.diametro=diametro
         self.separacion=separacion 
@@ -69,10 +71,12 @@ class rebarFamily(object):
         self.ladoDibSec= ladoDibSec
         self.vectorLRefSec=vectorLRefSec
         self.lstPtosConcrSect2=lstPtosConcrSect2    #sección 2 para definir armaduras variables
+        self.decLengths=decLengths
+        self.decSpacing=decSpacing
         self.listaPtosArm=[[],[]]
         self.nBarras=0
         self.wire=None 
-        self.wireSect2=None 
+        self.wireSect2=None
       
     
     def drawSectBars(self,vTranslation=Vector(0,0,0)):
@@ -143,8 +147,10 @@ class rebarFamily(object):
         to the shape defined for section2.
         '''
         self.wire=self.getRebar(self.lstPtosConcrSect)
+        self.wireLengths=[round(edg.Length,self.decLengths) for edg in self.wire.Edges]
         if len(self.lstPtosConcrSect2) > 0:
             self.wireSect2=self.getRebar(self.lstPtosConcrSect2)
+            self.wireSect2Lengths=[round(edg.Length,self.decLengths) for edg in self.wireSect2.Edges]
 
     def getRebar(self,lstPtsConcr):
         '''Return the wire that represents the true shape of the bar defined
@@ -182,6 +188,28 @@ class rebarFamily(object):
         lstLines=[Part.Line(lstPtsArm[i],lstPtsArm[i+1]).toShape() for i in range(len(lstPtsArm)-1)]
         rebarWire=Part.Wire(lstLines)
         return rebarWire
+
+    def getNumberOfBars(self):
+        '''Return the number of bars in the family.
+        '''
+        if self.separacion == 0:
+            nBar=self.nBarras
+        else:
+            vaux=self.ptosExtension[1].sub(self.ptosExtension[0])
+            Laux=vaux.Length
+            nesp=int((Laux-2.0*self.recLateral-self.diametro)/self.separacion)
+            nBar=nesp+1
+        return nBar
+
+    def getUnitWeight(self):
+        '''Return the weigth [kg] per meter of bar
+        '''
+        if self.diametro <=12e-3:
+            unitWeigth=round(math.pi*self.diametro**2.0/4.*7850,3)
+        else:
+            unitWeigth=round(math.pi*self.diametro**2.0/4.*7850,2)
+        return unitWeigth
+        
                         
     
 
@@ -235,19 +263,17 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hTexto):
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
     return
     
-def drawSketchRebarShape(rebFam,ptCOG,wColumn,hRow,hText,decLengths=2):
-    '''Draw the shape skectch of the rebFam reinforcment bar in the bar 
+def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
+    '''Draw the shape skectch of the rbFam reinforcment bar in the bar 
     schedule. Return the total length of the rebar.
 
-    :param rebFam: family of rebars to be represented.
+    :param rbFam: family of rebars to be represented.
     :param ptCOG:  point where to place the center of gravity of the sketch.
     :param wColumn: width of the column 'Shape' in the bar schedule.
     :param hRow: height of the row in the bar schedule.
     :param hText: height of the text to label the sketch.
-    :param decLengths: decimal positions to calculate and express lengths.
     '''
-    trueBar=rebFam.wire
-    sketch=trueBar.copy()
+    sketch=rbFam.wire.copy()
     bound=sketch.BoundBox
     cog=sketch.CenterOfMass
     if bound.YLength > bound.XLength:
@@ -261,16 +287,13 @@ def drawSketchRebarShape(rebFam,ptCOG,wColumn,hRow,hText,decLengths=2):
     sketch.translate(ptCOG.sub(cog))
     Part.show(sketch)
     #Texts
-    lengths=[round(edg.Length,decLengths) for edg in trueBar.Edges]
-    lengthsText=[str(i) for i in lengths]
-    totalLength=sum(lengths)
+    lengthsText=[str(i) for i in rbFam.wireLengths]
+    totalLength=sum(rbFam.wireLengths)
     totalLengthTxt=str(totalLength)
-    if rebFam.wireSect2 != None:
-        trueBarSect2=rebFam.wireSect2
-        lengthsSect2=[round(edg.Length,decLengths) for edg in trueBarSect2.Edges]
-        lengthsText=[(lengthsText[i]+'..'+str(lengthsSect2[i])) if lengths[i]!=lengthsSect2[i] else lengthsText[i] for i in range(len(lengths))]
-        totalLength=(totalLength+sum(lengthsSect2))/2.0
-        totalLengthTxt+='...'+str(sum(lengthsSect2))
+    if rbFam.wireSect2 != None:
+        lengthsText=[(lengthsText[i]+'..'+str(rbFam.wireSect2Lengths[i])) if rbFam.wireLengths[i]!=rbFam.wireSect2Lengths[i] else lengthsText[i] for i in range(len(rbFam.wireLengths))]
+        totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
+        totalLengthTxt+='...'+str(sum(rbFam.wireSect2Lengths))
     sketchEdges=sketch.Edges
     for i in zip(sketchEdges,lengthsText):
         edg=i[0]
@@ -281,8 +304,8 @@ def drawSketchRebarShape(rebFam,ptCOG,wColumn,hRow,hText,decLengths=2):
     return (totalLength,totalLengthTxt)
 
 
-
-def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,decLengths=2,decSpacing=2):
+                
+def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
     ''' Cuadro de despiece de la armadura 
 
     :param lstBarFamilies: ordered list of rebar families to be included in 
@@ -293,15 +316,9 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,decLengths=2,dec
     :param hRows: altura de todas las filas
     :param hText: altura textos
     :param hTextSketch: altura para los textos del esquema
-    :param decLengths: decimal positions to calculate and express lengths and
-                      their derivated magnitudes, like weight  (defaults to 2).
-    :param decSpacing: decimal positions to express the spacing (defaults to 2).
-
     '''
     #lstBarFamilies=familiasArmad.items() #creamos una lista a partir del diccionario para poder ordenar los valores
     #lstBarFamilies.sort()
-    formatLength='%.'+str(decLengths)+'f'
-    formatSpacing='%.'+str(decSpacing)+'f'
     anchoTotal=sum(wColumns)
     w=Draft.makeRectangle(anchoTotal,hRows*(len(lstBarFamilies)+1))
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = (1.00,1.00,0.00)
@@ -352,33 +369,26 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,decLengths=2,dec
     # iterElem=familiasArmad.iterkeys()
     pesoTotal=0
     for rbFam in lstBarFamilies:
+        formatLength='%.'+str(rbFam.decLengths)+'f'
+        formatSpacing='%.'+str(rbFam.decSpacing)+'f'
         if rbFam.wire==None:
             rbFam.createRebar()
-        #identf=iterElem.next()
-#        identf=lstBarFamilies[i][0]
+        #identifier
         pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
         tx=Draft.makeText(rbFam.identificador,pPos)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+        #sketch
         pEsq=pLinea.add(Vector(wColumns[0] + wColumns[1]/2.0,0))
-#        ptosArm=rbFam.listaPtosArm
-
-        barLength,barLengthTxt=drawSketchRebarShape(rbFam,pEsq,wColumns[1],hRows,hTextSketch,decLengths)
+        barLength,barLengthTxt=drawSketchRebarShape(rbFam,pEsq,wColumns[1],hRows,hTextSketch)
         pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
-        diamArm=rbFam.diametro
-        sepArm=rbFam.separacion
-        if sepArm ==0:
-            tx=Draft.makeText('%%C' + str(int(1000*diamArm)) ,pFiSep)
+        if rbFam.separacion ==0:
+            tx=Draft.makeText('%%C' + str(int(1000*rbFam.diametro)) ,pFiSep)
         else:
-            tx=Draft.makeText('%%C' + str(int(1000*diamArm)) + 'c/' + formatSpacing %sepArm,pFiSep)
+            tx=Draft.makeText('%%C' + str(int(1000*rbFam.diametro)) + 'c/' + formatSpacing %rbFam.separacion,pFiSep)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+        #number of bars
         pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
-        if sepArm == 0:
-            nBar=rbFam.nBarras
-        else:
-            vaux=rbFam.ptosExtension[1].sub(rbFam.ptosExtension[0])
-            Laux=vaux.Length
-            nesp=int((Laux-2.0*rbFam.recLateral-diamArm)/sepArm)
-            nBar=nesp+1
+        nBar=rbFam.getNumberOfBars()
         tx=Draft.makeText(str(nBar),pNbarras)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
@@ -387,7 +397,7 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,decLengths=2,dec
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
         pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
-        peso=nBar*barLength*math.pi*diamArm**2.0/4.*7850
+        peso=nBar*barLength*math.pi*rbFam.diametro**2.0/4.*7850
         tx=Draft.makeText(formatLength %peso,pPeso)
         FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
         FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
@@ -399,6 +409,29 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,decLengths=2,dec
     FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
     return
 
+
+def bars_quantities_for_budget(lstBarFamilies,outputFileName):
+    '''Generate the quantities of reinforcement bars included in the list and 
+    write them in a file that can be processed with pyCost in order to produce 
+    a budget.
+
+    :param lstBarFamilies :ordered list of rebar families to be included in 
+           the quantities list
+    :param outputFileName: file to be created (full path and extension must 
+           be given)
+    '''
+    f=open(outputFileName,'w')
+    for rbFam in lstBarFamilies:
+        if rbFam.wire==None:
+            rbFam.createRebar()
+        totalLength=sum(rbFam.wireLengths)
+        if rbFam.wireSect2 != None:
+            totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
+        s='currentUnitPriceQ.quantities.append(MeasurementRecord(c= \"'+ str(rbFam.identificador) +'\", uds= ' +str(rbFam.getNumberOfBars()) + ', l= ' + str(totalLength) + ', an= ' + str(rbFam.getUnitWeight())  + ')) \n'
+        print s
+        f.write(s)
+    f.close()
+        
 
 def int2rectas(P1,P2,P3,P4):
     ''' Devuelve el punto de interseccion de 2 rectas
