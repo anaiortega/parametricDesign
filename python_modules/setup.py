@@ -57,6 +57,14 @@ setup(name='freeCAD_civil',
       packages=['freeCAD_civil'],
      )
 
+setup(name='freeCAD_utils',
+      version='0.9.0',
+      description='Generic tool library for working with FreeCAD',
+      author='Ana Ortega',
+      author_email='ana.ortega@xcengineering.xyz',
+      packages=['freeCAD_utils'],
+     )
+
 setup(name='setting_out_work',
       version='0.9.0',
       description='Tools for setting-out works',

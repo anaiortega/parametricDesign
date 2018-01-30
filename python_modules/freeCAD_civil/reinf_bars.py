@@ -11,7 +11,8 @@ import Part, FreeCAD, math
 import Draft
 from FreeCAD import Vector
 import FreeCADGui
-import math
+from freeCAD_utils import geom_utils
+from freeCAD_utils import drawing_tools as dt
 
 class rebarFamily(object):
     '''Family of reinforcement bars
@@ -182,7 +183,7 @@ class rebarFamily(object):
 
         lstPtsArm=[listaaux[0]]
         for i in range (1,npuntos-1):
-            pint=int2lines(listaaux[2*(i-1)],listaaux[2*(i-1)+1],listaaux[2*i],listaaux[2*i+1])
+            pint=geom_utils.int2lines(listaaux[2*(i-1)],listaaux[2*(i-1)+1],listaaux[2*i],listaaux[2*i+1])
             lstPtsArm.append(pint)
 
         lstPtsArm.append(listaaux[2*(npuntos-1)-1])
@@ -250,18 +251,18 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
         etiq=Part.Wire([l1.toShape(),c1.toShape(),l2.toShape(),c2.toShape()])
         Part.show(etiq)
     if vectorLRef.x > 0:
+        justif="Left"
         if sepArm == 0:
-            tx=Draft.makeText(idArm + '  ' + str(int(nBarr)) + '%%C' + str(int(1000*diamArm)) , p5)
+            tx=idArm + '  ' + str(int(nBarr)) + '%%C' + str(int(1000*diamArm))
         else:
-            tx=Draft.makeText(idArm + '  %%C' + str(int(1000*diamArm)) + 'c/' + str(sepArm) , p5)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+            tx=idArm + '  %%C' + str(int(1000*diamArm)) + 'c/' + str(sepArm)
     else:
+        justif="Right"
         if sepArm == 0:
-            tx=Draft.makeText(str(int(nBarr)) + '%%C' + str(int(1000*diamArm)) + '   ' + idArm , p5)
+            tx=str(int(nBarr)) + '%%C' + str(int(1000*diamArm)) + '   ' + idArm
         else:
-            tx=Draft.makeText('%%C' + str(int(1000*diamArm)) + 'c/' + str(sepArm) +'   ' + idArm , p5)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-        FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
+            tx='%%C' + str(int(1000*diamArm)) + 'c/' + str(sepArm) +'   ' + idArm 
+    dt.put_text_in_pnt(text=tx,point=p5,hText=hText,justif=justif)
     return
     
 def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
@@ -298,10 +299,7 @@ def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
     sketchEdges=sketch.Edges
     for i in zip(sketchEdges,lengthsText):
         edg=i[0]
-        tx=Draft.makeText(i[1],edg.CenterOfMass)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-        FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Center"
-        FreeCADGui.ActiveDocument.getObject(tx.Name).Rotation = math.degrees(edg.tangentAt(0).getAngle(Vector(1,0,0)))
+        dt.put_text_in_pnt(text=i[1],point=edg.CenterOfMass,hText=hText,justif="Center",rotation=math.degrees(edg.tangentAt(0).getAngle(Vector(1,0,0))))
     return (totalLength,totalLengthTxt)
 
 
@@ -339,35 +337,20 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
     #Títulos para la tabla de despiece
     pLinea=p1.add(Vector(0,hRows/2.0))
     pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
-    tx=Draft.makeText('POS.',pPos)
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+    dt.put_text_in_pnt('POS.',pPos,hText)
     pEsq=pLinea.add(Vector(wColumns[0]+wColumns[1]/2.0,-hText/2.0))
-    tx=Draft.makeText('ESQUEMA',pEsq)
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Center"
+    dt.put_text_in_pnt('ESQUEMA',pEsq,hText,"Center")
     pFiSep=pLinea.add(Vector(wColumns[0]+wColumns[1]+hText/2.0,-hText/2.0))
-    tx=Draft.makeText('%%C/SEP.',pFiSep.add(Vector(0,hText)))
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    tx=Draft.makeText('(mm)/(m)',pFiSep.add(Vector(0,-hText)))
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+    dt.put_text_in_pnt('%%C/SEP.',pFiSep.add(Vector(0,hText)), hText)
+    dt.put_text_in_pnt('(mm)/(m)',pFiSep.add(Vector(0,-hText)), hText)
     pNbarras=pLinea.add(Vector(wColumns[0]+wColumns[1]+wColumns[2]+wColumns[3]-hText/2.0,-hText/2.0))
-    tx=Draft.makeText('NUM.',pNbarras)
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
+    dt.put_text_in_pnt('NUM.',pNbarras, hText, "Right")
     pLbarra=pLinea.add(Vector(wColumns[0]+wColumns[1]+wColumns[2]+wColumns[3]+wColumns[4]-hText/2.0,-hText/2.0))
-    tx=Draft.makeText('LONG.(m)',pLbarra)
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
+    dt.put_text_in_pnt('LONG.(m)',pLbarra, hText, "Right")
     pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
-    tx=Draft.makeText('PESO',pPeso.add(Vector(0,hText)))
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
-    tx=Draft.makeText('(Kg)',pPeso.add(Vector(0,-hText)))
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
-    
+    dt.put_text_in_pnt('PESO',pPeso.add(Vector(0,hText)), hText, "Right")
+    dt.put_text_in_pnt('(Kg)',pPeso.add(Vector(0,-hText)), hText, "Right")
     pLinea=p1.add(Vector(0,-hRows/2.0))
-    # iterElem=familiasArmad.iterkeys()
     pesoTotal=0
     for rbFam in lstBarFamilies:
         formatLength='%.'+str(rbFam.decLengths)+'f'
@@ -376,38 +359,29 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
             rbFam.createRebar()
         #identifier
         pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
-        tx=Draft.makeText(rbFam.identifier,pPos)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+        dt.put_text_in_pnt(rbFam.identifier,pPos, hText)
         #sketch
         pEsq=pLinea.add(Vector(wColumns[0] + wColumns[1]/2.0,0))
         barLength,barLengthTxt=drawSketchRebarShape(rbFam,pEsq,wColumns[1],hRows,hTextSketch)
         pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
         if rbFam.spacing ==0:
-            tx=Draft.makeText('%%C' + str(int(1000*rbFam.diameter)) ,pFiSep)
+            tx='%%C' + str(int(1000*rbFam.diameter))
         else:
-            tx=Draft.makeText('%%C' + str(int(1000*rbFam.diameter)) + 'c/' + formatSpacing %rbFam.spacing,pFiSep)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+            tx='%%C' + str(int(1000*rbFam.diameter)) + 'c/' + formatSpacing %rbFam.spacing
+        dt.put_text_in_pnt(tx,pFiSep, hText)
         #number of bars
         pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
         nBar=rbFam.getNumberOfBars()
-        tx=Draft.makeText(str(nBar),pNbarras)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-        FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
+        dt.put_text_in_pnt(str(nBar),pNbarras, hText, "Right")
         pbarLength=pLinea.add(Vector(sum(wColumns[:5])-hText/2.0,-hText/2.0))
-        tx=Draft.makeText(barLengthTxt,pbarLength)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-        FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
+        dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, "Right")
         pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
-        peso=nBar*barLength*math.pi*rbFam.diameter**2.0/4.*7850
-        tx=Draft.makeText(formatLength %peso,pPeso)
-        FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-        FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
+        peso=nBar*barLength*rbFam.getUnitWeight()
+        dt.put_text_in_pnt(formatLength %peso,pPeso, hText, "Right")
         pesoTotal += peso
         pLinea=pLinea.add(Vector(0,-hRows))
     pTotal=pLinea.add(Vector(anchoTotal-hText/2.0,0))
-    tx=Draft.makeText('TOTAL Kg:   ' + formatLength %pesoTotal,pTotal)
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    FreeCADGui.ActiveDocument.getObject(tx.Name).Justification = "Right"
+    dt.put_text_in_pnt('TOTAL Kg:   ' + formatLength %pesoTotal,pTotal, hText, "Right")
     return
 
 
@@ -434,41 +408,6 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
     f.close()
         
 
-def int2lines(P1,P2,P3,P4):
-    ''' Return the intersection point of two lines
-
-    :param P1 y P2: points that define line 1.
-    :param P3 y P4: points that define line 2.
-    '''
-    if P1.x == P2.x:
-        if P3.x == P4.x:
-            print 'Rectas paralelas'
-            Pinters=()
-        else:
-            xinters=P1.x
-            m2=1.0*(P4.y-P3.y)/(P4.x-P3.x) #pte. de la 2a. recta
-            b2=P3.y-m2*P3.x            # ordenada pto. de corte 2a. recta con eje Y
-            yinters=m2*xinters+b2
-            Pinters=Vector(xinters,yinters)
-    elif P3.x == P4.x:
-        xinters=P3.x
-        m1=1.0*(P2.y-P1.y)/(P2.x-P1.x) #pte. de la 2a. recta
-        b1=P1.y-m1*P1.x            # ordenada pto. de corte 2a. recta con eje Y
-        yinters=m1*xinters+b1
-        Pinters=Vector(xinters,yinters)
-    else:
-        m1=1.0*(P2.y-P1.y)/(P2.x-P1.x) #pte. de la 1a. recta
-        b1=P1.y-m1*P1.x            # ordenada pto. de corte 1a. recta con eje Y
-        m2=1.0*(P4.y-P3.y)/(P4.x-P3.x) #pte. de la 2a. recta
-        b2=P3.y-m2*P3.x            # ordenada pto. de corte 2a. recta con eje Y
-        if m1 == m2:
-            print 'Rectas paralelas'
-            Pinters=()
-        else:
-            xinters=1.0*(b2-b1)/(m1-m2)
-            yinters=m1*xinters+b1
-            Pinters=Vector(xinters,yinters)
-    return Pinters
 
 
 def drawRCSection(lstOfLstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0)):
