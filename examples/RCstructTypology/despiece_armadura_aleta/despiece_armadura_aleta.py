@@ -432,6 +432,7 @@ M1_8=reinf_bars.rebarFamily(
     vectorLRefSec=Vector(-0.3,0.5),
     lstPtsConcrSect2=[Ph3_2,Ph_1,Ph3_4,Ph3_3]
 )
+
 # Added 16.01.2018
 #Generate the attributes wire for each family that represent the rebar
 #(if not generated here it will be generated while drawing the sections or

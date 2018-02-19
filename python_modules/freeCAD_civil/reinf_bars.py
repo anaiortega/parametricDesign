@@ -29,10 +29,6 @@ class rebarFamily(object):
           defined with lstPtsConcrSect [m]
     :ivar coverSide: side to give cover  ('l' left side, 'r' for right side)
     :ivar bendingRad: bending radius [m]
-    :ivar gapStart: increment (decrement if gapStart <0) of the length of 
-          the reinforcement at its starting extremity.
-    :ivar gapEnd: increment (decrement if gapEnd<0) of the length of 
-          the reinforcement at its ending extremity.
     :ivar vectorLRef: vector to draw the leader line for labeling the bar
     :ivar hText: text height
     :ivar fromToExtPts: starting and end points that delimit the stretch of 
@@ -53,9 +49,17 @@ class rebarFamily(object):
     :ivar decLengths: decimal positions to calculate and express lengths and
                       their derivated magnitudes, like weight  (defaults to 2).
     :param decSpacing: decimal positions to express the spacing (defaults to 2).
+    :ivar gapStart: increment (decrement if gapStart <0) of the length of 
+          the reinforcement at its starting extremity (defaults to 0).
+    :ivar gapEnd: increment (decrement if gapEnd<0) of the length of 
+          the reinforcement at its ending extremity (defaults to 0).
+    :param fixLengthStart: fixed length of the first segment of the rebar 
+           (defaults to None = no fixed length)
+    :param fixLengthEnd: fixed length of the last segment of the rebar 
+           (defaults to None = no fixed length)
 
     '''
-    def __init__(self,identifier,diameter,spacing,lstPtsConcrSect,lstCover,coverSide,bendingRad,gapStart,gapEnd,vectorLRef,hText,fromToExtPts,recSec,lateralCover,sectBarsSide,vectorLRefSec,lstPtsConcrSect2=[],decLengths=2,decSpacing=2):
+    def __init__(self,identifier,diameter,spacing,lstPtsConcrSect,lstCover,coverSide,bendingRad,vectorLRef,hText,fromToExtPts,recSec,lateralCover,sectBarsSide,vectorLRefSec,lstPtsConcrSect2=[],decLengths=2,decSpacing=2,gapStart=0,gapEnd=0,fixLengthStart=None,fixLengthEnd=None):
         self.identifier=identifier 
         self.diameter=diameter
         self.spacing=spacing 
@@ -63,8 +67,6 @@ class rebarFamily(object):
         self.lstCover= lstCover
         self.coverSide=coverSide 
         self.bendingRad= bendingRad
-        self.gapStart= gapStart
-        self.gapEnd= gapEnd
         self.vectorLRef= vectorLRef
         self.hText= hText
         self.fromToExtPts= fromToExtPts
@@ -77,6 +79,10 @@ class rebarFamily(object):
         self.decSpacing=decSpacing
         self.listaPtosArm=[[],[]]
         self.nmbBars=0
+        self.gapStart= gapStart
+        self.gapEnd= gapEnd
+        self.fixLengthStart=fixLengthStart
+        self.fixLengthEnd=fixLengthEnd
         self.wire=None 
         self.wireSect2=None
       
@@ -163,12 +169,16 @@ class rebarFamily(object):
         '''
         npuntos=len(lstPtsConcr)
         lstPtosAux=[pt for pt in lstPtsConcr]
-        vaux=lstPtosAux[0].sub(lstPtosAux[1])
-        vaux.normalize().multiply(self.gapStart)
-        lstPtosAux[0]=lstPtosAux[0].add(vaux)
-        vaux=lstPtosAux[-1].sub(lstPtosAux[-2])
-        vaux.normalize().multiply(self.gapEnd)
-        lstPtosAux[-1]=lstPtosAux[-1].add(vaux)
+        vaux=lstPtosAux[0].sub(lstPtosAux[1]).normalize()
+        if self.fixLengthStart != None:
+            lstPtosAux[0]=lstPtosAux[1].add(vaux.multiply(self.fixLengthStart))
+        else:
+            lstPtosAux[0]=lstPtosAux[0].add(vaux.multiply(self.gapStart))
+        vaux=lstPtosAux[-1].sub(lstPtosAux[-2]).normalize()
+        if self.fixLengthEnd != None:
+            lstPtosAux[-1]=lstPtosAux[-2].add(vaux.multiply(self.fixLengthEnd))
+        else:
+            lstPtosAux[-1]=lstPtosAux[-1].add(vaux.multiply(self.gapEnd))
         listaaux=[]
         for i in range (0,npuntos-1):
             vaux=lstPtosAux[i+1].sub(lstPtosAux[i])
