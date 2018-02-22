@@ -14,23 +14,36 @@ import FreeCADGui
 from freeCAD_utils import geom_utils
 from freeCAD_utils import drawing_tools as dt
 
+#Default bending radius (EHE-08, B 500 S: 10fi para fi<=25 mm, 20fi para fi>25 mm)  
+defBendingRad={'0.008':0.08,'0.01':0.10,'0.012':0.12,'0.014':0.14,'0.016':0.16,'0.02':0.20,'0.025':0.25,'0.032':0.64,'8':80,'10':100,'12':120,'14':140,'16':160,'20':200,'25':250,'32':640}   #bending radius
+'''
+class genericConf(object):
+    generic parameteters to be used as default values for several 
+    attributes of different rebar families
+
+    :ivar cover:   minimum cover
+    :ivar texSize: generic size of text to label rebar families in the 
+          drawings
+    :ivar dictBendingRad: 
+
+'''
+
+
 class rebarFamily(object):
     '''Family of reinforcement bars
 
     :ivar identifier: identifier of the rebar family
     :ivar diameter: diameter of the bar [m]
     :ivar spacing: spacing between bars [m]. If number of bars is defined 
-          through parameter nmbBars, then spacing must be = 0
+          through parameter nmbBars, then spacing must be = 0 (default value of spacing=0)
     :ivar nmbBars: number of rebars in the family. This parameter is only taken
-          into account when spacing=0
+          into account when spacing=0 (default value of spacing=0)
     :ivar lstPtsConcrSect: list of points in the concrete section to which 
           the bar is 'attached'
     :ivar lstCover: list of covers that correspond to each of the segments 
           defined with lstPtsConcrSect [m]
     :ivar coverSide: side to give cover  ('l' left side, 'r' for right side)
-    :ivar bendingRad: bending radius [m]
     :ivar vectorLRef: vector to draw the leader line for labeling the bar
-    :ivar hText: text height
     :ivar fromToExtPts: starting and end points that delimit the stretch of 
           rebars.
     :ivar lateralCover: minimal lateral cover to place the rebar family
@@ -53,20 +66,22 @@ class rebarFamily(object):
           the reinforcement at its starting extremity (defaults to 0).
     :ivar gapEnd: increment (decrement if gapEnd<0) of the length of 
           the reinforcement at its ending extremity (defaults to 0).
+    :ivar hText: text height (defaults to 0.125)
     :param fixLengthStart: fixed length of the first segment of the rebar 
            (defaults to None = no fixed length)
     :param fixLengthEnd: fixed length of the last segment of the rebar 
            (defaults to None = no fixed length)
+    :ivar bendingRad: bending radius (defaults to 10fi if fi<25 mm and
+          20fi if fi>25mm)
 
     '''
-    def __init__(self,identifier,diameter,spacing,lstPtsConcrSect,lstCover,coverSide,bendingRad,vectorLRef,hText,fromToExtPts,recSec,lateralCover,sectBarsSide,vectorLRefSec,lstPtsConcrSect2=[],decLengths=2,decSpacing=2,gapStart=0,gapEnd=0,fixLengthStart=None,fixLengthEnd=None):
+    def __init__(self,identifier,diameter,lstPtsConcrSect,lstCover,coverSide,vectorLRef,fromToExtPts,recSec,lateralCover,sectBarsSide,vectorLRefSec,spacing=0,nmbBars=0,lstPtsConcrSect2=[],decLengths=2,decSpacing=2,gapStart=0,gapEnd=0,hText=0.125,fixLengthStart=None,fixLengthEnd=None):
         self.identifier=identifier 
         self.diameter=diameter
         self.spacing=spacing 
         self.lstPtsConcrSect=lstPtsConcrSect 
         self.lstCover= lstCover
         self.coverSide=coverSide 
-        self.bendingRad= bendingRad
         self.vectorLRef= vectorLRef
         self.hText= hText
         self.fromToExtPts= fromToExtPts
@@ -78,11 +93,12 @@ class rebarFamily(object):
         self.decLengths=decLengths
         self.decSpacing=decSpacing
         self.listaPtosArm=[[],[]]
-        self.nmbBars=0
+        self.nmbBars=nmbBars
         self.gapStart= gapStart
         self.gapEnd= gapEnd
         self.fixLengthStart=fixLengthStart
         self.fixLengthEnd=fixLengthEnd
+        self.bendingRad= defBendingRad[str(diameter)]
         self.wire=None 
         self.wireSect2=None
       
