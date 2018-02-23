@@ -16,8 +16,9 @@ from freeCAD_utils import drawing_tools as dt
 
 #Default bending radius (EHE-08, B 500 S: 10fi para fi<=25 mm, 20fi para fi>25 mm)  
 defBendingRad={'0.008':0.08,'0.01':0.10,'0.012':0.12,'0.014':0.14,'0.016':0.16,'0.02':0.20,'0.025':0.25,'0.032':0.64,'8':80,'10':100,'12':120,'14':140,'16':160,'20':200,'25':250,'32':640}   #bending radius
-'''
+
 class genericConf(object):
+    '''
     generic parameteters to be used as default values for several 
     attributes of different rebar families
 
@@ -25,7 +26,8 @@ class genericConf(object):
     :ivar texSize: generic size of text to label rebar families in the 
           drawings
     :ivar dictBendingRad: 
-
+    :ivar dynamEff: 'Y' 'yes' 'Yes' ... if dynamic effects over the 
+          structure (defaults to 'N') 
 '''
 
 
