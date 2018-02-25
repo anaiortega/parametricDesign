@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-# Copyright (C) 2009-2012  Luis C. Pérez Tato
+# Copyright (C) 2018  Ana Ortega
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
-# See http://www.xcingenieria.com/ or email : l.perez@xcingenieria.com
+# See http://www.xcengineering.xyz/ or email : ana.ortega@xcengineering.xyz
 #
 
 from distutils.core import setup
@@ -71,4 +71,12 @@ setup(name='setting_out_work',
       author='Ana Ortega',
       author_email='ana.ortega@xcengineering.xyz',
       packages=['setting_out'],
+     )
+
+setup(name='RC_utils',
+      version='0.9.0',
+      description='Tools for the design of reinforced concrete',
+      author='Ana Ortega',
+      author_email='ana.ortega@xcengineering.xyz',
+      packages=['RC_utils'],
      )

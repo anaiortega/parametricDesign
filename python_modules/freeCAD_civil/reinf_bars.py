@@ -7,50 +7,84 @@ __license__= "GPL"
 __version__= "1.0"
 __email__= "ana.ortega@xcengineering.xyz "
 
+import math
 import Part, FreeCAD, math
 import Draft
 from FreeCAD import Vector
 import FreeCADGui
 from freeCAD_utils import geom_utils
 from freeCAD_utils import drawing_tools as dt
+from RC_utils import reinf_bars_arrang_sets as RCutils
+import DraftVecUtils
 
-#Default bending radius (EHE-08, B 500 S: 10fi para fi<=25 mm, 20fi para fi>25 mm)  
-defBendingRad={'0.008':0.08,'0.01':0.10,'0.012':0.12,'0.014':0.14,'0.016':0.16,'0.02':0.20,'0.025':0.25,'0.032':0.64,'8':80,'10':100,'12':120,'14':140,'16':160,'20':200,'25':250,'32':640}   #bending radius
+'''Classes to generate in FreeCAD drawings to represent  a reinforced-concrete 
+structure and the bar schedule associated.
+
+Diameter of the reinforcement bars must be expressed in meters [m].
+Other length magnitudes should be expressed in meters [m].
+'''
 
 class genericConf(object):
     '''
-    generic parameteters to be used as default values for several 
-    attributes of different rebar families
+    Generic parameteters to be used as default values for several 
+    attributes of different rebar families.
 
     :ivar cover:   minimum cover
-    :ivar texSize: generic size of text to label rebar families in the 
-          drawings
-    :ivar dictBendingRad: 
-    :ivar dynamEff: 'Y' 'yes' 'Yes' ... if dynamic effects over the 
-          structure (defaults to 'N') 
-'''
-
+    :ivar texSize: generic text size to label rebar families in the 
+          drawings. Defaults to 0.125
+    :ivar Code: code on structural concrete that applies (defaults to 'EHE') 
+    :ivar concrType:type of concrete ('HA-25','HA-30','HA-35,'HA-40',
+           'HA-45' or 'HA-50'). Defaults to 'HA-30'
+    :param steelType: type of reinforcement steel ('B-400' or 'B-500'). Defaults
+           to 'B-500'.
+    :ivar dynamEff: 'Y' 'yes' 'Yes' ... if dynamic effects may occur (defaults 
+          to 'N') 
+    :ivar decLengths: decimal positions to calculate and express lengths and
+                      their derivated magnitudes, like weight  (defaults to 2).
+    :param decSpacing: decimal positions to express the spacing (defaults to 2).
+    '''
+    def __init__(self,cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2):
+        self.cover=cover
+        self.texSize=texSize
+        self.Code=Code
+        self.concrType=concrType
+        self.steelType=steelType
+        self.dynamEff=dynamEff
+        self.decLengths=decLengths
+        self.decSpacing=decSpacing
 
 class rebarFamily(object):
     '''Family of reinforcement bars
 
+    :ivar genConf: instance of th class genericConf that defines generic
+          parameters like concrete and steel type, text format, ... 
     :ivar identifier: identifier of the rebar family
     :ivar diameter: diameter of the bar [m]
     :ivar spacing: spacing between bars [m]. If number of bars is defined 
-          through parameter nmbBars, then spacing must be = 0 (default value of spacing=0)
+          through parameter nmbBars, then spacing must be = 0 (default value 
+          of spacing=0)
     :ivar nmbBars: number of rebars in the family. This parameter is only taken
           into account when spacing=0 (default value of spacing=0)
     :ivar lstPtsConcrSect: list of points in the concrete section to which 
           the bar is 'attached'
     :ivar lstCover: list of covers that correspond to each of the segments 
-          defined with lstPtsConcrSect [m]
+          defined with lstPtsConcrSect [m]. Defaults to the minimum cover 
+          defined with 'genConf'
     :ivar coverSide: side to give cover  ('l' left side, 'r' for right side)
     :ivar vectorLRef: vector to draw the leader line for labeling the bar
     :ivar fromToExtPts: starting and end points that delimit the stretch of 
-          rebars.
-    :ivar lateralCover: minimal lateral cover to place the rebar family
+          rebars. Defaults to None, in which case this length must be defined 
+          by means of the attribute' extensionLength'.
+    :ivar extensionLength: length of the stretch in which the rebar family extends.
+          Defaults to None, in which case  this length must be defined 
+          by means of the attribute 'fromToExtPts'.
+    :ivar lateralCover: minimal lateral cover to place the rebar family.
+          Defaults to the minimum cover given with 'genConf'.
     :ivar sectBarsSide: side of cover to draw the family as sectioned bars 
           (circles) ('l' left, 'r' right)
+    :ivar coverSectBars: cover to draw the family as sectioned bars 
+          (circles) ('l' left, 'r' right). Only needed if the bars are to be drawn.
+          Defaults to the minimum cover given with 'genConf'. 
     :ivar vectorLRefSec: vector to draw the leader line for labeling the 
           sectioned bar drawing
     :ivar wire: FreeCAD object of type wire that represents the rebar shape
@@ -61,46 +95,63 @@ class rebarFamily(object):
     :ivar lstPtsConcrSect2: parameter only used when defining a rebar family
           with variable shape. In that case, lstPtsConcrSect2 is the list of 
           points in the concrete section 2 to which the bar is 'attached'
-    :ivar decLengths: decimal positions to calculate and express lengths and
-                      their derivated magnitudes, like weight  (defaults to 2).
-    :param decSpacing: decimal positions to express the spacing (defaults to 2).
     :ivar gapStart: increment (decrement if gapStart <0) of the length of 
-          the reinforcement at its starting extremity (defaults to 0).
+          the reinforcement at its starting extremity (defaults to the minimum 
+          negative cover given with 'genConf').
     :ivar gapEnd: increment (decrement if gapEnd<0) of the length of 
-          the reinforcement at its ending extremity (defaults to 0).
-    :ivar hText: text height (defaults to 0.125)
-    :param fixLengthStart: fixed length of the first segment of the rebar 
+          the reinforcement at its ending extremity  (defaults to the minimum 
+          negative cover given with 'genConf').
+    :ivar anchStart: defines a straigth elongation or a hook at the starting 
+          extremity of the bar. The anchoring length is automatically 
+          calculated from the code, material, and rebar configuration.
+          It's defined as a string parameter that can be read as:
+          'anchType[angle]_position_stressState', where:
+          anchType= 'straight' for straight elongation,
+                    'hook90' for hook that forms a 90º angle counterclokwise 
+                             with the first segment of the rebar.
+                    'hook[angle]' where angle is a positive number that 
+                             represents the counterclokwise angle from 
+                             the first segment of the rebar towards the hook.
+          position= 'posI' if rebar in position I according to EHE definition.
+                    'posII' if rebar in position II according to EHE definition.
+          stressState= 'tens' if rebar in tension
+                       'compr' if rebar in compression.
+          Examples: 'straight_posII_compr', 'hook270_posI_tens'
+    :ivar anchEnd:defines a straigth elongation or a hook at the ending 
+          extremity of the bar. Definition analogous to anchStart.
+    :ivar fixLengthStart: fixed length of the first segment of the rebar 
            (defaults to None = no fixed length)
-    :param fixLengthEnd: fixed length of the last segment of the rebar 
+    :ivar fixLengthEnd: fixed length of the last segment of the rebar 
            (defaults to None = no fixed length)
-    :ivar bendingRad: bending radius (defaults to 10fi if fi<25 mm and
-          20fi if fi>25mm)
 
     '''
-    def __init__(self,identifier,diameter,lstPtsConcrSect,lstCover,coverSide,vectorLRef,fromToExtPts,recSec,lateralCover,sectBarsSide,vectorLRefSec,spacing=0,nmbBars=0,lstPtsConcrSect2=[],decLengths=2,decSpacing=2,gapStart=0,gapEnd=0,hText=0.125,fixLengthStart=None,fixLengthEnd=None):
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=0,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,anchStart=None,anchEnd=None,fixLengthStart=None,fixLengthEnd=None):
+        self.genConf=genConf
         self.identifier=identifier 
         self.diameter=diameter
         self.spacing=spacing 
-        self.lstPtsConcrSect=lstPtsConcrSect 
-        self.lstCover= lstCover
+        self.lstPtsConcrSect=lstPtsConcrSect
+        if lstCover is None:
+            self.lstCover=(len(lstPtsConcrSect)-1)*[genConf.cover]
+        else:
+            self.lstCover= lstCover
         self.coverSide=coverSide 
         self.vectorLRef= vectorLRef
-        self.hText= hText
         self.fromToExtPts= fromToExtPts
-        self.recSec= recSec
-        self.lateralCover=lateralCover 
+        self.extensionLength=extensionLength
+        self.coverSectBars=coverSectBars if coverSectBars is not None else genConf.cover
+        self.lateralCover=lateralCover if lateralCover is not None else genConf.cover
         self.sectBarsSide= sectBarsSide
         self.vectorLRefSec=vectorLRefSec
         self.lstPtsConcrSect2=lstPtsConcrSect2
-        self.decLengths=decLengths
-        self.decSpacing=decSpacing
         self.listaPtosArm=[[],[]]
         self.nmbBars=nmbBars
-        self.gapStart= gapStart
-        self.gapEnd= gapEnd
+        self.gapStart= gapStart if gapStart is not None else -genConf.cover
+        self.gapEnd= gapEnd  if gapEnd is not None else -genConf.cover
+        self.anchStart=anchStart
+        self.anchEnd=anchEnd
         self.fixLengthStart=fixLengthStart
         self.fixLengthEnd=fixLengthEnd
-        self.bendingRad= defBendingRad[str(diameter)]
         self.wire=None 
         self.wireSect2=None
       
@@ -121,11 +172,11 @@ class rebarFamily(object):
         else:
             vauxn=Vector(vaux.y,-vaux.x)
         vauxn.normalize()
-        incrini=vaux.multiply((Laux-nesp*self.spacing)/2.0).add(vauxn.multiply(self.recSec+self.diameter/2.0))
+        incrini=vaux.multiply((Laux-nesp*self.spacing)/2.0).add(vauxn.multiply(self.coverSectBars+self.diameter/2.0))
         cent=FreeCAD.Placement()
         cent.move(self.fromToExtPts[0].add(incrini).add(vTranslation))
         ptoIniEtiq=self.fromToExtPts[0].add(incrini).add(vTranslation)
-        rebarText(ptoIniEtiq,self.vectorLRefSec,self.identifier,self.diameter,self.spacing,0,self.hText)
+        rebarText(ptoIniEtiq,self.vectorLRefSec,self.identifier,self.diameter,self.spacing,0,self.genConf.texSize)
         vaux.normalize()
         incr=vaux.multiply(self.spacing)
         for i in range(0,nesp+1):
@@ -156,15 +207,15 @@ class rebarFamily(object):
         rebarEdges=rebarDraw.Edges
         #arrow in extremity 1
         pExtr1=rebarEdges[0].Vertexes[0].Point #vertex at extremity 1
-        vArr=rebarEdges[0].tangentAt(0).multiply(self.hText/2.0) #arrow vector
+        vArr=rebarEdges[0].tangentAt(0).multiply(self.genConf.texSize/3.0) #arrow vector
         Draft.rotate(Draft.makeLine(pExtr1,pExtr1.add(vArr)),15,pExtr1)
         #arrow in extremity 2
         pExtr2=rebarEdges[-1].Vertexes[1].Point #vertex at extremity 2
-        vArr=rebarEdges[-1].tangentAt(1).multiply(self.hText/2.0) #arrow vector
+        vArr=rebarEdges[-1].tangentAt(1).multiply(self.genConf.texSize/3.0) #arrow vector
         Draft.rotate(Draft.makeLine(pExtr2,pExtr2.add(vArr)),180-15,pExtr2)
         # Texts
         ptoIniEtiq=rebarEdges[int(len(rebarEdges)/2.)].CenterOfMass
-        rebarText(ptoIniEtiq,self.vectorLRef,self.identifier,self.diameter,self.spacing,self.nmbBars,self.hText)
+        rebarText(ptoIniEtiq,self.vectorLRef,self.identifier,self.diameter,self.spacing,self.nmbBars,self.genConf.texSize)
         return
 
     def createRebar(self):
@@ -173,10 +224,10 @@ class rebarFamily(object):
         to the shape defined for section2.
         '''
         self.wire=self.getRebar(self.lstPtsConcrSect)
-        self.wireLengths=[round(edg.Length,self.decLengths) for edg in self.wire.Edges]
+        self.wireLengths=[round(edg.Length,self.genConf.decLengths) for edg in self.wire.Edges]
         if len(self.lstPtsConcrSect2) > 0:
             self.wireSect2=self.getRebar(self.lstPtsConcrSect2)
-            self.wireSect2Lengths=[round(edg.Length,self.decLengths) for edg in self.wireSect2.Edges]
+            self.wireSect2Lengths=[round(edg.Length,self.genConf.decLengths) for edg in self.wireSect2.Edges]
 
     def getRebar(self,lstPtsConcr):
         '''Return the wire that represents the true shape of the bar defined
@@ -187,17 +238,45 @@ class rebarFamily(object):
         '''
         npuntos=len(lstPtsConcr)
         lstPtosAux=[pt for pt in lstPtsConcr]
-        vaux=lstPtosAux[0].sub(lstPtosAux[1]).normalize()
+        # Start extremity: gaps, straight elongation, hooks
+        vaux=lstPtosAux[1].sub(lstPtosAux[0]).normalize()
         if self.fixLengthStart != None:
-            lstPtosAux[0]=lstPtosAux[1].add(vaux.multiply(self.fixLengthStart))
+            lstPtosAux[0]=lstPtosAux[1].sub(vaux.multiply(self.fixLengthStart))
         else:
-            lstPtosAux[0]=lstPtosAux[0].add(vaux.multiply(self.gapStart))
+            lstPtosAux[0]=lstPtosAux[0].sub(vaux.multiply(self.gapStart))
+        if self.anchStart is not None:
+            anchAng,anchLn=self.getAnchorParams(self.anchStart)
+            vaux=lstPtosAux[1].sub(lstPtosAux[0]).normalize()
+            if anchAng == 0:  #straight elongation
+                lstPtosAux[0]=lstPtosAux[0].sub(vaux.multiply(anchLn))
+            else: #hook
+                lstPtosAux[0]=lstPtosAux[0].add(vaux.multiply(self.diameter/2.))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
+                vauxHook.normalize()
+                firstPoint=lstPtosAux[0].add(vauxHook.multiply(anchLn))
+                lstPtosAux.insert(0,firstPoint)
+                self.lstCover.insert(0,0)
+        # End extremity: gaps, straight elongation, hooks
         vaux=lstPtosAux[-1].sub(lstPtosAux[-2]).normalize()
         if self.fixLengthEnd != None:
             lstPtosAux[-1]=lstPtosAux[-2].add(vaux.multiply(self.fixLengthEnd))
         else:
             lstPtosAux[-1]=lstPtosAux[-1].add(vaux.multiply(self.gapEnd))
+        if self.anchEnd is not None:
+            anchAng,anchLn=self.getAnchorParams(self.anchEnd)
+            vaux=lstPtosAux[-1].sub(lstPtosAux[-2]).normalize()
+            if anchAng == 0:  #straight elongation
+                lstPtosAux[-1]=lstPtosAux[-1].add(vaux.multiply(anchLn))
+            else: #hook
+                lstPtosAux[-1]=lstPtosAux[-1].sub(vaux.multiply(self.diameter/2.))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
+                vauxHook.normalize()
+                endPoint=lstPtosAux[-1].add(vauxHook.multiply(anchLn))
+                lstPtosAux.append(endPoint)
+                self.lstCover.append(0)
+
         listaaux=[]
+        npuntos=len(lstPtosAux)
         for i in range (0,npuntos-1):
             vaux=lstPtosAux[i+1].sub(lstPtosAux[i])
             if self.coverSide == 'l':
@@ -239,6 +318,24 @@ class rebarFamily(object):
         else:
             unitWeigth=round(math.pi*self.diameter**2.0/4.*7850,2)
         return unitWeigth
+
+    def getAnchorParams(self,anchorStrDef):
+        '''Return the anchorage length [m] and the angle that forms
+         the hook or straight elongation defined with the string 'anchorStrDef' 
+         with the main rebar.
+        '''
+        paramAnc=anchorStrDef.split('_')
+        anchType=paramAnc[0]
+        if anchType[:4]=='hook':
+            angle=eval(anchType[4:])
+            anchType='hook'
+        else:
+            angle=0
+        pos=paramAnc[1].replace('pos','')
+        stress=paramAnc[2]
+        if self.genConf.Code=='EHE':
+            ancLength=RCutils.anchor_length_EHE(self.genConf.concrType,self.genConf.steelType,self.diameter,pos,anchType,stress,1.0,self.genConf.dynamEff)
+        return (angle,ancLength*1e-3)
         
                         
     
@@ -381,8 +478,8 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
     pLinea=p1.add(Vector(0,-hRows/2.0))
     pesoTotal=0
     for rbFam in lstBarFamilies:
-        formatLength='%.'+str(rbFam.decLengths)+'f'
-        formatSpacing='%.'+str(rbFam.decSpacing)+'f'
+        formatLength='%.'+str(rbFam.genConf.decLengths)+'f'
+        formatSpacing='%.'+str(rbFam.genConf.decSpacing)+'f'
         if rbFam.wire==None:
             rbFam.createRebar()
         #identifier
@@ -463,7 +560,8 @@ def drawRCSection(lstOfLstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTransla
     for rbFam in lstSectRebarFam:
         rbFam.drawSectBars(vTranslation)
     return
-    
+
+
 
 # Armadura 3D
 def arma8ptos(fi,recubrN,sepFi,radDobl,pto1,pto2,pto3,pto4,pto5,pto6,pto7,pto8,gap1,gap2):

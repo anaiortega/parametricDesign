@@ -24,7 +24,7 @@ coefBeta={
     'welded':{'tens':0.7,'compr':0.7}
 }
 
-def anchor_length_EHE(concrType,steelType,fi,position,anchType,stressState='compr',relacAs=1.0,efectDinam='N'):
+def anchor_length_EHE(concrType,steelType,fi,position,anchType,stressState='compr',ratAs=1.0,dynamEff='N'):
     '''Return anchorage length [mm] of passive reinforcements according to
     art. 69.5.1 of EHE-08.
     Depending on the position occupied by the bar in the member, the following 
@@ -49,10 +49,10 @@ def anchor_length_EHE(concrType,steelType,fi,position,anchType,stressState='comp
     'hook': pin, hook and U hook, 'welded': welded transverse bar)
     :param stressState: state of stress ('tens': tension, 
            'compr':compression). Defaults to 'compr' 
-    :param relacAs: ratio between the necessary reinforcement by calculation 
+    :param ratAs: ratio between the necessary reinforcement by calculation 
            and the actually existing reinforcement in the section from which 
            the reinforcement is anchored. Defaults to 1
-    :param efectDinam: ='Y' if dynamic effects may occur, 'N' otherwise.
+    :param dynamEff: ='Y' if dynamic effects may occur, 'N' otherwise.
            Defaults to  'N'
     '''
     fyk=eval(steelType[-3:])
@@ -64,8 +64,8 @@ def anchor_length_EHE(concrType,steelType,fi,position,anchType,stressState='comp
     else:
         print "Not valid value of rebar position (must be 'I' or 'II')"
     beta=coefBeta[anchType][stressState]
-    lbneta=lb*beta*relacAs
-    if efectDinam.upper() in 'SIYES':
+    lbneta=lb*beta*ratAs
+    if dynamEff.upper() in 'SIYES':
         lbneta=lbneta+10*fi
     if stressState[:2].lower() == 'co':
         fact=2/3.
