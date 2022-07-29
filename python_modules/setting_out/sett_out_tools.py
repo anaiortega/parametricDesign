@@ -66,7 +66,7 @@ def sett_out_marco(xAxesInters,yAxesInters,azimuthStruct,Hgauge,thWall,LaxisNeg,
     unitVectOrtogStrAxis=np.array([math.sin(azimuthStructRad+math.pi/2.),math.cos(azimuthStructRad+math.pi/2.)])
     demiDimHor=Hgauge/2.0+thWall
     skewVect=demiDimHor*math.tan(grads_to_rads(skewAngle))*unitVectStrAxis
-    print skewVect                       
+    print(skewVect)
     pt_start_aleta1=ptAxesInters-LaxisNeg*unitVectStrAxis-demiDimHor*unitVectOrtogStrAxis+skewVect
     pt_start_aleta2=ptAxesInters-LaxisNeg*unitVectStrAxis+demiDimHor*unitVectOrtogStrAxis-skewVect
     pt_start_aleta3=ptAxesInters+LaxisPos*unitVectStrAxis+demiDimHor*unitVectOrtogStrAxis-skewVect
@@ -93,27 +93,27 @@ def sett_out_aleta(start_point,azimuthAleta,azimuthPuntera,wCoron,lengths,widths
     cumlengths=np.insert(cumlengths,0,0)
     #Points talón
     for i in range(len(lengths)):
-        print 'point talón:', 2*i
-        print 'L=', cumlengths[i]
-        print 'width=', wTalon[i]
+        print('point talón:', 2*i)
+        print('L=', cumlengths[i])
+        print('width=', wTalon[i])
         pointsTalon[2*i]=start_point+cumlengths[i]*unitVectAleta-wTalon[i]*unitVectPuntera
-        print 'point talón:', 2*i+1
-        print 'L=', cumlengths[i+1]
-        print 'width=', wTalon[i]
+        print('point talón:', 2*i+1)
+        print('L=', cumlengths[i+1])
+        print('width=', wTalon[i])
         pointsTalon[2*i+1]=start_point+cumlengths[i+1]*unitVectAleta-wTalon[i]*unitVectPuntera
-    print 'poinstTalon=',pointsTalon
+    print('poinstTalon=',pointsTalon)
     #Points puntera
     for i in range(len(lengths)):
         pointsPuntera[2*i]=start_point+cumlengths[i]*unitVectAleta+wPunt[i]*unitVectPuntera
         pointsPuntera[2*i+1]=start_point+cumlengths[i+1]*unitVectAleta+wPunt[i]*unitVectPuntera
-    print 'pointsPuntera=',pointsPuntera
+    print('pointsPuntera=',pointsPuntera)
     #Arranging the point matrix
     pointsAleta[0]=pointsPuntera[0]
     for i in range(2*len(lengths)):
         pointsAleta[i+1]=pointsTalon[i]
     for i in range(1,2*len(lengths)):
         pointsAleta[2*len(lengths)+i]=pointsPuntera[-i]
-    print 'pointsAleta=',pointsAleta
+    print('pointsAleta=',pointsAleta)
     return pointsAleta
 
 
@@ -142,7 +142,7 @@ def write_points_to_file(title,pointsArr,nDecimalP,fileName,indPntChr=False):
         index=[i  for i in range(1,len(pointsArr)+1)]
     f.close()
     df = pandas.DataFrame(data=np.around(pointsArr,nDecimalP),index=index,columns=['X','Y'])
-    print df
+    print(df)
     df.to_csv(fileName,header=True, index=True,sep='\t',float_format='%.3f',mode='a')
     return
         

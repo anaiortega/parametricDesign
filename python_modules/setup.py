@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
+from __future__ import print_function
+
+#!/usr/bin/env python
+
 # Copyright (C) 2018  Ana Ortega
 #
 # This library is free software; you can redistribute it and/or
@@ -18,7 +22,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.xcengineering.xyz/ or email : ana.ortega@xcengineering.xyz
-#
+# freeCAD_civil: Tool library for civil work with FreeCAD (RC and metallic structures)
+# freeCAD_utils: Generic tool library for working with FreeCAD
+# setting_out_work: Tools for setting-out works
+# landXMLToFreeCAD: Python utils for FreeCAD (mostly for structural/civil engineering)
+# RC_utils: Tools for the design of reinforced concrete
+# 
+
 
 from distutils.core import setup
 import sys
@@ -41,42 +51,7 @@ if not myPrefix and "PREFIX" in os.environ:
 if not myPrefix or not len (myPrefix):
     myPrefix = "/usr/local"
 
-setup(name='landXMLToFreeCAD',
-      version='0.9.0',
-      description='Python utils for FreeCAD (mostly for structural/civil engineering)',
-      author='Luis C. Pérez Tato',
-      author_email='l.pereztato@gmail.com',
-      packages=['landXMLtoFreeCAD'],
-     )
-
-setup(name='freeCAD_civil',
-      version='0.9.0',
-      description='Tool library for civil work with FreeCAD (RC and metallic structures)',
+setup(name='parametricDesign',
       author='Ana Ortega',
-      author_email='ana.ortega@xcengineering.xyz',
-      packages=['freeCAD_civil'],
-     )
-
-setup(name='freeCAD_utils',
-      version='0.9.0',
-      description='Generic tool library for working with FreeCAD',
-      author='Ana Ortega',
-      author_email='ana.ortega@xcengineering.xyz',
-      packages=['freeCAD_utils'],
-     )
-
-setup(name='setting_out_work',
-      version='0.9.0',
-      description='Tools for setting-out works',
-      author='Ana Ortega',
-      author_email='ana.ortega@xcengineering.xyz',
-      packages=['setting_out'],
-     )
-
-setup(name='RC_utils',
-      version='0.9.0',
-      description='Tools for the design of reinforced concrete',
-      author='Ana Ortega',
-      author_email='ana.ortega@xcengineering.xyz',
-      packages=['RC_utils'],
-     )
+      packages=['freeCAD_civil','freeCAD_civil/structures','freeCAD_utils','geometry_utils','landXMLtoFreeCAD','RC_utils','setting_out']
+      )

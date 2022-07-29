@@ -29,12 +29,12 @@ def barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec=0):
         secc=secConformado(tipo,tamPerfil)
     
     vunit=(ptoFin.sub(ptoIni)).normalize()
-    if incrIni <> 0:
+    if incrIni != 0:
         p1=ptoIni.sub(vunit.multiply(incrIni))
     else:
         p1=ptoIni
     vunit=(ptoFin.sub(ptoIni)).normalize()
-    if incrFin <> 0:
+    if incrFin != 0:
         p2=ptoFin.add(vunit.multiply(incrFin))
     else:
         p2=ptoFin
@@ -57,7 +57,7 @@ def barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec=0):
 
     secc.translate(p1)
     barra=secc.extrude(eje)
-    if giroSec <> 0 :
+    if giroSec != 0 :
         barra.rotate(p1,eje,giroSec)
         
     return barra

@@ -62,7 +62,7 @@ def anchor_length_EHE(concrType,steelType,fi,position,anchType,stressState='comp
     elif position=='II':
         lb=max(1.4*m*fi**2,fyk/14.*fi)
     else:
-        print "Not valid value of rebar position (must be 'I' or 'II')"
+        print("Wrong value of rebar position (must be 'I' or 'II')")
     beta=coefBeta[anchType][stressState]
     lbneta=lb*beta*ratAs
     if dynamEff.upper() in 'SIYES':

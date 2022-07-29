@@ -146,10 +146,10 @@ class LandXMLModel(object):
                     tag5= extractTag(rawTag5)
                     vertices= getVertices(child5.text)
                     surf.appendTriangle(vertices)
-          print "  surface: ", surf.name, " readed:", surf.getNumPoints(), " points", surf.getNumTriangles(), " triangles"
+          print("  surface: ", surf.name, " readed:", surf.getNumPoints(), " points", surf.getNumTriangles(), " triangles")
           self.surfaces.append(surf)
       else:
-        print 'tag: ', tag,' ignored.'
+        print('tag: ', tag,' ignored.')
   def writeSTL(self,fName):
     '''Writes the surfaces in an STL file.'''
     f= open(fName,'w')

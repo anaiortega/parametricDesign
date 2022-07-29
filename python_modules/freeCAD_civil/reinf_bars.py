@@ -295,6 +295,7 @@ class rebarFamily(object):
 
         lstPtsArm.append(listaaux[2*(npuntos-1)-1])
         lstLines=[Part.Line(lstPtsArm[i],lstPtsArm[i+1]).toShape() for i in range(len(lstPtsArm)-1)]
+        print(lstLines)
         rebarWire=Part.Wire(lstLines)
         return rebarWire
 
@@ -528,7 +529,7 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
         if rbFam.wireSect2 != None:
             totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
         s='currentUnitPriceQ.quantities.append(MeasurementRecord(c= \"'+ str(rbFam.identifier) +'\", uds= ' +str(rbFam.getNumberOfBars()) + ', l= ' + str(totalLength) + ', an= ' + str(rbFam.getUnitWeight())  + ')) \n'
-        print s
+        print(s)
         f.write(s)
     f.close()
         
@@ -555,8 +556,10 @@ def drawRCSection(lstOfLstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTransla
         Part.show(l)
     #draw the rebars in their true shape
     for rbFam in lstShapeRebarFam:
+        print('aquí 0')
         rbFam.drawRebar(vTranslation)
-    #draw the sectioned rebars
+        print('aquí 1')
+   #draw the sectioned rebars
     for rbFam in lstSectRebarFam:
         rbFam.drawSectBars(vTranslation)
     return
