@@ -2,10 +2,9 @@
 
 import Part, FreeCAD, math
 import Draft
-import freeCADcivilOrt
-from freeCADcivilOrt import PerfilesMetalicos
-from freeCADcivilOrt import Geometria2D
-from freeCADcivilOrt import Geometria3D
+from freeCAD_civil import metallic_profiles
+from freeCAD_civil import geometry_2D
+from freeCAD_civil import geometry_3D
 from FreeCAD import Base
 from Draft import *
 
@@ -14,7 +13,7 @@ def barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec=0):
     # incrIni: incremento de longitud de la barra por el extremo inicial
     # incrFin: incremento de longitud de la barra por el extremo final
     # giroSec: giro de la sección para orientar la barra
-    tipo='PerfilesMetalicos.'+perfil
+    tipo='metallic_profiles.'+perfil
     if perfil in ['IPN','IPE','HEB','HEA','HEM','W']:
         secc=secDobleT(tipo,tamPerfil)
     elif perfil in ['UPN']:
@@ -101,7 +100,7 @@ def chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,
     # listaCoordAgujL: ptos. para definir los centros de los agujeros. Las coordenadas de estos ptos. se dan en el SC local en la forma: [[x1,y1],[x2,y2],[x3,y3],...].
     # espesorChapa: espesor de la chapa (en dirección vDirZL)
     # diamAguj: diámetro de los agujeros
-    placa=Geometria3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,espesorChapa)
+    placa=geometry_3D.prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,espesorChapa)
     vDirXL.normalize() #vector de dirección X local
     vDirYL.normalize() #vector de dirección Y local
     vDirZL.normalize() #vector de dirección Z local
@@ -148,7 +147,7 @@ def secDobleT(tipo,tam):
     # Genera la sección de un perfil metálico I o H
     # La nomenclatura empleada para las dimensiones es la del prontuario de
     # estructuras metálicas del CEDEX
-    # tipo: IPE, IPN, HEB, HEM, HEA o cualquier otro doble T definido en el fichero PerfilesMetalicos.py
+    # tipo: IPE, IPN, HEB, HEM, HEA o cualquier otro doble T definido en el fichero metallic_profiles.py
     # tam: tamaño que define el perfil (80, 100, 120 , ...)
     h=eval(tipo)[tam]['h']
     b=eval(tipo)[tam]['b']
@@ -186,7 +185,7 @@ def secU(tipo,tam):
     # Genera la sección de un perfil metálico U
     # La nomenclatura empleada para las dimensiones es la del prontuario de
     # estructuras metálicas del CEDEX
-    # tipo: UPN o cualquier otro U definido en el fichero PerfilesMetalicos.py
+    # tipo: UPN o cualquier otro U definido en el fichero metallic_profiles.py
     # tam: tamaño que define el perfil (80, 100, 120 , ...)
     h=eval(tipo)[tam]['h']
     b=eval(tipo)[tam]['b']
@@ -202,17 +201,17 @@ def secU(tipo,tam):
     l1=Part.makePolygon([p1,p2,p3,p4])
     p5=Base.Vector(b-e2,-h/2.0+e1)
     p6=p5.add(Base.Vector(-(b-e-e1)/2.0,(h/2.0-h1/2.0-2*e1)/2.0))
-    l2=Geometria2D.fillet2D(p4,p5,p5,p6,r1)
+    l2=geometry_2D.fillet2D(p4,p5,p5,p6,r1)
     p7=p6.add(Base.Vector(-(b-e-e1)/2.0,(h/2.0-h1/2.0-2*e1)/2.0))
     p8=Base.Vector(-e2+e,-h1/2.0)
     pmed=Base.Vector(-e2+e,0)
-    l3=Geometria2D.fillet2D(p6,p7,p8,pmed,-e1)
+    l3=geometry_2D.fillet2D(p6,p7,p8,pmed,-e1)
     p12=Base.Vector(b-e2,h/2.0-e1)
     p11=p12.add(Base.Vector(-(b-e-e1)/2.0,-(h/2.0-h1/2.0-2*e1)/2.0))
-    l4=Geometria2D.fillet2D(p1,p12,p12,p11,-r1)
+    l4=geometry_2D.fillet2D(p1,p12,p12,p11,-r1)
     p10=p11.add(Base.Vector(-(b-e-e1)/2.0,-(h/2.0-h1/2.0-2*e1)/2.0))
     p9=Base.Vector(-e2+e,h1/2.0)
-    l5=Geometria2D.fillet2D(p11,p10,p9,pmed,e1)
+    l5=geometry_2D.fillet2D(p11,p10,p9,pmed,e1)
     secPerfil=Part.Face(Part.Wire([l1,l2,l3,l4,l5]))
     secPerfil.rotate(Base.Vector(0,0,0),Base.Vector(1,0,0),90)
     return secPerfil
@@ -221,7 +220,7 @@ def secAngular(tipo,tam):
     # Genera la sección de un perfil metálico en L
     # La nomenclatura empleada para las dimensiones es la del prontuario de
     # estructuras metálicas del CEDEX
-    # tipo: L, LD u otro perfil angular definido en PerfilesMetalicos.py
+    # tipo: L, LD u otro perfil angular definido en metallic_profiles.py
     # tam: tamaño que define el perfil ('120?2', '100?5?',  ...)
     a=eval(tipo)[tam]['a']
     b=eval(tipo)[tam]['b']
@@ -236,12 +235,12 @@ def secAngular(tipo,tam):
     l1=Part.makePolygon([p1,p2,p3])
     p4=p3.add(Base.Vector(-e,0))
     p5=p4.add(Base.Vector(0,-(a-e)/2.0))
-    l2=Geometria2D.fillet2D(p3,p4,p4,p5,r1)
+    l2=geometry_2D.fillet2D(p3,p4,p4,p5,r1)
     p6=p5.add(Base.Vector(0,-(a-e)/2.0))
     p7=p6.add(Base.Vector(-(b-e)/2.0,0))
-    l3=Geometria2D.fillet2D(p5,p6,p6,p7,-r)
+    l3=geometry_2D.fillet2D(p5,p6,p6,p7,-r)
     p8=p7.add(Base.Vector(-(b-e)/2.0,0))
-    l4=Geometria2D.fillet2D(p7,p8,p8,p1,r1)
+    l4=geometry_2D.fillet2D(p7,p8,p8,p1,r1)
     secPerfil=Part.Face(Part.Wire([l1,l2,l3,l4]))
     secPerfil.rotate(Base.Vector(0,0,0),Base.Vector(1,0,0),90)
     return secPerfil
@@ -325,47 +324,47 @@ def secConformado(tipo,tam):
         a2=eval(tipo)[tam]['a2']
     if 'LF' in tipo:
         pieza1=Part.makePlane(e,a-rext,Base.Vector(-c2,-(c1-rext)))
-        pieza2=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-(c2-rext),-(c1-rext)),180,270)
+        pieza2=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-(c2-rext),-(c1-rext)),180,270)
         pieza3=Part.makePlane(b-rext,e,Base.Vector(-(c2-rext),-c1))
         secPerfil=pieza1.fuse(pieza2.fuse(pieza3))
     elif 'UF' in tipo:
         pieza1=Part.makePlane(b-rext,e,Base.Vector(-(c-rext),h/2.0-e))
-        pieza2=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),h/2.0-rext),90,180)
+        pieza2=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),h/2.0-rext),90,180)
         pieza3=Part.makePlane(e,h-2*rext,Base.Vector(-c,-(h/2.0-rext)))
-        pieza4=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),-(h/2.0-rext)),180,270)
+        pieza4=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),-(h/2.0-rext)),180,270)
         pieza5=Part.makePlane(b-rext,e,Base.Vector(-(c-rext),-h/2.0))
         secPerfil=pieza1.fuse(pieza2.fuse(pieza3.fuse(pieza4.fuse(pieza5))))
     elif 'CF' in tipo:
         pieza1=Part.makePlane(e,a-rext,Base.Vector(b-c-e,h/2.0-a))
-        pieza2=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(b-c-rext,h/2.0-rext),0,90)
+        pieza2=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(b-c-rext,h/2.0-rext),0,90)
         pieza3=Part.makePlane(b-2*rext,e,Base.Vector(-(c-rext),h/2.0-e))
-        pieza4=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),h/2.0-rext),90,180)
+        pieza4=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),h/2.0-rext),90,180)
         pieza5=Part.makePlane(e,h-2*rext,Base.Vector(-c,-(h/2.0-rext)))
-        pieza6=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),-(h/2.0-rext)),180,270)
+        pieza6=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-(c-rext),-(h/2.0-rext)),180,270)
         pieza7=Part.makePlane(b-2*rext,e,Base.Vector(-(c-rext),-h/2.0))
-        pieza8=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(b-c-rext,-(h/2.0-rext)),270,0)
+        pieza8=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(b-c-rext,-(h/2.0-rext)),270,0)
         pieza9=Part.makePlane(e,a-rext,Base.Vector(b-c-e,-(h/2.0-rext)))
         secPerfil=pieza1.fuse(pieza2.fuse(pieza3.fuse(pieza4.fuse(pieza5.fuse(pieza6.fuse(pieza7.fuse(pieza8.fuse(pieza9))))))))
     elif 'OF' in tipo:
         pieza1=Part.makePlane(a-rext,e,Base.Vector(-(a+b/2.0-e),-c))
-        pieza2=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-b/2.0-r,-c+rext),270,360)
+        pieza2=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-b/2.0-r,-c+rext),270,360)
         pieza3=Part.makePlane(e,h-2*rext,Base.Vector(-b/2.0,-(c-rext)))
-        pieza4=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-(b/2.0-rext),h-c-rext),90,180)
+        pieza4=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-(b/2.0-rext),h-c-rext),90,180)
         pieza5=Part.makePlane(b-2*rext,e,Base.Vector(-(b/2.0-rext),h-c-e))
-        pieza6=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(b/2.0-rext,h-c-rext),0,90)
+        pieza6=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(b/2.0-rext,h-c-rext),0,90)
         pieza7=Part.makePlane(e,h-2*rext,Base.Vector(b/2.0-e,-(c-rext)))
-        pieza8=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(b/2.0+r,-c+rext),180,270)
+        pieza8=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(b/2.0+r,-c+rext),180,270)
         pieza9=Part.makePlane(a-rext,e,Base.Vector(b/2.0+r,-c))
         secPerfil=pieza1.fuse(pieza2.fuse(pieza3.fuse(pieza4.fuse(pieza5.fuse(pieza6.fuse(pieza7.fuse(pieza8.fuse(pieza9))))))))
     elif 'ZF' in tipo:
         pieza1=Part.makePlane(e,a1-rext,Base.Vector(-(b1-c2),c1-a1))
-        pieza2=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(-(b1-c2-rext),c1-rext),90,180)
+        pieza2=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(-(b1-c2-rext),c1-rext),90,180)
         pieza3=Part.makePlane(b1-2*rext,e,Base.Vector(-(b1-c2-rext),c1-e))
-        pieza4=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(c2-rext,c1-rext),0,90)
+        pieza4=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(c2-rext,c1-rext),0,90)
         pieza5=Part.makePlane(e,h-2*rext,Base.Vector(c2-e,-(h-c1-rext)))
-        pieza6=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(c2-e+rext,-(h-c1-rext)),180,270)
+        pieza6=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(c2-e+rext,-(h-c1-rext)),180,270)
         pieza7=Part.makePlane(b2-2*rext,e,Base.Vector(c2-e+rext,-(h-c1)))
-        pieza8=Geometria2D.arcoCoronaCircular(r,rext,Base.Vector(c2-e+b2-rext,-(h-c1-rext)),270,360)
+        pieza8=geometry_2D.arcoCoronaCircular(r,rext,Base.Vector(c2-e+b2-rext,-(h-c1-rext)),270,360)
         pieza9=Part.makePlane(e,b2-rext,Base.Vector(c2-e+b2-e,-(h-c1-rext)))
         secPerfil=pieza1.fuse(pieza2.fuse(pieza3.fuse(pieza4.fuse(pieza5.fuse(pieza6.fuse(pieza7.fuse(pieza8.fuse(pieza9))))))))
 
@@ -394,11 +393,11 @@ def arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOr
     else:
         Pto2=Pto1.add(Base.Vector(yPto2*signoH,0,zPto2*signoV))
     if 'Circ' in tipoPerfilDiag:
-        bPerfil=PerfilesMetalicos.huecoCirc[idPerfilDiag]['d']
+        bPerfil=metallic_profiles.huecoCirc[idPerfilDiag]['d']
     elif ('Cuad' in tipoPerfilDiag):
-        bPerfil=PerfilesMetalicos.huecoCuad[idPerfilDiag]['a']
+        bPerfil=metallic_profiles.huecoCuad[idPerfilDiag]['a']
     elif ('Rect' in tipoPerfilDiag):
-        bPerfil=PerfilesMetalicos.huecoRect[idPerfilDiag]['a']
+        bPerfil=metallic_profiles.huecoRect[idPerfilDiag]['a']
     z3=(bPerfil/2.0+holguraCart)*math.sin(alfarad)
     y3=(bPerfil/2.0+holguraCart)*math.cos(alfarad)
     z4=VOrigenPerf+zPto2+z3

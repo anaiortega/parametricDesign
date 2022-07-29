@@ -630,4 +630,4 @@ listafamiliasArmad=[F1S,F1I,F2S,F2I,F3S,F3I,F4S,F4I,F5S,F5I,F6S,F6I,F7,F8S,F8I,F
 reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText)
 
 # Bar quantities for PyCost
-reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')
+reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/quant_arm.py')

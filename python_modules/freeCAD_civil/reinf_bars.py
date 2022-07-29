@@ -294,7 +294,6 @@ class rebarFamily(object):
             lstPtsArm.append(pint)
 
         lstPtsArm.append(listaaux[2*(npuntos-1)-1])
-#        lstLines=[Part.Line(lstPtsArm[i],lstPtsArm[i+1]).toShape() for i in range(len(lstPtsArm)-1)]  # CAMBIO 1
         lstLines=[Part.makeLine(lstPtsArm[i],lstPtsArm[i+1])for i in range(len(lstPtsArm)-1)]
         rebarWire=Part.Wire(lstLines)
         return rebarWire
@@ -374,7 +373,6 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
         c2=Part.Arc(pp2,pp5,pp4)
         l1=Part.makeLine(pp1,pp2)
         l2=Part.makeLine(pp3,pp4)
-#       etiq=Part.Wire([l1.toShape(),c1.toShape(),l2.toShape(),c2.toShape()]) # CAMCAMBIO 2
         etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
         Part.show(etiq)
     if vectorLRef.x > 0:
@@ -557,9 +555,7 @@ def drawRCSection(lstOfLstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTransla
         Part.show(l)
     #draw the rebars in their true shape
     for rbFam in lstShapeRebarFam:
-        print('aquí 0')
         rbFam.drawRebar(vTranslation)
-        print('aquí 1')
    #draw the sectioned rebars
     for rbFam in lstSectRebarFam:
         rbFam.drawSectBars(vTranslation)

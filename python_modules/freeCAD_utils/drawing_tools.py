@@ -27,11 +27,6 @@ def put_text_in_pnt(text,point,hText,justif="Left",rotation=None):
         tx=Draft.make_text(text,point)
     tx.ViewObject.FontSize = hText
     tx.ViewObject.Justification=justif
-    
-    # tx=Draft.make_text(text,point)
-    # FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    # FreeCADGui.ActiveDocument.getObject(tx.Name).Justification =justif
-    # if rotation != None:
-    #     FreeCADGui.ActiveDocument.getObject(tx.Name).Rotation =rotation
-    # return
+    return
+
     
