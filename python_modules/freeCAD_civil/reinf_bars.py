@@ -294,8 +294,8 @@ class rebarFamily(object):
             lstPtsArm.append(pint)
 
         lstPtsArm.append(listaaux[2*(npuntos-1)-1])
-        lstLines=[Part.Line(lstPtsArm[i],lstPtsArm[i+1]).toShape() for i in range(len(lstPtsArm)-1)]
-        print(lstLines)
+#        lstLines=[Part.Line(lstPtsArm[i],lstPtsArm[i+1]).toShape() for i in range(len(lstPtsArm)-1)]  # CAMBIO 1
+        lstLines=[Part.makeLine(lstPtsArm[i],lstPtsArm[i+1])for i in range(len(lstPtsArm)-1)]
         rebarWire=Part.Wire(lstLines)
         return rebarWire
 
@@ -372,9 +372,10 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
         pp5=p4.add(Vector(signo*hText*len(idArm),0))
         c1=Part.Arc(pp1,p3,pp3)
         c2=Part.Arc(pp2,pp5,pp4)
-        l1=Part.Line(pp1,pp2)
-        l2=Part.Line(pp3,pp4)
-        etiq=Part.Wire([l1.toShape(),c1.toShape(),l2.toShape(),c2.toShape()])
+        l1=Part.makeLine(pp1,pp2)
+        l2=Part.makeLine(pp3,pp4)
+#       etiq=Part.Wire([l1.toShape(),c1.toShape(),l2.toShape(),c2.toShape()]) # CAMCAMBIO 2
+        etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
         Part.show(etiq)
     if vectorLRef.x > 0:
         justif="Left"

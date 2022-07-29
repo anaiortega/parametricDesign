@@ -19,10 +19,19 @@ def put_text_in_pnt(text,point,hText,justif="Left",rotation=None):
     Justification defaults to "Left"
     Rotation defaults to None
     '''
-    tx=Draft.makeText(text,point)
-    FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
-    FreeCADGui.ActiveDocument.getObject(tx.Name).Justification =justif
     if rotation != None:
-        FreeCADGui.ActiveDocument.getObject(tx.Name).Rotation =rotation
-    return
+        zaxis=FreeCAD.Vector(0, 0, 1)
+        place=FreeCAD.Placement(point,FreeCAD.Rotation(zaxis,rotation))
+        tx=Draft.make_text(text,place)
+    else:
+        tx=Draft.make_text(text,point)
+    tx.ViewObject.FontSize = hText
+    tx.ViewObject.Justification=justif
+    
+    # tx=Draft.make_text(text,point)
+    # FreeCADGui.ActiveDocument.getObject(tx.Name).FontSize = hText
+    # FreeCADGui.ActiveDocument.getObject(tx.Name).Justification =justif
+    # if rotation != None:
+    #     FreeCADGui.ActiveDocument.getObject(tx.Name).Rotation =rotation
+    # return
     

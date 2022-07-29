@@ -1,6 +1,4 @@
 # -*- coding: iso-8859-1 -*-
-import sys
-sys.path.append('/usr/local/src/prg/parametricDesign/python_modules')
 
 import Part, FreeCAD, math
 import Draft
@@ -408,4 +406,4 @@ listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,
 reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText)
 
 # Bar quantities for PyCost
-reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')
+#reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')
