@@ -1,4 +1,6 @@
 # -*- coding: iso-8859-1 -*-
+import sys
+sys.path.append('/usr/local/src/prg/parametricDesign/python_modules')
 
 import Part, FreeCAD, math
 import Draft
@@ -134,7 +136,6 @@ Z1_1=reinf_bars.rebarFamily(
     genConf=aletGenConf,
     identifier='Z1/1',
     diameter=fi_Z1_1,
-    spacing=s_Z1_1,
     lstPtsConcrSect=[Ptzap_2,Ptzap_1,Ptzap_4,Ptzap_3],
     coverSide='l',
     vectorLRef=Vector(0.5,-0.5),
@@ -142,6 +143,7 @@ Z1_1=reinf_bars.rebarFamily(
     coverSectBars=recNominal,
     sectBarsSide='l',
     vectorLRefSec=Vector(-0.3,0.3),
+    spacing=s_Z1_1,
 #    lstPtsConcrSect2=[Ptzap_2p,Ptzap_1,Ptzap_4,Ptzap_3p]
 )
 # armadura transversal superior
@@ -402,6 +404,7 @@ hFilas=10
 #altura textos
 hText=2.5
 listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,M1_7,M1_8,M1_9]
+
 reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText)
 
 # Bar quantities for PyCost
