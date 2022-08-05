@@ -2,7 +2,7 @@
 
 #*    2013   Ana Ortega    *
 
-import Part, FreeCAD, math, Drawing, FreeCADGui
+import Part, FreeCAD, math, TechDraw, FreeCADGui
 import Draft
 import freeCAD_civil 
 from freeCAD_civil  import geometry_3D

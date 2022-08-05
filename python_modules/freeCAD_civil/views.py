@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division
 
-import Part, FreeCAD, FreeCADGui, math, Drawing
+import Part, FreeCAD, FreeCADGui, math, TechDraw
 
 
 def vistaSuperior(tamHoja,orientacion):
@@ -9,11 +9,11 @@ def vistaSuperior(tamHoja,orientacion):
     #orientacion: orientación de la hoja, puede ser 'vertical' o 'apaisado'
     CreaHoja(tamHoja,orientacion)
     figura=Gui.Selection.getSelectionEx()[0]
-    App.activeDocument().addObject('Drawing::FeatureViewPart','topView')
+    App.activeDocument().addObject('TechDraw::FeatureViewPart','topView')
     App.activeDocument().topView.Source = figura.Object
 
 
 def CreaHoja(tamHoja,orientacion):
-    App.activeDocument().addObject('Drawing::FeaturePage','vista')
-    App.activeDocument().vista.Template = App.getResourceDir()+'Mod/Drawing/Templates/'+tamHoja+'_'+orientacion+'.svg'
+    App.activeDocument().addObject('TechDraw::FeaturePage','vista')
+    App.activeDocument().vista.Template = App.getResourceDir()+'Mod/TechDraw/Templates/'+tamHoja+'_'+orientacion+'.svg'
 

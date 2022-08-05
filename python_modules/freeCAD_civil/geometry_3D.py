@@ -1,6 +1,6 @@
 # -*- coding: iso-8859-1 -*-
 
-import Part, FreeCAD, math, Drawing, FreeCADGui
+import Part, FreeCAD, math, TechDraw, FreeCADGui
 from FreeCAD import Base
 
 def prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura):
@@ -90,177 +90,182 @@ def simYZlistaCoord(listaCoord):
 
 def vistasIsom(App,escala,Pieza):
 #Perspectiva isométrica. Vista anterosuperior
-    App.activeDocument().addObject('Drawing::FeaturePage','IsoAnterosup')
-    App.activeDocument().IsoAnterosup.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','IsoAsup')
-    App.activeDocument().IsoAsup.Source =Pieza
-    App.activeDocument().IsoAsup.Direction = (1,1,1)
-    App.activeDocument().IsoAsup.Rotation=60
-    App.activeDocument().IsoAsup.Scale = escala
-    App.activeDocument().IsoAsup.X = 700
-    App.activeDocument().IsoAsup.Y = 600
-    App.activeDocument().IsoAsup.ShowHiddenLines=False
-    App.activeDocument().IsoAnterosup.addObject(App.activeDocument().IsoAsup)
-    App.activeDocument().recompute()
+#    App.ActiveDocument().addObject('TechDraw::FeaturePage','IsoAnterosup')
+    App.ActiveDocument.addObject('TechDraw::DrawPage','IsoAnterosup')
+#    App.ActiveDocument().IsoAnterosup.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoAsup')
+    App.ActiveDocument.IsoAsup.Source =Pieza
+    App.ActiveDocument.IsoAsup.Direction = (1,1,1)
+    App.ActiveDocument.IsoAsup.Rotation=60
+    App.ActiveDocument.IsoAsup.Scale = escala
+    App.ActiveDocument.IsoAsup.X = 700
+    App.ActiveDocument.IsoAsup.Y = 600
+#    App.ActiveDocument.IsoAsup.ShowHiddenLines=False
+    App.ActiveDocument.IsoAnterosup.addObject(App.ActiveDocument.IsoAsup)
+    App.ActiveDocument.recompute()
 #Perspectiva isométrica. Vista posteroinferior
-    App.activeDocument().addObject('Drawing::FeaturePage','IsoPosteroinf')
-    App.activeDocument().IsoPosteroinf.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','IsoPinf')
-    App.activeDocument().IsoPinf.Source =Pieza
-    App.activeDocument().IsoPinf.Direction = (-1,-1,-1)
-    App.activeDocument().IsoPinf.Rotation=300
-    App.activeDocument().IsoPinf.Scale = escala
-    App.activeDocument().IsoPinf.X = 700
-    App.activeDocument().IsoPinf.Y = 600
-    App.activeDocument().IsoPinf.ShowHiddenLines=False
-    App.activeDocument().IsoPosteroinf.addObject(App.activeDocument().IsoPinf)
-    App.activeDocument().recompute()
+    App.ActiveDocument.addObject('TechDraw::DrawPage','IsoPosteroinf')
+    App.ActiveDocument.IsoPosteroinf.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPinf')
+    App.ActiveDocument.IsoPinf.Source =Pieza
+    App.ActiveDocument.IsoPinf.Direction = (-1,-1,-1)
+    App.ActiveDocument.IsoPinf.Rotation=300
+    App.ActiveDocument.IsoPinf.Scale = escala
+    App.ActiveDocument.IsoPinf.X = 700
+    App.ActiveDocument.IsoPinf.Y = 600
+    App.ActiveDocument.IsoPinf.ShowHiddenLines=False
+    App.ActiveDocument.IsoPosteroinf.addObject(App.ActiveDocument.IsoPinf)
+    App.ActiveDocument.recompute()
     return
 
 def vistaIsoAnterosup(App,escala,Pieza):
 #Perspectiva isométrica. Vista anterosuperior
-    App.activeDocument().addObject('Drawing::FeaturePage','IsoAnterosup')
-    App.activeDocument().IsoAnterosup.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','IsoAsup')
-    App.activeDocument().IsoAsup.Source =Pieza
-    App.activeDocument().IsoAsup.Direction = (1,1,1)
-    App.activeDocument().IsoAsup.Rotation=60
-    App.activeDocument().IsoAsup.Scale = escala
-    App.activeDocument().IsoAsup.X = 700
-    App.activeDocument().IsoAsup.Y = 600
-    App.activeDocument().IsoAsup.ShowHiddenLines=False
-    App.activeDocument().IsoAnterosup.addObject(App.activeDocument().IsoAsup)
-    App.activeDocument().recompute()
+    IsoAnterosup=App.ActiveDocument.addObject('TechDraw::DrawPage','IsoAnterosup')
+    template = FreeCAD.ActiveDocument.addObject('TechDraw::DrawSVGTemplate','Template')
+    template.Template=App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    IsoAnterosup.Template = FreeCAD.ActiveDocument.Template
+#    App.ActiveDocument.IsoAnterosup.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoAsup')
+    App.ActiveDocument.IsoAsup.Source =Pieza
+    App.ActiveDocument.IsoAsup.Direction = (1,1,1)
+    App.ActiveDocument.IsoAsup.Rotation=60
+    App.ActiveDocument.IsoAsup.Scale = escala
+    App.ActiveDocument.IsoAsup.X = 700
+    App.ActiveDocument.IsoAsup.Y = 600
+#    App.ActiveDocument.IsoAsup.ShowHiddenLines=False
+    App.ActiveDocument.IsoAnterosup.addObject(App.ActiveDocument.IsoAsup)
+    App.ActiveDocument.recompute()
     return
 def vistaIsoAnteroinf(App,escala,Pieza):
 #Perspectiva isométrica. Vista anteroinferior
-    App.activeDocument().addObject('Drawing::FeaturePage','IsoAnteroinf')
-    App.activeDocument().IsoAnteroinf.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','IsoAinf')
-    App.activeDocument().IsoAinf.Source =Pieza
-    App.activeDocument().IsoAinf.Direction = (1,-1,-1)
-    App.activeDocument().IsoAinf.Rotation=60
-    App.activeDocument().IsoAinf.Scale = escala
-    App.activeDocument().IsoAinf.X = 700
-    App.activeDocument().IsoAinf.Y = 600
-    App.activeDocument().IsoAinf.ShowHiddenLines=False
-    App.activeDocument().IsoAnteroinf.addObject(App.activeDocument().IsoAinf)
-    App.activeDocument().recompute()
+    App.ActiveDocument.addObject('TechDraw::DrawPage','IsoAnteroinf')
+    App.ActiveDocument.IsoAnteroinf.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoAinf')
+    App.ActiveDocument.IsoAinf.Source =Pieza
+    App.ActiveDocument.IsoAinf.Direction = (1,-1,-1)
+    App.ActiveDocument.IsoAinf.Rotation=60
+    App.ActiveDocument.IsoAinf.Scale = escala
+    App.ActiveDocument.IsoAinf.X = 700
+    App.ActiveDocument.IsoAinf.Y = 600
+    App.ActiveDocument.IsoAinf.ShowHiddenLines=False
+    App.ActiveDocument.IsoAnteroinf.addObject(App.ActiveDocument.IsoAinf)
+    App.ActiveDocument.recompute()
     return
 #
 def vistaIsoPosterosup(App,escala,Pieza):
 #Perspectiva isométrica. Vista posteroinferior
-    App.activeDocument().addObject('Drawing::FeaturePage','IsoPosterosup')
-    App.activeDocument().IsoPosterosup.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','IsoPsup')
-    App.activeDocument().IsoPsup.Source =Pieza
-    App.activeDocument().IsoPsup.Direction = (-1,1,1)
-    App.activeDocument().IsoPsup.Rotation=300
-    App.activeDocument().IsoPsup.Scale = escala
-    App.activeDocument().IsoPsup.X = 700
-    App.activeDocument().IsoPsup.Y = 600
-    App.activeDocument().IsoPsup.ShowHiddenLines=False
-    App.activeDocument().IsoPosterosup.addObject(App.activeDocument().IsoPsup)
-    App.activeDocument().recompute()
+    App.ActiveDocument.addObject('TechDraw::DrawPage','IsoPosterosup')
+    App.ActiveDocument.IsoPosterosup.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPsup')
+    App.ActiveDocument.IsoPsup.Source =Pieza
+    App.ActiveDocument.IsoPsup.Direction = (-1,1,1)
+    App.ActiveDocument.IsoPsup.Rotation=300
+    App.ActiveDocument.IsoPsup.Scale = escala
+    App.ActiveDocument.IsoPsup.X = 700
+    App.ActiveDocument.IsoPsup.Y = 600
+    App.ActiveDocument.IsoPsup.ShowHiddenLines=False
+    App.ActiveDocument.IsoPosterosup.addObject(App.ActiveDocument.IsoPsup)
+    App.ActiveDocument.recompute()
     return
 
 def vistaIsoPosteroinf(App,escala,Pieza):
 #Perspectiva isométrica. Vista posteroinferior
-    App.activeDocument().addObject('Drawing::FeaturePage','IsoPosteroinf')
-    App.activeDocument().IsoPosteroinf.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','IsoPinf')
-    App.activeDocument().IsoPinf.Source =Pieza
-    App.activeDocument().IsoPinf.Direction = (-1,-1,-1)
-    App.activeDocument().IsoPinf.Rotation=300
-    App.activeDocument().IsoPinf.Scale = escala
-    App.activeDocument().IsoPinf.X = 700
-    App.activeDocument().IsoPinf.Y = 600
-    App.activeDocument().IsoPinf.ShowHiddenLines=False
-    App.activeDocument().IsoPosteroinf.addObject(App.activeDocument().IsoPinf)
-    App.activeDocument().recompute()
+    App.ActiveDocument.addObject('TechDraw::DrawPage','IsoPosteroinf')
+    App.ActiveDocument.IsoPosteroinf.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPinf')
+    App.ActiveDocument.IsoPinf.Source =Pieza
+    App.ActiveDocument.IsoPinf.Direction = (-1,-1,-1)
+    App.ActiveDocument.IsoPinf.Rotation=300
+    App.ActiveDocument.IsoPinf.Scale = escala
+    App.ActiveDocument.IsoPinf.X = 700
+    App.ActiveDocument.IsoPinf.Y = 600
+    App.ActiveDocument.IsoPinf.ShowHiddenLines=False
+    App.ActiveDocument.IsoPosteroinf.addObject(App.ActiveDocument.IsoPinf)
+    App.ActiveDocument.recompute()
     return
 
 def vistaIsoGeneral(App,escala,Pieza,vectorDir,angulo):
 #Perspectiva isométrica. Vista general según la dirección vectorDir
-    App.activeDocument().addObject('Drawing::FeaturePage','IsoGeneral')
-    App.activeDocument().IsoGeneral.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','IsoPinf')
-    App.activeDocument().IsoPinf.Source =Pieza
-    App.activeDocument().IsoPinf.Direction = vectorDir
-    App.activeDocument().IsoPinf.Rotation=angulo
-    App.activeDocument().IsoPinf.Scale = escala
-    App.activeDocument().IsoPinf.X = 700
-    App.activeDocument().IsoPinf.Y = 600
-    App.activeDocument().IsoPinf.ShowHiddenLines=False
-    App.activeDocument().IsoGeneral.addObject(App.activeDocument().IsoPinf)
-    App.activeDocument().recompute()
+    App.ActiveDocument.addObject('TechDraw::DrawPage','IsoGeneral')
+    App.ActiveDocument.IsoGeneral.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPinf')
+    App.ActiveDocument.IsoPinf.Source =Pieza
+    App.ActiveDocument.IsoPinf.Direction = vectorDir
+    App.ActiveDocument.IsoPinf.Rotation=angulo
+    App.ActiveDocument.IsoPinf.Scale = escala
+    App.ActiveDocument.IsoPinf.X = 700
+    App.ActiveDocument.IsoPinf.Y = 600
+    App.ActiveDocument.IsoPinf.ShowHiddenLines=False
+    App.ActiveDocument.IsoGeneral.addObject(App.ActiveDocument.IsoPinf)
+    App.ActiveDocument.recompute()
     return
 
 def vistaPlanta(App,escala,Pieza,ocultas,SupInf):
 #Planta
-    App.activeDocument().addObject('Drawing::FeaturePage','Planta')
-    App.activeDocument().Planta.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','topView')
-    App.activeDocument().topView.Source =Pieza
+    App.ActiveDocument.addObject('TechDraw::DrawPage','Planta')
+    App.ActiveDocument.Planta.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','topView')
+    App.ActiveDocument.topView.Source =Pieza
     if SupInf == 'Sup':
-        App.activeDocument().topView.Direction = (0,0,1)
-        App.activeDocument().topView.Rotation=90
+        App.ActiveDocument.topView.Direction = (0,0,1)
+        App.ActiveDocument.topView.Rotation=90
     else:
-        App.activeDocument().topView.Direction = (0,0,-1)
-        App.activeDocument().topView.Rotation=0
-    App.activeDocument().topView.Scale = escala
-    App.activeDocument().topView.X = 700 
-    App.activeDocument().topView.Y = 500 
+        App.ActiveDocument.topView.Direction = (0,0,-1)
+        App.ActiveDocument.topView.Rotation=0
+    App.ActiveDocument.topView.Scale = escala
+    App.ActiveDocument.topView.X = 700 
+    App.ActiveDocument.topView.Y = 500 
     if ocultas == 's':
-        App.activeDocument().topView.ShowHiddenLines=True
+        App.ActiveDocument.topView.ShowHiddenLines=True
     else:
-        App.activeDocument().topView.ShowHiddenLines=False
-    App.activeDocument().Planta.addObject(App.activeDocument().topView)
-    App.activeDocument().recompute()
+        App.ActiveDocument.topView.ShowHiddenLines=False
+    App.ActiveDocument.Planta.addObject(App.ActiveDocument.topView)
+    App.ActiveDocument.recompute()
     return
 
 def vistaFront(App,escala,Pieza,ocultas,AntPost):
 #Alzado frontal
-    App.activeDocument().addObject('Drawing::FeaturePage','AlzadoFrontal')
-    App.activeDocument().AlzadoFrontal.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','FrontView')
-    App.activeDocument().FrontView.Source =Pieza
+    App.ActiveDocument.addObject('TechDraw::DrawPage','AlzadoFrontal')
+    App.ActiveDocument.AlzadoFrontal.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','FrontView')
+    App.ActiveDocument.FrontView.Source =Pieza
     if AntPost == 'Ant':
-        App.activeDocument().FrontView.Direction = (1,0,0)
-        App.activeDocument().FrontView.Rotation=270
+        App.ActiveDocument.FrontView.Direction = (1,0,0)
+        App.ActiveDocument.FrontView.Rotation=270
     else:
-        App.activeDocument().FrontView.Direction = (-1,0,0)
-        App.activeDocument().FrontView.Rotation=90
-    App.activeDocument().FrontView.Scale = escala
-    App.activeDocument().FrontView.X = 700 
-    App.activeDocument().FrontView.Y = 700 
+        App.ActiveDocument.FrontView.Direction = (-1,0,0)
+        App.ActiveDocument.FrontView.Rotation=90
+    App.ActiveDocument.FrontView.Scale = escala
+    App.ActiveDocument.FrontView.X = 700 
+    App.ActiveDocument.FrontView.Y = 700 
     if ocultas == 's':
-        App.activeDocument().FrontView.ShowHiddenLines=True
+        App.ActiveDocument.FrontView.ShowHiddenLines=True
     else:
-        App.activeDocument().FrontView.ShowHiddenLines=False
-    App.activeDocument().AlzadoFrontal.addObject(App.activeDocument().FrontView)
-    App.activeDocument().recompute()
+        App.ActiveDocument.FrontView.ShowHiddenLines=False
+    App.ActiveDocument.AlzadoFrontal.addObject(App.ActiveDocument.FrontView)
+    App.ActiveDocument.recompute()
     return
 
 def vistaLat(App,escala,Pieza,ocultas,IzqDer):
 #Alzado lateral
-    App.activeDocument().addObject('Drawing::FeaturePage','AlzadoLateral')
-    App.activeDocument().AlzadoLateral.Template = App.getResourceDir()+'Mod/Drawing/Templates/A3_apaisado.svg'
-    App.activeDocument().addObject('Drawing::FeatureViewPart','RightView')
-    App.activeDocument().RightView.Source =Pieza
+    App.ActiveDocument.addObject('TechDraw::DrawPage','AlzadoLateral')
+    App.ActiveDocument.AlzadoLateral.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
+    App.ActiveDocument.addObject('TechDraw::DrawViewPart','RightView')
+    App.ActiveDocument.RightView.Source =Pieza
     if IzqDer == 'Izq':
-        App.activeDocument().RightView.Direction = (0,1,0)
-        App.activeDocument().RightView.Rotation=270
+        App.ActiveDocument.RightView.Direction = (0,1,0)
+        App.ActiveDocument.RightView.Rotation=270
     else:
-        App.activeDocument().RightView.Direction = (0,-1,0)
-        App.activeDocument().RightView.Rotation=90
-    App.activeDocument().RightView.Scale = escala
-    App.activeDocument().RightView.X = 700 
-    App.activeDocument().RightView.Y = 700 
+        App.ActiveDocument.RightView.Direction = (0,-1,0)
+        App.ActiveDocument.RightView.Rotation=90
+    App.ActiveDocument.RightView.Scale = escala
+    App.ActiveDocument.RightView.X = 700 
+    App.ActiveDocument.RightView.Y = 700 
     if ocultas == 's':
-        App.activeDocument().RightView.ShowHiddenLines=True
+        App.ActiveDocument.RightView.ShowHiddenLines=True
     else:
-        App.activeDocument().RightView.ShowHiddenLines=False
-    App.activeDocument().AlzadoLateral.addObject(App.activeDocument().RightView)
-    App.activeDocument().recompute()
+        App.ActiveDocument.RightView.ShowHiddenLines=False
+    App.ActiveDocument.AlzadoLateral.addObject(App.ActiveDocument.RightView)
+    App.ActiveDocument.recompute()
     return
