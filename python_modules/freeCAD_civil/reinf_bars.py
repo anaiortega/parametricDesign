@@ -53,6 +53,7 @@ class genericConf(object):
         self.decLengths=decLengths
         self.decSpacing=decSpacing
 
+
 class rebarFamily(object):
     '''Family of reinforcement bars
 
