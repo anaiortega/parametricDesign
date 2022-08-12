@@ -1,33 +1,26 @@
 # -*- coding: iso-8859-1 -*-
 
-import Part, FreeCAD, math
-import Draft
-import freeCAD_civil 
+import Part, FreeCAD
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
-from Draft import *
-
-width=4
-length=5
-thickness=0.4
-# bottom transverse rebars data
-botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'gapL':0.2,'gapR':0} 
-# top transverse rebars data
-botLnRb={'id':'2','fi':16e-3,'s':0.20,'gapL':0.1,'gapR':0.5}
-# bottom longitudinal rebars data
-topTrnsRb={'id':'3','fi':20e-3,'s':0.15,'gapL':0.2,'gapR':0.1} 
-# top longitudinal rebars data
-topLnRb={'id':'4','fi':16e-3,'s':0.20,'gapL':0.1,'gapR':0.3}
-
-anchPtTrnsSect=Vector(0,0)
-anchPtLnSect=Vector(width+1,0)
-
-genConf=rb.genericConf(cover=35e-3,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
 
            
-def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf):
-    '''
+def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y'):
+    '''Typical reinforcement arrangement of a closed slab
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
+
+    :param width: dimension of the slab in the direction of the transversal rebars
+    :param length: dimension of the slab in the direction of the longitudinal rebars
+    :param thickness: thickness of the slab
+    :param botTrnsRb: data for bottom transversal rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'gapL':0.2,'gapR':0.1}, where 'id' is the identificacion of the rebar family, 'fi' is the diameter of the rebar, 's' is the spacement, 'gapL' is the distance from the first rebar of the family to the left extremity of the slab (as it is drawn in the section),   'gapR' is the distance from the last rebar of the family to the rigth extremity of the slab (as it is drawn in the section)
+    :param topTrnsRb: same for the top transversal rebar family
+    :param botLnRb: same for the bottom longitudinal rebar family
+    :param topLnRb: same for the top longitudinal rebar family
+    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transversal cross-section
+    :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
+    :param genConf: instance of the reinf_bars.genericConf class
+    :param drawConrTrSect: 'Y' to draw the transversal concrete cross-section  (defaults to 'Y')
+    :param drawConrLnSect: 'Y' to draw the longitudinal concrete cross-section  (defaults to 'Y')
     '''
            
     # Concrete points of the transverse section
@@ -107,6 +100,10 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     ln_top_rf.createRebar()
     ln_top_rf.drawSectBars()
     ln_top_rf.drawRebar()
+    # Concrete transversal cross-section
+    if drawConrTrSect[0].lower()=='y':
+        Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
+    if drawConrLnSect[0].lower()=='y':
+        Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
     FreeCAD.ActiveDocument.recompute()    
     
-closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf)           
