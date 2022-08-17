@@ -1,12 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 
 import Part, FreeCAD, math
-import Draft
-import freeCAD_civil 
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
-from Draft import *
-from freeCAD_civil import reinf_bars as rb
 from freeCAD_civil.structures import typical_RC_members as trcm
 
 
@@ -46,25 +42,25 @@ boxL=5 #length of the box culvert
 cover=0.03
 reinfConf=reinf_bars.genericConf(cover=cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
 
-BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','gapL':0,'gapR':0} # bottom slab, bottom long. rebars
-BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','gapL':0,'gapR':0} # bottom slab, bottom transv. rebars
-BS_top_ln={'fi':0.016,'s':0.30,'id':'2','gapL':LW_th,'gapR':RW_th} # bottom slab, top long. rebars
-BS_top_tr={'fi':0.016,'s':0.30,'id':'4','gapL':0,'gapR':0} # bottom slab, top transv. rebars
+BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
+BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0} # bottom slab, bottom transv. rebars
+BS_top_ln={'fi':0.016,'s':0.30,'id':'2','distRFstart':LW_th,'distRFend':RW_th} # bottom slab, top long. rebars
+BS_top_tr={'fi':0.016,'s':0.30,'id':'4','distRFstart':0,'distRFend':0} # bottom slab, top transv. rebars
 
-LW_ext_hor={'fi':0.016,'s':0.30,'id':'7l','gapL':0,'gapR':0} # left wall, external horiz. rebars
-LW_ext_ver={'fi':0.016,'s':0.30,'id':'10l','gapL':0,'gapR':0} # left wall, external vert. rebars
-LW_int_hor={'fi':0.016,'s':0.30,'id':'8l','gapL':BS_th,'gapR':TS_th} # left wall, internal horiz. rebars
-LW_int_ver={'fi':0.016,'s':0.30,'id':'9l','gapL':0,'gapR':0} # left wall, internal vert. rebars
+LW_ext_hor={'fi':0.016,'s':0.30,'id':'7l','distRFstart':0,'distRFend':0} # left wall, external horiz. rebars
+LW_ext_ver={'fi':0.016,'s':0.30,'id':'10l','distRFstart':0,'distRFend':0} # left wall, external vert. rebars
+LW_int_hor={'fi':0.016,'s':0.30,'id':'8l','distRFstart':BS_th,'distRFend':TS_th} # left wall, internal horiz. rebars
+LW_int_ver={'fi':0.016,'s':0.30,'id':'9l','distRFstart':0,'distRFend':0} # left wall, internal vert. rebars
 
-RW_ext_hor={'fi':0.016,'s':0.30,'id':'7r','gapL':0,'gapR':0} # right wall, external horiz. rebars
-RW_ext_ver={'fi':0.016,'s':0.30,'id':'10r','gapL':0,'gapR':0} # right wall, external vert. rebars
-RW_int_hor={'fi':0.016,'s':0.30,'id':'8r','gapL':BS_th,'gapR':TS_th} # right wall, internal horiz. rebars
-RW_int_ver={'fi':0.016,'s':0.30,'id':'9r','gapL':0,'gapR':0} # right wall, internal vert. rebars
+RW_ext_hor={'fi':0.016,'s':0.30,'id':'7r','distRFstart':0,'distRFend':0} # right wall, external horiz. rebars
+RW_ext_ver={'fi':0.016,'s':0.30,'id':'10r','distRFstart':0,'distRFend':0} # right wall, external vert. rebars
+RW_int_hor={'fi':0.016,'s':0.30,'id':'8r','distRFstart':BS_th,'distRFend':TS_th} # right wall, internal horiz. rebars
+RW_int_ver={'fi':0.016,'s':0.30,'id':'9r','distRFstart':0,'distRFend':0} # right wall, internal vert. rebars
 
-TS_bot_ln={'fi':0.016,'s':0.30,'id':'11','gapL':LW_th,'gapR':RW_th} # top slab, bottom long. rebars
-TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','gapL':0,'gapR':0} # top slab, bottom transv. rebars
-TS_top_ln={'fi':0.016,'s':0.30,'id':'12','gapL':0,'gapR':0} # top slab, top long. rebars
-TS_top_tr={'fi':0.016,'s':0.30,'id':'14','gapL':0,'gapR':0} # top slab, top transv. rebars
+TS_bot_ln={'fi':0.016,'s':0.30,'id':'11','distRFstart':LW_th,'distRFend':RW_th} # top slab, bottom long. rebars
+TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','distRFstart':0,'distRFend':0} # top slab, bottom transv. rebars
+TS_top_ln={'fi':0.016,'s':0.30,'id':'12','distRFstart':0,'distRFend':0} # top slab, top long. rebars
+TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0} # top slab, top transv. rebars
 # END DATA
 
 

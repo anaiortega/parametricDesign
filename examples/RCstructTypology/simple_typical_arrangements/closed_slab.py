@@ -17,13 +17,13 @@ width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
 thickness=0.4  #thickness of the slab
 # bottom transverse rebars data
-botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'gapL':0.2,'gapR':0} 
+botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0} 
 # top transverse rebars data
-botLnRb={'id':'2','fi':16e-3,'s':0.20,'gapL':0.1,'gapR':0.5}
+botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5}
 # bottom longitudinal rebars data
-topTrnsRb={'id':'3','fi':20e-3,'s':0.15,'gapL':0.2,'gapR':0.1} 
+topTrnsRb={'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1} 
 # top longitudinal rebars data
-topLnRb={'id':'4','fi':16e-3,'s':0.20,'gapL':0.1,'gapR':0.3}
+topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section

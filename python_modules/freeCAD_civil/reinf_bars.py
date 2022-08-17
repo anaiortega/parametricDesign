@@ -336,6 +336,7 @@ class rebarFamily(object):
         stress=paramAnc[2]
         if self.genConf.Code=='EHE':
             ancLength=RCutils.anchor_length_EHE(self.genConf.concrType,self.genConf.steelType,self.diameter,pos,anchType,stress,1.0,self.genConf.dynamEff)
+            print('ancLength=',ancLength)
         return (angle,ancLength*1e-3)
         
                         
