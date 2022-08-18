@@ -1,5 +1,6 @@
 # -*- coding: iso-8859-1 -*-
 
+import math
 import Part, FreeCAD
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
@@ -222,7 +223,7 @@ def set_FR_options(RF,RFdef):
     if 'fixLengthStart' in RFdef.keys(): RF.anchStart=RFdef['fixLengthStart']
     if 'fixLengthEnd' in RFdef.keys(): RF.anchStart=RFdef['fixLengthEnd']
            
-def open_brick(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genConf,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConrTrSect='Y',drawConrLnSect='Y'):
+def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genConf,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConrTrSect='Y',drawConrLnSect='Y'):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family

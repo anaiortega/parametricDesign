@@ -297,6 +297,8 @@ class rebarFamily(object):
         lstPtsArm.append(listaaux[2*(npuntos-1)-1])
         lstLines=[Part.makeLine(lstPtsArm[i],lstPtsArm[i+1])for i in range(len(lstPtsArm)-1)]
         rebarWire=Part.Wire(lstLines)
+#        rebarWire=Draft.makeWire(lstPtsArm)
+#        rebarWire.FilletRadius=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
         return rebarWire
 
     def getNumberOfBars(self):
@@ -336,7 +338,6 @@ class rebarFamily(object):
         stress=paramAnc[2]
         if self.genConf.Code=='EHE':
             ancLength=RCutils.anchor_length_EHE(self.genConf.concrType,self.genConf.steelType,self.diameter,pos,anchType,stress,1.0,self.genConf.dynamEff)
-            print('ancLength=',ancLength)
         return (angle,ancLength*1e-3)
         
                         
