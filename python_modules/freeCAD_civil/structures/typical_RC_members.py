@@ -51,6 +51,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     tr_bot_rf.createRebar()
     tr_bot_rf.drawSectBars()
     tr_bot_rf.drawRebar()
+    
     # transversal bottom rebar family
     tr_top_rf=rb.rebarFamily(
         genConf=genConf,
@@ -108,7 +109,8 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     if drawConrLnSect[0].lower()=='y':
         s=Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
         Part.show(s)
-    FreeCAD.ActiveDocument.recompute()    
+    FreeCAD.ActiveDocument.recompute()
+    return [tr_bot_rf,tr_top_rf,ln_bot_rf,ln_top_rf]
     
 
 def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConrVertSect='Y',drawConrHorSect='Y'):
@@ -213,9 +215,12 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     if drawConrHorSect[0].lower()=='y':
         s=Part.makePolygon([hor_bl,hor_tl,hor_tr,hor_br,hor_bl])
         Part.show(s)
-    FreeCAD.ActiveDocument.recompute()    
+    FreeCAD.ActiveDocument.recompute()
+    return [vert_left_rf,vert_right_rf,hor_left_rf,hor_right_rf]
     
 def set_FR_options(RF,RFdef):
+    '''Set the attributes of a rebar family
+    '''
     if 'gapStart' in RFdef.keys(): RF.gapStart=RFdef['gapStart']
     if 'gapEnd' in RFdef.keys(): RF.gapEnd=RFdef['gapEnd']
     if 'anchStart' in RFdef.keys(): RF.anchStart=RFdef['anchStart']
@@ -256,84 +261,93 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
     ln_tr=ln_tl+length*vdirLn
     ln_br= ln_bl+length*vdirLn
     # Families of rebars
+    lstRebFam=list()
     # transversal bottom rebar family
-    tr_bot_rf=rb.rebarFamily(
-        genConf=genConf,
-        identifier=botTrnsRb['id'],
-        diameter=botTrnsRb['fi'],
-        spacing=botTrnsRb['s'],
-        lstPtsConcrSect=[tr_bl,tr_br],
-        coverSide='l',
-        vectorLRef=Vector(-0.3,-0.4),
-        fromToExtPts=[ln_bl+botTrnsRb['distRFstart']*vdirLn,ln_br-botTrnsRb['distRFend']*vdirLn],
-        sectBarsSide='l',
-        vectorLRefSec=Vector(0.6*length,-0.3),
-        gapStart=0,
-        gapEnd=0
-        )
-    set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
-    tr_bot_rf.createRebar()
-    tr_bot_rf.drawSectBars()
-    tr_bot_rf.drawRebar()
+    if botTrnsRb:
+        tr_bot_rf=rb.rebarFamily(
+            genConf=genConf,
+            identifier=botTrnsRb['id'],
+            diameter=botTrnsRb['fi'],
+            spacing=botTrnsRb['s'],
+            lstPtsConcrSect=[tr_bl,tr_br],
+            coverSide='l',
+            vectorLRef=Vector(-0.3,-0.4),
+            fromToExtPts=[ln_bl+botTrnsRb['distRFstart']*vdirLn,ln_br-botTrnsRb['distRFend']*vdirLn],
+            sectBarsSide='l',
+            vectorLRefSec=Vector(0.6*length,-0.3),
+            gapStart=0,
+            gapEnd=0
+            )
+        set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
+        tr_bot_rf.createRebar()
+        tr_bot_rf.drawSectBars()
+        tr_bot_rf.drawRebar()
+        lstRebFam+=[tr_bot_rf]
     # transversal bottom rebar family
-    tr_top_rf=rb.rebarFamily(
-        genConf=genConf,
-        identifier=topTrnsRb['id'],
-        diameter=topTrnsRb['fi'],
-        spacing=topTrnsRb['s'],
-        lstPtsConcrSect=[tr_tl,tr_tr],
-        coverSide='r',
-        vectorLRef=Vector(-0.3,0.4),
-        fromToExtPts=[ln_tl+topTrnsRb['distRFstart']*vdirLn,ln_tr-topTrnsRb['distRFend']*vdirLn],
-        sectBarsSide='r',
-        vectorLRefSec=Vector(0.6*length,0.3),
-        gapStart=0,
-        gapEnd=0
-        )
-    set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)    
-    tr_top_rf.createRebar()
-    tr_top_rf.drawSectBars()
-    tr_top_rf.drawRebar()
-    ln_bot_rf=rb.rebarFamily(
-        genConf=genConf,
-        identifier=botLnRb['id'],
-        diameter=botLnRb['fi'],
-        spacing=botLnRb['s'],
-        lstPtsConcrSect=[ln_bl,ln_br],
-        coverSide='l',
-        lstCover=[genConf.cover+botTrnsRb['fi']],
-        vectorLRef=Vector(-0.3,-0.4),
-        fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTr,tr_br-botLnRb['distRFend']*vdirTr],
-        coverSectBars=genConf.cover+botTrnsRb['fi'],
-        sectBarsSide='l',
-        vectorLRefSec=Vector(0.6*width,-0.3),
-        gapStart=0,
-        gapEnd=0
-       )
-    set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
-    ln_bot_rf.createRebar()
-    ln_bot_rf.drawSectBars()
-    ln_bot_rf.drawRebar()
-    ln_top_rf=rb.rebarFamily(
-        genConf=genConf,
-        identifier=topLnRb['id'],
-        diameter=topLnRb['fi'],
-        spacing=topLnRb['s'],
-        lstPtsConcrSect=[ln_tl,ln_tr],
-        coverSide='r',
-        lstCover=[genConf.cover+topTrnsRb['fi']],
-        vectorLRef=Vector(-0.3,0.4),
-        fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTr,tr_tr-topLnRb['distRFend']*vdirTr],
-        coverSectBars=genConf.cover+topTrnsRb['fi'],
-        sectBarsSide='r',
-        vectorLRefSec=Vector(0.6*width,0.3),
-        gapStart=0,
-        gapEnd=0
-        )
-    set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
-    ln_top_rf.createRebar()
-    ln_top_rf.drawSectBars()
-    ln_top_rf.drawRebar()
+    if topTrnsRb:
+        tr_top_rf=rb.rebarFamily(
+            genConf=genConf,
+            identifier=topTrnsRb['id'],
+            diameter=topTrnsRb['fi'],
+            spacing=topTrnsRb['s'],
+            lstPtsConcrSect=[tr_tl,tr_tr],
+            coverSide='r',
+            vectorLRef=Vector(-0.3,0.4),
+            fromToExtPts=[ln_tl+topTrnsRb['distRFstart']*vdirLn,ln_tr-topTrnsRb['distRFend']*vdirLn],
+            sectBarsSide='r',
+            vectorLRefSec=Vector(0.6*length,0.3),
+            gapStart=0,
+            gapEnd=0
+            )
+        set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)    
+        tr_top_rf.createRebar()
+        tr_top_rf.drawSectBars()
+        tr_top_rf.drawRebar()
+        lstRebFam+=[tr_top_rf]
+    if botLnRb:
+        ln_bot_rf=rb.rebarFamily(
+            genConf=genConf,
+            identifier=botLnRb['id'],
+            diameter=botLnRb['fi'],
+            spacing=botLnRb['s'],
+            lstPtsConcrSect=[ln_bl,ln_br],
+            coverSide='l',
+            lstCover=[genConf.cover+botTrnsRb['fi']],
+            vectorLRef=Vector(-0.3,-0.4),
+            fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTr,tr_br-botLnRb['distRFend']*vdirTr],
+            coverSectBars=genConf.cover+botTrnsRb['fi'],
+            sectBarsSide='l',
+            vectorLRefSec=Vector(0.6*width,-0.3),
+            gapStart=0,
+            gapEnd=0
+           )
+        set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
+        ln_bot_rf.createRebar()
+        ln_bot_rf.drawSectBars()
+        ln_bot_rf.drawRebar()
+        lstRebFam+=[ln_bot_rf]
+    if topLnRb:
+        ln_top_rf=rb.rebarFamily(
+            genConf=genConf,
+            identifier=topLnRb['id'],
+            diameter=topLnRb['fi'],
+            spacing=topLnRb['s'],
+            lstPtsConcrSect=[ln_tl,ln_tr],
+            coverSide='r',
+            lstCover=[genConf.cover+topTrnsRb['fi']],
+            vectorLRef=Vector(-0.3,0.4),
+            fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTr,tr_tr-topLnRb['distRFend']*vdirTr],
+            coverSectBars=genConf.cover+topTrnsRb['fi'],
+            sectBarsSide='r',
+            vectorLRefSec=Vector(0.6*width,0.3),
+            gapStart=0,
+            gapEnd=0
+            )
+        set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
+        ln_top_rf.createRebar()
+        ln_top_rf.drawSectBars()
+        ln_top_rf.drawRebar()
+        lstRebFam+=[ln_top_rf]
     # Concrete transversal cross-section
     if drawConrTrSect[0].lower()=='y':
         s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
@@ -341,4 +355,5 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
     if drawConrLnSect[0].lower()=='y':
         s=Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
         Part.show(s)
-    FreeCAD.ActiveDocument.recompute()    
+    FreeCAD.ActiveDocument.recompute()
+    return lstRebFam

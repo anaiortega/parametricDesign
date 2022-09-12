@@ -12,10 +12,12 @@ import Part, FreeCAD, math
 import Draft
 from FreeCAD import Vector
 import FreeCADGui
+from FreeCAD import Gui
 from freeCAD_utils import geom_utils
 from freeCAD_utils import drawing_tools as dt
 from RC_utils import reinf_bars_arrang_sets as RCutils
 import DraftVecUtils
+
 
 '''Classes to generate in FreeCAD drawings to represent  a reinforced-concrete 
 structure and the bar schedule associated.
@@ -42,8 +44,9 @@ class genericConf(object):
     :ivar decLengths: decimal positions to calculate and express lengths and
                       their derivated magnitudes, like weight  (defaults to 2).
     :param decSpacing: decimal positions to express the spacing (defaults to 2).
+    :param docName: name of the FreeCAD document where to draw the RC sections
     '''
-    def __init__(self,cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2):
+    def __init__(self,cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2,docName='reinfDrawing'):
         self.cover=cover
         self.texSize=texSize
         self.Code=Code
@@ -52,6 +55,7 @@ class genericConf(object):
         self.dynamEff=dynamEff
         self.decLengths=decLengths
         self.decSpacing=decSpacing
+        self.doc=FreeCAD.newDocument(docName)
 
 
 class rebarFamily(object):
@@ -204,7 +208,11 @@ class rebarFamily(object):
         #flechas en extremos de barra
         rebarDraw=self.wire.copy()
         rebarDraw.translate(vTranslation)
-        Part.show(rebarDraw)
+        rebarFillet= Draft.make_wire(rebarDraw)
+        rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
+        rebarFillet.FilletRadius=rad
+        self.genConf.doc.recompute()
+#        Part.show(rebarDraw)
         rebarEdges=rebarDraw.Edges
         #arrow in extremity 1
         pExtr1=rebarEdges[0].Vertexes[0].Point #vertex at extremity 1

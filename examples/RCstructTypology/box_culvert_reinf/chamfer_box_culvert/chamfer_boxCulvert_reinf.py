@@ -40,7 +40,7 @@ boxL=5 #length of the box culvert
 
 # Data  reinforcements
 cover=0.03
-reinfConf=reinf_bars.genericConf(cover=cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
+reinfConf=reinf_bars.genericConf(cover=cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
 BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0} # bottom slab, bottom transv. rebars
@@ -61,6 +61,15 @@ TS_bot_ln={'fi':0.016,'s':0.30,'id':'11','distRFstart':LW_th,'distRFend':RW_th} 
 TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','distRFstart':0,'distRFend':0} # top slab, bottom transv. rebars
 TS_top_ln={'fi':0.016,'s':0.30,'id':'12','distRFstart':0,'distRFend':0} # top slab, top long. rebars
 TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0} # top slab, top transv. rebars
+
+# Bottom dowels
+diam=LW_ext_ver['fi']
+recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']+diam/2
+LD_ext={'id':'6','fi':diam,'s':LW_ext_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'anchStart':'hook270_posI_tens','splicingEnd':'splic_posI_tens'}#,'fixLengthEnd':5}   #bottom dowel, external, left wall
+
+diam=LW_int_ver['fi']
+LD_int={'id':'5','fi':diam,'s':LW_int_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'anchStart':'hook270_posI_tens','splicingEnd':'splic_posI_tens'}#,'fixLengthEnd':5}   #bottom dowel, internal, left wall
+
 # END DATA
 
 
@@ -92,17 +101,32 @@ for lsc in lstPtsConcrSect:
     Part.show(s)
 
 # Reinforcement
+lstRebarFam=list()
 ## bottom slab
-trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),genConf=reinfConf,drawConrTrSect='N',drawConrLnSect='Y')          
+lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),genConf=reinfConf,drawConrTrSect='N',drawConrLnSect='Y')          
 
 ## top slab
-trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),genConf=reinfConf,drawConrTrSect='N',drawConrLnSect='Y')          
+lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),genConf=reinfConf,drawConrTrSect='N',drawConrLnSect='Y')          
 
 ## left wall
-trcm.wall(height=ext_hg-BS_th,length=boxL,thickness=LW_th,leftVertRb=LW_ext_ver,rightVertRb=LW_int_ver,leftHorRb=LW_ext_hor,rightHorRb=LW_int_hor,anchPtVertSect=ext_p1+Vector(0,BS_th),anchPtHorSect=ext_p1+Vector(0,ext_hg+2),genConf=reinfConf,drawConrVertSect='N',drawConrHorSect='Y')
+lstRebarFam+=trcm.wall(height=ext_hg-BS_th,length=boxL,thickness=LW_th,leftVertRb=LW_ext_ver,rightVertRb=LW_int_ver,leftHorRb=LW_ext_hor,rightHorRb=LW_int_hor,anchPtVertSect=ext_p1+Vector(0,BS_th),anchPtHorSect=ext_p1+Vector(0,ext_hg+2),genConf=reinfConf,drawConrVertSect='N',drawConrHorSect='Y')
 
 ## right wall
-trcm.wall(height=ext_hg-BS_th,length=boxL,thickness=RW_th,leftVertRb=RW_int_ver,rightVertRb=RW_ext_ver,leftHorRb=RW_int_hor,rightHorRb=RW_ext_hor,anchPtVertSect=ext_p1+Vector(LW_th+boxC_int_wd,BS_th),anchPtHorSect=ext_p1+Vector(LW_th+boxC_int_wd,ext_hg+2),genConf=reinfConf,drawConrVertSect='N',drawConrHorSect='Y')
+lstRebarFam+=trcm.wall(height=ext_hg-BS_th,length=boxL,thickness=RW_th,leftVertRb=RW_int_ver,rightVertRb=RW_ext_ver,leftHorRb=RW_int_hor,rightHorRb=RW_ext_hor,anchPtVertSect=ext_p1+Vector(LW_th+boxC_int_wd,BS_th),anchPtHorSect=ext_p1+Vector(LW_th+boxC_int_wd,ext_hg+2),genConf=reinfConf,drawConrVertSect='N',drawConrHorSect='Y')
+
+## Dowels left wall
+lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,length=boxL,thickness=LW_th,
+           anchPtTrnsSect=ext_p1+Vector(LW_th,0),anchPtLnSect=ext_p1+Vector(LW_th,0),genConf=reinfConf,
+           angTrns=90,angLn=0,
+           botTrnsRb=LD_int,topTrnsRb=LD_ext,botLnRb=None,topLnRb=None,
+           drawConrTrSect='N',drawConrLnSect='N') 
+
+pp.newDocument("despiece")
+rb.barSchedule(lstBarFamilies=lstRebarFam,
+               wColumns=[14,30,25,10,15,15],
+               hRows=10,
+               hText=2.5,
+               hTextSketch=2.5)
 
 
 

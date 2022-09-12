@@ -26,6 +26,13 @@ rightHorRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
 anchPtVertSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete vertical cross-section
 anchPtHorSect=anchPtVertSect+Vector(thickness+3,0) #anchor point to place the bottom left corner of the concrete horizontal cross-section
 
-genConf=rb.genericConf(cover=35e-3,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
+genConf=rb.genericConf(cover=35e-3,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2,docName='simpleWall')
 
-trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConrVertSect='N',drawConrHorSect='N')           
+lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConrVertSect='N',drawConrHorSect='N')           
+
+App.newDocument("despiece")
+rb.barSchedule(lstBarFamilies=lstRebarFam,
+               wColumns=[14,30,25,10,15,15],
+               hRows=10,
+               hText=2.5,
+               hTextSketch=2.5)
