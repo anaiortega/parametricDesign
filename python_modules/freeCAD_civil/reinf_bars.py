@@ -17,7 +17,7 @@ from freeCAD_utils import geom_utils
 from freeCAD_utils import drawing_tools as dt
 from RC_utils import reinf_bars_arrang_sets as RCutils
 import DraftVecUtils
-
+from materials.ec2 import EC2_limit_state_checking as Lcalc
 
 '''Classes to generate in FreeCAD drawings to represent  a reinforced-concrete 
 structure and the bar schedule associated.
@@ -34,10 +34,9 @@ class genericConf(object):
     :ivar cover:   minimum cover
     :ivar texSize: generic text size to label rebar families in the 
           drawings. Defaults to 0.125
-    :ivar Code: code on structural concrete that applies (defaults to 'EHE') 
-    :ivar concrType:type of concrete ('HA-25','HA-30','HA-35,'HA-40',
-           'HA-45' or 'HA-50'). Defaults to 'HA-30'
-    :param steelType: type of reinforcement steel ('B-400' or 'B-500'). Defaults
+    :ivar Code: code on structural concrete that applies (defaults to 'EC2') 
+    :ivar xcConcr: XC concrete material object
+    :param xcSteel: type of reinforcement steel ('B-400' or 'B-500'). Defaults
            to 'B-500'.
     :ivar dynamEff: 'Y' 'yes' 'Yes' ... if dynamic effects may occur (defaults 
           to 'N') 
@@ -46,16 +45,17 @@ class genericConf(object):
     :param decSpacing: decimal positions to express the spacing (defaults to 2).
     :param docName: name of the FreeCAD document where to draw the RC sections
     '''
-    def __init__(self,cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2,docName='reinfDrawing'):
+    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='reinfDrawing'):
         self.cover=cover
         self.texSize=texSize
-        self.Code=Code
-        self.concrType=concrType
-        self.steelType=steelType
+        self.xcConcr=xcConcr
+        self.xcSteel=xcSteel
         self.dynamEff=dynamEff
         self.decLengths=decLengths
         self.decSpacing=decSpacing
         self.doc=FreeCAD.newDocument(docName)
+        if Code == 'EC2':
+            from materials.ec2 import EC2_limit_state_checking as Lcalc # doesn't work if only imported here
 
 
 class rebarFamily(object):
@@ -106,7 +106,7 @@ class rebarFamily(object):
     :ivar gapEnd: increment (decrement if gapEnd<0) of the length of 
           the reinforcement at its ending extremity  (defaults to the minimum 
           negative cover given with 'genConf').
-    :ivar anchStart: defines a straigth elongation or a hook at the starting 
+    :ivar extrShapeStart: defines a straigth elongation or a hook at the starting 
           extremity of the bar. The anchoring length is automatically 
           calculated from the code, material, and rebar configuration.
           It's defined as a string parameter that can be read as:
@@ -122,15 +122,15 @@ class rebarFamily(object):
           stressState= 'tens' if rebar in tension
                        'compr' if rebar in compression.
           Examples: 'straight_posII_compr', 'hook270_posI_tens'
-    :ivar anchEnd:defines a straigth elongation or a hook at the ending 
-          extremity of the bar. Definition analogous to anchStart.
+    :ivar extrShapeEnd:defines a straigth elongation or a hook at the ending 
+          extremity of the bar. Definition analogous to extrShapeStart.
     :ivar fixLengthStart: fixed length of the first segment of the rebar 
            (defaults to None = no fixed length)
     :ivar fixLengthEnd: fixed length of the last segment of the rebar 
            (defaults to None = no fixed length)
 
     '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=0,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,anchStart=None,anchEnd=None,fixLengthStart=None,fixLengthEnd=None):
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=0,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None):
         self.genConf=genConf
         self.identifier=identifier 
         self.diameter=diameter
@@ -153,8 +153,8 @@ class rebarFamily(object):
         self.nmbBars=nmbBars
         self.gapStart= gapStart if gapStart is not None else -genConf.cover
         self.gapEnd= gapEnd  if gapEnd is not None else -genConf.cover
-        self.anchStart=anchStart
-        self.anchEnd=anchEnd
+        self.extrShapeStart=extrShapeStart
+        self.extrShapeEnd=extrShapeEnd
         self.fixLengthStart=fixLengthStart
         self.fixLengthEnd=fixLengthEnd
         self.wire=None 
@@ -274,16 +274,19 @@ class rebarFamily(object):
             lstPtsArm[0]=lstPtsArm[1].sub(vaux.multiply(self.fixLengthStart))
         else:
             lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(self.gapStart))
-        if self.anchStart is not None:
-            anchAng,anchLn=self.getAnchorParams(self.anchStart)
+        if self.extrShapeStart is not None:
+            print('extrShapeStart=',self.extrShapeStart)
+            extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeStart)
+            print('extrShAng= ',extrShAng)
+            print('extrShLn= ',extrShLn)
             vaux=lstPtsArm[1].sub(lstPtsArm[0]).normalize()
-            if anchAng == 0:  #straight elongation
-                lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(anchLn))
+            if extrShAng == 0:  #straight elongation
+                lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(extrShLn))
             else: #hook
                 lstPtsArm[0]=lstPtsArm[0].add(vaux.multiply(self.diameter/2.))
-                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
                 vauxHook.normalize()
-                firstPoint=lstPtsArm[0].add(vauxHook.multiply(anchLn))
+                firstPoint=lstPtsArm[0].add(vauxHook.multiply(extrShLn))
                 lstPtsArm.insert(0,firstPoint)
 #                self.lstCover.insert(0,0)
                 
@@ -293,16 +296,16 @@ class rebarFamily(object):
             lstPtsArm[-1]=lstPtsArm[-2].add(vaux.multiply(self.fixLengthEnd))
         else:
             lstPtsArm[-1]=lstPtsArm[-1].add(vaux.multiply(self.gapEnd))
-        if self.anchEnd is not None:
-            anchAng,anchLn=self.getAnchorParams(self.anchEnd)
+        if self.extrShapeEnd is not None:
+            extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeEnd)
             vaux=lstPtsArm[-1].sub(lstPtsArm[-2]).normalize()
-            if anchAng == 0:  #straight elongation
-                lstPtsArm[-1]=lstPtsArm[-1].add(vaux.multiply(anchLn))
+            if extrShAng == 0:  #straight elongation
+                lstPtsArm[-1]=lstPtsArm[-1].add(vaux.multiply(extrShLn))
             else: #hook
                 lstPtsArm[-1]=lstPtsArm[-1].sub(vaux.multiply(self.diameter/2.))
-                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
                 vauxHook.normalize()
-                endPoint=lstPtsArm[-1].add(vauxHook.multiply(anchLn))
+                endPoint=lstPtsArm[-1].add(vauxHook.multiply(extrShLn))
                 lstPtsArm.append(endPoint)
 #                self.lstCover.append(0)
         
@@ -331,23 +334,41 @@ class rebarFamily(object):
             unitWeigth=round(math.pi*self.diameter**2.0/4.*7850,2)
         return unitWeigth
 
-    def getAnchorParams(self,anchorStrDef):
-        '''Return the anchorage length [m] and the angle that forms
-         the hook or straight elongation defined with the string 'anchorStrDef' 
-         with the main rebar.
+    def getExtrShapeParams(self,rbEndStrDef):
+        '''For extremity rebar shapes 'anc' (anchor) or 'lap' (lapped bars), return 
+        the angle that forms with the main rebar, and the length of anchoring or lapping [m]
         '''
-        paramAnc=anchorStrDef.split('_')
-        anchType=paramAnc[0]
-        if anchType[:4]=='hook':
-            angle=eval(anchType[4:])
-            anchType='hook'
-        else:
+        paramAnc=rbEndStrDef.split('_')
+        rbEndType=paramAnc[0][:3]
+        angle=eval(paramAnc[0][3:])
+        print('here angle= ',angle)
+        if abs(angle-180)<0.1:
             angle=0
-        pos=paramAnc[1].replace('pos','')
+        print('here 2 angle= ',angle)
         stress=paramAnc[2]
-        if self.genConf.Code=='EHE':
-            ancLength=RCutils.anchor_length_EHE(self.genConf.concrType,self.genConf.steelType,self.diameter,pos,anchType,stress,1.0,self.genConf.dynamEff)
-        return (angle,ancLength*1e-3)
+        compression= True if (stress in 'compr') else False
+        pos=paramAnc[1].replace('pos','').lower()
+        if pos=='good':
+            eta1=1.0
+        elif pos=='poor':
+            eta1=0.7
+        else:
+            print('rebar familly ', self.identifier,' must be in "good" or "poor" position')
+        # create rebar controllers
+        contrReb=Lcalc.RebarController(concreteCover=self.genConf.cover, spacing=self.spacing, eta1=eta1, compression= compression)
+        if rbEndType=='anc': # anchor length is calculated
+            barShape='bent' if (angle>0) else 'straight'
+            rbEndLenght=contrReb.getDesignAnchorageLength(concrete=self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, barShape= barShape)
+        elif rbEndType[:4]=='lap': #lap length id calculated
+            ratio=eval(paramAnc[3].replace('perc',''))/100 
+            rbEndLenght=contrReb.getLapLength(concrete= self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
+        else:
+            print('rebar end in family ', self.identifier,' must be of type "anc" (anchoring) or "lap" (lapping)')
+#        if self.genConf.Code=='EHE':
+#            rbEndLenght=RCutils.anchor_length_EHE(self.genConf.xcConcr,self.genConf.xcSteel,self.diameter,pos,rbEndType,stress,1.0,self.genConf.dynamEff)
+        print('here rbEndLenght =', rbEndLenght)
+        print('here 3 angle= ',angle)
+        return (angle,rbEndLenght)
         
                         
     

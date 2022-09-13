@@ -6,6 +6,10 @@ import freeCAD_civil
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
+from materials.ec2 import EC2_materials
+
+concr=EC2_materials.C25
+steel=EC2_materials.S500C
 
 
 # DATA
@@ -28,7 +32,7 @@ foot_p7=foot_p5.add(Vector(footing_ln,footing_th))
 foot_p8=foot_p5.add(Vector(footing_ln,0))
 
 #rebars definition
-gConf=reinf_bars.genericConf(cover=0.05,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
+gConf=reinf_bars.genericConf(cover=0.05,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 
 R1=reinf_bars.rebarFamily(
     genConf=gConf,
@@ -41,8 +45,8 @@ R1=reinf_bars.rebarFamily(
     fromToExtPts=[foot_p5,foot_p8],
     sectBarsSide='l',
     vectorLRefSec=Vector(-0.3,-0.3),
-    anchStart='hook45_posII_compr',
-    anchEnd='hook90_posI_tens',
+    extrShapeStart='anc45_posPoor_compr',
+    extrShapeEnd='anc90_posGood_tens',
 )
 R2=reinf_bars.rebarFamily(
     genConf=gConf,
@@ -51,8 +55,8 @@ R2=reinf_bars.rebarFamily(
     spacing=0.20,
     lstPtsConcrSect=[foot_p2,foot_p3],
     fromToExtPts=[foot_p6,foot_p7],
-    anchStart='hook270_posI_compr',
-    anchEnd='hook225_posII_compr',
+    extrShapeStart='anc270_posGood_compr',
+    extrShapeEnd='anc225_posPoor_compr',
 
 )
 

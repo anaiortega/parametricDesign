@@ -4,6 +4,10 @@ import Part, FreeCAD, math
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
+from materials.ec2 import EC2_materials
+
+concr=EC2_materials.C25
+steel=EC2_materials.S500C
 
 
 # Reinforcement of a box culvert with chamfers in all its
@@ -40,7 +44,7 @@ boxL=5 #length of the box culvert
 
 # Data  reinforcements
 cover=0.03
-reinfConf=reinf_bars.genericConf(cover=cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
+reinfConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
 BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0} # bottom slab, bottom transv. rebars
@@ -65,10 +69,10 @@ TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0} # top sl
 # Bottom dowels
 diam=LW_ext_ver['fi']
 recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']+diam/2
-LD_ext={'id':'6','fi':diam,'s':LW_ext_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'anchStart':'hook270_posI_tens','splicingEnd':'splic_posI_tens'}#,'fixLengthEnd':5}   #bottom dowel, external, left wall
+LD_ext={'id':'6','fi':diam,'s':LW_ext_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'extrShapeStart':'anc270_posGood_tens','extrShapeEnd':'lap_posGood_tens'}#,'fixLengthEnd':5}   #bottom dowel, external, left wall
 
 diam=LW_int_ver['fi']
-LD_int={'id':'5','fi':diam,'s':LW_int_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'anchStart':'hook270_posI_tens','splicingEnd':'splic_posI_tens'}#,'fixLengthEnd':5}   #bottom dowel, internal, left wall
+LD_int={'id':'5','fi':diam,'s':LW_int_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'extrShapeStart':'anc270_posGood_tens','extrShapeEnd':'lap_posGood_tens'}#,'fixLengthEnd':5}   #bottom dowel, internal, left wall
 
 # END DATA
 

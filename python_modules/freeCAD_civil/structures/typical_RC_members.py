@@ -223,8 +223,8 @@ def set_FR_options(RF,RFdef):
     '''
     if 'gapStart' in RFdef.keys(): RF.gapStart=RFdef['gapStart']
     if 'gapEnd' in RFdef.keys(): RF.gapEnd=RFdef['gapEnd']
-    if 'anchStart' in RFdef.keys(): RF.anchStart=RFdef['anchStart']
-    if 'anchEnd' in RFdef.keys(): RF.anchEnd=RFdef['anchEnd']
+    if 'extrShapeStart' in RFdef.keys(): RF.extrShapeStart=RFdef['extrShapeStart']
+    if 'extrShapeEnd' in RFdef.keys(): RF.extrShapeEnd=RFdef['extrShapeEnd']
     if 'fixLengthStart' in RFdef.keys(): RF.fixLengthStart=RFdef['fixLengthStart']
     if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
            
