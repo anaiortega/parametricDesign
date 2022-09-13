@@ -224,9 +224,9 @@ def set_FR_options(RF,RFdef):
     if 'gapStart' in RFdef.keys(): RF.gapStart=RFdef['gapStart']
     if 'gapEnd' in RFdef.keys(): RF.gapEnd=RFdef['gapEnd']
     if 'anchStart' in RFdef.keys(): RF.anchStart=RFdef['anchStart']
-    if 'anchEnd' in RFdef.keys(): RF.anchStart=RFdef['anchEnd']
-    if 'fixLengthStart' in RFdef.keys(): RF.anchStart=RFdef['fixLengthStart']
-    if 'fixLengthEnd' in RFdef.keys(): RF.anchStart=RFdef['fixLengthEnd']
+    if 'anchEnd' in RFdef.keys(): RF.anchEnd=RFdef['anchEnd']
+    if 'fixLengthStart' in RFdef.keys(): RF.fixLengthStart=RFdef['fixLengthStart']
+    if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
            
 def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genConf,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConrTrSect='Y',drawConrLnSect='Y'):
     '''Typical reinforcement arrangement of an open brick 

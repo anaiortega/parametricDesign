@@ -247,43 +247,7 @@ class rebarFamily(object):
         '''
         npuntos=len(lstPtsConcr)
         lstPtosAux=[pt for pt in lstPtsConcr]
-        # Start extremity: gaps, straight elongation, hooks
-        vaux=lstPtosAux[1].sub(lstPtosAux[0]).normalize()
-        if self.fixLengthStart != None:
-            lstPtosAux[0]=lstPtosAux[1].sub(vaux.multiply(self.fixLengthStart))
-        else:
-            lstPtosAux[0]=lstPtosAux[0].sub(vaux.multiply(self.gapStart))
-        if self.anchStart is not None:
-            anchAng,anchLn=self.getAnchorParams(self.anchStart)
-            vaux=lstPtosAux[1].sub(lstPtosAux[0]).normalize()
-            if anchAng == 0:  #straight elongation
-                lstPtosAux[0]=lstPtosAux[0].sub(vaux.multiply(anchLn))
-            else: #hook
-                lstPtosAux[0]=lstPtosAux[0].add(vaux.multiply(self.diameter/2.))
-                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
-                vauxHook.normalize()
-                firstPoint=lstPtosAux[0].add(vauxHook.multiply(anchLn))
-                lstPtosAux.insert(0,firstPoint)
-                self.lstCover.insert(0,0)
-        # End extremity: gaps, straight elongation, hooks
-        vaux=lstPtosAux[-1].sub(lstPtosAux[-2]).normalize()
-        if self.fixLengthEnd != None:
-            lstPtosAux[-1]=lstPtosAux[-2].add(vaux.multiply(self.fixLengthEnd))
-        else:
-            lstPtosAux[-1]=lstPtosAux[-1].add(vaux.multiply(self.gapEnd))
-        if self.anchEnd is not None:
-            anchAng,anchLn=self.getAnchorParams(self.anchEnd)
-            vaux=lstPtosAux[-1].sub(lstPtosAux[-2]).normalize()
-            if anchAng == 0:  #straight elongation
-                lstPtosAux[-1]=lstPtosAux[-1].add(vaux.multiply(anchLn))
-            else: #hook
-                lstPtosAux[-1]=lstPtosAux[-1].sub(vaux.multiply(self.diameter/2.))
-                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
-                vauxHook.normalize()
-                endPoint=lstPtosAux[-1].add(vauxHook.multiply(anchLn))
-                lstPtosAux.append(endPoint)
-                self.lstCover.append(0)
-
+        # Shape of the main rebar (without gaps, straight elongation, hooks, ...
         listaaux=[]
         npuntos=len(lstPtosAux)
         for i in range (0,npuntos-1):
@@ -303,10 +267,47 @@ class rebarFamily(object):
             lstPtsArm.append(pint)
 
         lstPtsArm.append(listaaux[2*(npuntos-1)-1])
+        
+        # Start extremity: gaps, straight elongation, hooks
+        vaux=lstPtsArm[1].sub(lstPtsArm[0]).normalize()
+        if self.fixLengthStart != None:
+            lstPtsArm[0]=lstPtsArm[1].sub(vaux.multiply(self.fixLengthStart))
+        else:
+            lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(self.gapStart))
+        if self.anchStart is not None:
+            anchAng,anchLn=self.getAnchorParams(self.anchStart)
+            vaux=lstPtsArm[1].sub(lstPtsArm[0]).normalize()
+            if anchAng == 0:  #straight elongation
+                lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(anchLn))
+            else: #hook
+                lstPtsArm[0]=lstPtsArm[0].add(vaux.multiply(self.diameter/2.))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
+                vauxHook.normalize()
+                firstPoint=lstPtsArm[0].add(vauxHook.multiply(anchLn))
+                lstPtsArm.insert(0,firstPoint)
+#                self.lstCover.insert(0,0)
+                
+        # End extremity: gaps, straight elongation, hooks
+        vaux=lstPtsArm[-1].sub(lstPtsArm[-2]).normalize()
+        if self.fixLengthEnd != None:
+            lstPtsArm[-1]=lstPtsArm[-2].add(vaux.multiply(self.fixLengthEnd))
+        else:
+            lstPtsArm[-1]=lstPtsArm[-1].add(vaux.multiply(self.gapEnd))
+        if self.anchEnd is not None:
+            anchAng,anchLn=self.getAnchorParams(self.anchEnd)
+            vaux=lstPtsArm[-1].sub(lstPtsArm[-2]).normalize()
+            if anchAng == 0:  #straight elongation
+                lstPtsArm[-1]=lstPtsArm[-1].add(vaux.multiply(anchLn))
+            else: #hook
+                lstPtsArm[-1]=lstPtsArm[-1].sub(vaux.multiply(self.diameter/2.))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(anchAng),Vector(0,0,1))
+                vauxHook.normalize()
+                endPoint=lstPtsArm[-1].add(vauxHook.multiply(anchLn))
+                lstPtsArm.append(endPoint)
+#                self.lstCover.append(0)
+        
         lstLines=[Part.makeLine(lstPtsArm[i],lstPtsArm[i+1])for i in range(len(lstPtsArm)-1)]
         rebarWire=Part.Wire(lstLines)
-#        rebarWire=Draft.makeWire(lstPtsArm)
-#        rebarWire.FilletRadius=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
         return rebarWire
 
     def getNumberOfBars(self):

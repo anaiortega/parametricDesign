@@ -116,13 +116,13 @@ lstRebarFam+=trcm.wall(height=ext_hg-BS_th,length=boxL,thickness=RW_th,leftVertR
 
 ## Dowels left wall
 lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,length=boxL,thickness=LW_th,
-           anchPtTrnsSect=ext_p1+Vector(LW_th,0),anchPtLnSect=ext_p1+Vector(LW_th,0),genConf=reinfConf,
-           angTrns=90,angLn=0,
+           anchPtTrnsSect=ext_p1+Vector(LW_th,0),anchPtLnSect=ext_p1+Vector(0,20),genConf=reinfConf,
+           angTrns=90,angLn=90,
            botTrnsRb=LD_int,topTrnsRb=LD_ext,botLnRb=None,topLnRb=None,
            drawConrTrSect='N',drawConrLnSect='N') 
 
-pp.newDocument("despiece")
-rb.barSchedule(lstBarFamilies=lstRebarFam,
+FreeCADnewDocument("despiece")
+reinf_bars.barSchedule(lstBarFamilies=lstRebarFam,
                wColumns=[14,30,25,10,15,15],
                hRows=10,
                hText=2.5,
