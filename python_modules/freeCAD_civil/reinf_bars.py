@@ -35,15 +35,15 @@ class genericConf(object):
     :ivar texSize: generic text size to label rebar families in the 
           drawings. Defaults to 0.125
     :ivar Code: code on structural concrete that applies (defaults to 'EC2') 
-    :ivar xcConcr: XC concrete material object
-    :param xcSteel: type of reinforcement steel ('B-400' or 'B-500'). Defaults
-           to 'B-500'.
+    :ivar xcConcr: XC concrete material object (ex: EC2_materials.C25)
+    :ivar xcSteel: XC steel material object (ex: EC2_materials.S500C)
+
     :ivar dynamEff: 'Y' 'yes' 'Yes' ... if dynamic effects may occur (defaults 
           to 'N') 
     :ivar decLengths: decimal positions to calculate and express lengths and
                       their derivated magnitudes, like weight  (defaults to 2).
-    :param decSpacing: decimal positions to express the spacing (defaults to 2).
-    :param docName: name of the FreeCAD document where to draw the RC sections
+    :ivar decSpacing: decimal positions to express the spacing (defaults to 2).
+    :ivar docName: name of the FreeCAD document where to draw the RC sections
     '''
     def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='reinfDrawing'):
         self.cover=cover
@@ -106,22 +106,40 @@ class rebarFamily(object):
     :ivar gapEnd: increment (decrement if gapEnd<0) of the length of 
           the reinforcement at its ending extremity  (defaults to the minimum 
           negative cover given with 'genConf').
-    :ivar extrShapeStart: defines a straigth elongation or a hook at the starting 
-          extremity of the bar. The anchoring length is automatically 
-          calculated from the code, material, and rebar configuration.
+    :ivar extrShapeStart: defines the shape of the bar at its starting 
+          extremity. It can be an straight or hook shape with anchor or lap length.
+          The anchor or lap length are automatically 
+          calculated from the code (for now only EC2), material, and rebar configuration.
           It's defined as a string parameter that can be read as:
-          'anchType[angle]_position_stressState', where:
-          anchType= 'straight' for straight elongation,
-                    'hook90' for hook that forms a 90º angle counterclokwise 
-                             with the first segment of the rebar.
-                    'hook[angle]' where angle is a positive number that 
-                             represents the counterclokwise angle from 
-                             the first segment of the rebar towards the hook.
-          position= 'posI' if rebar in position I according to EHE definition.
-                    'posII' if rebar in position II according to EHE definition.
-          stressState= 'tens' if rebar in tension
-                       'compr' if rebar in compression.
-          Examples: 'straight_posII_compr', 'hook270_posI_tens'
+          For anchor end:
+            'anc[angle]_position_stressState', where:
+            anc[angle]= the anchor length is calculated.
+                        angle is a positive number, expresed in sexagesimal degrees, 
+                        that represents the counterclokwise angle from the first segment 
+                        of the rebar towards the hook.
+                        If angle is 0 or 180, the straight anchor length is calculated 
+                        'straight' for straight elongation,
+            position= 'posGood' if rebar in position I according to EHE definition =
+                                position 'good' according to EC2 definition.
+                      'posPoor' if rebar in position II according to EHE definition = 
+                                position 'poor'. according to EC2 definition.
+            stressState= 'tens' if rebar in tension
+                         'compr' if rebar in compression.
+            Examples: 'anc90_posGood_compr', 'anc0_posPoor_tens'
+          For lap end:
+            'lap[angle]_position_stressState_perc[percentage]', where:
+            lap[angle]= the lap length is calculated.
+                        angle is a positive number, expresed in sexagesimal degrees, 
+                        that represents the counterclokwise angle from the first segment 
+                        of the rebar towards the hook.
+            position= 'posGood' if rebar in position I according to EHE definition =
+                                position 'good' according to EC2 definition.
+                      'posPoor' if rebar in position II according to EHE definition = 
+                                position 'poor'. according to EC2 definition.
+            stressState= 'tens' if rebar in tension
+                         'compr' if rebar in compression.
+            perc[percentage]= percentage is the percentage of rebars that are lapped.
+            Examples: 'lap90_posGood_compr', 'lap0_posPoor_tens_perc50'
     :ivar extrShapeEnd:defines a straigth elongation or a hook at the ending 
           extremity of the bar. Definition analogous to extrShapeStart.
     :ivar fixLengthStart: fixed length of the first segment of the rebar 
@@ -360,7 +378,9 @@ class rebarFamily(object):
             barShape='bent' if (angle>0) else 'straight'
             rbEndLenght=contrReb.getDesignAnchorageLength(concrete=self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, barShape= barShape)
         elif rbEndType[:4]=='lap': #lap length id calculated
-            ratio=eval(paramAnc[3].replace('perc',''))/100 
+            ratio=1.0
+            if len(paramAnc)>3:
+                ratio=eval(paramAnc[3].replace('perc',''))/100
             rbEndLenght=contrReb.getLapLength(concrete= self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
         else:
             print('rebar end in family ', self.identifier,' must be of type "anc" (anchoring) or "lap" (lapping)')
