@@ -189,7 +189,7 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
 
 FreeCAD.newDocument("despiece")
 reinf_bars.barSchedule(lstBarFamilies=lstRebarFam,
-               wColumns=[14,30,25,10,15,15],
+               wColumns=[10,35,20,5,15,15],
                hRows=10,
                hText=2.5,
                hTextSketch=2.5)

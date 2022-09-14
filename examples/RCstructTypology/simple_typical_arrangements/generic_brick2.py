@@ -18,7 +18,7 @@ topTrnsRb={'id':'3','fi':16e-3,'s':0.15,'distRFstart':0,'distRFend':0,'extrShape
 # bottom longitudinal rebars data
 botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5,'fixLengthStart':5,'gapEnd':2,'extrShapeEnd':'lap45_posGood_compr'}
 # top longitudinal rebars data
-topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,'extrShapeStart':'anc180_posPoor_tens','extrShapeEnd':'lap180_posPoor_tens_perc50'}
+topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,'extrShapeStart':'fix40_len1200','extrShapeEnd':'lap180_posPoor_tens_perc50'}
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section

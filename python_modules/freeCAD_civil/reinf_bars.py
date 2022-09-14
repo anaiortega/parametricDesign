@@ -107,7 +107,8 @@ class rebarFamily(object):
           the reinforcement at its ending extremity  (defaults to the minimum 
           negative cover given with 'genConf').
     :ivar extrShapeStart: defines the shape of the bar at its starting 
-          extremity. It can be an straight or hook shape with anchor or lap length.
+          extremity. It can be an straight or hook shape with anchor (anc) length, 
+          lap length or a given fixed length.
           The anchor or lap length are automatically 
           calculated from the code (for now only EC2), material, and rebar configuration.
           It's defined as a string parameter that can be read as:
@@ -140,6 +141,10 @@ class rebarFamily(object):
                          'compr' if rebar in compression.
             perc[percentage]= percentage is the percentage of rebars that are lapped.
             Examples: 'lap90_posGood_compr', 'lap0_posPoor_tens_perc50'
+          For fixed end:
+            'fix[angle]= same meaning
+            len[number]: number is the length of the segment to add (in mm)
+            Examples: 'fix45_len150'
     :ivar extrShapeEnd:defines a straigth elongation or a hook at the ending 
           extremity of the bar. Definition analogous to extrShapeStart.
     :ivar fixLengthStart: fixed length of the first segment of the rebar 
@@ -358,17 +363,21 @@ class rebarFamily(object):
         angle=eval(paramAnc[0][3:])
         if abs(angle-180)<0.1:
             angle=0
-        stress=paramAnc[2]
-        compression= True if (stress in 'compr') else False
-        pos=paramAnc[1].replace('pos','').lower()
-        if pos=='good':
-            eta1=1.0
-        elif pos=='poor':
-            eta1=0.7
+        if rbEndType in ['anc','lap']:    
+            stress=paramAnc[2]
+            compression= True if (stress in 'compr') else False
+            pos=paramAnc[1].replace('pos','').lower()
+            if pos=='good':
+                eta1=1.0
+            elif pos=='poor':
+                eta1=0.7
+            else:
+                print('rebar familly ', self.identifier,' must be in "good" or "poor" position')
+            contrReb=Lcalc.RebarController(concreteCover=self.genConf.cover, spacing=self.spacing, eta1=eta1, compression= compression) # create rebar controllers to calculate anchor or gap lengths
+        elif rbEndType in ['fix']:
+            rbEndLenght=eval(paramAnc[1].replace('len',''))/1000 # longitud en metros
         else:
-            print('rebar familly ', self.identifier,' must be in "good" or "poor" position')
-        # create rebar controllers
-        contrReb=Lcalc.RebarController(concreteCover=self.genConf.cover, spacing=self.spacing, eta1=eta1, compression= compression)
+            print('rebar end in family ', self.identifier,' must be of type "anc" (anchoring), "lap" (lapping) or "fix" (fixed length)')
         if rbEndType=='anc': # anchor length is calculated
             barShape='bent' if (angle>0) else 'straight'
             rbEndLenght=contrReb.getDesignAnchorageLength(concrete=self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, barShape= barShape)
@@ -377,10 +386,6 @@ class rebarFamily(object):
             if len(paramAnc)>3:
                 ratio=eval(paramAnc[3].replace('perc',''))/100
             rbEndLenght=contrReb.getLapLength(concrete= self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
-        else:
-            print('rebar end in family ', self.identifier,' must be of type "anc" (anchoring) or "lap" (lapping)')
-#        if self.genConf.Code=='EHE':
-#            rbEndLenght=RCutils.anchor_length_EHE(self.genConf.xcConcr,self.genConf.xcSteel,self.diameter,pos,rbEndType,stress,1.0,self.genConf.dynamEff)
         return (angle,rbEndLenght)
         
                         
