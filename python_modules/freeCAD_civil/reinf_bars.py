@@ -293,10 +293,7 @@ class rebarFamily(object):
         else:
             lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(self.gapStart))
         if self.extrShapeStart is not None:
-            print('extrShapeStart=',self.extrShapeStart)
             extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeStart)
-            print('extrShAng= ',extrShAng)
-            print('extrShLn= ',extrShLn)
             vaux=lstPtsArm[1].sub(lstPtsArm[0]).normalize()
             if extrShAng == 0:  #straight elongation
                 lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(extrShLn))
@@ -359,10 +356,8 @@ class rebarFamily(object):
         paramAnc=rbEndStrDef.split('_')
         rbEndType=paramAnc[0][:3]
         angle=eval(paramAnc[0][3:])
-        print('here angle= ',angle)
         if abs(angle-180)<0.1:
             angle=0
-        print('here 2 angle= ',angle)
         stress=paramAnc[2]
         compression= True if (stress in 'compr') else False
         pos=paramAnc[1].replace('pos','').lower()
@@ -386,8 +381,6 @@ class rebarFamily(object):
             print('rebar end in family ', self.identifier,' must be of type "anc" (anchoring) or "lap" (lapping)')
 #        if self.genConf.Code=='EHE':
 #            rbEndLenght=RCutils.anchor_length_EHE(self.genConf.xcConcr,self.genConf.xcSteel,self.diameter,pos,rbEndType,stress,1.0,self.genConf.dynamEff)
-        print('here rbEndLenght =', rbEndLenght)
-        print('here 3 angle= ',angle)
         return (angle,rbEndLenght)
         
                         
@@ -453,6 +446,7 @@ def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
     :param hRow: height of the row in the bar schedule.
     :param hText: height of the text to label the sketch.
     '''
+    formatLength='%.'+str(rbFam.genConf.decLengths)+'f'
     sketch=rbFam.wire.copy()
     bound=sketch.BoundBox
     cog=sketch.CenterOfMass
@@ -468,12 +462,12 @@ def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
     Part.show(sketch)
     #Texts
     lengthsText=[str(i) for i in rbFam.wireLengths]
-    totalLength=sum(rbFam.wireLengths)
-    totalLengthTxt=str(totalLength)
+    totalLength=round(sum(rbFam.wireLengths),rbFam.genConf.decLengths)
+    totalLengthTxt=formatLength %totalLength
     if rbFam.wireSect2 != None:
         lengthsText=[(lengthsText[i]+'..'+str(rbFam.wireSect2Lengths[i])) if rbFam.wireLengths[i]!=rbFam.wireSect2Lengths[i] else lengthsText[i] for i in range(len(rbFam.wireLengths))]
         totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
-        totalLengthTxt+='...'+str(sum(rbFam.wireSect2Lengths))
+        totalLengthTxt+='...'+ formatLength %sum(rbFam.wireSect2Lengths)
     sketchEdges=sketch.Edges
     for i in zip(sketchEdges,lengthsText):
         edg=i[0]

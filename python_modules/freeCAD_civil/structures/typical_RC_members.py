@@ -6,7 +6,7 @@ from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 
            
-def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y'):
+def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=1):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
 
@@ -22,6 +22,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     :param genConf: instance of the reinf_bars.genericConf class
     :param drawConrTrSect: 'Y' to draw the transversal concrete cross-section  (defaults to 'Y')
     :param drawConrLnSect: 'Y' to draw the longitudinal concrete cross-section  (defaults to 'Y')
+    :param factGap: the gapSart and gapEnd are made equal to factGap*cover
     '''
            
     # Concrete points of the transverse section
@@ -46,7 +47,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[ln_bl+Vector(botTrnsRb['distRFstart'],0),ln_br-Vector(botTrnsRb['distRFend'],0)],
         sectBarsSide='l',
-        vectorLRefSec=Vector(0.6*length,-0.3)
+        vectorLRefSec=Vector(0.6*length,-0.3),
+        gapStart=-factGap*genConf.cover,
+        gapEnd=-factGap*genConf.cover,
         )
     tr_bot_rf.createRebar()
     tr_bot_rf.drawSectBars()
@@ -63,8 +66,10 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         vectorLRef=Vector(-0.3,0.4),
         fromToExtPts=[ln_tl+Vector(topTrnsRb['distRFstart'],0),ln_tr-Vector(topTrnsRb['distRFend'],0)],
         sectBarsSide='r',
-        vectorLRefSec=Vector(0.6*length,0.3)
-        )
+        vectorLRefSec=Vector(0.6*length,0.3),
+        gapStart=-factGap*genConf.cover,
+        gapEnd=-factGap*genConf.cover,
+         )
     tr_top_rf.createRebar()
     tr_top_rf.drawSectBars()
     tr_top_rf.drawRebar()
@@ -80,7 +85,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         fromToExtPts=[tr_bl+Vector(botLnRb['distRFstart'],0),tr_br-Vector(botLnRb['distRFend'],0)],
         coverSectBars=genConf.cover+botTrnsRb['fi'],
         sectBarsSide='l',
-        vectorLRefSec=Vector(0.6*width,-0.3)
+        vectorLRefSec=Vector(0.6*width,-0.3),
+        gapStart=-factGap*genConf.cover,
+        gapEnd=-factGap*genConf.cover,
         )
     ln_bot_rf.createRebar()
     ln_bot_rf.drawSectBars()
@@ -97,8 +104,10 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         fromToExtPts=[tr_tl+Vector(topLnRb['distRFstart'],0),tr_tr-Vector(topLnRb['distRFend'],0)],
         coverSectBars=genConf.cover+topTrnsRb['fi'],
         sectBarsSide='r',
-        vectorLRefSec=Vector(0.6*width,0.3)
-        )
+        vectorLRefSec=Vector(0.6*width,0.3),
+        gapStart=-factGap*genConf.cover,
+        gapEnd=-factGap*genConf.cover,
+         )
     ln_top_rf.createRebar()
     ln_top_rf.drawSectBars()
     ln_top_rf.drawRebar()

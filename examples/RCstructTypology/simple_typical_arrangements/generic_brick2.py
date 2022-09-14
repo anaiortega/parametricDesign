@@ -12,13 +12,13 @@ width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
 thickness=0.4  #thickness of the slab
 # bottom transverse rebars data
-topTrnsRb={'id':'3','fi':16e-3,'s':0.15,'distRFstart':0,'distRFend':0,'extrShapeStart':'anc90_posGood_tens','extrShapeEnd':'anc270_posPoor_tens'}#,'fixLengthEnd':2} 
-botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'distRFstart':0,'distRFend':0,'extrShapeStart':'anc90_posGood_tens','fixLengthEnd':5} 
+botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'distRFstart':0,'distRFend':0,'gapStart':0.5,'extrShapeStart':'anc90_posGood_tens','extrShapeEnd':'anc90_posGood_tens'} 
 # top transverse rebars data
-botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5,'gapStart':1,'gapEnd':2,'extrShapeEnd':'anc45_posGood_compr'}
+topTrnsRb={'id':'3','fi':16e-3,'s':0.15,'distRFstart':0,'distRFend':0,'extrShapeStart':'lap270_posPoor_tens','extrShapeEnd':'lap0_posPoor_tens_perc100'}#,'fixLengthEnd':2} 
 # bottom longitudinal rebars data
+botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5,'fixLengthStart':5,'gapEnd':2,'extrShapeEnd':'lap45_posGood_compr'}
 # top longitudinal rebars data
-topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,}
+topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,'extrShapeStart':'anc180_posPoor_tens','extrShapeEnd':'lap180_posPoor_tens_perc50'}
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
@@ -27,7 +27,7 @@ genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Cod
 
 lstRebarFam=trcm.generic_brick_reinf(width=width,length=length,thickness=thickness,
            anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,genConf=genConf,
-           angTrns=30,angLn=40,
+           angTrns=5,angLn=10,
            botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,
            drawConrTrSect='Y',drawConrLnSect='Y') 
 
