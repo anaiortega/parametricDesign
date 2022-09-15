@@ -44,7 +44,7 @@ boxL=5 #length of the box culvert
 
 # Data  reinforcements
 cover=0.03
-reinfConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
+reinfConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
 BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0} # bottom slab, bottom transv. rebars
@@ -56,15 +56,15 @@ TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','distRFstart':0,'distRFend':0} # top sl
 TS_top_ln={'fi':0.016,'s':0.30,'id':'12','distRFstart':0,'distRFend':0} # top slab, top long. rebars
 TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0} # top slab, top transv. rebars
 
-LW_ext_hor={'fi':0.016,'s':0.30,'id':'7l','distRFstart':0,'distRFend':0} # left wall, external horiz. rebars
+LW_ext_hor={'fi':0.016,'s':0.30,'id':'7l','distRFstart':0,'distRFend':0,'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg)} # left wall, external horiz. rebars
 LW_ext_ver={'fi':0.016,'s':0.30,'id':'10l','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-cover,'extrShapeEnd':'lap270_posPoor_tens_perc100'} # left wall, external vert. rebars
-LW_int_hor={'fi':0.016,'s':0.30,'id':'8l','distRFstart':BS_th,'distRFend':TS_th} # left wall, internal horiz. rebars
-LW_int_ver={'fi':0.016,'s':0.30,'id':'9l','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),'extrShapeEnd':'anc90_posPoor_compr'} # left wall, internal vert. rebars
+LW_int_hor={'fi':0.016,'s':0.30,'id':'8l','distRFstart':BS_th,'distRFend':TS_th,'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg)} # left wall, internal horiz. rebars
+LW_int_ver={'fi':0.016,'s':0.30,'id':'9l','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),'extrShapeEnd':'fix90_len150'} # left wall, internal vert. rebars
 
-RW_ext_hor={'fi':0.016,'s':0.30,'id':'7r','distRFstart':0,'distRFend':0} # right wall, external horiz. rebars
+RW_ext_hor={'fi':0.016,'s':0.30,'id':'7r','distRFstart':0,'distRFend':0,'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg)} # right wall, external horiz. rebars
 RW_ext_ver={'fi':0.016,'s':0.30,'id':'10r','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-cover,'extrShapeEnd':'lap90_posPoor_tens_perc100'} # right wall, external vert. rebars
-RW_int_hor={'fi':0.016,'s':0.30,'id':'8r','distRFstart':BS_th,'distRFend':TS_th} # right wall, internal horiz. rebars
-RW_int_ver={'fi':0.016,'s':0.30,'id':'9r','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),'extrShapeEnd':'anc270_posPoor_compr'} # right wall, internal vert. rebars
+RW_int_hor={'fi':0.016,'s':0.30,'id':'8r','distRFstart':BS_th,'distRFend':TS_th,'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg)} # right wall, internal horiz. rebars
+RW_int_ver={'fi':0.016,'s':0.30,'id':'9r','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),'extrShapeEnd':'fix270_len150'} # right wall, internal vert. rebars
 
 
 # Bottom dowels
