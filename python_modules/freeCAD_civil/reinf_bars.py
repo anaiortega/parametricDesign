@@ -245,8 +245,11 @@ class rebarFamily(object):
         pExtr2=rebarEdges[-1].Vertexes[1].Point #vertex at extremity 2
         vArr=rebarEdges[-1].tangentAt(1).multiply(self.genConf.texSize/3.0) #arrow vector
         Draft.rotate(Draft.makeLine(pExtr2,pExtr2.add(vArr)),180-15,pExtr2)
-        # Texts
-        ptoIniEtiq=rebarEdges[int(len(rebarEdges)/2.)].CenterOfMass
+        # Texts pointing at the longest edge of the rebar
+        laux=[e.Length for e in rebarEdges]
+        print('laux=',laux)
+        ptoIniEtiq=rebarEdges[laux.index(max(laux))].CenterOfMass
+#        ptoIniEtiq=rebarEdges[int(len(rebarEdges)/2.)].CenterOfMass
         rebarText(ptoIniEtiq,self.vectorLRef,self.identifier,self.diameter,self.spacing,self.nmbBars,self.genConf.texSize)
         return
 

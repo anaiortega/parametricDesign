@@ -56,33 +56,162 @@ TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','distRFstart':0,'distRFend':0} # top sl
 TS_top_ln={'fi':0.016,'s':0.30,'id':'12','distRFstart':0,'distRFend':0} # top slab, top long. rebars
 TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0} # top slab, top transv. rebars
 
-LW_ext_hor={'fi':0.016,'s':0.30,'id':'7l','distRFstart':0,'distRFend':0,'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg)} # left wall, external horiz. rebars
-LW_ext_ver={'fi':0.016,'s':0.30,'id':'10l','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-cover,'extrShapeEnd':'lap270_posPoor_tens_perc100'} # left wall, external vert. rebars
-LW_int_hor={'fi':0.016,'s':0.30,'id':'8l','distRFstart':BS_th,'distRFend':TS_th,'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg)} # left wall, internal horiz. rebars
-LW_int_ver={'fi':0.016,'s':0.30,'id':'9l','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),'extrShapeEnd':'fix90_len150'} # left wall, internal vert. rebars
-
-RW_ext_hor={'fi':0.016,'s':0.30,'id':'7r','distRFstart':0,'distRFend':0,'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg)} # right wall, external horiz. rebars
-RW_ext_ver={'fi':0.016,'s':0.30,'id':'10r','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-cover,'extrShapeEnd':'lap90_posPoor_tens_perc100'} # right wall, external vert. rebars
-RW_int_hor={'fi':0.016,'s':0.30,'id':'8r','distRFstart':BS_th,'distRFend':TS_th,'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg)} # right wall, internal horiz. rebars
-RW_int_ver={'fi':0.016,'s':0.30,'id':'9r','distRFstart':0,'distRFend':0,'gapStart':-BS_th,'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),'extrShapeEnd':'fix270_len150'} # right wall, internal vert. rebars
+# left wall, external horiz. rebars
+LW_ext_hor={'fi':0.016,
+            's':0.30,
+            'id':'7l',
+            'distRFstart':0,
+            'distRFend':0,
+            'gapStart':-cover,
+            'gapEnd':-cover,
+            'extrShapeStart':'fix270_len125',
+            'extrShapeEnd':'fix270_len125',
+            'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg),
+            } 
+# left wall, external vert. rebars
+LW_ext_ver={'fi':0.016,
+            's':0.30,
+            'id':'10l',
+            'distRFstart':0,
+            'distRFend':0,
+            'gapStart':-BS_th,
+            'gapEnd':-cover,
+            'extrShapeEnd': 'lap270_posPoor_tens_perc100',
+            'vectorLRefSec':Vector(-0.3,boxL/2),
+            } 
+# left wall, internal horiz. rebars
+LW_int_hor={'fi':0.016,
+            's':0.30,
+            'id':'8l',
+            'distRFstart':BS_th,
+            'distRFend':TS_th,
+            'gapStart':-cover,
+            'gapEnd':-cover,
+            'extrShapeStart':'fix90_len125',
+            'extrShapeEnd':'fix90_len125',
+            'vectorLRef':Vector(0.3,0.3),
+            'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg),
+             } 
+# left wall, internal vert. rebars
+LW_int_ver={'fi':0.016,
+            's':0.30,
+            'id':'9l',
+            'distRFstart':0,
+            'distRFend':0,
+            'gapStart':-BS_th,
+            'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),
+            'extrShapeEnd':'fix90_len150',
+            'vectorLRef':Vector(0.3,0.3),
+            'vectorLRefSec': Vector(0.3,0.5*boxL),
+            }
+# Right wall. Main rebars
+ # right wall, external horiz. rebars
+RW_ext_hor={'fi':0.016,
+            's':0.30,
+            'id':'7r',
+            'distRFstart':0,
+            'distRFend':0,
+            'gapStart':-cover,
+            'gapEnd':-cover,
+            'extrShapeStart':'fix90_len125',
+            'extrShapeEnd':'fix90_len125',
+            'vectorLRef':Vector(0.3,0.3),
+            'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg)}
+# right wall, external vert. rebars
+RW_ext_ver={'fi':0.016,
+            's':0.30,
+            'id':'10r',
+            'distRFstart':0,
+            'distRFend':0,
+            'gapStart':-BS_th,
+            'gapEnd':-cover,
+            'extrShapeEnd':'lap90_posPoor_tens_perc100',
+            'vectorLRef':Vector(0.3,0.3),
+            'vectorLRefSec':Vector(0.3,0.5*boxL),
+            } 
+# right wall, internal horiz. rebars
+RW_int_hor={'fi':0.016,
+            's':0.30,
+            'id':'8r',
+            'distRFstart':BS_th,
+            'distRFend':TS_th,
+            'gapStart':-cover,
+            'gapEnd':-cover,
+            'extrShapeStart':'fix270_len125',
+            'extrShapeEnd':'fix270_len125',
+            'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg),
+            }
+ # right wall, internal vert. rebars
+RW_int_ver={'fi':0.016,
+            's':0.30,
+            'id':'9r',
+            'distRFstart':0,
+            'distRFend':0,
+            'gapStart':-BS_th,
+            'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),
+            'extrShapeEnd':'fix270_len150',
+            'vectorLRefSec':Vector(-0.3,0.5*boxL),
+            }
 
 
 # Bottom dowels
 ## left wall
 diam=LW_ext_ver['fi']
 recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']
-LD_ext={'id':'6','fi':diam,'s':LW_ext_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'extrShapeStart':'anc270_posGood_tens','extrShapeEnd':'lap0_posGood_tens'}#,'fixLengthEnd':5}   #bottom dowel, external, left wall
+#bottom dowel, external, left wall
+LD_ext={'id':'6l',
+        'fi':diam,
+        's':LW_ext_ver['s'],
+        'distRFstart':0,
+        'distRFend':0,
+        'gapStart':-recStart,
+        'extrShapeStart':
+        'fix270_len200',
+        'extrShapeEnd':'lap0_posGood_tens',
+        'vectorLRef':Vector(-0.2,0.2),
+        }
 
+#bottom dowel, internal, left wall
 diam=LW_int_ver['fi']
-LD_int={'id':'5','fi':diam,'s':LW_int_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'extrShapeStart':'anc270_posGood_tens','extrShapeEnd':'lap0_posGood_tens'}#,'fixLengthEnd':5}   #bottom dowel, internal, left wall
+LD_int={'id':'5l',
+        'fi':diam,
+        's':LW_int_ver['s'],
+        'distRFstart':0,
+        'distRFend':0,
+        'gapStart':-recStart,
+        'extrShapeStart':
+        'fix270_len200',
+        'extrShapeEnd':'lap0_posGood_tens',
+        'vectorLRef':Vector(0.2,0.2),
+        }
 
 ## right wall
 diam=RW_ext_ver['fi']
 recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']
-RD_ext={'id':'6','fi':diam,'s':RW_ext_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'extrShapeStart':'anc90_posGood_tens','extrShapeEnd':'lap0_posGood_tens'}#,'fixLengthEnd':5}   #bottom dowel, external, right wall
-
+#bottom dowel, external, right wall
+RD_ext={'id':'6r',
+        'fi':diam,
+        's':RW_ext_ver['s'],
+        'distRFstart':0,
+        'distRFend':0,
+        'gapStart':-recStart,
+        'extrShapeStart':'fix90_len200',
+        'extrShapeEnd':'lap0_posGood_tens',
+        'vectorLRef':Vector(0.2,0.2),
+        }
+#bottom dowel, internal, right wall
 diam=RW_int_ver['fi']
-RD_int={'id':'5','fi':diam,'s':RW_int_ver['s'],'distRFstart':0,'distRFend':0,'gapStart':-recStart,'extrShapeStart':'anc90_posGood_tens','extrShapeEnd':'lap0_posGood_tens'}#,'fixLengthEnd':5}   #bottom dowel, internal, left wall
+RD_int={'id':'5r',
+        'fi':diam,
+        's':RW_int_ver['s'],
+        'distRFstart':0,
+        'distRFend':0,
+        'gapStart':-recStart,
+        'extrShapeStart':
+        'fix90_len200','extrShapeEnd':
+        'lap0_posGood_tens',
+        'vectorLRef':Vector(-0.2,0.2),
+        }#,'fixLengthEnd':5}   
 
 # END DATA
 
