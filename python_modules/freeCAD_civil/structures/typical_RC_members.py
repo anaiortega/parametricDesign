@@ -4,8 +4,10 @@ import math
 import Part, FreeCAD
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
+import FreeCADGui
 
-           
+colorConcrete=(0.00,1.00,1.00) #cyan
+
 def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=1):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
@@ -114,10 +116,12 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     # Concrete transversal cross-section
     if drawConrTrSect[0].lower()=='y':
         s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
-        Part.show(s)
+        p=Part.show(s)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     if drawConrLnSect[0].lower()=='y':
         s=Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
-        Part.show(s)
+        p=Part.show(s)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     FreeCAD.ActiveDocument.recompute()
     return [tr_bot_rf,tr_top_rf,ln_bot_rf,ln_top_rf]
     
@@ -220,10 +224,12 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     # Concrete vertical cross-section
     if drawConrVertSect[0].lower()=='y':
         s=Part.makePolygon([vert_bl,vert_tl,vert_tr,vert_br,vert_bl])
-        Part.show(s)
+        p=Part.show(s)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     if drawConrHorSect[0].lower()=='y':
         s=Part.makePolygon([hor_bl,hor_tl,hor_tr,hor_br,hor_bl])
-        Part.show(s)
+        p=Part.show(s)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     FreeCAD.ActiveDocument.recompute()
     return [vert_left_rf,vert_right_rf,hor_left_rf,hor_right_rf]
     
@@ -362,9 +368,11 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
     # Concrete transversal cross-section
     if drawConrTrSect[0].lower()=='y':
         s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
-        Part.show(s)
+        p=Part.show(s)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     if drawConrLnSect[0].lower()=='y':
         s=Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
-        Part.show(s)
+        p=Part.show(s)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam

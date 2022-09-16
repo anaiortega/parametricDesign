@@ -6,6 +6,10 @@ import freeCAD_civil
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
+from materials.ec2 import EC2_materials
+
+concr=EC2_materials.C25
+steel=EC2_materials.S500C
 
 # Abutment
 # Nomenclature:
@@ -185,7 +189,7 @@ AS_p2=AS_p1.add(Vector(0,aprSl_th))
 AS_p3=AS_p2.add(Vector(aprSl_ln,aprSl_ln/aprSl_sl))
 AS_p4=AS_p3.add(Vector(0,-aprSl_th))
 
-abutConf=reinf_bars.genericConf(cover=cover,texSize=0.125,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
+abutConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 
 # Reinforcement footing
 #1 longitudinal bottom

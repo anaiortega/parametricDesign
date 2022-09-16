@@ -6,6 +6,10 @@ import freeCAD_civil
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
+from materials.ec2 import EC2_materials
+
+concr=EC2_materials.C25
+steel=EC2_materials.S500C
 
 
 elosa=0.45 #espesor de la losa
@@ -63,7 +67,7 @@ Pt10i=Pt10.add(Vector(0,-elosa))
 Pt11i=Pt11.add(Vector(0,-elosa))
 Pt12i=Pt12.add(Vector(0,-elosa))
 
-losaGenConf=reinf_bars.genericConf(cover=recNominal,texSize=hTextsArmados,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
+losaGenConf=reinf_bars.genericConf(cover=recNominal,xcConcr=concr,xcSteel=steel,texSize=hTextsArmados,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 
 F1S=reinf_bars.rebarFamily(
    genConf=losaGenConf,

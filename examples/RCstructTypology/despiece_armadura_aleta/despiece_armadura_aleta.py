@@ -6,6 +6,10 @@ import freeCAD_civil
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
+from materials.ec2 import EC2_materials
+
+concr=EC2_materials.C25
+steel=EC2_materials.S500C
 
 # Aleta 1, muro 1, PI+PF+OD 103.52
 # DATA
@@ -126,7 +130,7 @@ Ph3_2=Vector(0,bCoron+0.2*pendTrasdos)
 Ph3_3=Vector(lMur/(hMurMax-hMurMin)*0.2,bCoron)
 Ph3_4=Vector(lMur/(hMurMax-hMurMin)*0.2,0)
 
-aletGenConf=reinf_bars.genericConf(cover=recNominal,texSize=hTextsArmados,Code='EHE',concrType='HA-30',steelType='B-500',dynamEff='N',decLengths=2,decSpacing=2)
+aletGenConf=reinf_bars.genericConf(cover=recNominal,xcConcr=concr,xcSteel=steel,texSize=hTextsArmados,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='aleta')
 
 # Armaduras zapata
 # armadura transversal inferior
