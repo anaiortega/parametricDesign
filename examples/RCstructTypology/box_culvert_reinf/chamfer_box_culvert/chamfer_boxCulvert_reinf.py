@@ -6,9 +6,10 @@ from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
 from materials.ec2 import EC2_materials
 
-concr=EC2_materials.C25
+concr=EC2_materials.C30
 steel=EC2_materials.S500C
 
+estrName='boxCulvert'
 
 # Reinforcement of a box culvert with chamfers in all its
 # internal corners
@@ -44,7 +45,7 @@ boxL=5 #length of the box culvert
 
 # Data  reinforcements
 cover=0.03
-reinfConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.075,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
+reinfConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName=estrName+'_armados')
 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
 BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0} # bottom slab, bottom transv. rebars
@@ -59,7 +60,7 @@ TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0} # top sl
 # left wall, external horiz. rebars
 LW_ext_hor={'fi':0.016,
             's':0.30,
-            'id':'7l',
+            'id':'7L',
             'distRFstart':0,
             'distRFend':0,
             'gapStart':-cover,
@@ -72,7 +73,7 @@ LW_ext_hor={'fi':0.016,
 # left wall, external vert. rebars
 LW_ext_ver={'fi':0.016,
             's':0.30,
-            'id':'10l',
+            'id':'10L',
             'distRFstart':0,
             'distRFend':0,
             'gapStart':-BS_th,
@@ -83,7 +84,7 @@ LW_ext_ver={'fi':0.016,
 # left wall, internal horiz. rebars
 LW_int_hor={'fi':0.016,
             's':0.30,
-            'id':'8l',
+            'id':'8L',
             'distRFstart':BS_th,
             'distRFend':TS_th,
             'gapStart':-cover,
@@ -96,7 +97,7 @@ LW_int_hor={'fi':0.016,
 # left wall, internal vert. rebars
 LW_int_ver={'fi':0.016,
             's':0.30,
-            'id':'9l',
+            'id':'9L',
             'distRFstart':0,
             'distRFend':0,
             'gapStart':-BS_th,
@@ -109,7 +110,7 @@ LW_int_ver={'fi':0.016,
  # right wall, external horiz. rebars
 RW_ext_hor={'fi':0.016,
             's':0.30,
-            'id':'7r',
+            'id':'7R',
             'distRFstart':0,
             'distRFend':0,
             'gapStart':-cover,
@@ -121,7 +122,7 @@ RW_ext_hor={'fi':0.016,
 # right wall, external vert. rebars
 RW_ext_ver={'fi':0.016,
             's':0.30,
-            'id':'10r',
+            'id':'10R',
             'distRFstart':0,
             'distRFend':0,
             'gapStart':-BS_th,
@@ -133,7 +134,7 @@ RW_ext_ver={'fi':0.016,
 # right wall, internal horiz. rebars
 RW_int_hor={'fi':0.016,
             's':0.30,
-            'id':'8r',
+            'id':'8R',
             'distRFstart':BS_th,
             'distRFend':TS_th,
             'gapStart':-cover,
@@ -146,7 +147,7 @@ RW_int_hor={'fi':0.016,
  # right wall, internal vert. rebars
 RW_int_ver={'fi':0.016,
             's':0.30,
-            'id':'9r',
+            'id':'9R',
             'distRFstart':0,
             'distRFend':0,
             'gapStart':-BS_th,
@@ -161,7 +162,7 @@ RW_int_ver={'fi':0.016,
 diam=LW_ext_ver['fi']
 recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']
 #bottom dowel, external, left wall
-LD_ext={'id':'6l',
+LD_ext={'id':'6L',
         'fi':diam,
         's':LW_ext_ver['s'],
         'distRFstart':0,
@@ -175,7 +176,7 @@ LD_ext={'id':'6l',
 
 #bottom dowel, internal, left wall
 diam=LW_int_ver['fi']
-LD_int={'id':'5l',
+LD_int={'id':'5L',
         'fi':diam,
         's':LW_int_ver['s'],
         'distRFstart':0,
@@ -191,7 +192,7 @@ LD_int={'id':'5l',
 diam=RW_ext_ver['fi']
 recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']
 #bottom dowel, external, right wall
-RD_ext={'id':'6r',
+RD_ext={'id':'6R',
         'fi':diam,
         's':RW_ext_ver['s'],
         'distRFstart':0,
@@ -203,7 +204,7 @@ RD_ext={'id':'6r',
         }
 #bottom dowel, internal, right wall
 diam=RW_int_ver['fi']
-RD_int={'id':'5r',
+RD_int={'id':'5R',
         'fi':diam,
         's':RW_int_ver['s'],
         'distRFstart':0,
@@ -319,12 +320,12 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       drawConrTrSect='N',
                                       drawConrLnSect='N') 
 
-FreeCAD.newDocument("despiece")
+FreeCAD.newDocument(estrName+"_despiece")
 reinf_bars.barSchedule(lstBarFamilies=lstRebarFam,
-               wColumns=[10,35,20,5,15,15],
-               hRows=10,
-               hText=3.0,
-                       hTextSketch=3.0)
+                       wColumns=[10,34,20,10,12,12],
+                       hRows=10,
+                       hText=2.5,
+                       hTextSketch=2.5)
 
 
 

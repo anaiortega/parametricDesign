@@ -25,15 +25,15 @@ structure and the bar schedule associated.
 Diameter of the reinforcement bars must be expressed in meters [m].
 Other length magnitudes should be expressed in meters [m].
 '''
-colorSectBars= (1.00,0.00,0.00) # red
-colorRefLines=(1.00,1.00,0.00) # yellow
-colorRebars=(0.00,1.00,0.00) # green
-colorArrows=(1.00,0.00,1.00) #magenta
-colorConcrete=(0.00,1.00,1.00) #cyan
-colorTextLeft=(0.00,0.00,1.00) #blue
-colorTextCenter=(0.50,0.50,0.50) #gray
-colorTextRight=(0.50,0.00,0.50) #purple
-colorRebarSketch=(0.00,0.00,0.50) # navy
+colorSectBars= (1.00,0.00,0.00) # red (color 1 Autocad)
+colorRefLines=(1.00,1.00,0.00) # yellow (color 2 Autocad)
+colorRebars=(0.00,1.00,0.00) # green (color 3 Autocad)
+colorArrows=(1.00,0.00,1.00) #magenta (color 6 Autocad)
+colorConcrete=(0.00,1.00,1.00) #cyan (color 4 Autocad)
+colorTextLeft=(0.00,0.00,1.00) #blue (color 5 Autocad)
+colorTextCenter=(0.50,0.50,0.50) #gray (color 9 Autocad)
+colorTextRight=(0.50,0.00,0.50) #purple (color 214 Autocad)
+colorRebarSketch=(0.50,0.50,0.00) # olive (color 54 Autocad)
 
 class genericConf(object):
     '''
@@ -481,7 +481,8 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
         pos='r'
     dt.put_text_in_pnt(text=tx,point=p5,hText=hText,color=txtColor,justif=justif)
     return ptoSketch,pos
-    
+
+
 def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
     '''Draw the shape skectch of the rbFam reinforcment bar in the bar 
     schedule. Return the total length of the rebar.
@@ -501,9 +502,9 @@ def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
         sketch.rotate(cog,Vector(0,0,1),-90)
         bound=sketch.BoundBox
     if bound.YLength==0:
-        fScale=(0.85*wColumn)/(bound.XLength)
+        fScale=(0.80*wColumn)/(bound.XLength)
     else:
-        fScale=min((0.9*wColumn)/(bound.XLength),hRow/(bound.YLength))
+        fScale=min((0.80*wColumn)/(bound.XLength),hRow/(bound.YLength))
     sketch.scale(fScale,cog)
     sketch.translate(ptCOG.sub(cog))
     p=Part.show(sketch)
@@ -580,18 +581,21 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
     pNbarras=pLinea.add(Vector(wColumns[0]+wColumns[1]+wColumns[2]+wColumns[3]-hText/2.0,-hText/2.0))
     dt.put_text_in_pnt('NUM.',pNbarras, hText, colorTextRight,"Right")
     pLbarra=pLinea.add(Vector(wColumns[0]+wColumns[1]+wColumns[2]+wColumns[3]+wColumns[4]-hText/2.0,-hText/2.0))
-    dt.put_text_in_pnt('LONG.(m)',pLbarra, hText, colorTextRight,"Right")
+    dt.put_text_in_pnt('LONG.',pLbarra.add(Vector(0,hText)), hText, colorTextRight,"Right")
+    dt.put_text_in_pnt('(m)',pLbarra.add(Vector(0,-hText)), hText, colorTextRight,"Right")
     pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
     dt.put_text_in_pnt('PESO',pPeso.add(Vector(0,hText)), hText, colorTextRight,"Right")
     dt.put_text_in_pnt('(Kg)',pPeso.add(Vector(0,-hText)), hText, colorTextRight,"Right")
     pLinea=p1.add(Vector(0,-hRows/2.0))
     pesoTotal=0
     # order list of rebar families by identifications
-    lstIds=[rbFam.identifier for rbFam in lstBarFamilies]
-#    orderLstBarFamilies=[x for _,x in sorted(zip(lstIds,lstBarFamilies))]
-    orderLstBarFamilies=[x for x,_ in sorted(zip(lstBarFamilies,lstIds),key=lambda x: x[1])]
-    print
-    for rbFam in orderLstBarFamilies:
+    lstIdsOrig=[rbFam.identifier for rbFam in lstBarFamilies]
+    lstOrdered=[i for i in lstIdsOrig]
+    dsu.sort_human(lstOrdered)
+#    orderLstBarFamilies=[x for x,_ in sorted(zip(lstBarFamilies,lstIds),key=lambda x: x[1])]
+    for k in lstOrdered:
+        index=lstIdsOrig.index(k)
+        rbFam=lstBarFamilies[index]
         formatLength='%.'+str(rbFam.genConf.decLengths)+'f'
         formatSpacing='%.'+str(rbFam.genConf.decSpacing)+'f'
         if rbFam.wire==None:
