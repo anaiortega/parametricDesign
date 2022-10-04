@@ -7,8 +7,10 @@ class SlopedWall(object):
     :ivar alpha: embankment slope (radians)
     :ivar Lambda: angle between the wall and the road axis (radians)
     '''
-    def __init__(self):
-
+    def __init__(self,alpha,Lambda):
+        self.alpha=alpha
+        self.Lambda=Lambda
+        
     def getAngleTopFace(self):
         '''Return the angle between the top face of the wall and the plane of 
         the foundation required to contain the embankment 

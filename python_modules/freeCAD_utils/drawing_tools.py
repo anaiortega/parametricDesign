@@ -12,7 +12,7 @@ import Draft
 from FreeCAD import Vector
 import FreeCADGui
 
-def put_text_in_pnt(text,point,hText,justif="Left",rotation=None):
+def put_text_in_pnt(text,point,hText,color,justif="Left",rotation=None):
     '''Draws in the active document of FreeCAD the text in the specified point 
     with the font size, justificacion ("Left", "Center" or "Right") and rotation
     (expressed in degrees) given as parameters. 
@@ -26,7 +26,9 @@ def put_text_in_pnt(text,point,hText,justif="Left",rotation=None):
     else:
         tx=Draft.make_text(text,point)
     tx.ViewObject.FontSize = hText
+    print('fontsize=',tx.ViewObject.FontSize)
     tx.ViewObject.Justification=justif
+    tx.ViewObject.TextColor=color
     return
 
     

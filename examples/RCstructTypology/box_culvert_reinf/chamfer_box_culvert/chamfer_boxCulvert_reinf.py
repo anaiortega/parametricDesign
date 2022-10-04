@@ -44,7 +44,7 @@ boxL=5 #length of the box culvert
 
 # Data  reinforcements
 cover=0.03
-reinfConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
+reinfConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.075,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='boxCulvert')
 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
 BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0} # bottom slab, bottom transv. rebars
@@ -66,6 +66,7 @@ LW_ext_hor={'fi':0.016,
             'gapEnd':-cover,
             'extrShapeStart':'fix270_len125',
             'extrShapeEnd':'fix270_len125',
+            'vectorLRef':Vector(-0.3,0.5),
             'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg),
             } 
 # left wall, external vert. rebars
@@ -89,8 +90,8 @@ LW_int_hor={'fi':0.016,
             'gapEnd':-cover,
             'extrShapeStart':'fix90_len125',
             'extrShapeEnd':'fix90_len125',
-            'vectorLRef':Vector(0.3,0.3),
-            'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg),
+            'vectorLRef':Vector(0.3,0.5),
+            'vectorLRefSec':Vector(0.3,0.35*boxC_int_hg),
              } 
 # left wall, internal vert. rebars
 LW_int_ver={'fi':0.016,
@@ -115,7 +116,7 @@ RW_ext_hor={'fi':0.016,
             'gapEnd':-cover,
             'extrShapeStart':'fix90_len125',
             'extrShapeEnd':'fix90_len125',
-            'vectorLRef':Vector(0.3,0.3),
+            'vectorLRef':Vector(0.3,0.5),
             'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg)}
 # right wall, external vert. rebars
 RW_ext_ver={'fi':0.016,
@@ -139,7 +140,8 @@ RW_int_hor={'fi':0.016,
             'gapEnd':-cover,
             'extrShapeStart':'fix270_len125',
             'extrShapeEnd':'fix270_len125',
-            'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg),
+            'vectorLRef':Vector(-0.3,0.5),
+            'vectorLRefSec':Vector(-0.3,0.35*boxC_int_hg),
             }
  # right wall, internal vert. rebars
 RW_int_ver={'fi':0.016,
@@ -241,7 +243,8 @@ int_p4b=int_p4a.add(Vector(chamfer_wd,chamfer_hg))
 lstPtsConcrSect=[[ext_p1,ext_p2,ext_p3,ext_p4,ext_p1],[int_p1a,int_p1b,int_p2b,int_p2a,int_p3a,int_p3b,int_p4b,int_p4a,int_p1a]]
 for lsc in lstPtsConcrSect:
     s=Part.makePolygon(lsc)
-    Part.show(s)
+    p=Part.show(s)
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor=reinf_bars.colorConcrete
 
 # Reinforcement
 lstRebarFam=list()
@@ -320,8 +323,8 @@ FreeCAD.newDocument("despiece")
 reinf_bars.barSchedule(lstBarFamilies=lstRebarFam,
                wColumns=[10,35,20,5,15,15],
                hRows=10,
-               hText=2.5,
-               hTextSketch=2.5)
+               hText=3.0,
+                       hTextSketch=3.0)
 
 
 
