@@ -26,7 +26,6 @@ def put_text_in_pnt(text,point,hText,color,justif="Left",rotation=None):
     else:
         tx=Draft.make_text(text,point)
     tx.ViewObject.FontSize = hText
-    print('fontsize=',tx.ViewObject.FontSize)
     tx.ViewObject.Justification=justif
     tx.ViewObject.TextColor=color
     return

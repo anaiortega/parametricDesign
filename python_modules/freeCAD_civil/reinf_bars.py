@@ -712,5 +712,26 @@ def arma8ptos(fi,recubrN,sepFi,radDobl,pto1,pto2,pto3,pto4,pto5,pto6,pto7,pto8,g
     armadura=arma.makeFillet(radDobl,arma.Edges)
     return armadura
 
+def rect_stirrup(genConf,identifier,diameter,nmbStirrups,width,height):
+    ''' define a closed rectangular stirrup for the quantities schedule
+    only, not for drawing it.
+    
+    :param genConf: instance of th class genericConf that defines generic
+          parameters like concrete and steel type, text format, ... 
+    :param identifier: identifier of the rebar family
+    :param diameter: diameter of the bar [m]
+    :param nmbStirrups: number of stirrups
+    :param width: width of the stirrup (in the axis of the bar)
+    :param height: height of the stirrup (in the axis of the bar)
+    '''
+    paux1=Vector(0,height)
+    paux2=Vector(width,height)
+    paux3=Vector(width,0)
+    paux4=Vector(0,0)
+    rbf=rebarFamily(genConf=genConf,identifier=identifier,diameter=diameter,nmbBars=nmbStirrups,lstPtsConcrSect=[paux1,paux2,paux3,paux4,paux1])
+    return rbf
+    
+
+    
     
     
