@@ -49,7 +49,7 @@ cover=0.03
 reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName=estrName+'_armados')
 # chamfers' rebar definition (diameter, spacement)
 ch_rb={'fi':12e-3,'s':0.30}
-# armadura longitudinal muretes (se dibujar· en detalle)
+# armadura longitudinal muretes (se dibujar√° en detalle)
 muret_ln={'fi':0.012,'s':0.30,'id':'15'} 
 # 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
@@ -325,7 +325,13 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       drawConrTrSect='N',
                                       drawConrLnSect='N')
 
-lastId=14
+muret_rf=rb.rebarFamily(
+    genConf=reinfConf,
+    identifier=muret_ln['id'],
+    diameter=muret_ln['fi'],
+    spacing==muret_ln['s'],
+    
+lastId=15
 chamfer1=rb.rebarFamily(
     genConf=reinfConf,
     identifier=str(lastId+1),

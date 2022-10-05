@@ -162,7 +162,7 @@ class rebarFamily(object):
            (defaults to None = no fixed length)
 
     '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=0,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None):
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None):
         self.genConf=genConf
         self.identifier=identifier 
         self.diameter=diameter
@@ -365,6 +365,8 @@ class rebarFamily(object):
         '''
         if self.spacing == 0:
             nBar=self.nmbBars
+        elif self.extensionLength:
+            nBar=int(self.extensionLength/self.spacing)+1
         else:
             vaux=self.fromToExtPts[1].sub(self.fromToExtPts[0])
             Laux=vaux.Length
@@ -504,7 +506,7 @@ def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
     if bound.YLength==0:
         fScale=(0.80*wColumn)/(bound.XLength)
     else:
-        fScale=min((0.80*wColumn)/(bound.XLength),hRow/(bound.YLength))
+        fScale=min((0.80*wColumn)/(bound.XLength),0.80*hRow/(bound.YLength))
     sketch.scale(fScale,cog)
     sketch.translate(ptCOG.sub(cog))
     p=Part.show(sketch)
