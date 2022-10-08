@@ -53,9 +53,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
         )
-    tr_bot_rf.createRebar()
+    tr_bot_rf.createLstRebar()
     tr_bot_rf.drawSectBars()
-    tr_bot_rf.drawRebar()
+    tr_bot_rf.drawLstRebar()
     
     # transversal bottom rebar family
     tr_top_rf=rb.rebarFamily(
@@ -72,9 +72,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
          )
-    tr_top_rf.createRebar()
+    tr_top_rf.createLstRebar()
     tr_top_rf.drawSectBars()
-    tr_top_rf.drawRebar()
+    tr_top_rf.drawLstRebar()
     ln_bot_rf=rb.rebarFamily(
         genConf=genConf,
         identifier=botLnRb['id'],
@@ -91,9 +91,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
         )
-    ln_bot_rf.createRebar()
+    ln_bot_rf.createLstRebar()
     ln_bot_rf.drawSectBars()
-    ln_bot_rf.drawRebar()
+    ln_bot_rf.drawLstRebar()
     ln_top_rf=rb.rebarFamily(
         genConf=genConf,
         identifier=topLnRb['id'],
@@ -110,9 +110,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
          )
-    ln_top_rf.createRebar()
+    ln_top_rf.createLstRebar()
     ln_top_rf.drawSectBars()
-    ln_top_rf.drawRebar()
+    ln_top_rf.drawLstRebar()
     # Concrete transversal cross-section
     if drawConrTrSect[0].lower()=='y':
         s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
@@ -168,9 +168,9 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         sectBarsSide='r',
         vectorLRefSec=Vector(-0.3,0.6*length)
         )
-    vert_left_rf.createRebar()
+    vert_left_rf.createLstRebar()
     vert_left_rf.drawSectBars()
-    vert_left_rf.drawRebar()
+    vert_left_rf.drawLstRebar()
     # vertical left rebar family
     vert_right_rf=rb.rebarFamily(
         genConf=genConf,
@@ -184,9 +184,9 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         sectBarsSide='l',
         vectorLRefSec=Vector(0.3,0.6*length)
         )
-    vert_right_rf.createRebar()
+    vert_right_rf.createLstRebar()
     vert_right_rf.drawSectBars()
-    vert_right_rf.drawRebar()
+    vert_right_rf.drawLstRebar()
     hor_left_rf=rb.rebarFamily(
         genConf=genConf,
         identifier=leftHorRb['id'],
@@ -201,9 +201,9 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         sectBarsSide='r',
         vectorLRefSec=Vector(-0.3,0.6*height)
         )
-    hor_left_rf.createRebar()
+    hor_left_rf.createLstRebar()
     hor_left_rf.drawSectBars()
-    hor_left_rf.drawRebar()
+    hor_left_rf.drawLstRebar()
     hor_right_rf=rb.rebarFamily(
         genConf=genConf,
         identifier=rightHorRb['id'],
@@ -218,9 +218,9 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         sectBarsSide='l',
         vectorLRefSec=Vector(0.3,0.6*height)
         )
-    hor_right_rf.createRebar()
+    hor_right_rf.createLstRebar()
     hor_right_rf.drawSectBars()
-    hor_right_rf.drawRebar()
+    hor_right_rf.drawLstRebar()
     # Concrete vertical cross-section
     if drawConrVertSect[0].lower()=='y':
         s=Part.makePolygon([vert_bl,vert_tl,vert_tr,vert_br,vert_bl])
@@ -296,9 +296,9 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             gapEnd=0
             )
         set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
-        tr_bot_rf.createRebar()
+        tr_bot_rf.createLstRebar()
         tr_bot_rf.drawSectBars()
-        tr_bot_rf.drawRebar()
+        tr_bot_rf.drawLstRebar()
         lstRebFam+=[tr_bot_rf]
     # transversal bottom rebar family
     if topTrnsRb:
@@ -317,9 +317,9 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             gapEnd=0
             )
         set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)    
-        tr_top_rf.createRebar()
+        tr_top_rf.createLstRebar()
         tr_top_rf.drawSectBars()
-        tr_top_rf.drawRebar()
+        tr_top_rf.drawLstRebar()
         lstRebFam+=[tr_top_rf]
     if botLnRb:
         ln_bot_rf=rb.rebarFamily(
@@ -339,9 +339,9 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             gapEnd=0
            )
         set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
-        ln_bot_rf.createRebar()
+        ln_bot_rf.createLstRebar()
         ln_bot_rf.drawSectBars()
-        ln_bot_rf.drawRebar()
+        ln_bot_rf.drawLstRebar()
         lstRebFam+=[ln_bot_rf]
     if topLnRb:
         ln_top_rf=rb.rebarFamily(
@@ -361,9 +361,9 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             gapEnd=0
             )
         set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
-        ln_top_rf.createRebar()
+        ln_top_rf.createLstRebar()
         ln_top_rf.drawSectBars()
-        ln_top_rf.drawRebar()
+        ln_top_rf.drawLstRebar()
         lstRebFam+=[ln_top_rf]
     # Concrete transversal cross-section
     if drawConrTrSect[0].lower()=='y':

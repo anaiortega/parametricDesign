@@ -434,7 +434,7 @@ stemW_TT_01=reinf_bars.rebarFamily(
 # the bar schedule
 listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,M1_7,M1_8,M1_9]
 for fa in listafamiliasArmad:
-    fa.createRebar()
+    fa.createLstRebar()
 # end  16.01.2018
 '''
 

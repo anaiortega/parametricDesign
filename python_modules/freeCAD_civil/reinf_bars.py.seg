@@ -8,7 +8,6 @@ __version__= "1.0"
 __email__= "ana.ortega@xcengineering.xyz "
 
 import math
-import bisect
 import Part, FreeCAD, math
 import Draft
 from FreeCAD import Vector
@@ -164,10 +163,8 @@ class rebarFamily(object):
     :ivar maxLrebar: maximum length of rebars (defaults to 12m)
     :ivar position: 'good' or 'poor' (equivalent to posI and posII in EHE). Is used to
                     calculate lap lengths when splitting bars- (defaults to 'poor')
-    :ivar compression: True if rebars in compression, False if rebars in tension.  Is used to
-                    calculate lap lengths when splitting bars- (defaults to False)  
     '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False):
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor':
         self.genConf=genConf
         self.identifier=identifier 
         self.diameter=diameter
@@ -194,11 +191,9 @@ class rebarFamily(object):
         self.extrShapeEnd=extrShapeEnd
         self.fixLengthStart=fixLengthStart
         self.fixLengthEnd=fixLengthEnd
-        self.lstWire=None 
+        self.wire=None 
         self.wireSect2=None
-        self.maxLrebar=maxLrebar
         self.position=position
-        self.compression=compression
     
     def drawSectBars(self,vTranslation=Vector(0,0,0)):
         '''Draw the rebar family as sectioned bars represented by circles in 
@@ -234,22 +229,18 @@ class rebarFamily(object):
         FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
         return
 
-    def drawLstRebar(self,vTranslation=Vector(0,0,0)):
-        if self.lstWire==None:
-            self.createLstRebar()
-        for rw in self.lstWire:
-            self.drawRebar(rw,vTranslation)
-    
-    def drawRebar(self,rebWire,vTranslation=Vector(0,0,0)):
+    def drawRebar(self,vTranslation=Vector(0,0,0)):
         '''Represent the bar family in the RC section as a bar in its 
         true shape.
 
         :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
         the drawing (defaults to Vector(0,0,0))
         '''
+        if self.wire==None:
+            self.createRebar()
         # copy of the rebar wire to be depicted and applying of the translation
         #flechas en extremos de barra
-        rebarDraw=rebWire.copy()
+        rebarDraw=self.wire.copy()
         rebarDraw.translate(vTranslation)
         rebarFillet= Draft.make_wire(rebarDraw)
         rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
@@ -274,15 +265,10 @@ class rebarFamily(object):
         ptoSketch,pos=rebarText(ptoIniEtiq,self.vectorLRef,self.identifier,self.diameter,self.spacing,self.nmbBars,self.genConf.texSize)
         # draw sketch
         wSketch=5*self.genConf.texSize ; hSketch=5*self.genConf.texSize
-        sketch=rebWire.copy()
+        sketch=self.wire.copy()
         bound=sketch.BoundBox
         cog=sketch.CenterOfMass
-        if bound.XLength==0:
-            fScale=hSketch/bound.YLength
-        elif bound.YLength==0:
-            fScale=wSketch/bound.XLength
-        else:
-            fScale=min(wSketch/bound.XLength,hSketch/bound.YLength)
+        fScale=min(wSketch/bound.XLength,hSketch/bound.YLength)
         sketch.scale(fScale,cog)
         bound=sketch.BoundBox
         ptoCDG=ptoSketch-Vector(bound.XLength/2,0) if pos=='r' else ptoSketch+Vector(bound.XLength/2,0)
@@ -293,20 +279,18 @@ class rebarFamily(object):
 #        drawMiniSketchRebar(rbFam=self,ptCOG=ptoSketch,wColumn=10*self.genConf.texSize,hRow=10*self.genConf.texSize,hText=0)
         return
 
-    def createLstRebar(self):
+    def createRebar(self):
         '''Create the wire that represents the true shape of a bar in the 
         family. In case of variable shape, a second wire is created according 
         to the shape defined for section2.
         '''
-        lstPtRFam=self.getLstPtsRebar(self.lstPtsConcrSect)
-        self.lstWire=self.getLstRebars(lstPtRFam)
-#        self.lstWireLengths=[round(edg.Length,self.genConf.decLengths) for edg in self.wire.Edges]
+        self.wire=self.getRebar(self.lstPtsConcrSect)
+        self.wireLengths=[round(edg.Length,self.genConf.decLengths) for edg in self.wire.Edges]
         if len(self.lstPtsConcrSect2) > 0:
-            self.wireSect2=self.getLstPtsRebar(self.lstPtsConcrSect2)
+            self.wireSect2=self.getRebar(self.lstPtsConcrSect2)
             self.wireSect2Lengths=[round(edg.Length,self.genConf.decLengths) for edg in self.wireSect2.Edges]
-        
 
-    def getLstPtsRebar(self,lstPtsConcr):
+    def getRebar(self,lstPtsConcr):
         '''Return the wire that represents the true shape of the bar defined
         by the points of the concrete section listed in lstPtsConcr.
 
@@ -329,102 +313,55 @@ class rebarFamily(object):
             listaaux.append(lstPtosAux[i].add(vauxn))
             listaaux.append(lstPtosAux[i+1].add(vauxn))
 
-        lstPtsRebar=[listaaux[0]]
+        lstPtsArm=[listaaux[0]]
         for i in range (1,npuntos-1):
             pint=geom_utils.int2lines(listaaux[2*(i-1)],listaaux[2*(i-1)+1],listaaux[2*i],listaaux[2*i+1])
-            lstPtsRebar.append(pint)
+            lstPtsArm.append(pint)
 
-        lstPtsRebar.append(listaaux[2*(npuntos-1)-1])
+        lstPtsArm.append(listaaux[2*(npuntos-1)-1])
         
         # Start extremity: gaps, straight elongation, hooks
-        vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
+        vaux=lstPtsArm[1].sub(lstPtsArm[0]).normalize()
         if self.fixLengthStart != None:
-            lstPtsRebar[0]=lstPtsRebar[1].sub(vaux.multiply(self.fixLengthStart))
+            lstPtsArm[0]=lstPtsArm[1].sub(vaux.multiply(self.fixLengthStart))
         else:
-            lstPtsRebar[0]=lstPtsRebar[0].sub(vaux.multiply(self.gapStart))
+            lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(self.gapStart))
         if self.extrShapeStart is not None:
             extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeStart)
-            vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
+            vaux=lstPtsArm[1].sub(lstPtsArm[0]).normalize()
             if extrShAng == 0:  #straight elongation
-                lstPtsRebar[0]=lstPtsRebar[0].sub(vaux.multiply(extrShLn))
+                lstPtsArm[0]=lstPtsArm[0].sub(vaux.multiply(extrShLn))
             else: #hook
-                lstPtsRebar[0]=lstPtsRebar[0].add(vaux.multiply(self.diameter/2.))
+                lstPtsArm[0]=lstPtsArm[0].add(vaux.multiply(self.diameter/2.))
                 vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
                 vauxHook.normalize()
-                firstPoint=lstPtsRebar[0].add(vauxHook.multiply(extrShLn))
-                lstPtsRebar.insert(0,firstPoint)
+                firstPoint=lstPtsArm[0].add(vauxHook.multiply(extrShLn))
+                lstPtsArm.insert(0,firstPoint)
 #                self.lstCover.insert(0,0)
                 
         # End extremity: gaps, straight elongation, hooks
-        vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
+        vaux=lstPtsArm[-1].sub(lstPtsArm[-2]).normalize()
         if self.fixLengthEnd != None:
-            lstPtsRebar[-1]=lstPtsRebar[-2].add(vaux.multiply(self.fixLengthEnd))
+            lstPtsArm[-1]=lstPtsArm[-2].add(vaux.multiply(self.fixLengthEnd))
         else:
-            lstPtsRebar[-1]=lstPtsRebar[-1].add(vaux.multiply(self.gapEnd))
+            lstPtsArm[-1]=lstPtsArm[-1].add(vaux.multiply(self.gapEnd))
         if self.extrShapeEnd is not None:
             extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeEnd)
-            vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
+            vaux=lstPtsArm[-1].sub(lstPtsArm[-2]).normalize()
             if extrShAng == 0:  #straight elongation
-                lstPtsRebar[-1]=lstPtsRebar[-1].add(vaux.multiply(extrShLn))
+                lstPtsArm[-1]=lstPtsArm[-1].add(vaux.multiply(extrShLn))
             else: #hook
-                lstPtsRebar[-1]=lstPtsRebar[-1].sub(vaux.multiply(self.diameter/2.))
+                lstPtsArm[-1]=lstPtsArm[-1].sub(vaux.multiply(self.diameter/2.))
                 vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
                 vauxHook.normalize()
-                endPoint=lstPtsRebar[-1].add(vauxHook.multiply(extrShLn))
-                lstPtsRebar.append(endPoint)
-                 
+                endPoint=lstPtsArm[-1].add(vauxHook.multiply(extrShLn))
+                lstPtsArm.append(endPoint)
 #                self.lstCover.append(0)
         
-        return lstPtsRebar
-        
-        # return rebarWire
-                 
-    def getLstRebars(self,lstPtsRebar):
-        '''Checks the length of the rebar defined by the list of points lstPtsRebar. If 
-        it is less than maxLrebar returns a list with the wire defined by those points,
-        otherwise, the rebar is splitted in pieces of length less or equal than maxLrebar,
-        and a list of wires is returned.
+        lstLines=[Part.makeLine(lstPtsArm[i],lstPtsArm[i+1])for i in range(len(lstPtsArm)-1)]
+        rebarWire=Part.Wire(lstLines)
+        return rebarWire
 
-        :param lstPtsRebar: list of points that define the rebar in its entire length.
-        '''
-        print('lista ptos original=',lstPtsRebar)
-        lstRebars=list()
-        lstDist=[lstPtsRebar[i].distanceToPoint(lstPtsRebar[i+1]) for i in range(len(lstPtsRebar)-1)]
-        if sum(lstDist) <= self.maxLrebar:
-            lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
-            rebarWire=Part.Wire(lstLinRebar)
-            lstRebars.append(rebarWire)
-        else:
-            # calculate slap length
-            eta1=1.0 if self.position=='good' else 0.7
-            contrReb=Lcalc.RebarController(concreteCover=self.genConf.cover, spacing=self.spacing, eta1=eta1, compression= self.compression) # create rebar controllers to calculate anchor or gap lengths
-            lapLenght=contrReb.getLapLength(concrete= self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= 1.0)
-            
-            lstCumDist=[0]+[sum(lstDist[:y]) for y in range(1, len(lstDist) + 1)] # cummulated lengths
-            while lstCumDist[-1] > self.maxLrebar:
-                indLmax=bisect.bisect_left(lstCumDist,self.maxLrebar)# find the position of maxLrebar in lstCumDist
-                lstPtsReb1=lstPtsRebar[:indLmax]
-                vaux=lstPtsRebar[indLmax].sub(lstPtsRebar[indLmax-1])
-                vaux.normalize()
-                LtoAdd1=self.maxLrebar if indLmax==0 else self.maxLrebar-lstCumDist[indLmax-1]
- #               LtoAdd1=self.maxLrebar-lstCumDist[indLmax-1]
-                lastPnt1=lstPtsReb1[-1].add(LtoAdd1*vaux)
-                lstPtsReb1.append(lastPnt1)
-                lstLinRebar1=[Part.makeLine(lstPtsReb1[i],lstPtsReb1[i+1])for i in range(len(lstPtsReb1)-1)]
-                lstRebars.append(Part.Wire(lstLinRebar1))
-                # next rebar (rest)
-                lstPtsRebar=lstPtsRebar[indLmax:]
-#                length2add=lstDist[indLmax-1]-LtoAdd1+lapLenght
-#                firstPnt=lstPtsRebar[0].add(-length2add*vaux)
-                firstPnt=lastPnt1.add(-lapLenght*vaux)
-                lstPtsRebar.insert(0,firstPnt)
-                lstDist=[lstPtsRebar[i].distanceToPoint(lstPtsRebar[i+1]) for i in range(len(lstPtsRebar)-1)]
-                lstCumDist=[0]+[sum(lstDist[:y]) for y in range(1, len(lstDist) + 1)] # cummulated lengths
-            lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
-            lstRebars.append(Part.Wire(lstLinRebar))
-        return lstRebars
-        
- 
     def getNumberOfBars(self):
         '''Return the number of bars in the family.
         '''
@@ -517,8 +454,16 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
         pp5=p4.add(Vector(signo*hText*len(idArm),0))
         c1=Part.Arc(pp1,p3,pp3)
         c2=Part.Arc(pp2,pp5,pp4)
+#        pl=FreeCAD.Placement(); pl.move(p3)
+#        c1=Draft.make_circle(radius=hText,placement=pl,startangle=90,endangle=270)
+#        pl=FreeCAD.Placement(); pl.move(pp5)
+#        c2=Draft.make_circle(radius=hText,placement=pl,startangle=90,endangle=-90)
         l1=Part.makeLine(pp1,pp2)
         l2=Part.makeLine(pp3,pp4)
+        # FreeCADGui.ActiveDocument.getObject(c1.Name).LineColor = colorRefLines
+        # FreeCADGui.ActiveDocument.getObject(c2.Name).LineColor = colorRefLines
+#        FreeCADGui.ActiveDocument.getObject(l1.Name).LineColor = colorRefLines
+#        FreeCADGui.ActiveDocument.getObject(l2.Name).LineColor = colorRefLines
         etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
         p=Part.show(etiq)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = colorRefLines
@@ -542,20 +487,19 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
     return ptoSketch,pos
 
 
-def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2):
-    '''Draw the shape skectch of the reinforcment bar in the bar 
+def drawSketchRebarShape(rbFam,ptCOG,wColumn,hRow,hText):
+    '''Draw the shape skectch of the rbFam reinforcment bar in the bar 
     schedule. Return the total length of the rebar.
 
-    :param rW: rebar wire
+    :param rbFam: family of rebars to be represented.
     :param ptCOG:  point where to place the center of gravity of the sketch.
     :param wColumn: width of the column 'Shape' in the bar schedule.
     :param hRow: height of the row in the bar schedule.
     :param hText: height of the text to label the sketch.
-    :param decLengths: decimal posiitions
     '''
     
-    formatLength='%.'+str(decLengths)+'f'
-    sketch=rW.copy()
+    formatLength='%.'+str(rbFam.genConf.decLengths)+'f'
+    sketch=rbFam.wire.copy()
     bound=sketch.BoundBox
     cog=sketch.CenterOfMass
     if bound.YLength > bound.XLength:
@@ -570,14 +514,13 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2):
     p=Part.show(sketch)
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorRebarSketch
     #Texts
-    lstWireLengths=[round(edg.Length,decLengths) for edg in rW.Edges]
-    lengthsText=[str(i) for i in lstWireLengths]
-    totalLength=round(sum(lstWireLengths),decLengths)
+    lengthsText=[str(i) for i in rbFam.wireLengths]
+    totalLength=round(sum(rbFam.wireLengths),rbFam.genConf.decLengths)
     totalLengthTxt=formatLength %totalLength
-    # if rbFam.wireSect2 != None:
-    #     lengthsText=[(lengthsText[i]+'..'+str(rbFam.wireSect2Lengths[i])) if rbFam.lstWireLengths[i]!=rbFam.wireSect2Lengths[i] else lengthsText[i] for i in range(len(rbFam.lstWireLengths))]
-    #     totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
-    #     totalLengthTxt+='...'+ formatLength %sum(rbFam.wireSect2Lengths)
+    if rbFam.wireSect2 != None:
+        lengthsText=[(lengthsText[i]+'..'+str(rbFam.wireSect2Lengths[i])) if rbFam.wireLengths[i]!=rbFam.wireSect2Lengths[i] else lengthsText[i] for i in range(len(rbFam.wireLengths))]
+        totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
+        totalLengthTxt+='...'+ formatLength %sum(rbFam.wireSect2Lengths)
     sketchEdges=sketch.Edges
     for i in zip(sketchEdges,lengthsText):
         edg=i[0]
@@ -615,21 +558,17 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
     '''
     #lstBarFamilies=familiasArmad.items() #creamos una lista a partir del diccionario para poder ordenar los valores
     #lstBarFamilies.sort()
-    for rf in lstBarFamilies:
-        if rf.lstWire==None:
-            rf.createLstRebar()
     anchoTotal=sum(wColumns)
-    numRows=sum([len(rb.lstWire) for rb in lstBarFamilies])
-    w=Draft.makeRectangle(anchoTotal,hRows*(numRows+1))
+    w=Draft.makeRectangle(anchoTotal,hRows*(len(lstBarFamilies)+1))
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
     p1=Vector(0,0)
-    p2=p1.add(Vector(0,hRows*(numRows+1)))
+    p2=p1.add(Vector(0,hRows*(len(lstBarFamilies)+1)))
     for i in range (0,len(wColumns)):
         p1=p1.add(Vector(wColumns[i],0))
         p2=p2.add(Vector(wColumns[i],0))
         w=Draft.makeLine(p1,p2)
         FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
-    p1=Vector(0,hRows*(numRows))
+    p1=Vector(0,hRows*(len(lstBarFamilies)))
     p2=p1.add(Vector(anchoTotal,0))
     w=Draft.makeLine(p1,p2)
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
@@ -663,32 +602,31 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
         rbFam=lstBarFamilies[index]
         formatLength='%.'+str(rbFam.genConf.decLengths)+'f'
         formatSpacing='%.'+str(rbFam.genConf.decSpacing)+'f'
-        if rbFam.lstWire==None:
-            rbFam.createLstRebar()
-        for i in range(len(rbFam.lstWire)):
-            #identifier
-            pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
-            dt.put_text_in_pnt(rbFam.identifier,pPos, hText,colorTextLeft)
-            #sketch
-            pEsq=pLinea.add(Vector(wColumns[0] + wColumns[1]/2.0,0))
-            barLength,barLengthTxt=drawSketchRebarShape(rbFam.lstWire[i],pEsq,wColumns[1],hRows,hTextSketch,rbFam.genConf.decLengths)
-            pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
-            if rbFam.spacing ==0:
-                tx='%%C' + str(int(1000*rbFam.diameter))
-            else:
-                tx='%%C' + str(int(1000*rbFam.diameter)) + 'c/' + formatSpacing %rbFam.spacing
-            dt.put_text_in_pnt(tx,pFiSep, hText,colorTextLeft)
-            #number of bars
-            pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
-            nBar=rbFam.getNumberOfBars()
-            dt.put_text_in_pnt(str(nBar),pNbarras, hText, colorTextRight,"Right")
-            pbarLength=pLinea.add(Vector(sum(wColumns[:5])-hText/2.0,-hText/2.0))
-            dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, colorTextRight,"Right")
-            pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
-            peso=nBar*barLength*rbFam.getUnitWeight()
-            dt.put_text_in_pnt(formatLength %peso,pPeso, hText, colorTextRight,"Right")
-            pesoTotal += peso
-            pLinea=pLinea.add(Vector(0,-hRows))
+        if rbFam.wire==None:
+            rbFam.createRebar()
+        #identifier
+        pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
+        dt.put_text_in_pnt(rbFam.identifier,pPos, hText,colorTextLeft)
+        #sketch
+        pEsq=pLinea.add(Vector(wColumns[0] + wColumns[1]/2.0,0))
+        barLength,barLengthTxt=drawSketchRebarShape(rbFam,pEsq,wColumns[1],hRows,hTextSketch)
+        pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
+        if rbFam.spacing ==0:
+            tx='%%C' + str(int(1000*rbFam.diameter))
+        else:
+            tx='%%C' + str(int(1000*rbFam.diameter)) + 'c/' + formatSpacing %rbFam.spacing
+        dt.put_text_in_pnt(tx,pFiSep, hText,colorTextLeft)
+        #number of bars
+        pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
+        nBar=rbFam.getNumberOfBars()
+        dt.put_text_in_pnt(str(nBar),pNbarras, hText, colorTextRight,"Right")
+        pbarLength=pLinea.add(Vector(sum(wColumns[:5])-hText/2.0,-hText/2.0))
+        dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, colorTextRight,"Right")
+        pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
+        peso=nBar*barLength*rbFam.getUnitWeight()
+        dt.put_text_in_pnt(formatLength %peso,pPeso, hText, colorTextRight,"Right")
+        pesoTotal += peso
+        pLinea=pLinea.add(Vector(0,-hRows))
     pTotal=pLinea.add(Vector(anchoTotal-hText/2.0,0))
     dt.put_text_in_pnt('TOTAL Kg:   ' + formatLength %pesoTotal,pTotal, hText, colorTextRight,"Right")
     return
@@ -706,9 +644,9 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
     '''
     f=open(outputFileName,'w')
     for rbFam in lstBarFamilies:
-        if rbFam.lstWire==None:
-            rbFam.createLstRebar()
-        totalLength=sum(rbFam.lstWireLengths)
+        if rbFam.wire==None:
+            rbFam.createRebar()
+        totalLength=sum(rbFam.wireLengths)
         if rbFam.wireSect2 != None:
             totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
         s='currentUnitPriceQ.quantities.append(MeasurementRecord(c= \"'+ str(rbFam.identifier) +'\", uds= ' +str(rbFam.getNumberOfBars()) + ', l= ' + str(totalLength) + ', an= ' + str(rbFam.getUnitWeight())  + ')) \n'

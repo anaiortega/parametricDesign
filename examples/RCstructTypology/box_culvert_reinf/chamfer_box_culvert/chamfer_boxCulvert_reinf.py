@@ -41,7 +41,7 @@ LW_th=0.30 # thickness of the left wall
 RW_th=0.30 # thickness of the right wall
 TS_th=0.30 # thickness of the top slab
 BS_th=0.30 # thickness of the bottom slab
-boxL=5 #length of the box culvert
+boxL=25 #length of the box culvert
 muret_hg=0.30
 
 # Data  reinforcements
@@ -365,7 +365,7 @@ chamfer1_rf=rb.rebarFamily(
     extrShapeStart='fix225_len150',
     extrShapeEnd='fix315_len150',
     )
-chamfer1_rf.drawRebar()
+chamfer1_rf.drawLstRebar()
 lastId+=1
 chamfer2_rf=rb.rebarFamily(
     genConf=reinfConf,
@@ -381,7 +381,7 @@ chamfer2_rf=rb.rebarFamily(
     extrShapeStart='fix225_len150',
     extrShapeEnd='fix315_len150',
     )
-chamfer2_rf.drawRebar()
+chamfer2_rf.drawLstRebar()
 lastId+=1
 chamfer3_rf=rb.rebarFamily(
     genConf=reinfConf,
@@ -397,7 +397,7 @@ chamfer3_rf=rb.rebarFamily(
     extrShapeStart='fix225_len150',
     extrShapeEnd='fix315_len150',
     )
-chamfer3_rf.drawRebar()
+chamfer3_rf.drawLstRebar()
 lastId+=1
 chamfer4_rf=rb.rebarFamily(
     genConf=reinfConf,
@@ -413,7 +413,7 @@ chamfer4_rf=rb.rebarFamily(
     extrShapeStart='fix225_len150',
     extrShapeEnd='fix315_len150',
     )
-chamfer4_rf.drawRebar()
+chamfer4_rf.drawLstRebar()
 lastId+=1
 lstRebarFam+=[chamfer1_rf,chamfer2_rf,chamfer3_rf,chamfer4_rf]
 # cercos del murete
@@ -437,6 +437,7 @@ if botSlab_st['nmStirr'] > 0:
                              )
     lastId+=1
     lstRebarFam+=[stirBotSlab_rf]
+
     
 if topSlab_st['nmStirr'] > 0:
     stirTopSlab_rf=rb.rect_stirrup(genConf=reinfConf,
@@ -448,8 +449,9 @@ if topSlab_st['nmStirr'] > 0:
                              )
     lastId+=1
     lstRebarFam+=[stirTopSlab_rf]
+
     
-if walls_st['nmStirr'] > 0:
+if walls_st['nmStirr']>0:
     stirWalls_rf=rb.rect_stirrup(genConf=reinfConf,
                              identifier=str(lastId)+'lc',
                              diameter=walls_st['fi'],
@@ -459,6 +461,7 @@ if walls_st['nmStirr'] > 0:
                              )
     lastId+=1
     lstRebarFam+=[stirWalls_rf]
+    
 
 FreeCAD.newDocument(estrName+"_despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
