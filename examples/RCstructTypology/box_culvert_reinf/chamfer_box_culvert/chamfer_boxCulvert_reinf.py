@@ -43,26 +43,35 @@ TS_th=0.30 # thickness of the top slab
 BS_th=0.30 # thickness of the bottom slab
 boxL=25 #length of the box culvert
 muret_hg=0.30
-
+muret_th=0.30
 # Data  reinforcements
 cover=0.03
-reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName=estrName+'_armados')
+reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+docName=estrName+'_armados'
+FreeCAD.newDocument(docName)
+
 # chamfers' longitudinal rebar definition (diameter, spacement)
 ch_rb={'fi':12e-3,'s':0.30}
 # armadura longitudinal muretes (no se dibujan, sólo aparecen en despiece)
-muret_ln={'fi':0.012,'id':'15','nmBars':2*4,'gap':0.15} # diameter, ID, number of rebars, extension of the rebar through the deck of the box
+muret_ln={'fi':0.016,'id':'15','nmBars':2*3,'gap':0.15} # diameter, ID, number of rebars, extension of the rebar through the deck of the box
+
 # cercos muretes (no se dibujan, sólo aparecen en despiece)
 fiStirr=12e-3
-muret_st={'fi':fiStirr,'nmStirr':20,'B':0.2+fiStirr,'H':muret_hg+TS_th-2*cover-fiStirr} # definición de los cercos del murete (diámetro, número de cercos, ancho y alto medidos en el eje del cerco)
+sepStirr=0.20
+nmStirr=2*(int((boxC_int_wd+LW_th+RW_th)/sepStirr+1))
+bStirr=muret_th-2*cover-fiStirr
+hStirr=muret_hg+TS_th-2*cover-fiStirr
+muret_st={'fi':fiStirr,'nmStirr':nmStirr,'B':bStirr,'H':hStirr} # definición de los cercos del murete (diámetro, número de cercos, ancho y alto medidos en el eje del cerco)
+
 # Cercos losa de cimentación (si no hay cercos definir nmStirr=0)
 fiStirr=12e-3
 botSlab_st={'fi':fiStirr,'nmStirr':20,'B':0.2+fiStirr,'H':BS_th-2*cover-fiStirr}
 # Cercos dintel
 fiStirr=12e-3
 topSlab_st={'fi':fiStirr,'nmStirr':20,'B':0.2+fiStirr,'H':TS_th-2*cover-fiStirr}
-# Cercos muros
+# Cercos muros  (NO)
 fiStirr=12e-3
-walls_st={'fi':fiStirr,'nmStirr':20,'B':0.2+fiStirr,'H':LW_th-2*cover-fiStirr}
+walls_st={'fi':fiStirr,'nmStirr':0,'B':0.2+fiStirr,'H':LW_th-2*cover-fiStirr}
 
 #Armadura principal marco 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars

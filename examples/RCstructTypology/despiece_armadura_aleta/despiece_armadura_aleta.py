@@ -130,7 +130,8 @@ Ph3_2=Vector(0,bCoron+0.2*pendTrasdos)
 Ph3_3=Vector(lMur/(hMurMax-hMurMin)*0.2,bCoron)
 Ph3_4=Vector(lMur/(hMurMax-hMurMin)*0.2,0)
 
-aletGenConf=reinf_bars.genericConf(cover=recNominal,xcConcr=concr,xcSteel=steel,texSize=hTextsArmados,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='aleta')
+aletGenConf=reinf_bars.genericConf(cover=recNominal,xcConcr=concr,xcSteel=steel,texSize=hTextsArmados,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+FreeCAD.newDocument(estrName+'_armados')
 
 # Armaduras zapata
 # armadura transversal inferior

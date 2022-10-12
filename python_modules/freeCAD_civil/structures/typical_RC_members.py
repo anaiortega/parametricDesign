@@ -8,7 +8,7 @@ import FreeCADGui
 
 colorConcrete=(0.00,1.00,1.00) #cyan
 
-def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=1):
+def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=1,coverLat=None):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
 
@@ -25,8 +25,11 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     :param drawConrTrSect: 'Y' to draw the transversal concrete cross-section  (defaults to 'Y')
     :param drawConrLnSect: 'Y' to draw the longitudinal concrete cross-section  (defaults to 'Y')
     :param factGap: the gapSart and gapEnd are made equal to factGap*cover
+    :param coverLat: lateral cover (if None, genConf.cover is used)
     '''
-           
+    cover=genConf.cover
+    if not coverLat:
+        coverLat=genConf.cover
     # Concrete points of the transverse section
     tr_bl=anchPtTrnsSect
     tr_tl=tr_bl+Vector(0,thickness)
@@ -45,8 +48,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         diameter=botTrnsRb['fi'],
         spacing=botTrnsRb['s'],
         lstPtsConcrSect=[tr_tl,tr_bl,tr_br,tr_tr],
+        lstCover=[coverLat,cover,coverLat],
         coverSide='l',
-        vectorLRef=Vector(-0.3,-0.4),
+        vectorLRef=Vector(-0.15,-0.35),
         fromToExtPts=[ln_bl+Vector(botTrnsRb['distRFstart'],0),ln_br-Vector(botTrnsRb['distRFend'],0)],
         sectBarsSide='l',
         vectorLRefSec=Vector(0.6*length,-0.3),
@@ -64,8 +68,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         diameter=topTrnsRb['fi'],
         spacing=topTrnsRb['s'],
         lstPtsConcrSect=[tr_bl,tr_tl,tr_tr,tr_br],
+        lstCover=[coverLat,cover,coverLat],
         coverSide='r',
-        vectorLRef=Vector(-0.3,0.4),
+        vectorLRef=Vector(-0.15,0.35),
         fromToExtPts=[ln_tl+Vector(topTrnsRb['distRFstart'],0),ln_tr-Vector(topTrnsRb['distRFend'],0)],
         sectBarsSide='r',
         vectorLRefSec=Vector(0.6*length,0.3),
@@ -82,12 +87,12 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         spacing=botLnRb['s'],
         lstPtsConcrSect=[ln_tl,ln_bl,ln_br,ln_tr],
         coverSide='l',
-        lstCover=[genConf.cover,genConf.cover+botTrnsRb['fi'],genConf.cover],
+        lstCover=[coverLat,genConf.cover+botTrnsRb['fi'],coverLat],
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[tr_bl+Vector(botLnRb['distRFstart'],0),tr_br-Vector(botLnRb['distRFend'],0)],
         coverSectBars=genConf.cover+botTrnsRb['fi'],
         sectBarsSide='l',
-        vectorLRefSec=Vector(0.6*width,-0.3),
+        vectorLRefSec=Vector(0.5*width,-0.3),
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
         )
@@ -101,12 +106,12 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         spacing=topLnRb['s'],
         lstPtsConcrSect=[ln_bl,ln_tl,ln_tr,ln_br],
         coverSide='r',
-        lstCover=[genConf.cover,genConf.cover+topTrnsRb['fi'],genConf.cover],
+        lstCover=[coverLat,genConf.cover+topTrnsRb['fi'],coverLat],
         vectorLRef=Vector(-0.3,0.4),
         fromToExtPts=[tr_tl+Vector(topLnRb['distRFstart'],0),tr_tr-Vector(topLnRb['distRFend'],0)],
         coverSectBars=genConf.cover+topTrnsRb['fi'],
         sectBarsSide='r',
-        vectorLRefSec=Vector(0.6*width,0.3),
+        vectorLRefSec=Vector(0.5*width,0.3),
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
          )
@@ -258,7 +263,15 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
     :param genConf: instance of the reinf_bars.genericConf class
     :param angTrns: angle (degrees) between the horizontal and the brick width dimension
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
-    :param botTrnsRb: data for bottom transversal rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family, 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
+    :param botTrnsRb: data for bottom transversal rebar family expressed as a dictionary of type 
+           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
+           where 'id' is the identificacion of the rebar family, 
+                  'fi' is the diameter of the rebar, 
+                   's' is the spacement, 
+                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
+                   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
+                   'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
+                              slap length when splitting rebars
     :param topTrnsRb: same for the top transversal rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
@@ -293,7 +306,8 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             sectBarsSide='l',
             vectorLRefSec=Vector(0.6*length,-0.3),
             gapStart=0,
-            gapEnd=0
+            gapEnd=0,
+            position=botTrnsRb['position'],
             )
         set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
         tr_bot_rf.createLstRebar()
@@ -314,7 +328,8 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             sectBarsSide='r',
             vectorLRefSec=Vector(0.6*length,0.3),
             gapStart=0,
-            gapEnd=0
+            gapEnd=0,
+            position=topTrnsRb['position'],
             )
         set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)    
         tr_top_rf.createLstRebar()
@@ -336,7 +351,8 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             sectBarsSide='l',
             vectorLRefSec=Vector(0.6*width,-0.3),
             gapStart=0,
-            gapEnd=0
+            gapEnd=0,
+            position=botLnRb['position'],
            )
         set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
         ln_bot_rf.createLstRebar()
@@ -358,7 +374,8 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             sectBarsSide='r',
             vectorLRefSec=Vector(0.6*width,0.3),
             gapStart=0,
-            gapEnd=0
+            gapEnd=0,
+            position=topLnRb['position'],
             )
         set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
         ln_top_rf.createLstRebar()

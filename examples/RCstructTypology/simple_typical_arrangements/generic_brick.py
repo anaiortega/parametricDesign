@@ -9,7 +9,8 @@ from materials.ec2 import EC2_materials
 concr=EC2_materials.C25
 steel=EC2_materials.S500C
 
-genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='genericBrick')
+genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+FreeCAD.newDocument(estrName+'genericBrick')
 
 width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars

@@ -18,7 +18,8 @@ H=0.65
 Lmax_rebar=12 # maxium lenght of rebar
 cover=0
 
-reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName=estrName+'_reinf')
+reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+FreeCAD.newDocument(estrName+'_armados')
 pt0=Vector(0,H)
 pt1=Vector(0,0)
 pt2=Vector(B,0)

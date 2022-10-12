@@ -53,9 +53,10 @@ class genericConf(object):
     :ivar decLengths: decimal positions to calculate and express lengths and
                       their derivated magnitudes, like weight  (defaults to 2).
     :ivar decSpacing: decimal positions to express the spacing (defaults to 2).
-    :ivar docName: name of the FreeCAD document where to draw the RC sections
+    :ivar sketchScale: scale of the sketch that represents the rebar in the text
+                       relative to the text size (defaults to 5)
     '''
-    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,docName='reinfDrawing'):
+    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,sketchScale=5):
         self.cover=cover
         self.texSize=texSize
         self.xcConcr=xcConcr
@@ -63,9 +64,10 @@ class genericConf(object):
         self.dynamEff=dynamEff
         self.decLengths=decLengths
         self.decSpacing=decSpacing
-        self.doc=FreeCAD.newDocument(docName)
+        self.sketchScale=sketchScale
         if Code == 'EC2':
             from materials.ec2 import EC2_limit_state_checking as Lcalc # doesn't work if only imported here
+            
 
 
 class rebarFamily(object):
@@ -166,8 +168,9 @@ class rebarFamily(object):
                     calculate lap lengths when splitting bars- (defaults to 'poor')
     :ivar compression: True if rebars in compression, False if rebars in tension.  Is used to
                     calculate lap lengths when splitting bars- (defaults to False)  
+    :ivar drawSketch: True to draw mini-sketch of the rebars besides the text (defaults to True)
     '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False):
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
         self.genConf=genConf
         self.identifier=identifier 
         self.diameter=diameter
@@ -199,6 +202,7 @@ class rebarFamily(object):
         self.maxLrebar=maxLrebar
         self.position=position
         self.compression=compression
+        self.drawSketch=drawSketch
     
     def drawSectBars(self,vTranslation=Vector(0,0,0)):
         '''Draw the rebar family as sectioned bars represented by circles in 
@@ -255,7 +259,7 @@ class rebarFamily(object):
         rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
         rebarFillet.FilletRadius=rad
         FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = colorRebars
-        self.genConf.doc.recompute()
+        FreeCADGui.ActiveDocument.Document.recompute()
 #        Part.show(rebarDraw)
         rebarEdges=rebarDraw.Edges
         #arrow in extremity 1
@@ -273,23 +277,25 @@ class rebarFamily(object):
         ptoIniEtiq=rebarEdges[laux.index(max(laux))].CenterOfMass
         ptoSketch,pos=rebarText(ptoIniEtiq,self.vectorLRef,self.identifier,self.diameter,self.spacing,self.nmbBars,self.genConf.texSize)
         # draw sketch
-        wSketch=5*self.genConf.texSize ; hSketch=5*self.genConf.texSize
-        sketch=rebWire.copy()
-        bound=sketch.BoundBox
-        cog=sketch.CenterOfMass
-        if bound.XLength==0:
-            fScale=hSketch/bound.YLength
-        elif bound.YLength==0:
-            fScale=wSketch/bound.XLength
-        else:
-            fScale=min(wSketch/bound.XLength,hSketch/bound.YLength)
-        sketch.scale(fScale,cog)
-        bound=sketch.BoundBox
-        ptoCDG=ptoSketch-Vector(bound.XLength/2,0) if pos=='r' else ptoSketch+Vector(bound.XLength/2,0)
-#        ptoSketch=ptoTxt+Vector(0,-(self.genConf.texSize+bound.YLength/2))
-        sketch.translate(ptoCDG.sub(cog))
-        p=Part.show(sketch)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorRebarSketch
+        if self.drawSketch:
+            wSketch=self.genConf.sketchScale*self.genConf.texSize
+            hSketch=self.genConf.sketchScale*self.genConf.texSize
+            sketch=rebWire.copy()
+            bound=sketch.BoundBox
+            cog=sketch.CenterOfMass
+            if bound.XLength==0:
+                fScale=hSketch/bound.YLength
+            elif bound.YLength==0:
+                fScale=wSketch/bound.XLength
+            else:
+                fScale=min(wSketch/bound.XLength,hSketch/bound.YLength)
+            sketch.scale(fScale,cog)
+            bound=sketch.BoundBox
+            ptoCDG=ptoSketch-Vector(bound.XLength/2,0) if pos=='r' else ptoSketch+Vector(bound.XLength/2,0)
+    #        ptoSketch=ptoTxt+Vector(0,-(self.genConf.texSize+bound.YLength/2))
+            sketch.translate(ptoCDG.sub(cog))
+            p=Part.show(sketch)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorRebarSketch
 #        drawMiniSketchRebar(rbFam=self,ptCOG=ptoSketch,wColumn=10*self.genConf.texSize,hRow=10*self.genConf.texSize,hText=0)
         return
 
@@ -564,9 +570,10 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2):
     if bound.YLength==0:
         fScale=(0.80*wColumn)/(bound.XLength)
     else:
-        fScale=min((0.80*wColumn)/(bound.XLength),0.80*hRow/(bound.YLength))
+        fScale=min((0.75*wColumn)/(bound.XLength),0.75*hRow/(bound.YLength))
     sketch.scale(fScale,cog)
-    sketch.translate(ptCOG.sub(cog))
+    pos=sketch.BoundBox.Center
+    sketch.translate(ptCOG.sub(pos))
     p=Part.show(sketch)
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorRebarSketch
     #Texts
