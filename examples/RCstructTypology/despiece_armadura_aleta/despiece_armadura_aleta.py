@@ -13,6 +13,7 @@ steel=EC2_materials.S500C
 
 # Aleta 1, muro 1, PI+PF+OD 103.52
 # DATA
+estrName='Aleta 1'
 #   Zapata
 bZap=5.05 #ancho zapata
 lMur=6.20 #longitud muro
@@ -118,7 +119,7 @@ Ptmur2_3=Vector(bPuntera+bCoron,eZap+hMurMin)
 Ptmur2_4=Vector(bPuntera+bCoron+hMurMin*pendTrasdos,eZap)
 Ptmur2_5=Vector(bPuntera+bCoron+(hMurMin+eZap)*pendTrasdos,0)
 
-#Puntos secciones transversales horizonatales
+#Puntos secciones transversales horizontales
 Ph_1=Vector(0,0)
 Ph1_2=Vector(0,bCoron+hMurMax*pendTrasdos)
 Ph1_3=Vector(lMur,bCoron+hMurMin*pendTrasdos)
@@ -375,6 +376,10 @@ App.newDocument("planRCsections")
 lstPtsConcrSect=[[Ptzap_1,Ptzap_2,Ptmur_1,Ptmur1_2,Ptmur1_3,Ptmur1_4,Ptzap_3,Ptzap_4,Ptzap_1]]
 lstShapeRebarFam=[Z1_1,Z1_2,M1_1,M1_2,M1_3,M1_5,M1_4]
 lstSectRebarFam=[Z1_3,Z1_4,Z1_7,Z1_8,M1_9,M1_7,M1_6,M1_8]
+# for rf in lstShapeRebarFam:
+#     rf.drawLstRebar(vTranslation=Vector(0,5,0))
+# for rf in lstSectRebarFam:
+#     rf.drawSectBars(vTranslation=Vector(0,5,0))
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
 
 #SECCIONES LONGITUDINALES
@@ -382,12 +387,26 @@ reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTrans
 lstPtsConcrSect=[[Plzap_1,Plzap_2,Plzap_3,Plzap_4,Plzap_1]]
 lstShapeRebarFam=[Z1_3,Z1_4]
 lstSectRebarFam=[Z1_1,Z1_2]
+#vTranslation=Vector(10,5,0))
+# for rf in lstShapeRebarFam:
+#     rf.drawLstRebar(vTranslation)
+# for rf in lstSectRebarFam:
+#     rf.drawSectBars(vTranslation)
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,5,0))
 
 #SECCIÓN HORIZONTAL POR LA BASE DEL MURO
 lstPtsConcrSect=[[Ph_1,Ph1_2,Ph1_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[M1_7,M1_9]
 lstSectRebarFam=[M1_3,M1_1,M1_4]
+# vTranslation=Vector(0,0,0)
+# for rf in lstShapeRebarFam:
+#     rf.drawLstRebar(vTranslation)
+
+    
+# for rf in lstSectRebarFam:
+#     rf.drawSectBars(vTranslation)
+
+
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))
 
 
@@ -395,6 +414,8 @@ reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTrans
 lstPtsConcrSect=[[Ph_1,Ph2_2,Ph2_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[M1_6,M1_8]
 lstSectRebarFam=[]
+
+
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,0,0))
 
 
@@ -408,7 +429,7 @@ hFilas=10
 hText=2.5
 listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,M1_7,M1_8,M1_9]
 
-reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=2.0)
 
 # Bar quantities for PyCost
 #reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')

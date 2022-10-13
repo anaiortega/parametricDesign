@@ -306,10 +306,10 @@ class rebarFamily(object):
         '''
         lstPtRFam=self.getLstPtsRebar(self.lstPtsConcrSect)
         self.lstWire=self.getLstRebars(lstPtRFam)
-#        self.lstWireLengths=[round(edg.Length,self.genConf.decLengths) for edg in self.wire.Edges]
         if len(self.lstPtsConcrSect2) > 0:
-            self.wireSect2=self.getLstPtsRebar(self.lstPtsConcrSect2)
-            self.wireSect2Lengths=[round(edg.Length,self.genConf.decLengths) for edg in self.wireSect2.Edges]
+            lstPtsRebar2=self.getLstPtsRebar(self.lstPtsConcrSect2)
+            lstLinRebar2=[Part.makeLine(lstPtsRebar2[i],lstPtsRebar2[i+1])for i in range(len(lstPtsRebar2)-1)]
+            self.wireSect2=[(Part.Wire(lstLinRebar2))]
         
 
     def getLstPtsRebar(self,lstPtsConcr):
@@ -393,7 +393,6 @@ class rebarFamily(object):
 
         :param lstPtsRebar: list of points that define the rebar in its entire length.
         '''
-        print('lista ptos original=',lstPtsRebar)
         lstRebars=list()
         lstDist=[lstPtsRebar[i].distanceToPoint(lstPtsRebar[i+1]) for i in range(len(lstPtsRebar)-1)]
         if sum(lstDist) <= self.maxLrebar:
@@ -548,7 +547,7 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
     return ptoSketch,pos
 
 
-def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2):
+def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
     '''Draw the shape skectch of the reinforcment bar in the bar 
     schedule. Return the total length of the rebar.
 
@@ -558,6 +557,7 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2):
     :param hRow: height of the row in the bar schedule.
     :param hText: height of the text to label the sketch.
     :param decLengths: decimal posiitions
+    :param rW2: second rebar wire when variable section
     '''
     
     formatLength='%.'+str(decLengths)+'f'
@@ -581,10 +581,15 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2):
     lengthsText=[str(i) for i in lstWireLengths]
     totalLength=round(sum(lstWireLengths),decLengths)
     totalLengthTxt=formatLength %totalLength
-    # if rbFam.wireSect2 != None:
-    #     lengthsText=[(lengthsText[i]+'..'+str(rbFam.wireSect2Lengths[i])) if rbFam.lstWireLengths[i]!=rbFam.wireSect2Lengths[i] else lengthsText[i] for i in range(len(rbFam.lstWireLengths))]
-    #     totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
-    #     totalLengthTxt+='...'+ formatLength %sum(rbFam.wireSect2Lengths)
+    if rW2:
+        lstWireLengths2=[round(edg.Length,decLengths) for edg in  rW2.Edges]
+        lengthsText2=[str(i) for i in lstWireLengths2]
+        totalLength2=round(sum(lstWireLengths2),decLengths)
+        totalLength=(totalLength+totalLength2)/2.0
+        totalLengthTxt+='...'+ formatLength %sum(lstWireLengths2)
+        for j in range(len(lstWireLengths)):
+            if lengthsText[j] != lengthsText2[j]:
+                lengthsText[j]+='...'+ lengthsText2[j]
     sketchEdges=sketch.Edges
     for i in zip(sketchEdges,lengthsText):
         edg=i[0]
@@ -678,7 +683,8 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
             dt.put_text_in_pnt(rbFam.identifier,pPos, hText,colorTextLeft)
             #sketch
             pEsq=pLinea.add(Vector(wColumns[0] + wColumns[1]/2.0,0))
-            barLength,barLengthTxt=drawSketchRebarShape(rbFam.lstWire[i],pEsq,wColumns[1],hRows,hTextSketch,rbFam.genConf.decLengths)
+            rW2=rbFam.wireSect2[i] if rbFam.wireSect2 else None
+            barLength,barLengthTxt=drawSketchRebarShape(rbFam.lstWire[i],pEsq,wColumns[1],hRows,hTextSketch,rbFam.genConf.decLengths,rW2)
             pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
             if rbFam.spacing ==0:
                 tx='%%C' + str(int(1000*rbFam.diameter))
@@ -747,7 +753,7 @@ def drawRCSection(lstOfLstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTransla
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     #draw the rebars in their true shape
     for rbFam in lstShapeRebarFam:
-        rbFam.drawRebar(vTranslation)
+        rbFam.drawLstRebar(vTranslation)
    #draw the sectioned rebars
     for rbFam in lstSectRebarFam:
         rbFam.drawSectBars(vTranslation)
