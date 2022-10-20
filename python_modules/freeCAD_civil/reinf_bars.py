@@ -613,8 +613,8 @@ def drawMiniSketchRebar(rbFam,ptCOG,wSketch,hSketch):
     Part.show(sketch)
  
                 
-def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
-    ''' Cuadro de despiece de la armadura 
+def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,title=None):
+    ''' Create the rebar schedule from a list of rebar families
 
     :param lstBarFamilies: ordered list of rebar families to be included in 
            the schedule
@@ -624,15 +624,14 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
     :param hRows: rows height
     :param hText: text height
     :param hTextSketch: text height for the sketch.
+    :param title: title for the rebar schedule 
     '''
-    #lstBarFamilies=familiasArmad.items() #creamos una lista a partir del diccionario para poder ordenar los valores
-    #lstBarFamilies.sort()
     for rf in lstBarFamilies:
         if rf.lstWire==None:
             rf.createLstRebar()
     anchoTotal=sum(wColumns)
     numRows=sum([len(rb.lstWire) for rb in lstBarFamilies])
-    w=Draft.makeRectangle(anchoTotal,hRows*(numRows+1))
+    w=Draft.makeRectangle(anchoTotal,hRows*(numRows+2))
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
     p1=Vector(0,0)
     p2=p1.add(Vector(0,hRows*(numRows+1)))
@@ -645,7 +644,12 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch):
     p2=p1.add(Vector(anchoTotal,0))
     w=Draft.makeLine(p1,p2)
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
-
+    # General title of the table
+    pLinea=p1.add(Vector(0,hRows))
+    w=Draft.makeLine(pLinea,pLinea.add(Vector(anchoTotal,0)))
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
+    pPos=pLinea.add(Vector(anchoTotal/2.0,hRows/2))
+    dt.put_text_in_pnt(title,pPos,1.2*hText,colorTextCenter,"Center")
     #Títulos para la tabla de despiece
     pLinea=p1.add(Vector(0,hRows/2.0))
     pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
@@ -729,35 +733,52 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
         f.write(s)
     f.close()
         
-
-
-
-def drawRCSection(lstOfLstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0)):
-    '''Draw a reinforced concrete section in the FreeCAD active document
+def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0)):
+    ''' Draw a section of concrete defined by a list of points in the FreeCAD 
+    active document
 
     :param lstPtsConcrSect: list of ordered lists of points to draw the 
            concrete section. Each list of points originates an open wire.
-    :param lstShapeRebarFam: list of rebar families that are going to be 
-           drawn with their true shape.
-    :param lstSectRebarFam: list of rebar families that are going to be 
-           drawn as sectioned bars (circles).
     :param vTranslation: Vector to apply a traslation to the RC section drawing.
            It facilitates the adding of several RC-sections to the same sheet of
            FreeCAD.
     '''
-    #draw the concrete section
-    for lp in lstOfLstPtsConcrSect:
-        l=Part.makePolygon(lp)
-        l.translate(vTranslation)
-        p=Part.show(l)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    #draw the rebars in their true shape
-    for rbFam in lstShapeRebarFam:
-        rbFam.drawLstRebar(vTranslation)
-   #draw the sectioned rebars
-    for rbFam in lstSectRebarFam:
-        rbFam.drawSectBars(vTranslation)
-    return
+    l=Part.makePolygon(lstPtsConcrSect)
+    l.translate(vTranslation)
+    p=Part.show(l)
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
+    
+
+
+def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,vTranslation=Vector(0,0,0)):
+    '''Draw a reinforced concrete section in the FreeCAD active document
+
+    :param lstOfLstPtsConcrSect: list of ordered lists of points to draw the 
+           concrete section. Each list of points originates an open wire.
+           (defaults to None)
+    :param lstShapeRebarFam: list of rebar families that are going to be 
+           drawn with their true shape.
+           (defaults to None)
+    :param lstSectRebarFam: list of rebar families that are going to be 
+           drawn as sectioned bars (circles).
+           (defaults to None)
+    :param vTranslation: Vector to apply a traslation to the RC section drawing.
+           It facilitates the adding of several RC-sections to the same sheet of
+           FreeCAD. (defaults to Vector(0,0,0))
+    '''
+    if lstOfLstPtsConcrSect:
+        #draw the concrete section
+        for lp in lstOfLstPtsConcrSect:
+            drawConcreteSection(lp,vTranslation)
+    if lstShapeRebarFam:
+        #draw the rebars in their true shape
+        for rbFam in lstShapeRebarFam:
+            rbFam.drawLstRebar(vTranslation)
+    if lstSectRebarFam:
+        #draw the sectioned rebars
+        for rbFam in lstSectRebarFam:
+            rbFam.drawSectBars(vTranslation)
+
 
 
 

@@ -11,6 +11,9 @@ from materials.ec2 import EC2_materials
 concr=EC2_materials.C25
 steel=EC2_materials.S500C
 
+estrName='Losa'
+titSchedule=estrName.upper()
+
 
 elosa=0.45 #espesor de la losa
 recNominal=0.05
@@ -619,7 +622,7 @@ hFilas=10
 hText=2.5
 listafamiliasArmad=[F1S,F1I,F2S,F2I,F3S,F3I,F4S,F4I,F5S,F5I,F6S,F6I,F7,F8S,F8I,F9S,F9I,F11S,F12S,F12I,F13S,F13I,F14S,F14I,F15S,F15I,F16S,F16I,F17,F18,R1S]
 
-reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText,title=titSchedule)
 
 #DESPIECE DE LA ARMADURA
 App.newDocument("despiece")
@@ -631,7 +634,7 @@ hFilas=10
 hText=2.5
 listafamiliasArmad=[F1S,F1I,F2S,F2I,F3S,F3I,F4S,F4I,F5S,F5I,F6S,F6I,F7,F8S,F8I,F9S,F9I,F11S,F12S,F12I,F13S,F13I,F14S,F14I,F15S,F15I,F16S,F16I,F17,F18,R1S]
 
-reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText,title=titSchedule)
 
 # Bar quantities for PyCost
 reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/quant_arm.py')

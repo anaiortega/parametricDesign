@@ -8,6 +8,7 @@ from FreeCAD import Vector
 from Draft import *
 from materials.ec2 import EC2_materials
 
+estrName='ABUTMENT'
 concr=EC2_materials.C25
 steel=EC2_materials.S500C
 
@@ -482,7 +483,7 @@ hFilas=10
 #altura textos
 hText=2.5
 listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,M1_7,M1_8,M1_9]
-reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText,title=estrName)
 
 # Bar quantities for PyCost
 reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')

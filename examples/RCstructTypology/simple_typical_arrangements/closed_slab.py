@@ -16,6 +16,8 @@ from materials.ec2 import EC2_materials
 
 concr=EC2_materials.C25
 steel=EC2_materials.S500C
+estrName='Closed slab'
+titSchedule=estrName.upper()
 
 width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
@@ -43,4 +45,6 @@ rb.barSchedule(lstBarFamilies=lstRebarFam,
                wColumns=[10,35,20,10,15,15],
                hRows=10,
                hText=2.5,
-               hTextSketch=2.5)
+               hTextSketch=2.5,
+               title=titSchedule
+)

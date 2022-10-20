@@ -46,7 +46,7 @@ hRows=10
 hText=2.5
 hTextSketch=2.0
 
-rb.barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch)
+rb.barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,title=estrName)
 
 
 

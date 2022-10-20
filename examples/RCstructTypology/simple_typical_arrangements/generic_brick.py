@@ -9,6 +9,9 @@ from materials.ec2 import EC2_materials
 concr=EC2_materials.C25
 steel=EC2_materials.S500C
 
+estrName='Generic brick'
+titSchedule=estrName.upper()
+
 genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 FreeCAD.newDocument(estrName+'genericBrick')
 
@@ -39,4 +42,6 @@ rb.barSchedule(lstBarFamilies=lstRebarFam,
                wColumns=[14,30,25,10,15,15],
                hRows=10,
                hText=2.5,
-               hTextSketch=2.5)
+               hTextSketch=2.5,
+               title=titSchedule
+)

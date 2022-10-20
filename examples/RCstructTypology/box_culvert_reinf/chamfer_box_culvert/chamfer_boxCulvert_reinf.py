@@ -10,6 +10,7 @@ concr=EC2_materials.C30
 steel=EC2_materials.S500C
 
 estrName='boxCulvert'
+titSchedule=estrName.upper()
 
 # Reinforcement of a box culvert with chamfers in all its
 # internal corners
@@ -474,10 +475,12 @@ if walls_st['nmStirr']>0:
 
 FreeCAD.newDocument(estrName+"_despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-                       wColumns=[10,34,20,10,12,12],
-                       hRows=10,
-                       hText=2.5,
-                       hTextSketch=2.5)
+               wColumns=[10,34,20,10,12,12],
+               hRows=10,
+               hText=2.5,
+               hTextSketch=2.5,
+               title=titSchedule
+)
 
 
 

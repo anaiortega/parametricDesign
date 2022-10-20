@@ -3,7 +3,7 @@
 # Example of underpass modelized with FreeCAD
 from freeCAD_civil.structures import underpass
 import Part
-from FreeCAD import Base
+from FreeCAD import Vector
 
 struct=underpass.Underpass(startLAxPoint=[0,0,0],endLAxPoint=[10,10,1],posFrameLAxVect=[0,0,0],vertIntHeigAx=7,intSpan=10.75,wallTh=0.5,deckTh=0.5,deckSlope=0.04)
 dw=struct.genDeckAndWalls()
@@ -38,12 +38,12 @@ wingWall=underpass.Wingwall(wallTopLevel=7.5,foundLevel=-1,wallLenght=10,wallSlo
 ww=wingWall.genWingwall()
 wfoundt=wingWall.genWingwallFoundation(footsLength=[3,4,3],footsHeight=[2,1,0.5],footsWidth=[6,5,3],footsIntraWidth=[2*6/3,2*5/3,2*3/3])
 wingwallInitLeft=Part.makeCompound([ww,wfoundt])
-pt1=struct.kpETL.add(Base.Vector(0,0,initLH))
-pt2=struct.kpETR.add(Base.Vector(0,0,initRH))
+pt1=struct.kpETL.add(Vector(0,0,initLH))
+pt2=struct.kpETR.add(Vector(0,0,initRH))
 vDir=(pt2-pt1).normalize().multiply(wTopWidth)
 ptSType=pt1
 ptStruct=struct.getPtStrPKAxis(ptSectType=ptSType,longAxisPK=0)
-WWInitLeft=underpass.PlaceShpPtVect(shapeId=wingwallInitLeft,ptOrig=wingWall.placementPoint,vDirOrig=Base.Vector(0,1,0),ptDest=ptStruct,vDirDest=Base.Vector(-1,0,0))
+WWInitLeft=underpass.PlaceShpPtVect(shapeId=wingwallInitLeft,ptOrig=wingWall.placementPoint,vDirOrig=Vector(0,1,0),ptDest=ptStruct,vDirDest=Vector(-1,0,0))
 Part.show(WWInitLeft)
 
 #Initial section, wingwall right
@@ -52,12 +52,12 @@ wingWall=Wingwall(wallTopLevel=8,foundLevel=-1,wallLenght=8,wallSlope=1/4.0,wall
 ww=wingWall.genWingwall()
 wfoundt=wingWall.genWingwallFoundation(footsLength=[8],footsHeight=[0.75],footsWidth=[5],footsIntraWidth=[2*5/3])
 wingwallInitRight=Part.makeCompound([ww,wfoundt])
-pt1=struct.kpETL.add(Base.Vector(0,0,initLH))
-pt2=struct.kpETR.add(Base.Vector(0,0,initRH))
+pt1=struct.kpETL.add(Vector(0,0,initLH))
+pt2=struct.kpETR.add(Vector(0,0,initRH))
 vDir=(pt1-pt2).normalize().multiply(wTopWidth)
 ptSType=pt2+vDir
 ptStruct=struct.getPtStrPKAxis(ptSectType=ptSType,longAxisPK=0)
-WWInitRight=PlaceShpPtVect(shapeId=wingwallInitRight,ptOrig=wingWall.placementPoint,vDirOrig=Base.Vector(0,1,0),ptDest=ptStruct,vDirDest=Base.Vector(-1,-10,0))
+WWInitRight=PlaceShpPtVect(shapeId=wingwallInitRight,ptOrig=wingWall.placementPoint,vDirOrig=Vector(0,1,0),ptDest=ptStruct,vDirDest=Vector(-1,-10,0))
 Part.show(WWInitRight)
 
 #Final section, wingwall left
@@ -66,12 +66,12 @@ wingWall=Wingwall(wallTopLevel=8,foundLevel=-1,wallLenght=8,wallSlope=1/5.0,wall
 ww=wingWall.genWingwall()
 wfoundt=wingWall.genWingwallFoundation(footsLength=[4,4],footsHeight=[1,0.5],footsWidth=[5,3],footsIntraWidth=[2*5/3,2*3/3])
 wingwallEndLeft=Part.makeCompound([ww,wfoundt])
-pt1=struct.kpETL.add(Base.Vector(0,0,endLH))
-pt2=struct.kpETR.add(Base.Vector(0,0,endRH))
+pt1=struct.kpETL.add(Vector(0,0,endLH))
+pt2=struct.kpETR.add(Vector(0,0,endRH))
 vDir=(pt2-pt1).normalize().multiply(wTopWidth)
 ptSType=pt1+vDir
 ptStruct=struct.getPtStrPKAxis(ptSectType=ptSType,longAxisPK=struct.LAxisVector.Length)
-WWEndLeft=underpass.PlaceShpPtVect(shapeId=wingwallEndLeft,ptOrig=wingWall.placementPoint,vDirOrig=Base.Vector(0,1,0),ptDest=ptStruct,vDirDest=Base.Vector(1,10,0))
+WWEndLeft=underpass.PlaceShpPtVect(shapeId=wingwallEndLeft,ptOrig=wingWall.placementPoint,vDirOrig=Vector(0,1,0),ptDest=ptStruct,vDirDest=Vector(1,10,0))
 Part.show(WWEndLeft)
 
 #Final section, wingwall right
@@ -80,10 +80,10 @@ wingWall=Wingwall(wallTopLevel=7.5,foundLevel=-1,wallLenght=12,wallSlope=1/3.0,w
 ww=wingWall.genWingwall()
 wfoundt=wingWall.genWingwallFoundation(footsLength=[6,6],footsHeight=[1.5,0.75],footsWidth=[6,5],footsIntraWidth=[2*6/3,2*5/3])
 wingwallEndRight=Part.makeCompound([ww,wfoundt])
-pt1=struct.kpETL.add(Base.Vector(0,0,initLH))
-pt2=struct.kpETR.add(Base.Vector(0,0,initRH))
+pt1=struct.kpETL.add(Vector(0,0,initLH))
+pt2=struct.kpETR.add(Vector(0,0,initRH))
 vDir=(pt1-pt2).normalize().multiply(wTopWidth)
 ptSType=pt2
 ptStruct=struct.getPtStrPKAxis(ptSectType=ptSType,longAxisPK=struct.LAxisVector.Length)
-WWEndRight=underpass.PlaceShpPtVect(shapeId=wingwallEndRight,ptOrig=wingWall.placementPoint,vDirOrig=Base.Vector(0,1,0),ptDest=ptStruct,vDirDest=Base.Vector(10,1,0))
+WWEndRight=underpass.PlaceShpPtVect(shapeId=wingwallEndRight,ptOrig=wingWall.placementPoint,vDirOrig=Vector(0,1,0),ptDest=ptStruct,vDirDest=Vector(10,1,0))
 Part.show(WWEndRight)

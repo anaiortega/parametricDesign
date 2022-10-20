@@ -15,6 +15,9 @@ from materials.ec2 import EC2_materials
 concr=EC2_materials.C25
 steel=EC2_materials.S500C
 
+estrName='Simple wall'
+titSchedule=estrName.upper()
+
 height=4 #dimension of the slab in the direction of the vertical rebars
 length=5 #dimension of the slab in the direction of the horizontal rebars
 thickness=0.4  #thickness of the slab
@@ -41,4 +44,6 @@ rb.barSchedule(lstBarFamilies=lstRebarFam,
                wColumns=[14,30,25,10,15,15],
                hRows=10,
                hText=2.5,
-               hTextSketch=2.5)
+               hTextSketch=2.5,
+               title=titSchedule
+)
