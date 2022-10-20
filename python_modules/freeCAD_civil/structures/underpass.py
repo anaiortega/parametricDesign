@@ -38,14 +38,15 @@ class Underpass(object):
       baseSlabTh:     thickness of the base slab
       wallTh:         thickness of the walls
       deckTh:         deck thickness
-      deckSlope:      deck slope
+      deckTrSlope:    deck transversal slope (Z/X) (if skewed, the slope is defined
+                      parallel to the skew 
       posFrameLAxVect: position [x,0,z] of the longitudinal axis in the
                        section type
 
        kpETL  ________________________________________ kpETR
              |                     ^deckTh            |
              |    _________________↓______________    |
-             |   |   deckSlope=Z/X ^         kpITR|   |
+             |   |   deckTrSlope=Z/X ^         kpITR|   |
              |   |kpITL            |              |   |
              |<->|                 |              |   |
              | wallTh              |              |   |
@@ -63,7 +64,7 @@ class Underpass(object):
 
     '''
 
-    def __init__(self,startLAxPoint,endLAxPoint,posFrameLAxVect,vertIntHeigAx,intSpan,wallTh,deckTh,deckSlope,skewAngle=0):
+    def __init__(self,startLAxPoint,endLAxPoint,posFrameLAxVect,vertIntHeigAx,intSpan,wallTh,deckTh,deckTrSlope,skewAngle=0):
         self.startLAxPoint=Vector(startLAxPoint[0],startLAxPoint[1],startLAxPoint[2])
         self.endLAxPoint=Vector(endLAxPoint[0],endLAxPoint[1],endLAxPoint[2])
         self.ptLAxis=Vector(posFrameLAxVect[0],0,posFrameLAxVect[2])
@@ -71,7 +72,7 @@ class Underpass(object):
         self.intSpan=intSpan
         self.wallTh=wallTh
         self.deckTh=deckTh
-        self.deckSlope=deckSlope
+        self.deckTrSlope=deckTrSlope
         self.skewAngle=skewAngle
         self.LAxisVector=self.endLAxPoint-self.startLAxPoint     #vector used for extrusions
         self.rotAngl=(-180/math.pi)*((self.endLAxPoint-self.startLAxPoint).projectToPlane(Vector(0,0,0),Vector(0,0,1))).getAngle(Vector(0,1,0))  #rotation angle
@@ -80,21 +81,24 @@ class Underpass(object):
     def initSectPoints(self):
         ''' initialize the main points of the transversal section
         '''
-        deckThVert=self.deckTh*(1+self.deckSlope**2)**(1/2)
+        deckThVert=self.deckTh*(1+self.deckTrSlope**2)**(1/2)
         skewAngleRad=math.radians(self.skewAngle)
         skewUnitVector=Vector(math.cos(skewAngleRad),math.sin(skewAngleRad),0)
         intSpanSkew=self.intSpan/math.cos(skewAngleRad)
         extSpanSkew=(self.intSpan+2*self.wallTh)/math.cos(skewAngleRad)
-        hIntL=self.vertIntHeigAx-self.deckSlope*intSpanSkew/2
-        hExtL=self.vertIntHeigAx-self.deckSlope*extSpanSkew/2+deckThVert
-        hIntR=self.vertIntHeigAx+self.deckSlope*intSpanSkew/2
-        hExtR=self.vertIntHeigAx+self.deckSlope*extSpanSkew/2+deckThVert
+        hIntL=self.vertIntHeigAx-self.deckTrSlope*intSpanSkew/2
+        hExtL=self.vertIntHeigAx-self.deckTrSlope*extSpanSkew/2+deckThVert
+        hIntR=self.vertIntHeigAx+self.deckTrSlope*intSpanSkew/2
+        hExtR=self.vertIntHeigAx+self.deckTrSlope*extSpanSkew/2+deckThVert
         zUnitVector=Vector(0,0,1)
-        #keypoints: 
-        self.kpIBL=-(intSpanSkew/2)*skewUnitVector    #internal bottom left
-        self.kpIBR=(intSpanSkew/2)*skewUnitVector     #internal bottom right
-        self.kpEBL=-(extSpanSkew/2)*skewUnitVector  #external bottom left
-        self.kpEBR=(extSpanSkew/2)*skewUnitVector   #external bottom right
+        Lslope= self.LAxisVector.z/self.LAxisVector.Length #longitudinal slope
+        intVectorIncrZskew=Vector(0,0,intSpanSkew/2*math.sin(skewAngleRad)*Lslope)
+        extVectorIncrZskew=Vector(0,0,extSpanSkew/2*math.sin(skewAngleRad)*Lslope)
+        #keypoints:
+        self.kpIBL=-(intSpanSkew/2)*skewUnitVector-intVectorIncrZskew    #internal bottom left
+        self.kpIBR=(intSpanSkew/2)*skewUnitVector+intVectorIncrZskew     #internal bottom right
+        self.kpEBL=-(extSpanSkew/2)*skewUnitVector-extVectorIncrZskew  #external bottom left
+        self.kpEBR=(extSpanSkew/2)*skewUnitVector+extVectorIncrZskew   #external bottom right
         self.kpITL=self.kpIBL.add(hIntL*zUnitVector)  #internal top left
         self.kpITR= self.kpIBR.add(hIntR*zUnitVector)   #internal top right
         self.kpETL=self.kpEBL.add(hExtL*zUnitVector)  #external top left
@@ -116,28 +120,35 @@ class Underpass(object):
         return retSh
 
     def genDeck(self):
-        linDeck=Part.makePolygon([self.kpITL,self.ptDeckBL,self.kpETL,self.kpETR,self.ptDeckBR,self.kpITR,self.kpITL])
+        linDeck=Part.makePolygon([self.kpETL,self.kpETR,self.ptDeckBR,self.ptDeckBL])
         deck=Part.Face(linDeck)
         retComp=Part.makeCompound([deck])
-        return self.placeAndExtrudeShape(retComp)
+        retComp=self.placeAndExtrudeShape(retComp)
+        print(retComp.Vertexes)
+        stakingPoints=[retComp.Vertexes[1],retComp.Vertexes[0],retComp.Vertexes[2],retComp.Vertexes[3]] #see sketch for staking-point's position
+        return retComp,stakingPoints
 
     def genLeftWall(self):
         ''' Return the compound with the left wall '''
-        linLeftWall=Part.makePolygon([self.kpIBL,self.kpEBL,selfptDeckBL,self.kpITL,self.kpIBL])
+        linLeftWall=Part.makePolygon([self.ptDeckBL,self.kpITL,self.kpIBL,self.kpEBL,self.ptDeckBL])
         leftWall=Part.Face(linLeftWall)
-        retComp=Part.makeCompound([
+        retComp=Part.makeCompound([leftWall])
+        return self.placeAndExtrudeShape(retComp)
+
+    def genRightWall(self):
+        ''' Return the compound with the right wall '''
+        linRightWall=Part.makePolygon([self.kpITR,self.ptDeckBR,self.kpEBR,self.kpIBR,self.kpITR])
+        rightWall=Part.Face(linRightWall)
+        retComp=Part.makeCompound([rightWall])
+        return self.placeAndExtrudeShape(retComp)
 
     def genDeckAndWalls(self):
         '''Returns a compound with the deck and walls of the structure'''
         #Deck
-
-        linDeck=Part.makePolygon([self.kpITL,self.ptDeckBL,self.kpETL,self.kpETR,self.ptDeckBR,self.kpITR,self.kpITL])
-        deck=Part.Face(linDeck)
+        deck=self.genDeck()
         #Walls
-        linLeftWall=Part.makePolygon([self.kpIBL,self.kpEBL,selfptDeckBL,self.kpITL,self.kpIBL])
-        leftWall=Part.Face(linLeftWall)
-        linRightWall=Part.makePolygon([self.kpEBR,self.kpIBR,self.kpITR,self.ptDeckBR,self.kpEBR])
-        rightWall=Part.Face(linRightWall)
+        leftWall=self.genLeftWall()
+        rightWall=self.genRightWall()
         retComp=Part.makeCompound([deck,leftWall,rightWall])
         return self.placeAndExtrudeShape(retComp)
 
@@ -191,13 +202,13 @@ class Underpass(object):
           apSlabSuppTh: thickness of the support for the approach slab
         '''
         #Supports of the approach slabs
-        ptDeckBL=self.kpITL.add(Vector(-self.wallTh,0,-self.deckSlope*self.wallTh*self.wallTh))
+        ptDeckBL=self.kpITL.add(Vector(-self.wallTh,0,-self.deckTrSlope*self.wallTh*self.wallTh))
         ptLSup1=ptDeckBL.add(Vector(-apSlabSuppWdt,0,0))
         ptLSup2=ptLSup1.add(Vector(0,0,-apSlabSuppTh))
         ptLSup3=ptLSup2.add(Vector(apSlabSuppWdt,0,0))
         linLeftSup=Part.makePolygon([ptDeckBL,ptLSup1,ptLSup2,ptLSup3,ptDeckBL])
         leftSup=Part.Face(linLeftSup)
-        ptDeckBR=self.kpITR.add(Vector(self.wallTh,0,self.deckSlope*self.wallTh*self.wallTh))
+        ptDeckBR=self.kpITR.add(Vector(self.wallTh,0,self.deckTrSlope*self.wallTh*self.wallTh))
         ptRSup1=ptDeckBR.add(Vector(apSlabSuppWdt,0,0))
         ptRSup2=ptRSup1.add(Vector(0,0,-apSlabSuppTh))
         ptRSup3=ptRSup2.add(Vector(-apSlabSuppWdt,0,0))
@@ -234,7 +245,7 @@ class Underpass(object):
         vectExtr=(self.endLAxPoint-self.startLAxPoint)
         if section =='I':
             ptDestination=self.startLAxPoint
-          vectExtr.normalize().multiply(thickness)
+            vectExtr.normalize().multiply(thickness)
         else:
             ptDestination=self.endLAxPoint
             vectExtr.normalize().multiply(-thickness)
@@ -257,6 +268,22 @@ class Underpass(object):
         vInAxis=self.getDirecVectLAxis().multiply(longAxisPK)
         PlaceShpPtVect(shapeId=retVtx,ptOrig=self.ptLAxis,vDirOrig=Vector(0,1,0),ptDest=self.startLAxPoint.add(vInAxis),vDirDest=Vector(self.LAxisVector.x,self.LAxisVector.y,0))
         return Vector(retVtx.X,retVtx.Y,retVtx.Z)
+
+    def genArrayPiles(self,fiPile,lengthPile,distPiles,nPiles,refPoint,distFirstPile2refPoint):
+        vDirArray=self.LAxisVector.normalize()
+        vExtrPile=Vector(0,0,-lengthPile)
+        stackPoints=list()
+        piles=list()
+        for i in range(nPiles):
+            centCircle=refPoint+(distFirstPile2refPoint+i*distPiles)*vDirArray
+            stackPoints+=[centCircle]
+            c=Part.Circle(Center=centCircle,Normal=Vector(0,0,1),Radius=fiPile/2)
+            c=c.toShape()
+            pile=c.extrude(vExtrPile)
+            piles+=[pile]
+        return piles,stackPoints
+        
+        
 
 class Wingwall(object):
     '''Generation of a wingwall                                             
