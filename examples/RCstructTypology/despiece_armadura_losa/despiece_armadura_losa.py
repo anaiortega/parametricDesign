@@ -614,15 +614,9 @@ reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTrans
 
 #DESPIECE DE LA ARMADURA
 App.newDocument("despiece")
-#ancho de las columnas de cuadro de despiece (corresponden a posici'on, esquema, diam. y separac., No. de barras y longitud de cada barra)
-anchoColumnas=[14,30,25,10,15,15]
-#altura de las filas
-hFilas=10
-#altura textos
-hText=2.5
-listafamiliasArmad=[F1S,F1I,F2S,F2I,F3S,F3I,F4S,F4I,F5S,F5I,F6S,F6I,F7,F8S,F8I,F9S,F9I,F11S,F12S,F12I,F13S,F13I,F14S,F14I,F15S,F15I,F16S,F16I,F17,F18,R1S]
+#listafamiliasArmad=[F1S,F1I,F2S,F2I,F3S,F3I,F4S,F4I,F5S,F5I,F6S,F6I,F7,F8S,F8I,F9S,F9I,F11S,F12S,F12I,F13S,F13I,F14S,F14I,F15S,F15I,F16S,F16I,F17,F18,R1S]
 
-reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText,title=titSchedule)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmadtitle=titSchedule)
 
 #DESPIECE DE LA ARMADURA
 App.newDocument("despiece")
@@ -634,7 +628,7 @@ hFilas=10
 hText=2.5
 listafamiliasArmad=[F1S,F1I,F2S,F2I,F3S,F3I,F4S,F4I,F5S,F5I,F6S,F6I,F7,F8S,F8I,F9S,F9I,F11S,F12S,F12I,F13S,F13I,F14S,F14I,F15S,F15I,F16S,F16I,F17,F18,R1S]
 
-reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=hText,title=titSchedule)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,title=titSchedule)
 
 # Bar quantities for PyCost
 reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/quant_arm.py')

@@ -41,12 +41,7 @@ rfam.drawLstRebar()
 rfam.drawSectBars()
 
 lstBarFamilies=[rfam]
-wColumns=[14,30,25,10,15,15]
-hRows=10
-hText=2.5
-hTextSketch=2.0
-
-rb.barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,title=estrName)
+rb.barSchedule(lstBarFamilies,title=estrName)
 
 
 

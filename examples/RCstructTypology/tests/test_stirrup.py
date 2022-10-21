@@ -35,9 +35,5 @@ stirrup=rb.rebarFamily(
 lstRebarFam=[stirrup]
 FreeCAD.newDocument(estrName+"_despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-               wColumns=[10,34,20,10,12,12],
-               hRows=10,
-               hText=2.5,
-               hTextSketch=2.5,
                title=estrName
 )

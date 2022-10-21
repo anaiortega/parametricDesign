@@ -68,7 +68,21 @@ class genericConf(object):
         if Code == 'EC2':
             from materials.ec2 import EC2_limit_state_checking as Lcalc # doesn't work if only imported here
             
+class scheduleConf(object):
+    '''Parameters to configure the geometry of the rebar schedule 
 
+    :ivar widthColumns: width of the columns [identifier,sketch, diam. and spacing., 
+                        Number of bars, length of each bar, total weight of the family]
+                        (defaults to [10,28,20,10,12,12])
+    :ivar hRows: rows height (defaults to 12)
+    :ivar heightText: text height (defaults to 2.5)
+    :ivar heigthTextSketch: text height for the sketch (defaults to 2.0).
+    '''
+    def __init__(self,widthColumns=[10,28,20,10,12,12],heightRows=12,heightText=2.5,,heigthTextSketch=2.0):
+        self.widthColumns=widthColumns
+        self.heightRows=heightRows
+        self.heightText=heightText
+        self.heigthTextSketch=heigthTextSketch
 
 class rebarFamily(object):
     '''Family of reinforcement bars
@@ -613,9 +627,10 @@ def drawMiniSketchRebar(rbFam,ptCOG,wSketch,hSketch):
     Part.show(sketch)
  
                 
-def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,title=None):
+def barSchedule(lstBarFamilies,config=scheduleConf(),title=None):
     ''' Create the rebar schedule from a list of rebar families
 
+    :param config: instance of scheduleConf class
     :param lstBarFamilies: ordered list of rebar families to be included in 
            the schedule
     :param wColumns: list of column widths for the table 
@@ -626,6 +641,10 @@ def barSchedule(lstBarFamilies,wColumns,hRows,hText,hTextSketch,title=None):
     :param hTextSketch: text height for the sketch.
     :param title: title for the rebar schedule 
     '''
+    wColumns=config.widthColumns
+    hRows=config.heightRows
+    hText=config.heightText
+    hTextSketch=config.heigthTextSketch
     for rf in lstBarFamilies:
         if rf.lstWire==None:
             rf.createLstRebar()

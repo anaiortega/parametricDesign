@@ -38,9 +38,5 @@ lstRebarFam=trcm.generic_brick_reinf(width=width,length=length,thickness=thickne
 
 App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-               wColumns=[14,30,25,10,15,15],
-               hRows=10,
-               hText=2.5,
-               hTextSketch=2.5,
                title=titSchedule
 )

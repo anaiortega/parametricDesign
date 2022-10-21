@@ -423,14 +423,9 @@ reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTrans
    #BAR SCHEDULE
 App.newDocument("despiece")
 #ancho de las columnas de cuadro de despiece (corresponden a posici'on, esquema, diam. y separac., No. de barras y longitud de cada barra)
-anchoColumnas=[14,30,25,10,15,15]
-#altura de las filas
-hFilas=10
-#altura textos
-hText=2.5
 listafamiliasArmad=[Z1_1,Z1_2,Z1_3,Z1_4,Z1_7,Z1_8,M1_1,M1_2,M1_3,M1_4,M1_5,M1_6,M1_7,M1_8,M1_9]
 
-reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,wColumns=anchoColumnas,hRows=hFilas,hText=hText,hTextSketch=2.0,title=titSchedule)
+reinf_bars.barSchedule(lstBarFamilies=listafamiliasArmad,title=titSchedule)
 
 # Bar quantities for PyCost
 #reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')

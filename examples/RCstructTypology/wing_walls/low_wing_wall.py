@@ -13,10 +13,7 @@ concrWall=EC2_materials.C30 # concrete type in wall stem
 steelWall=EC2_materials.S500C # steel for wall stem
 
 #rebar schedule dimensions
-widthColSched=[14,30,25,10,15,15] # pos,sketch,diam.,spac., number, length, weight
-hRowsSched=10 # rows heigth
-hTextSched=2.5
-hTextSketchSched=2.0
+scheduleCfg=reinf_bars.scheduleConf([14,30,25,10,15,15],10,2.5,2.0)
 
 #  DATA
 estrName='Aleta 1'
@@ -401,7 +398,7 @@ App.newDocument("despiece")
 #altura de las filas
 #altura textos
 
-reinf_bars.barSchedule(lstBarFamilies=lstRebarFam,wColumns=widthColSched,hRows=hRowsSched,hText=hTextSched,hTextSketch=hTextSketchSched,title=titSchedule)
+reinf_bars.barSchedule(lstBarFamilies=lstRebarFam,scheduleCfg,title=titSchedule)
 
 # Bar quantities for PyCost
 #reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')

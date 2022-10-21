@@ -41,9 +41,5 @@ lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,r
 
 App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-               wColumns=[14,30,25,10,15,15],
-               hRows=10,
-               hText=2.5,
-               hTextSketch=2.5,
                title=titSchedule
 )

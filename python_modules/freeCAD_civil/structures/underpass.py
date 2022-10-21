@@ -120,11 +120,16 @@ class Underpass(object):
         return retSh
 
     def genDeck(self):
+        '''return the deck as a part-compound and a list of staking points.
+        The staking points are four vertexes of the top of the deck counterclockwise 
+        [LE,LS,RS,RE], meaning: L-R left-right, S-E start-end of the box (direction
+        according to startLAxPoint -> endLAxPoint)
+        
+        '''
         linDeck=Part.makePolygon([self.kpETL,self.kpETR,self.ptDeckBR,self.ptDeckBL])
         deck=Part.Face(linDeck)
         retComp=Part.makeCompound([deck])
         retComp=self.placeAndExtrudeShape(retComp)
-        print(retComp.Vertexes)
         stakingPoints=[retComp.Vertexes[1],retComp.Vertexes[0],retComp.Vertexes[2],retComp.Vertexes[3]] #see sketch for staking-point's position
         return retComp,stakingPoints
 
@@ -281,6 +286,7 @@ class Underpass(object):
             c=c.toShape()
             pile=c.extrude(vExtrPile)
             piles+=[pile]
+        piles=Part.makeCompound(piles)
         return piles,stackPoints
         
         
