@@ -260,7 +260,7 @@ class Underpass(object):
         '''
         ptWallTL=self.kpETL.add(Vector(0,0,leftHeight))
         ptWallTR=self.kpETR.add(Vector(0,0,rightHeight))
-        linWall=Part.makePolygon([self.kpETL,self.kpETR,ptWallTR,ptWallTL,self.kpETL])
+        linWall=Part.makePolygon([ptWallTL,ptWallTR,self.kpETR,self.kpETL,ptWallTL])
         headwall=Part.Face(linWall)
         vectExtr=(self.endLAxPoint-self.startLAxPoint) #extrusion vector
         if section =='I':
@@ -339,30 +339,43 @@ class Wingwall(object):
     #                  wingwall depicted in the figures
     #  rotAng:         vector of direction with which to align the local Y axis of the wingwall
     '''
-    def __init__(self,wallTopLevel,foundLevel,wallLenght,wallSlope,wallTopWidth,intraSlope,extraSlope):
-        self.wallTopLevel=wallTopLevel
+    def __init__(self,placementPoint,foundLevel,wallLenght,wallSlope,wallTopWidth,intraSlope,extraSlope,vDirTr,vDirLn):
+        '''
+        :param placementPoint: point in the global coordinate system where to place the corner of the
+                               wingwall (top corner in the intrados facing )
+        :param foundLevel: z_global coordinate of the top face of the foundation
+        :param wallLenght: length of the wall (longitudinal direction)
+        :param wallSlope: slope of the top face of the wall in longitudinal direction
+        :param wallTopWidth: width of the top face of the wall (transversal)
+        :param intraSlope: slope of the intrados (front face) H/V (positive)
+        :param extraSlope: slope of the extrados (back face) H/V (positive)
+        :param vDirTr: vector in transversal direction (from front to back of the wall)
+        :param vDirLn: vector in longitudinal direction (from placementPoint to the end of the wall)
+        '''
+        self.placementPoint=placementPoint
         self.foundLevel=foundLevel
         self.wallLenght=wallLenght
         self.wallSlope=wallSlope
         self.wallTopWidth=wallTopWidth
         self.intraSlope=intraSlope
         self.extraSlope=extraSlope
-        #keyPoints
-        self.placementPoint=Vector(0,0,self.wallTopLevel)  
+        self.vDirTr=vDirTr.normalize()
+        self.vDirLn=vDirLn.normalize()
 
     def genWingwall(self):
-        hStartWall=abs(self.wallTopLevel-self.foundLevel)
-        endWallTopLevel=self.wallTopLevel-self.wallLenght*self.wallSlope
-        hEndWall=abs(endWallTopLevel-self.foundLevel)
+        hStartWall=self.placementPoint.z-self.foundLevel
         hEndWall=hStartWall-self.wallLenght*self.wallSlope
-        ptTr1TL=Vector(-self.wallTopWidth,0,self.wallTopLevel)
-        ptTr1BL=ptTr1TL.add(Vector(-(hStartWall*self.intraSlope),0,-hStartWall))
-        ptTr1BR=self.placementPoint.add(Vector(hStartWall*self.extraSlope,0,-hStartWall))
+        ptTr1TL=self.placementPoint+self.wallTopWidth*self.vDirTr
+        ptTr1BL=ptTr1TL.add(hStartWall*self.intraSlope*self.vDirTr).add(Vector(0,0,-hStartWall))
+        baseSect1=self.wallTopWidth+hStartWall*self.intraSlope+hStartWall*self.extraSlope
+        ptTr1BR=ptTr1BL.add(-baseSect1*self.vDirTr)
         faceTr1=Part.Face(Part.makePolygon([ptTr1TL,self.placementPoint,ptTr1BR,ptTr1BL,ptTr1TL]))
-        ptTr2TL=Vector(-self.wallTopWidth,self.wallLenght,endWallTopLevel)
-        ptTr2TR=Vector(0,self.wallLenght,endWallTopLevel)
-        ptTr2BL=ptTr2TL.add(Vector(-(hEndWall*self.intraSlope),0,-hEndWall))
-        ptTr2BR=ptTr2TR.add(Vector(hEndWall*self.extraSlope,0,-hEndWall))
+        vDeltaZ=self.wallLenght*self.wallSlope*Vector(0,0,-1)
+        ptTr2TL=ptTr1TL.add(self.wallLenght*self.vDirLn).add(vDeltaZ)
+        ptTr2TR=self.placementPoint.add(self.wallLenght*self.vDirLn).add(vDeltaZ)
+        ptTr2BL=ptTr2TL.add(hEndWall*self.intraSlope*self.vDirTr).add(Vector(0,0,-hEndWall))
+        baseSect2=self.wallTopWidth+hEndWall*self.intraSlope+hEndWall*self.extraSlope
+        ptTr2BR=ptTr2BL.add(-baseSect2*self.vDirTr)
         faceTr2=Part.Face(Part.makePolygon([ptTr2TL,ptTr2TR,ptTr2BR,ptTr2BL,ptTr2TL]))
         faceTop=Part.Face(Part.makePolygon([ptTr1TL,self.placementPoint,ptTr2TR,ptTr2TL,ptTr1TL]))
         faceBot=Part.Face(Part.makePolygon([ptTr1BL,ptTr1BR,ptTr2BR,ptTr2BL,ptTr1BL]))
