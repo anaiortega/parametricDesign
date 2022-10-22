@@ -78,7 +78,7 @@ class scheduleConf(object):
     :ivar heightText: text height (defaults to 2.5)
     :ivar heigthTextSketch: text height for the sketch (defaults to 2.0).
     '''
-    def __init__(self,widthColumns=[10,28,20,10,12,12],heightRows=12,heightText=2.5,,heigthTextSketch=2.0):
+    def __init__(self,widthColumns=[10,28,20,10,12,12],heightRows=12,heightText=2.5,heigthTextSketch=2.0):
         self.widthColumns=widthColumns
         self.heightRows=heightRows
         self.heightText=heightText

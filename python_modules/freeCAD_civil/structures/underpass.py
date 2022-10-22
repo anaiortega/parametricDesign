@@ -81,7 +81,7 @@ class Underpass(object):
     def initSectPoints(self):
         ''' initialize the main points of the transversal section
         '''
-        deckThVert=self.deckTh*(1+self.deckTrSlope**2)**(1/2)
+        deckThVert=self.getDeckVertTh()
         skewAngleRad=math.radians(self.skewAngle)
         skewUnitVector=Vector(math.cos(skewAngleRad),math.sin(skewAngleRad),0)
         intSpanSkew=self.intSpan/math.cos(skewAngleRad)
@@ -119,6 +119,19 @@ class Underpass(object):
         retSh=shName.extrude(self.LAxisVector)
         return retSh
 
+    def getDeckVertTh(self):
+        '''Return the thickness of the deck measured vertically
+        '''
+        deckVertTh=self.deckTh*(1+self.deckTrSlope**2)**(1/2)
+        return deckVertTh
+
+    def getSkewWallTh(self):
+        '''Return the thichness of the wall in skewed direction
+        '''
+        skewAngleRad=math.radians(self.skewAngle)
+        skewWallTh=self.wallTh/math.cos(skewAngleRad)
+        return skewWallTh
+        
     def genDeck(self):
         '''return the deck as a part-compound and a list of staking points.
         The staking points are four vertexes of the top of the deck counterclockwise 
@@ -130,7 +143,7 @@ class Underpass(object):
         deck=Part.Face(linDeck)
         retComp=Part.makeCompound([deck])
         retComp=self.placeAndExtrudeShape(retComp)
-        stakingPoints=[retComp.Vertexes[1],retComp.Vertexes[0],retComp.Vertexes[2],retComp.Vertexes[3]] #see sketch for staking-point's position
+        stakingPoints=[retComp.Vertexes[1].Point,retComp.Vertexes[0].Point,retComp.Vertexes[2].Point,retComp.Vertexes[3].Point] #see sketch for staking-point's position
         return retComp,stakingPoints
 
     def genLeftWall(self):
@@ -236,18 +249,20 @@ class Underpass(object):
 
     def genHeadWall(self,leftHeight,rightHeight,thickness,section):
         '''Generates the headwall over the end section of the structure
-        Parameters:
-          leftHeight:  heigth of the headwall in the left side of the deck
-          rightHeight: heigth of the headwall in the right side of the deck
-          thickness:   thickness of the headwall (longitudinal direction)
-          section:     ='I' generates de headwall in the initial section of the structure
-                       ='E'     "      "    "      "  "  ending    "     "   "     "
+        Return the headwall and two points (left and right) to place
+        the wing-walls (top external face of the wing-wall)
+  
+        :param leftHeight:  heigth of the headwall in the left side of the deck
+        :param rightHeight: heigth of the headwall in the right side of the deck
+        :param thickness:   thickness of the headwall (longitudinal direction)
+        :param section:     ='I' generates de headwall in the initial section of the structure
+                            ='E' idem for ending section
         '''
         ptWallTL=self.kpETL.add(Vector(0,0,leftHeight))
         ptWallTR=self.kpETR.add(Vector(0,0,rightHeight))
         linWall=Part.makePolygon([self.kpETL,self.kpETR,ptWallTR,ptWallTL,self.kpETL])
         headwall=Part.Face(linWall)
-        vectExtr=(self.endLAxPoint-self.startLAxPoint)
+        vectExtr=(self.endLAxPoint-self.startLAxPoint) #extrusion vector
         if section =='I':
             ptDestination=self.startLAxPoint
             vectExtr.normalize().multiply(thickness)
@@ -256,7 +271,9 @@ class Underpass(object):
             vectExtr.normalize().multiply(-thickness)
         PlaceShpPtVect(shapeId=headwall,ptOrig=self.ptLAxis,vDirOrig=Vector(0,1,0),ptDest=ptDestination,vDirDest=Vector(self.LAxisVector.x,self.LAxisVector.y,0))
         retSh=headwall.extrude(vectExtr)
-        return retSh
+        # staking points
+        stackPt=[retSh.Vertexes[0].Point,retSh.Vertexes[2].Point]
+        return retSh,stackPt
 
     def getPtStrPKAxis(self,ptSectType,longAxisPK):
         '''Returns any point of the structure, given its position in the section type and
