@@ -111,6 +111,14 @@ class Underpass(object):
         vDirec=(self.endLAxPoint-self.startLAxPoint).normalize()
         return vDirec
 
+    def getVectFrontalView(self):
+        v=self.getDirecVectLAxis()
+        return Vector(-v.x,-v.y,0)
+
+    def getVectDorsalView(self):
+        v=self.getDirecVectLAxis()
+        return Vector(v.x,v.y,0)
+     
     def placeAndExtrudeShape(self,shName):
         '''place the shape in the initial position of the longitudinal axis
         and extrudes it until the end point

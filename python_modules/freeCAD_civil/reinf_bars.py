@@ -278,12 +278,12 @@ class rebarFamily(object):
         rebarEdges=rebarDraw.Edges
         #arrow in extremity 1
         pExtr1=rebarEdges[0].Vertexes[0].Point #vertex at extremity 1
-        vArr=rebarEdges[0].tangentAt(0).multiply(self.genConf.texSize/3.0) #arrow vector
+        vArr=rebarEdges[0].tangentAt(0).multiply(0.9*self.genConf.texSize) #arrow vector
         l=Draft.rotate(Draft.makeLine(pExtr1,pExtr1.add(vArr)),15,pExtr1)
         FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = colorArrows
         #arrow in extremity 2
         pExtr2=rebarEdges[-1].Vertexes[1].Point #vertex at extremity 2
-        vArr=rebarEdges[-1].tangentAt(1).multiply(self.genConf.texSize/3.0) #arrow vector
+        vArr=rebarEdges[-1].tangentAt(1).multiply(0.9*self.genConf.texSize) #arrow vector
         l=Draft.rotate(Draft.makeLine(pExtr2,pExtr2.add(vArr)),180-15,pExtr2)
         FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = colorArrows
         # Texts pointing at the longest edge of the rebar
