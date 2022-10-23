@@ -385,15 +385,22 @@ class Wingwall(object):
         return retComp
 
     def genWingwallFoundation(self,footsLength,footsHeight,footsWidth,footsIntraWidth):
-        retFound=[]
-        yOrig=0
+        foots=list()
+        stackPts=list()
+        vDirTB=Vector(0,0,-1) # vector direction top-bottom
+        keyPnt=Vector(self.placementPoint.x,self.placementPoint.y,self.foundLevel)
         for i in range(0,len(footsLength)):
-            xOrig=-footsIntraWidth[i]
-            zOrig=self.foundLevel-footsHeight[i]
-            ptOrig=Vector(xOrig,yOrig,zOrig)
-            foot=Part.makeBox(footsWidth[i],footsLength[i],footsHeight[i],ptOrig)
-            retFound.append(foot)
-            yOrig+=footsLength[i]
-        retComp=Part.makeCompound(retFound)
-        return retComp
+            L=footsLength[i]; H=footsHeight[i]; WF=footsIntraWidth[i]; WK=footsWidth[i]-footsIntraWidth[i]
+            ptoTK=keyPnt.add(WK*self.vDirTr) # top back
+            ptoTF=keyPnt.add(-WF*self.vDirTr) # top front
+            ptoBK=ptoTK.add(H*vDirTB) # bottom back
+            ptoBF=ptoTF.add(H*vDirTB) # bottom front
+            faceTr=Part.Face(Part.makePolygon([ptoTK,ptoTF,ptoBF,ptoBK]))
+            foot=faceTr.extrude(L*self.vDirLn)
+            foots+=[foot]
+            vtxs=foot.Vertexes
+            stackPts.append([vtxs[0],vtxs[1],vtxs[3],vtxs[2]])
+            keyPnt=keyPnt.add(L*self.vDirLn)
+        retComp=Part.makeCompound(foots)
+        return retComp,stackPts
 
