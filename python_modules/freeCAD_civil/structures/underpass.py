@@ -118,6 +118,14 @@ class Underpass(object):
     def getVectDorsalView(self):
         v=self.getDirecVectLAxis()
         return Vector(v.x,v.y,0)
+
+    def getVectLeftView(self):
+        v=self.getDirecVectLAxis()
+        return Vector(v.y,-v.x,0)
+
+    def getVectRightView(self):
+        v=self.getDirecVectLAxis()
+        return Vector(-v.y,v.x,0)
      
     def placeAndExtrudeShape(self,shName):
         '''place the shape in the initial position of the longitudinal axis
@@ -324,7 +332,7 @@ class Wingwall(object):
            |  +                                            ______________ /      |\ 
            |     +                                           /\   /\     /       . \
            |        +                                                   /        |  \
-           |           +   __1__                           intraSlope  /         .   \ extraSlope
+           |           +   __1__                        backFaceSlope  /         .   \ frontFaceSlope
            |              +     | wallSlope                      _↓__ /          |    \_↓__
            |                 +                                   |   /                 \  |          
            |                    +                               1|  /                   \ |1
@@ -337,8 +345,8 @@ class Wingwall(object):
            |          |         |________|              ^|                                          |
            |          |_________|            footsHeight||                                          |
            |__________|                                 ↓|__________________________________________|
-           <----------><--------><------->               <---------------------->
-            footsLength                                      footsIntraWidth
+           <----------><--------><------->                                       <----------------->
+            footsLength                                                           footsToeWidth
                                                          <----------------------------------------->
                                                                         footsWidth
 
@@ -347,7 +355,7 @@ class Wingwall(object):
     #                  wingwall depicted in the figures
     #  rotAng:         vector of direction with which to align the local Y axis of the wingwall
     '''
-    def __init__(self,placementPoint,foundLevel,wallLenght,wallSlope,wallTopWidth,intraSlope,extraSlope,vDirTr,vDirLn):
+    def __init__(self,placementPoint,foundLevel,wallLenght,wallSlope,wallTopWidth,backFaceSlope,frontFaceSlope,vDirTr,vDirLn):
         '''
         :param placementPoint: point in the global coordinate system where to place the corner of the
                                wingwall (top corner in the intrados facing )
@@ -355,9 +363,9 @@ class Wingwall(object):
         :param wallLenght: length of the wall (longitudinal direction)
         :param wallSlope: slope of the top face of the wall in longitudinal direction
         :param wallTopWidth: width of the top face of the wall (transversal)
-        :param intraSlope: slope of the intrados (front face) H/V (positive)
-        :param extraSlope: slope of the extrados (back face) H/V (positive)
-        :param vDirTr: vector in transversal direction (from front to back of the wall)
+        :param backFaceSlope: slope of the intrados (back face) H/V (positive)
+        :param frontFaceSlope: slope of the extrados (front face) H/V (positive)
+        :param vDirTr: vector in transversal direction (from front to back faces of the wall)
         :param vDirLn: vector in longitudinal direction (from placementPoint to the end of the wall)
         '''
         self.placementPoint=placementPoint
@@ -365,8 +373,8 @@ class Wingwall(object):
         self.wallLenght=wallLenght
         self.wallSlope=wallSlope
         self.wallTopWidth=wallTopWidth
-        self.intraSlope=intraSlope
-        self.extraSlope=extraSlope
+        self.backFaceSlope=backFaceSlope
+        self.frontFaceSlope=frontFaceSlope
         self.vDirTr=vDirTr.normalize()
         self.vDirLn=vDirLn.normalize()
 
@@ -374,36 +382,44 @@ class Wingwall(object):
         hStartWall=self.placementPoint.z-self.foundLevel
         hEndWall=hStartWall-self.wallLenght*self.wallSlope
         ptTr1TL=self.placementPoint+self.wallTopWidth*self.vDirTr
-        ptTr1BL=ptTr1TL.add(hStartWall*self.intraSlope*self.vDirTr).add(Vector(0,0,-hStartWall))
-        baseSect1=self.wallTopWidth+hStartWall*self.intraSlope+hStartWall*self.extraSlope
+        ptTr1BL=ptTr1TL.add(hStartWall*self.backFaceSlope*self.vDirTr).add(Vector(0,0,-hStartWall))
+        baseSect1=self.wallTopWidth+hStartWall*self.backFaceSlope+hStartWall*self.frontFaceSlope
         ptTr1BR=ptTr1BL.add(-baseSect1*self.vDirTr)
         faceTr1=Part.Face(Part.makePolygon([ptTr1TL,self.placementPoint,ptTr1BR,ptTr1BL,ptTr1TL]))
         vDeltaZ=self.wallLenght*self.wallSlope*Vector(0,0,-1)
         ptTr2TL=ptTr1TL.add(self.wallLenght*self.vDirLn).add(vDeltaZ)
         ptTr2TR=self.placementPoint.add(self.wallLenght*self.vDirLn).add(vDeltaZ)
-        ptTr2BL=ptTr2TL.add(hEndWall*self.intraSlope*self.vDirTr).add(Vector(0,0,-hEndWall))
-        baseSect2=self.wallTopWidth+hEndWall*self.intraSlope+hEndWall*self.extraSlope
+        ptTr2BL=ptTr2TL.add(hEndWall*self.backFaceSlope*self.vDirTr).add(Vector(0,0,-hEndWall))
+        baseSect2=self.wallTopWidth+hEndWall*self.backFaceSlope+hEndWall*self.frontFaceSlope
         ptTr2BR=ptTr2BL.add(-baseSect2*self.vDirTr)
         faceTr2=Part.Face(Part.makePolygon([ptTr2TL,ptTr2TR,ptTr2BR,ptTr2BL,ptTr2TL]))
         faceTop=Part.Face(Part.makePolygon([ptTr1TL,self.placementPoint,ptTr2TR,ptTr2TL,ptTr1TL]))
         faceBot=Part.Face(Part.makePolygon([ptTr1BL,ptTr1BR,ptTr2BR,ptTr2BL,ptTr1BL]))
-        faceIntra=Part.Face(Part.makePolygon([ptTr1TL,ptTr2TL,ptTr2BL,ptTr1BL,ptTr1TL]))
-        faceExtra=Part.Face(Part.makePolygon([self.placementPoint,ptTr2TR,ptTr2BR,ptTr1BR,self.placementPoint]))
-        retComp=Part.makeCompound([faceTr1,faceTr2,faceTop,faceBot,faceIntra,faceExtra])
+        faceBack=Part.Face(Part.makePolygon([ptTr1TL,ptTr2TL,ptTr2BL,ptTr1BL,ptTr1TL]))
+        faceFront=Part.Face(Part.makePolygon([self.placementPoint,ptTr2TR,ptTr2BR,ptTr1BR,self.placementPoint]))
+        retComp=Part.makeCompound([faceTr1,faceTr2,faceTop,faceBot,faceBack,faceFront])
         return retComp
 
-    def genWingwallFoundation(self,footsLength,footsHeight,footsWidth,footsIntraWidth):
+    def genWingwallFoundation(self,footsLength,footsHeight,footsWidth,footsToeWidth):
+        ''' Return the footings of a wingwal
+ 
+        :param footsLength: ordered list of foot lengths (longitudinal direction of the wall)
+        :param footsHeight: ordered list of foot heights
+        :param footsWidth: ordered list of foot widths (transversal direction)
+        :param footsToeWidth: ordered list of foot toe lengths (measured from de vertical of 
+                             the placementPoint)
+        '''
         foots=list()
         stackPts=list()
         vDirTB=Vector(0,0,-1) # vector direction top-bottom
         keyPnt=Vector(self.placementPoint.x,self.placementPoint.y,self.foundLevel)
         for i in range(0,len(footsLength)):
-            L=footsLength[i]; H=footsHeight[i]; WF=footsIntraWidth[i]; WK=footsWidth[i]-footsIntraWidth[i]
+            L=footsLength[i]; H=footsHeight[i]; WF=footsToeWidth[i]; WK=footsWidth[i]-footsToeWidth[i]
             ptoTK=keyPnt.add(WK*self.vDirTr) # top back
             ptoTF=keyPnt.add(-WF*self.vDirTr) # top front
             ptoBK=ptoTK.add(H*vDirTB) # bottom back
             ptoBF=ptoTF.add(H*vDirTB) # bottom front
-            faceTr=Part.Face(Part.makePolygon([ptoTK,ptoTF,ptoBF,ptoBK]))
+            faceTr=Part.Face(Part.makePolygon([ptoTK,ptoTF,ptoBF,ptoBK,ptoTK]))
             foot=faceTr.extrude(L*self.vDirLn)
             foots+=[foot]
             vtxs=foot.Vertexes

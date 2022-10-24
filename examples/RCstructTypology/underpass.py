@@ -34,9 +34,9 @@ Part.show(headwallEnd)
 #wingwalls
 #Initial section, wingwall left
 wTopWidth=0.5
-wingWall=underpass.Wingwall(wallTopLevel=7.5,foundLevel=-1,wallLenght=10,wallSlope=1/3.0,wallTopWidth=wTopWidth,intraSlope=1/5.0,extraSlope=1/10.0)
+wingWall=underpass.Wingwall(wallTopLevel=7.5,foundLevel=-1,wallLenght=10,wallSlope=1/3.0,wallTopWidth=wTopWidth,backFaceSlope=1/5.0,frontFaceSlope=1/10.0)
 ww=wingWall.genWingwall()
-wfoundt=wingWall.genWingwallFoundation(footsLength=[3,4,3],footsHeight=[2,1,0.5],footsWidth=[6,5,3],footsIntraWidth=[2*6/3,2*5/3,2*3/3])
+wfoundt=wingWall.genWingwallFoundation(footsLength=[3,4,3],footsHeight=[2,1,0.5],footsWidth=[6,5,3],footsToeWidth=[2*6/3,2*5/3,2*3/3])
 wingwallInitLeft=Part.makeCompound([ww,wfoundt])
 pt1=struct.kpETL.add(Vector(0,0,initLH))
 pt2=struct.kpETR.add(Vector(0,0,initRH))
@@ -48,9 +48,9 @@ Part.show(WWInitLeft)
 
 #Initial section, wingwall right
 wTopWidth=0.5
-wingWall=Wingwall(wallTopLevel=8,foundLevel=-1,wallLenght=8,wallSlope=1/4.0,wallTopWidth=wTopWidth,intraSlope=1/5.0,extraSlope=1/10.0)
+wingWall=Wingwall(wallTopLevel=8,foundLevel=-1,wallLenght=8,wallSlope=1/4.0,wallTopWidth=wTopWidth,backFaceSlope=1/5.0,frontFaceSlope=1/10.0)
 ww=wingWall.genWingwall()
-wfoundt=wingWall.genWingwallFoundation(footsLength=[8],footsHeight=[0.75],footsWidth=[5],footsIntraWidth=[2*5/3])
+wfoundt=wingWall.genWingwallFoundation(footsLength=[8],footsHeight=[0.75],footsWidth=[5],footsToeWidth=[2*5/3])
 wingwallInitRight=Part.makeCompound([ww,wfoundt])
 pt1=struct.kpETL.add(Vector(0,0,initLH))
 pt2=struct.kpETR.add(Vector(0,0,initRH))
@@ -62,9 +62,9 @@ Part.show(WWInitRight)
 
 #Final section, wingwall left
 wTopWidth=0.5
-wingWall=Wingwall(wallTopLevel=8,foundLevel=-1,wallLenght=8,wallSlope=1/5.0,wallTopWidth=wTopWidth,intraSlope=1/20.0,extraSlope=1/15.0)
+wingWall=Wingwall(wallTopLevel=8,foundLevel=-1,wallLenght=8,wallSlope=1/5.0,wallTopWidth=wTopWidth,backFaceSlope=1/20.0,frontFaceSlope=1/15.0)
 ww=wingWall.genWingwall()
-wfoundt=wingWall.genWingwallFoundation(footsLength=[4,4],footsHeight=[1,0.5],footsWidth=[5,3],footsIntraWidth=[2*5/3,2*3/3])
+wfoundt=wingWall.genWingwallFoundation(footsLength=[4,4],footsHeight=[1,0.5],footsWidth=[5,3],footsToeWidth=[2*5/3,2*3/3])
 wingwallEndLeft=Part.makeCompound([ww,wfoundt])
 pt1=struct.kpETL.add(Vector(0,0,endLH))
 pt2=struct.kpETR.add(Vector(0,0,endRH))
@@ -76,9 +76,9 @@ Part.show(WWEndLeft)
 
 #Final section, wingwall right
 wTopWidth=0.5
-wingWall=Wingwall(wallTopLevel=7.5,foundLevel=-1,wallLenght=12,wallSlope=1/3.0,wallTopWidth=wTopWidth,intraSlope=1/5.0,extraSlope=1/10.0)
+wingWall=Wingwall(wallTopLevel=7.5,foundLevel=-1,wallLenght=12,wallSlope=1/3.0,wallTopWidth=wTopWidth,backFaceSlope=1/5.0,frontFaceSlope=1/10.0)
 ww=wingWall.genWingwall()
-wfoundt=wingWall.genWingwallFoundation(footsLength=[6,6],footsHeight=[1.5,0.75],footsWidth=[6,5],footsIntraWidth=[2*6/3,2*5/3])
+wfoundt=wingWall.genWingwallFoundation(footsLength=[6,6],footsHeight=[1.5,0.75],footsWidth=[6,5],footsToeWidth=[2*6/3,2*5/3])
 wingwallEndRight=Part.makeCompound([ww,wfoundt])
 pt1=struct.kpETL.add(Vector(0,0,initLH))
 pt2=struct.kpETR.add(Vector(0,0,initRH))

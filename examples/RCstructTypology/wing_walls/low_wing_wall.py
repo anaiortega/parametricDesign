@@ -52,36 +52,32 @@ foot_tr_top={'fi':0.025,'s':0.15}
 foot_ln_bot={'fi':0.016,'s':0.20}
 # armadura longitudinal superior
 foot_ln_top={'fi':0.016,'s':0.20}
-# armadura lateral talón
-fi_foot_lat_heel=0.016
-s_foot_lat_heel=0.25
+# armadura lateral talón (None si no existe)
+#foot_lat_heel=None
+foot_lat_heel={'fi':0.016,'nReb':4}
 # armadura lateral puntera
-foot_lat_toe={'fi':0.016,'s':0.25}
+#foot_lat_toe=None
+foot_lat_toe={'fi':0.016,'nReb':3}
 
 # armaduras muro
 # Vertical trasdós
 wall_vert_back={'fi':0.010,'s':0.20}
 
 # Vertical intradós
-fi_wall_vert_front=0.020
-s_wall_vert_front=0.20
+wall_vert_front={'fi':0.020,'s':0.20}
 
 # Horizontal trasdós zona inferior
-fi_wall_horBottom_back=0.016
-s_wall_horBottom_back=0.20
+wall_horBottom_back={'fi':0.016,'s':0.20}
 
 # Horizontal intradós zona inferior
-fi_wall_horBottom_front=0.016
-s_wall_horBottom_front=0.20
+wall_horBottom_front={'fi':0.016,'s':0.20}
 
 # Horizontal intradós zona superior
-fi_wall_horTop_front=fi_wall_horBottom_front
-s_wall_horTop_front=s_wall_horBottom_front
+wall_horTop_front={'fi':0.016,'s':0.20}
 
 # Horizontal trasdós zona superior
-fi_wall_horTop_back=fi_wall_horBottom_back
-s_wall_horTop_back=s_wall_horBottom_back
-
+#wall_horTop_back={'fi':0.016,'s':0.20}
+wall_horTop_back=wall_horBottom_back
 #END DATA
 
 # points longitudinal section
@@ -240,8 +236,8 @@ rebarCount+=1
 RF_wall_vert_front=reinf_bars.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
-    diameter=fi_wall_vert_front,
-    spacing=s_wall_vert_front,
+    diameter=wall_vert_front['fi'],
+    spacing=s_wall_vert_front['s'],
     lstPtsConcrSect=[Ptwall1_4,Ptwall1_3,Ptwall1_2],
     coverSide='l',
     gapStart=0,
@@ -256,8 +252,8 @@ rebarCount+=1
 RF_wall_horBottom_front=reinf_bars.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
-    diameter=fi_wall_horBottom_front,
-    spacing=s_wall_horBottom_front,
+    diameter=wall_horBottom_front['fi'],
+    spacing=wall_horBottom_front['s'],
     lstPtsConcrSect=[Ph_1,Ph1_2,Ph1_3,Ph_4],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_tr_bot['fi'],wallGenConf.cover],
     gapStart=0,
@@ -275,8 +271,8 @@ rebarCount+=1
 RF_wall_horBottom_back=reinf_bars.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
-    diameter=fi_wall_horBottom_back,
-    spacing=s_wall_horBottom_back,
+    diameter=wall_horBottom_back['fi'],
+    spacing=wall_horBottom_back['s'],
     lstPtsConcrSect=[Ph_1+Vector(0,wTop),Ph_1,Ph_4,Ph2_3],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_ln_bot['fi'],wallGenConf.cover],
     coverSide='l',
@@ -293,8 +289,8 @@ rebarCount+=1
 RF_wall_horTop_front=reinf_bars.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
-    diameter=fi_wall_horTop_front,
-    spacing=s_wall_horTop_front,
+    diameter=wall_horTop_front['fi'],
+    spacing=wall_horTop_front['s'],
     lstPtsConcrSect=[Ph_1,Ph2_2,Ph2_3,Ph_4],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_tr_bot['fi'],wallGenConf.cover],
     gapStart=0,
@@ -312,8 +308,8 @@ rebarCount+=1
 RF_wall_horTop_back=reinf_bars.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
-    diameter=fi_wall_horTop_back,
-    spacing=s_wall_horTop_back,
+    diameter=wall_horTop_back['fi'],
+    spacing=wall_horTop_back['s'],
     lstPtsConcrSect=[Ph2_2,Ph_1,Ph_4,Ph2_3],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_ln_bot['fi'],wallGenConf.cover],
     coverSide='l',
@@ -382,8 +378,6 @@ reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTrans
 lstPtsConcrSect=[[Ph_1,Ph2_2,Ph2_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[RF_wall_horTop_front,RF_wall_horTop_back]
 lstSectRebarFam=[]
-
-
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,0,0))
 
 
@@ -392,7 +386,7 @@ App.newDocument("despiece")
 #altura de las filas
 #altura textos
 
-reinf_bars.barSchedule(lstBarFamilies=lstRebarFam,scheduleCfg,title=titSchedule)
+reinf_bars.barSchedule(lstRebarFam,scheduleCfg,title=titSchedule)
 
 # Bar quantities for PyCost
 #reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')
