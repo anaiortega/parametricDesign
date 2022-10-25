@@ -33,7 +33,6 @@ hWallMax=2.8
 hWallMin=1.25
 slopeBack=1/15.  #pendiente del trasdós (H/V)
 coverWall=0.04
-slopeBack=0
 alpha_degrees=math.degrees(math.atan(slopeBack)) 
 #
 
@@ -52,29 +51,21 @@ foot_tr_top={'fi':0.025,'s':0.15}
 foot_ln_bot={'fi':0.016,'s':0.20}
 # armadura longitudinal superior
 foot_ln_top={'fi':0.016,'s':0.20}
-# armadura lateral talón (None si no existe)
+# armadura lateral en todo el perímetro de la zapata  definida por el nº de barras
 #foot_lat_heel=None
-foot_lat_heel={'fi':0.016,'nReb':4}
-# armadura lateral puntera
-#foot_lat_toe=None
-foot_lat_toe={'fi':0.016,'nReb':3}
+foot_lat={'fi':0.016,'nmbBars':2,'s':0} 
 
 # armaduras muro
 # Vertical trasdós
 wall_vert_back={'fi':0.010,'s':0.20}
-
 # Vertical intradós
 wall_vert_front={'fi':0.020,'s':0.20}
-
 # Horizontal trasdós zona inferior
 wall_horBottom_back={'fi':0.016,'s':0.20}
-
 # Horizontal intradós zona inferior
 wall_horBottom_front={'fi':0.016,'s':0.20}
-
 # Horizontal intradós zona superior
 wall_horTop_front={'fi':0.016,'s':0.20}
-
 # Horizontal trasdós zona superior
 #wall_horTop_back={'fi':0.016,'s':0.20}
 wall_horTop_back=wall_horBottom_back
@@ -122,6 +113,9 @@ Ph3_2=Vector(0,wTop+0.2*slopeBack)
 Ph3_3=Vector(lWall/(hWallMax-hWallMin)*0.2,wTop)
 Ph3_4=Vector(lWall/(hWallMax-hWallMin)*0.2,0)
 
+Phf_2=Ph_1.add(Vector(0,wFoot))
+Phf_3=Ph_4.add(Vector(0,wFoot))
+
 # Armaduras zapata
 # armadura transversal inferior
 lstRebarFam=list()
@@ -130,6 +124,8 @@ RF_foot_tr_bot=reinf_bars.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_tr_bot['fi'],
+    gapStart=-2.5*footGenConf.cover,
+    gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Ptfoot_2,Ptfoot_1,Ptfoot_4,Ptfoot_3],
     coverSide='l',
     vectorLRef=Vector(0.5,-0.5),
@@ -148,6 +144,8 @@ RF_foot_tr_top=reinf_bars.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=foot_tr_top['fi'],
     spacing=foot_tr_top['s'],
+    gapStart=-2.5*footGenConf.cover,
+    gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Ptfoot_1,Ptfoot_2,Ptfoot_3,Ptfoot_4],
     fromToExtPts=[Plfoot_2,Plfoot_3],
     vectorLRefSec=Vector(-0.3,0.3))
@@ -160,12 +158,14 @@ RF_foot_ln_bot=reinf_bars.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=foot_ln_bot['fi'],
     spacing=foot_ln_bot['s'],
+    gapStart=-2.5*footGenConf.cover,
+    gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Plfoot_2,Plfoot_1,Plfoot_4,Plfoot_3],
     lstCover=[footGenConf.cover,footGenConf.cover+foot_tr_bot['fi'],footGenConf.cover],
     coverSide='l',
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[Ptfoot_1,Ptfoot_4],
-    coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
+    coverSectBars=footGenConfootGenConf.coverf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
     vectorLRefSec=Vector(-0.3,-0.3))
 lstRebarFam+=[RF_foot_ln_bot]
@@ -176,6 +176,8 @@ RF_foot_ln_top=reinf_bars.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=foot_ln_top['fi'],
     spacing=foot_ln_top['s'],
+    gapStart=-2.5*footGenConf.cover,
+    gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Plfoot_1,Plfoot_2,Plfoot_3,Plfoot_4],
     lstCover=[footGenConf.cover,footGenConf.cover+foot_tr_top['fi'],footGenConf.cover],
     fromToExtPts=[Ptfoot_2,Ptfoot_3],
@@ -188,12 +190,15 @@ rebarCount+=1
 RF_foot_lat_heel=reinf_bars.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
-    diameter=foot_lat_heel['fi'],
-    spacing=s_foot_lat_heel,
-    lstPtsConcrSect=[Plfoot_1,Plfoot_4],
+    diameter=foot_lat['fi'],
+#    spacing=foot_lat_heel['s'],
+    nmbBars=foot_lat['nmbBars'],
+    lstPtsConcrSect=[Ph_1,Phf_2],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Ptfoot_1,Ptfoot_2],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
+    extrShapeStart='anc270_posGood_tens',
+    extrShapeEnd='anc270_posGood_tens',
     vectorLRefSec=Vector(-0.3,0.3))
 lstRebarFam+=[RF_foot_lat_heel]
 rebarCount+=1
@@ -204,13 +209,55 @@ RF_foot_lat_toe=reinf_bars.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=foot_lat_toe['fi'],
     spacing=foot_lat_toe['s'],
-    lstPtsConcrSect=[Plfoot_1,Plfoot_4],
+    coverSide='l',
+    nmbBars=foot_lat_toe['nmbBars'],
+    lstPtsConcrSect=[Ph_4,Phf_3],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Ptfoot_4,Ptfoot_3],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
+    extrShapeStart='anc90_posGood_tens',
+    extrShapeEnd='anc90_posGood_tens',
 )
 lstRebarFam+=[RF_foot_lat_toe]
+rebarCount+=1
+
+# armadura lateral frontal
+RF_foot_lat_front=reinf_bars.rebarFamily(
+    genConf=footGenConf,
+    identifier=str(rebarCount+1),
+    diameter=foot_lat_toe['fi'],
+    spacing=foot_lat_toe['s'],
+    coverSide='l',
+    nmbBars=foot_lat_toe['nmbBars'],
+    lstPtsConcrSect=[Ph_1,Ph_4],
+    lstCover=[footGenConf.cover+foot_tr_bot['fi']],
+    fromToExtPts=[Ptfoot_4,Ptfoot_3],
+    coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
+    sectBarsSide='l',
+    extrShapeStart='anc90_posGood_tens',
+    extrShapeEnd='anc90_posGood_tens',
+)
+lstRebarFam+=[RF_foot_lat_front]
+rebarCount+=1
+
+# armadura lateral dorsal
+RF_foot_lat_dors=reinf_bars.rebarFamily(
+    genConf=footGenConf,
+    identifier=str(rebarCount+1),
+    diameter=foot_lat_toe['fi'],
+    spacing=foot_lat_toe['s'],
+    coverSide='r',
+    nmbBars=foot_lat_toe['nmbBars'],
+    lstPtsConcrSect=[Phf_2,Phf_3],
+    lstCover=[footGenConf.cover+foot_tr_bot['fi']],
+    fromToExtPts=[Ptfoot_4,Ptfoot_3],
+    coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
+    sectBarsSide='l',
+    extrShapeStart='anc270_posGood_tens',
+    extrShapeEnd='anc2700_posGood_tens',
+)
+lstRebarFam+=[RF_foot_lat_dors]
 rebarCount+=1
 
 #Armadura muro
@@ -237,7 +284,7 @@ RF_wall_vert_front=reinf_bars.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_vert_front['fi'],
-    spacing=s_wall_vert_front['s'],
+    spacing=wall_vert_front['s'],
     lstPtsConcrSect=[Ptwall1_4,Ptwall1_3,Ptwall1_2],
     coverSide='l',
     gapStart=0,
@@ -256,7 +303,6 @@ RF_wall_horBottom_front=reinf_bars.rebarFamily(
     spacing=wall_horBottom_front['s'],
     lstPtsConcrSect=[Ph_1,Ph1_2,Ph1_3,Ph_4],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_tr_bot['fi'],wallGenConf.cover],
-    gapStart=0,
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ptwall1_4,Ptwall1_3p],
     coverSectBars=wallGenConf.cover+foot_tr_bot['fi'],
@@ -276,7 +322,6 @@ RF_wall_horBottom_back=reinf_bars.rebarFamily(
     lstPtsConcrSect=[Ph_1+Vector(0,wTop),Ph_1,Ph_4,Ph2_3],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_ln_bot['fi'],wallGenConf.cover],
     coverSide='l',
-    gapStart=0,
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall_1,Ptwall2_2],
     coverSectBars=wallGenConf.cover+foot_ln_bot['fi'],
@@ -293,7 +338,6 @@ RF_wall_horTop_front=reinf_bars.rebarFamily(
     spacing=wall_horTop_front['s'],
     lstPtsConcrSect=[Ph_1,Ph2_2,Ph2_3,Ph_4],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_tr_bot['fi'],wallGenConf.cover],
-    gapStart=0,
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ptwall1_3p,Ptwall1_3],
     coverSectBars=wallGenConf.cover+foot_tr_bot['fi'],
@@ -313,7 +357,6 @@ RF_wall_horTop_back=reinf_bars.rebarFamily(
     lstPtsConcrSect=[Ph2_2,Ph_1,Ph_4,Ph2_3],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_ln_bot['fi'],wallGenConf.cover],
     coverSide='l',
-    gapStart=0,
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall2_2,Ptwall1_2],
     coverSectBars=wallGenConf.cover+foot_ln_bot['fi'],
@@ -380,6 +423,11 @@ lstShapeRebarFam=[RF_wall_horTop_front,RF_wall_horTop_back]
 lstSectRebarFam=[]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,0,0))
 
+#SECCIÓN HORIZONTAL ZAPATA
+lstPtsConcrSect=[[Ph_1,Phf_2,Phf_3,Ph_4,Ph_1]]
+lstShapeRebarFam=[RF_foot_lat_heel,RF_foot_lat_toe,RF_foot_lat_front,RF_foot_lat_dors]
+lstSectRebarFam=[]
+reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(20,0,0))
 
    #BAR SCHEDULE
 App.newDocument("despiece")

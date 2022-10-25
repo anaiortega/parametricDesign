@@ -102,6 +102,7 @@ class rebarFamily(object):
           defined with lstPtsConcrSect [m]. Defaults to the minimum cover 
           defined with 'genConf'
     :ivar coverSide: side to give cover  ('l' left side, 'r' for right side)
+          (defaults to 'r')
     :ivar vectorLRef: vector to draw the leader line for labeling the bar
     :ivar fromToExtPts: starting and end points that delimit the stretch of 
           rebars. Defaults to None, in which case this length must be defined 

@@ -29,9 +29,9 @@ class Underpass(object):
     Approach slabs, footing under the walls, sloped deck,..., figure among 
     the capabilities implemented.
     Attributes:
-      startLAxPoint: coordinates [X,Y,Z] of the starting point in the 
+      startLAxPoint: Vector(x,y,z) coordinates of the starting point in the 
                      longitudinal axis where the structure begins
-      endLAxPoint:   coordinates [X,Y,Z] of the ending point in the
+      endLAxPoint:   Vector(x,y,z) coordinates of the ending point in the
                      longitudinal axis where the structure ends
       vertIntHeigAx:  vertical internal height in the central axis of the frame
       intSpan:        distance between internal faces of the walls
@@ -65,8 +65,8 @@ class Underpass(object):
     '''
 
     def __init__(self,startLAxPoint,endLAxPoint,posFrameLAxVect,vertIntHeigAx,intSpan,wallTh,deckTh,deckTrSlope,skewAngle=0):
-        self.startLAxPoint=Vector(startLAxPoint[0],startLAxPoint[1],startLAxPoint[2])
-        self.endLAxPoint=Vector(endLAxPoint[0],endLAxPoint[1],endLAxPoint[2])
+        self.startLAxPoint=startLAxPoint
+        self.endLAxPoint=endLAxPoint
         self.ptLAxis=Vector(posFrameLAxVect[0],0,posFrameLAxVect[2])
         self.vertIntHeigAx=vertIntHeigAx
         self.intSpan=intSpan
