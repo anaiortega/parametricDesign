@@ -9,7 +9,7 @@ __email__= "ana.ortega@xcengineering.xyz "
 
 import math
 import bisect
-import Part, FreeCAD, math
+import Part, FreeCAD
 import Draft
 from FreeCAD import Vector
 import FreeCADGui
@@ -20,21 +20,14 @@ from RC_utils import reinf_bars_arrang_sets as RCutils
 import DraftVecUtils
 from materials.ec2 import EC2_limit_state_checking as Lcalc
 from misc_utils import data_struct_utils as dsu
+from freeCAD_civil import draw_config as cfg
+from freeCAD_civil import tables 
 '''Classes to generate in FreeCAD drawings to represent  a reinforced-concrete 
 structure and the bar schedule associated.
 
 Diameter of the reinforcement bars must be expressed in meters [m].
 Other length magnitudes should be expressed in meters [m].
 '''
-colorSectBars= (1.00,0.00,0.00) # red (color 1 Autocad)
-colorRefLines=(1.00,1.00,0.00) # yellow (color 2 Autocad)
-colorRebars=(0.00,1.00,0.00) # green (color 3 Autocad)
-colorArrows=(1.00,0.00,1.00) #magenta (color 6 Autocad)
-colorConcrete=(0.00,1.00,1.00) #cyan (color 4 Autocad)
-colorTextLeft=(0.00,0.00,1.00) #blue (color 5 Autocad)
-colorTextCenter=(0.50,0.50,0.50) #gray (color 9 Autocad)
-colorTextRight=(0.50,0.00,0.50) #purple (color 214 Autocad)
-colorRebarSketch=(0.50,0.50,0.00) # olive (color 54 Autocad)
 
 class genericConf(object):
     '''
@@ -244,13 +237,13 @@ class rebarFamily(object):
         incr=vaux.multiply(self.spacing)
         for i in range(0,nesp+1):
             c=Draft.makeCircle(self.diameter/2.0,cent,False)
-            FreeCADGui.ActiveDocument.getObject(c.Name).LineColor =colorSectBars
+            FreeCADGui.ActiveDocument.getObject(c.Name).LineColor =cfg.colorSectBars
             cent.move(incr)
         p1=ptoIniEtiq.add(self.vectorLRefSec)
         vaux.normalize()
         p2=p1.add(vaux.multiply(self.spacing*nesp)).sub(self.vectorLRefSec)
         w=Draft.makeWire([p1,p2])
-        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
+        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
         return
 
     def drawLstRebar(self,vTranslation=Vector(0,0,0)):
@@ -273,7 +266,7 @@ class rebarFamily(object):
         rebarFillet= Draft.make_wire(rebarDraw)
         rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
         rebarFillet.FilletRadius=rad
-        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = colorRebars
+        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
         FreeCADGui.ActiveDocument.Document.recompute()
 #        Part.show(rebarDraw)
         rebarEdges=rebarDraw.Edges
@@ -281,12 +274,12 @@ class rebarFamily(object):
         pExtr1=rebarEdges[0].Vertexes[0].Point #vertex at extremity 1
         vArr=rebarEdges[0].tangentAt(0).multiply(0.9*self.genConf.texSize) #arrow vector
         l=Draft.rotate(Draft.makeLine(pExtr1,pExtr1.add(vArr)),15,pExtr1)
-        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = colorArrows
+        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = cfg.colorArrows
         #arrow in extremity 2
         pExtr2=rebarEdges[-1].Vertexes[1].Point #vertex at extremity 2
         vArr=rebarEdges[-1].tangentAt(1).multiply(0.9*self.genConf.texSize) #arrow vector
         l=Draft.rotate(Draft.makeLine(pExtr2,pExtr2.add(vArr)),180-15,pExtr2)
-        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = colorArrows
+        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = cfg.colorArrows
         # Texts pointing at the longest edge of the rebar
         laux=[e.Length for e in rebarEdges]
         ptoIniEtiq=rebarEdges[laux.index(max(laux))].CenterOfMass
@@ -310,7 +303,7 @@ class rebarFamily(object):
     #        ptoSketch=ptoTxt+Vector(0,-(self.genConf.texSize+bound.YLength/2))
             sketch.translate(ptoCDG.sub(cog))
             p=Part.show(sketch)
-            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorRebarSketch
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorRebarSketch
 #        drawMiniSketchRebar(rbFam=self,ptCOG=ptoSketch,wColumn=10*self.genConf.texSize,hRow=10*self.genConf.texSize,hText=0)
         return
 
@@ -522,13 +515,13 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
     p4=p3.add(Vector(signo*hText,0))
     p5=p3.add(Vector(signo*hText/2.0,-hText/2.0))
     w=Draft.makeWire([ptoInic,p2,p3])
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
     if len(idArm)==1:
         pl=FreeCAD.Placement()
         pl.move(p4)
 #        c=Draft.makeCircle(hText*(len(idArm)+1)/2.0,pl,False)
         c=Draft.make_circle(radius=hText*(len(idArm)+1)/2.0,placement=pl)
-        FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = colorRefLines
+        FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = cfg.colorRefLines
     else:
         pp1=p4.add(Vector(0,hText))
         pp2=p4.add(Vector(signo*hText*(len(idArm)-1),hText))
@@ -541,9 +534,9 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
         l2=Part.makeLine(pp3,pp4)
         etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
         p=Part.show(etiq)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = colorRefLines
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = cfg.colorRefLines
     if vectorLRef.x > 0:
-        justif="Left"; txtColor=colorTextLeft
+        justif="Left"; txtColor=cfg.colorTextLeft
         if sepArm == 0:
             tx=idArm + '  ' + str(int(nBarr)) + '%%C' + str(int(1000*diamArm))
         else:
@@ -551,7 +544,7 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
         ptoSketch=p5+Vector((len(tx)-2)*0.7*hText,0)
         pos='l'
     else:
-        justif="Right"; txtColor=colorTextRight
+        justif="Right"; txtColor=cfg.colorTextRight
         if sepArm == 0:
             tx=str(int(nBarr)) + '%%C' + str(int(1000*diamArm)) + '   ' + idArm
         else:
@@ -590,7 +583,7 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
     pos=sketch.BoundBox.Center
     sketch.translate(ptCOG.sub(pos))
     p=Part.show(sketch)
-    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorRebarSketch
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorRebarSketch
     #Texts
     lstWireLengths=[round(edg.Length,decLengths) for edg in rW.Edges]
     lengthsText=[str(i) for i in lstWireLengths]
@@ -608,7 +601,7 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
     sketchEdges=sketch.Edges
     for i in zip(sketchEdges,lengthsText):
         edg=i[0]
-        dt.put_text_in_pnt(text=i[1],point=edg.CenterOfMass,hText=hText,color=colorTextCenter,justif="Center",rotation=math.degrees(edg.tangentAt(0).getAngle(Vector(1,0,0))))
+        dt.put_text_in_pnt(text=i[1],point=edg.CenterOfMass,hText=hText,color=cfg.colorTextCenter,justif="Center",rotation=math.degrees(edg.tangentAt(0).getAngle(Vector(1,0,0))))
     return (totalLength,totalLengthTxt)
 
 def drawMiniSketchRebar(rbFam,ptCOG,wSketch,hSketch):
@@ -649,44 +642,46 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None):
     for rf in lstBarFamilies:
         if rf.lstWire==None:
             rf.createLstRebar()
-    anchoTotal=sum(wColumns)
+#    totalWidth=sum(wColumns)
     numRows=sum([len(rb.lstWire) for rb in lstBarFamilies])
-    w=Draft.makeRectangle(anchoTotal,hRows*(numRows+2))
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
-    p1=Vector(0,0)
-    p2=p1.add(Vector(0,hRows*(numRows+1)))
-    for i in range (0,len(wColumns)):
-        p1=p1.add(Vector(wColumns[i],0))
-        p2=p2.add(Vector(wColumns[i],0))
-        w=Draft.makeLine(p1,p2)
-        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
-    p1=Vector(0,hRows*(numRows))
-    p2=p1.add(Vector(anchoTotal,0))
-    w=Draft.makeLine(p1,p2)
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
-    # General title of the table
-    pLinea=p1.add(Vector(0,hRows))
-    w=Draft.makeLine(pLinea,pLinea.add(Vector(anchoTotal,0)))
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = colorRefLines
-    pPos=pLinea.add(Vector(anchoTotal/2.0,hRows/2))
-    dt.put_text_in_pnt(title,pPos,1.2*hText,colorTextCenter,"Center")
+    totalWidth=sum(wColumns)
+    # w=Draft.makeRectangle(totalWidth,hRows*(numRows+2))
+    # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    # p1=Vector(0,0)
+    # p2=p1.add(Vector(0,hRows*(numRows+1)))
+    # for i in range (0,len(wColumns)):
+    #     p1=p1.add(Vector(wColumns[i],0))
+    #     p2=p2.add(Vector(wColumns[i],0))
+    #     w=Draft.makeLine(p1,p2)
+    #     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    # p1=Vector(0,hRows*(numRows))
+    # p2=p1.add(Vector(totalWidth,0))
+    # w=Draft.makeLine(p1,p2)
+    # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    # # Generate title of the table
+    # pLinea=p1.add(Vector(0,hRows))
+    # w=Draft.makeLine(pLinea,pLinea.add(Vector(totalWidth,0)))
+    # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    # pPos=pLinea.add(Vector(totalWidth/2.0,hRows/2))
+    # dt.put_text_in_pnt(title,pPos,1.2*hText,cfg.colorTextCenter,"Center")
+    p1=tables.drawBoxWtitle(Vector(0,0),wColumns,title,hText,hRows,numRows)
     #Títulos para la tabla de despiece
     pLinea=p1.add(Vector(0,hRows/2.0))
     pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
-    dt.put_text_in_pnt('POS.',pPos,hText,colorTextLeft)
+    dt.put_text_in_pnt('POS.',pPos,hText,cfg.colorTextLeft)
     pEsq=pLinea.add(Vector(wColumns[0]+wColumns[1]/2.0,-hText/2.0))
-    dt.put_text_in_pnt('ESQUEMA',pEsq,hText,colorTextCenter,"Center")
+    dt.put_text_in_pnt('ESQUEMA',pEsq,hText,cfg.colorTextCenter,"Center")
     pFiSep=pLinea.add(Vector(wColumns[0]+wColumns[1]+hText/2.0,-hText/2.0))
-    dt.put_text_in_pnt('%%C/SEP.',pFiSep.add(Vector(0,hText)), hText,colorTextLeft)
-    dt.put_text_in_pnt('(mm)/(m)',pFiSep.add(Vector(0,-hText)), hText,colorTextLeft)
+    dt.put_text_in_pnt('%%C/SEP.',pFiSep.add(Vector(0,hText)), hText,cfg.colorTextLeft)
+    dt.put_text_in_pnt('(mm)/(m)',pFiSep.add(Vector(0,-hText)), hText,cfg.colorTextLeft)
     pNbarras=pLinea.add(Vector(wColumns[0]+wColumns[1]+wColumns[2]+wColumns[3]-hText/2.0,-hText/2.0))
-    dt.put_text_in_pnt('NUM.',pNbarras, hText, colorTextRight,"Right")
+    dt.put_text_in_pnt('NUM.',pNbarras, hText, cfg.colorTextRight,"Right")
     pLbarra=pLinea.add(Vector(wColumns[0]+wColumns[1]+wColumns[2]+wColumns[3]+wColumns[4]-hText/2.0,-hText/2.0))
-    dt.put_text_in_pnt('LONG.',pLbarra.add(Vector(0,hText)), hText, colorTextRight,"Right")
-    dt.put_text_in_pnt('(m)',pLbarra.add(Vector(0,-hText)), hText, colorTextRight,"Right")
+    dt.put_text_in_pnt('LONG.',pLbarra.add(Vector(0,hText)), hText, cfg.colorTextRight,"Right")
+    dt.put_text_in_pnt('(m)',pLbarra.add(Vector(0,-hText)), hText, cfg.colorTextRight,"Right")
     pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
-    dt.put_text_in_pnt('PESO',pPeso.add(Vector(0,hText)), hText, colorTextRight,"Right")
-    dt.put_text_in_pnt('(Kg)',pPeso.add(Vector(0,-hText)), hText, colorTextRight,"Right")
+    dt.put_text_in_pnt('PESO',pPeso.add(Vector(0,hText)), hText, cfg.colorTextRight,"Right")
+    dt.put_text_in_pnt('(Kg)',pPeso.add(Vector(0,-hText)), hText, cfg.colorTextRight,"Right")
     pLinea=p1.add(Vector(0,-hRows/2.0))
     pesoTotal=0
     # order list of rebar families by identifications
@@ -704,7 +699,7 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None):
         for i in range(len(rbFam.lstWire)):
             #identifier
             pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
-            dt.put_text_in_pnt(rbFam.identifier,pPos, hText,colorTextLeft)
+            dt.put_text_in_pnt(rbFam.identifier,pPos, hText,cfg.colorTextLeft)
             #sketch
             pEsq=pLinea.add(Vector(wColumns[0] + wColumns[1]/2.0,0))
             rW2=rbFam.wireSect2[i] if rbFam.wireSect2 else None
@@ -714,20 +709,20 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None):
                 tx='%%C' + str(int(1000*rbFam.diameter))
             else:
                 tx='%%C' + str(int(1000*rbFam.diameter)) + 'c/' + formatSpacing %rbFam.spacing
-            dt.put_text_in_pnt(tx,pFiSep, hText,colorTextLeft)
+            dt.put_text_in_pnt(tx,pFiSep, hText,cfg.colorTextLeft)
             #number of bars
             pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
             nBar=rbFam.getNumberOfBars()
-            dt.put_text_in_pnt(str(nBar),pNbarras, hText, colorTextRight,"Right")
+            dt.put_text_in_pnt(str(nBar),pNbarras, hText, cfg.colorTextRight,"Right")
             pbarLength=pLinea.add(Vector(sum(wColumns[:5])-hText/2.0,-hText/2.0))
-            dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, colorTextRight,"Right")
+            dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, cfg.colorTextRight,"Right")
             pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
             peso=nBar*barLength*rbFam.getUnitWeight()
-            dt.put_text_in_pnt(formatLength %peso,pPeso, hText, colorTextRight,"Right")
+            dt.put_text_in_pnt(formatLength %peso,pPeso, hText, cfg.colorTextRight,"Right")
             pesoTotal += peso
             pLinea=pLinea.add(Vector(0,-hRows))
-    pTotal=pLinea.add(Vector(anchoTotal-hText/2.0,0))
-    dt.put_text_in_pnt('TOTAL Kg:   ' + formatLength %pesoTotal,pTotal, hText, colorTextRight,"Right")
+    pTotal=pLinea.add(Vector(totalWidth-hText/2.0,0))
+    dt.put_text_in_pnt('TOTAL Kg:   ' + formatLength %pesoTotal,pTotal, hText, cfg.colorTextRight,"Right")
     return
 
 
@@ -766,7 +761,7 @@ def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0)):
     l=Part.makePolygon(lstPtsConcrSect)
     l.translate(vTranslation)
     p=Part.show(l)
-    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
     
 
 

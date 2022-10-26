@@ -5,6 +5,7 @@ from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
 from materials.ec2 import EC2_materials
+from freeCAD_civil import draw_config as cfg
 
 concr=EC2_materials.C30
 steel=EC2_materials.S500C
@@ -273,7 +274,7 @@ lstPtsConcrSect=[[ext_p1,ext_p2,ext_p3,ext_p4,ext_p1],[int_p1a,int_p1b,int_p2b,i
 for lsc in lstPtsConcrSect:
     s=Part.makePolygon(lsc)
     p=Part.show(s)
-    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor=rb.colorConcrete
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor=cfg.colorConcrete
 
 # Reinforcement
 lstRebarFam=list()

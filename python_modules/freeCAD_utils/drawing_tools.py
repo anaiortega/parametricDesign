@@ -30,4 +30,5 @@ def put_text_in_pnt(text,point,hText,color,justif="Left",rotation=None):
     tx.ViewObject.TextColor=color
     return
 
+   
     

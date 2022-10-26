@@ -35,7 +35,7 @@ anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the 
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
 
 genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
-docName='closed_slab')
+docName='closed_slab'
 FreeCAD.newDocument(docName)
 
 lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=2)
