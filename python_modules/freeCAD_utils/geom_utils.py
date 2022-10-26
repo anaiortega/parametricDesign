@@ -64,9 +64,9 @@ def int2lines(P1,P2,P3,P4):
             Pinters=Vector(xinters,yinters)
     return Pinters
 
-def getRotatedVector(v,angle):
-    '''Return a vector v rotated counterclockwise in XY plane angle degrees'''
+def getRotatedVector(v,vrotAxis,angle):
+    '''Return the vector v rotated an angle (expressed in degrees)  around 
+    axis defined by the vector vrotAxis'''
     angRad=math.radians(angle)
-    x2=math.cos(angRad)*v.x-math.sin(angRad)*v.y
-    y2=math.sin(angRad)*v.x-math.cos(angRad)*v.y
-    return Vector(x2,y2,0)
+    retV=math.cos(angRad)*v+math.sin(angRad)*(vrotAxis.cross(v))
+    return retV

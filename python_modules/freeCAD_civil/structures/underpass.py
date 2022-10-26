@@ -42,6 +42,8 @@ class Underpass(object):
                       parallel to the skew 
       posFrameLAxVect: position [x,0,z] of the longitudinal axis in the
                        section type
+      deltaHRightWall: increase (or decrease if negative) in height of the rigtht wall
+                       relative to the height of the left wall.
 
        kpETL  ________________________________________ kpETR
              |                     ^deckTh            |
@@ -64,7 +66,7 @@ class Underpass(object):
 
     '''
 
-    def __init__(self,startLAxPoint,endLAxPoint,posFrameLAxVect,vertIntHeigAx,intSpan,wallTh,deckTh,deckTrSlope,skewAngle=0):
+    def __init__(self,startLAxPoint,endLAxPoint,posFrameLAxVect,vertIntHeigAx,intSpan,wallTh,deckTh,deckTrSlope,skewAngle=0,deltaHRightWall=None):
         self.startLAxPoint=startLAxPoint
         self.endLAxPoint=endLAxPoint
         self.ptLAxis=Vector(posFrameLAxVect[0],0,posFrameLAxVect[2])
@@ -76,6 +78,7 @@ class Underpass(object):
         self.skewAngle=skewAngle
         self.LAxisVector=self.endLAxPoint-self.startLAxPoint     #vector used for extrusions
         self.rotAngl=(-180/math.pi)*((self.endLAxPoint-self.startLAxPoint).projectToPlane(Vector(0,0,0),Vector(0,0,1))).getAngle(Vector(0,1,0))  #rotation angle
+        self.deltaHRightWall=deltaHRightWall
         self.initSectPoints()
 
     def initSectPoints(self):
@@ -97,8 +100,12 @@ class Underpass(object):
         #keypoints:
         self.kpIBL=-(intSpanSkew/2)*skewUnitVector-intVectorIncrZskew    #internal bottom left
         self.kpIBR=(intSpanSkew/2)*skewUnitVector+intVectorIncrZskew     #internal bottom right
+        if self.deltaHRightWall:
+            self.kpIBR=self.kpIBR+self.deltaHRightWall*Vector(0,0,-1)
         self.kpEBL=-(extSpanSkew/2)*skewUnitVector-extVectorIncrZskew  #external bottom left
         self.kpEBR=(extSpanSkew/2)*skewUnitVector+extVectorIncrZskew   #external bottom right
+        if self.deltaHRightWall:
+            self.kpEBR=self.kpEBR+self.deltaHRightWall*Vector(0,0,-1)
         self.kpITL=self.kpIBL.add(hIntL*zUnitVector)  #internal top left
         self.kpITR= self.kpIBR.add(hIntR*zUnitVector)   #internal top right
         self.kpETL=self.kpEBL.add(hExtL*zUnitVector)  #external top left
