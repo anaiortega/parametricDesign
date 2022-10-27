@@ -42,5 +42,6 @@ lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,
 
 App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-               title=titSchedule
+               title=titSchedule,
+               pntTlcorner=Vector(10,20),
 )

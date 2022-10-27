@@ -621,7 +621,7 @@ def drawMiniSketchRebar(rbFam,ptCOG,wSketch,hSketch):
     Part.show(sketch)
  
                 
-def barSchedule(lstBarFamilies,config=scheduleConf(),title=None):
+def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTlcorner=Vector(0,0),doc=FreeCAD.ActiveDocument):
     ''' Create the rebar schedule from a list of rebar families
 
     :param config: instance of scheduleConf class
@@ -633,8 +633,12 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None):
     :param hRows: rows height
     :param hText: text height
     :param hTextSketch: text height for the sketch.
-    :param title: title for the rebar schedule 
+    :param title: title for the rebar schedule (defaults to None)
+    :param pntTlcorner: point in top-left corner (defaults to Vector(0,0))
+    :param doc: document in which to put the schedule (defaults to the 
+                active document)
     '''
+    FreeCAD.setActiveDocument(doc.Name)
     wColumns=config.widthColumns
     hRows=config.heightRows
     hText=config.heightText
@@ -645,26 +649,7 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None):
 #    totalWidth=sum(wColumns)
     numRows=sum([len(rb.lstWire) for rb in lstBarFamilies])
     totalWidth=sum(wColumns)
-    # w=Draft.makeRectangle(totalWidth,hRows*(numRows+2))
-    # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-    # p1=Vector(0,0)
-    # p2=p1.add(Vector(0,hRows*(numRows+1)))
-    # for i in range (0,len(wColumns)):
-    #     p1=p1.add(Vector(wColumns[i],0))
-    #     p2=p2.add(Vector(wColumns[i],0))
-    #     w=Draft.makeLine(p1,p2)
-    #     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-    # p1=Vector(0,hRows*(numRows))
-    # p2=p1.add(Vector(totalWidth,0))
-    # w=Draft.makeLine(p1,p2)
-    # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-    # # Generate title of the table
-    # pLinea=p1.add(Vector(0,hRows))
-    # w=Draft.makeLine(pLinea,pLinea.add(Vector(totalWidth,0)))
-    # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-    # pPos=pLinea.add(Vector(totalWidth/2.0,hRows/2))
-    # dt.put_text_in_pnt(title,pPos,1.2*hText,cfg.colorTextCenter,"Center")
-    p1=tables.drawBoxWtitle(Vector(0,0),wColumns,title,hText,hRows,numRows)
+    p1=tables.drawBoxWtitle(pntTlcorner,wColumns,title,hText,hRows,numRows,doc)
     #Títulos para la tabla de despiece
     pLinea=p1.add(Vector(0,hRows/2.0))
     pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
