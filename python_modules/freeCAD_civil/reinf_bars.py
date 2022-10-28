@@ -505,8 +505,6 @@ class rebarFamily(object):
         vaux=endPnt-startPnt
         vaux.normalize()
         vnorm=-1*vauxn.normalize()
-        print('startPnt',startPnt)
-        print('endPnt',endPnt)
         p1=startPnt+hText*vaux+1.5*hText*vnorm
         p2=endPnt-hText*vaux+1.5*hText*vnorm
         pol=Part.makePolygon([startPnt,p1,p2,endPnt])
@@ -568,7 +566,12 @@ class rebarFamily(object):
             ppEndRefL=pCentCirc.add(Vector(0,-hText))
             ppCentCirc=pCentCirc.add(Vector(signo*hText*(len(self.identifier)-1),-hText))
             ppText=pCentCirc.add(Vector(signo*hText*len(self.identifier),0))
-            c1=Part.Arc(pp1,pEndRefL,ppEndRefL)
+            
+            if (pp1-pEndRefL).Length ==0  or (pp1-ppEndRefL).Length ==0 or (pEndRefL-ppEndRefL).Length == 0:
+                print('pp1=',pp1,'pp2=',pp2,'pEndRefL=',pEndRefL,'ppEndRefL=',ppEndRefL)
+                c1=Part.Arc(pCentCirc+Vector(0,hText),pCentCirc+Vector(-hText,0),pCentCirc-Vector(0,hText))
+            else:
+                c1=Part.Arc(pp1,pEndRefL,ppEndRefL)
             c2=Part.Arc(pp2,ppText,ppCentCirc)
             l1=Part.makeLine(pp1,pp2)
             l2=Part.makeLine(ppEndRefL,ppCentCirc)

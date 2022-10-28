@@ -48,7 +48,7 @@ muret_hg=0.30
 muret_th=0.30
 # Data  reinforcements
 cover=0.03
-reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=0.45)
 docName=estrName+'_armados'
 FreeCAD.newDocument(docName)
 
@@ -76,15 +76,16 @@ fiStirr=12e-3
 walls_st={'fi':fiStirr,'nmStirr':0,'B':0.2+fiStirr,'H':LW_th-2*cover-fiStirr}
 
 #Armadura principal marco 
-BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0} # bottom slab, bottom long. rebars
-BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0} # bottom slab, bottom transv. rebars
-BS_top_ln={'fi':0.016,'s':0.30,'id':'2','distRFstart':LW_th,'distRFend':RW_th} # bottom slab, top long. rebars
-BS_top_tr={'fi':0.016,'s':0.30,'id':'4','distRFstart':0,'distRFend':0} # bottom slab, top transv. rebars
+BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0,'position':'good'} # bottom slab, bottom long. rebars
+BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0,'position':'good'} # bottom slab, bottom transv. rebars
+BS_top_ln={'fi':0.016,'s':0.30,'id':'2','distRFstart':LW_th,'distRFend':RW_th,'position':'poor'} # bottom slab, top long. rebars
+BS_top_tr={'fi':0.016,'s':0.30,'id':'4','distRFstart':0,'distRFend':0,'position':'poor'} # bottom slab, top transv. rebars
 
-TS_bot_ln={'fi':0.016,'s':0.30,'id':'11','distRFstart':LW_th,'distRFend':RW_th} # top slab, bottom long. rebars
-TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','distRFstart':0,'distRFend':0} # top slab, bottom transv. rebars
-TS_top_ln={'fi':0.016,'s':0.30,'id':'12','distRFstart':0,'distRFend':0} # top slab, top long. rebars
-TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0} # top slab, top transv. rebars
+TS_bot_ln={'fi':0.016,'s':0.30,'id':'11','distRFstart':LW_th,'distRFend':RW_th,'position':'good'} # top slab, bottom long. rebars
+TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','distRFstart':0,'distRFend':0,'position':'good'} # top slab, bottom transv. rebars
+TS_top_ln={'fi':0.016,'s':0.30,'id':'12','distRFstart':0,'distRFend':0,'position':'poor'} # top slab, top long. rebars
+TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0,'position':'poor'} # top slab, top transv. rebars
+
 
 # left wall, external horiz. rebars
 LW_ext_hor={'fi':0.016,
@@ -97,6 +98,7 @@ LW_ext_hor={'fi':0.016,
             'extrShapeStart':'fix270_len125',
             'extrShapeEnd':'fix270_len125',
             'vectorLRef':Vector(-0.3,0.5),
+            'position': 'good',
             } 
 # left wall, external vert. rebars
 LW_ext_ver={'fi':0.016,
@@ -107,6 +109,7 @@ LW_ext_ver={'fi':0.016,
             'gapStart':-BS_th,
             'gapEnd':-cover,
             'extrShapeEnd': 'lap270_posPoor_tens_perc100',
+            'position': 'poor',
             } 
 # left wall, internal horiz. rebars
 LW_int_hor={'fi':0.016,
@@ -119,6 +122,7 @@ LW_int_hor={'fi':0.016,
             'extrShapeStart':'fix90_len125',
             'extrShapeEnd':'fix90_len125',
             'vectorLRef':Vector(0.3,0.5),
+            'position': 'good',
              } 
 # left wall, internal vert. rebars
 LW_int_ver={'fi':0.016,
@@ -130,6 +134,7 @@ LW_int_ver={'fi':0.016,
             'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),
             'extrShapeEnd':'fix90_len150',
             'vectorLRef':Vector(0.3,0.3),
+            'position': 'poor',
             }
 # Right wall. Main rebars
  # right wall, external horiz. rebars
@@ -143,6 +148,8 @@ RW_ext_hor={'fi':0.016,
             'extrShapeStart':'fix90_len125',
             'extrShapeEnd':'fix90_len125',
             'vectorLRef':Vector(0.3,0.5),
+            'position': 'good',
+            }
 # right wall, external vert. rebars
 RW_ext_ver={'fi':0.016,
             's':0.30,
@@ -153,6 +160,7 @@ RW_ext_ver={'fi':0.016,
             'gapEnd':-cover,
             'extrShapeEnd':'lap90_posPoor_tens_perc100',
             'vectorLRef':Vector(0.3,0.3),
+            'position': 'poor',
             } 
 # right wall, internal horiz. rebars
 RW_int_hor={'fi':0.016,
@@ -165,6 +173,7 @@ RW_int_hor={'fi':0.016,
             'extrShapeStart':'fix270_len125',
             'extrShapeEnd':'fix270_len125',
             'vectorLRef':Vector(-0.3,0.5),
+            'position': 'good',
             }
  # right wall, internal vert. rebars
 RW_int_ver={'fi':0.016,
@@ -175,6 +184,7 @@ RW_int_ver={'fi':0.016,
             'gapStart':-BS_th,
             'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),
             'extrShapeEnd':'fix270_len150',
+            'position': 'poor',
             }
 
 # Bottom dowels
@@ -192,6 +202,7 @@ LD_ext={'id':'6L',
         'fix270_len200',
         'extrShapeEnd':'lap0_posGood_tens',
         'vectorLRef':Vector(-0.2,0.2),
+        'position':'good',
         }
 
 #bottom dowel, internal, left wall
@@ -206,7 +217,8 @@ LD_int={'id':'5L',
         'fix270_len200',
         'extrShapeEnd':'lap0_posGood_tens',
         'vectorLRef':Vector(0.2,0.2),
-        }
+        'position':'good',
+       }
 
 ## right wall
 diam=RW_ext_ver['fi']
@@ -221,6 +233,7 @@ RD_ext={'id':'6R',
         'extrShapeStart':'fix90_len200',
         'extrShapeEnd':'lap0_posGood_tens',
         'vectorLRef':Vector(0.2,0.2),
+        'position':'good',
         }
 #bottom dowel, internal, right wall
 diam=RW_int_ver['fi']
@@ -234,6 +247,7 @@ RD_int={'id':'5R',
         'fix90_len200','extrShapeEnd':
         'lap0_posGood_tens',
         'vectorLRef':Vector(-0.2,0.2),
+        'position':'good',
         }#,'fixLengthEnd':5}   
 
 # END DATA
@@ -323,7 +337,8 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       botLnRb=None,
                                       topLnRb=None,
                                       drawConrTrSect='N',
-                                      drawConrLnSect='N') 
+                                      drawConrLnSect='N',
+                                      ) 
 
 ## Dowels right wall
 lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
@@ -339,7 +354,8 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       botLnRb=None,
                                       topLnRb=None,
                                       drawConrTrSect='N',
-                                      drawConrLnSect='N')
+                                      drawConrLnSect='N',
+                                      )
 
 muret_rf=rb.rebarFamily(
     genConf=reinfConf,
@@ -466,9 +482,10 @@ if walls_st['nmStirr']>0:
     lstRebarFam+=[stirWalls_rf]
     
 
-FreeCAD.newDocument(estrName+"_despiece")
+doc=FreeCAD.newDocument(estrName+"_despiece",estrName+"_despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-               title=titSchedule
+               title=titSchedule,
+               doc=doc
 )
 
 
