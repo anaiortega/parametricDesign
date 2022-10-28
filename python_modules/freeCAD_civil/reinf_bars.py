@@ -232,7 +232,7 @@ class rebarFamily(object):
         cent=FreeCAD.Placement()
         cent.move(self.fromToExtPts[0].add(incrini).add(vTranslation))
         ptoIniEtiq=self.fromToExtPts[0].add(incrini).add(vTranslation)
-        ptoSketch,pos=rebarText(ptoIniEtiq,self.vectorLRefSec,self.identifier,self.diameter,self.spacing,0,self.genConf.texSize)
+#        ptoSketch,pos=rebarLabel(ptoIniEtiq,self.vectorLRefSec,self.identifier,self.diameter,self.spacing,0,self.genConf.texSize) # old labeling way 
         vaux.normalize()
         incr=vaux.multiply(self.spacing)
         for i in range(0,nesp+1):
@@ -242,8 +242,9 @@ class rebarFamily(object):
         p1=ptoIniEtiq.add(self.vectorLRefSec)
         vaux.normalize()
         p2=p1.add(vaux.multiply(self.spacing*nesp)).sub(self.vectorLRefSec)
-        w=Draft.makeWire([p1,p2])
-        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+        # w=Draft.makeWire([p1,p2]) # old labeling way
+        # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+        sectRebarLabel(ptoIniEtiq,p2,vaux,vauxn,self.identifier,self.diameter,self.spacing,0,self.genConf.texSize)
         return
 
     def drawLstRebar(self,vTranslation=Vector(0,0,0)):
@@ -283,7 +284,7 @@ class rebarFamily(object):
         # Texts pointing at the longest edge of the rebar
         laux=[e.Length for e in rebarEdges]
         ptoIniEtiq=rebarEdges[laux.index(max(laux))].CenterOfMass
-        ptoSketch,pos=rebarText(ptoIniEtiq,self.vectorLRef,self.identifier,self.diameter,self.spacing,self.nmbBars,self.genConf.texSize)
+        ptoSketch,pos=rebarLabel(ptoIniEtiq,self.vectorLRef,self.identifier,self.diameter,self.spacing,self.nmbBars,self.genConf.texSize)
         # draw sketch
         if self.drawSketch:
             wSketch=self.genConf.sketchScale*self.genConf.texSize
@@ -496,9 +497,34 @@ class rebarFamily(object):
         return (angle,rbEndLenght)
         
                         
-    
+def sectRebarLabel(startPnt,endPnt,vaux,vauxn,idArm,diamArm,sepArm,nBarr,hText):
+    vaux.normalize()
+    vnorm=-1*vauxn.normalize()
+    print('startPnt',startPnt)
+    print('endPnt',endPnt)
+    p1=startPnt+hText*vaux+hText*vnorm
+    print('p1',p1)
+    p2=endPnt-hText*vaux+hText*vnorm
+    print('p2',p2)
+    pol=Part.makePolygon([startPnt,p1,p2,endPnt])
+    w=Part.show(pol)
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorSectBars
+    pcent=p1+2/3*(p2-p1)
+    p2=pcent+hText*vnorm
+    w=Draft.makeWire([pcent,p2])
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorSectBars
+    pCentCirc=p2+hText*vnorm
+    if vnorm.x < 0:
+        justif="Right"
+        pText=pCentCirc+hText/2*Vector(1,0)-hText/2*Vector(0,1)
+    else:
+        justif="Left"
+        pText=pCentCirc-hText/2*Vector(1,0)-hText/2*Vector(0,1)
+    ptoSketch,pos=rebarText(pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText)
+    return ptoSketch,pos
+     
 
-def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
+def rebarLabel(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
     '''Rotulacion de un grupo de barras de armado
 
     :param ptoInic: pto del que arranca la linea de referencia
@@ -512,46 +538,54 @@ def rebarText(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
     p2=ptoInic.add(vectorLRef)
     signo=1.0*vectorLRef.x/abs(vectorLRef.x)
     p3=p2.add(Vector(signo*hText,0))
-    p4=p3.add(Vector(signo*hText,0))
-    p5=p3.add(Vector(signo*hText/2.0,-hText/2.0))
+    pCentCirc=p3.add(Vector(signo*hText,0))
+    pText=p3.add(Vector(signo*hText/2.0,-hText/2.0))
     w=Draft.makeWire([ptoInic,p2,p3])
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    if vectorLRef.x > 0:
+        justif="Left"
+    else:
+        justif="Right"
+    ptoSketch,pos=rebarText(pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText)
+    return ptoSketch,pos
+
+def rebarText(pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText):
     if len(idArm)==1:
         pl=FreeCAD.Placement()
-        pl.move(p4)
+        pl.move(pCentCirc)
 #        c=Draft.makeCircle(hText*(len(idArm)+1)/2.0,pl,False)
         c=Draft.make_circle(radius=hText*(len(idArm)+1)/2.0,placement=pl)
         FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = cfg.colorRefLines
     else:
-        pp1=p4.add(Vector(0,hText))
-        pp2=p4.add(Vector(signo*hText*(len(idArm)-1),hText))
-        pp3=p4.add(Vector(0,-hText))
-        pp4=p4.add(Vector(signo*hText*(len(idArm)-1),-hText))
-        pp5=p4.add(Vector(signo*hText*len(idArm),0))
+        pp1=pCentCirc.add(Vector(0,hText))
+        pp2=pCentCirc.add(Vector(signo*hText*(len(idArm)-1),hText))
+        pp3=pCentCirc.add(Vector(0,-hText))
+        ppCentCirc=pCentCirc.add(Vector(signo*hText*(len(idArm)-1),-hText))
+        ppText=pCentCirc.add(Vector(signo*hText*len(idArm),0))
         c1=Part.Arc(pp1,p3,pp3)
-        c2=Part.Arc(pp2,pp5,pp4)
+        c2=Part.Arc(pp2,ppText,ppCentCirc)
         l1=Part.makeLine(pp1,pp2)
-        l2=Part.makeLine(pp3,pp4)
+        l2=Part.makeLine(pp3,ppCentCirc)
         etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
         p=Part.show(etiq)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = cfg.colorRefLines
-    if vectorLRef.x > 0:
-        justif="Left"; txtColor=cfg.colorTextLeft
+    if justif=="Left":
+        txtColor=cfg.colorTextLeft
         if sepArm == 0:
             tx=idArm + '  ' + str(int(nBarr)) + '%%C' + str(int(1000*diamArm))
         else:
             tx=idArm + '  %%C' + str(int(1000*diamArm)) + 'c/' + str(sepArm)
-        ptoSketch=p5+Vector((len(tx)-2)*0.7*hText,0)
+        ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
         pos='l'
     else:
-        justif="Right"; txtColor=cfg.colorTextRight
+        txtColor=cfg.colorTextRight
         if sepArm == 0:
             tx=str(int(nBarr)) + '%%C' + str(int(1000*diamArm)) + '   ' + idArm
         else:
             tx='%%C' + str(int(1000*diamArm)) + 'c/' + str(sepArm) +'   ' + idArm
-        ptoSketch=p5+Vector(-(len(tx)-2)*0.7*hText,0)
+        ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
         pos='r'
-    dt.put_text_in_pnt(text=tx,point=p5,hText=hText,color=txtColor,justif=justif)
+    dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
     return ptoSketch,pos
 
 

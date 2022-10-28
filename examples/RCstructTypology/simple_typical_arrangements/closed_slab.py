@@ -40,8 +40,9 @@ FreeCAD.newDocument(docName)
 
 lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=2)
 
-App.newDocument("despiece")
+doc=App.newDocument("despiece","despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
                title=titSchedule,
                pntTlcorner=Vector(10,20),
+               doc=doc
 )
