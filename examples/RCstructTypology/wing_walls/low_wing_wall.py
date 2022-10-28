@@ -1,7 +1,7 @@
 import Part, FreeCAD, math
 import Draft
 import freeCAD_civil 
-from freeCAD_civil import reinf_bars
+from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from Draft import *
 from materials.ec2 import EC2_materials
@@ -13,7 +13,7 @@ concrWall=EC2_materials.C30 # concrete type in wall stem
 steelWall=EC2_materials.S500C # steel for wall stem
 
 #rebar schedule dimensions
-scheduleCfg=reinf_bars.scheduleConf([14,30,25,10,15,15],10,2.5,2.0)
+scheduleCfg=rb.scheduleConf([14,30,25,10,15,15],10,2.5,2.0)
 
 #  DATA
 estrName='Aleta 1'
@@ -36,10 +36,10 @@ coverWall=0.04
 alpha_degrees=math.degrees(math.atan(slopeBack)) 
 #
 
-footGenConf=reinf_bars.genericConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+footGenConf=rb.genericConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 FreeCAD.newDocument(estrName+'_armados')
 
-wallGenConf=reinf_bars.genericConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+wallGenConf=rb.genericConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 FreeCAD.newDocument(estrName+'_armados')
 
 # #  Armados zapata
@@ -120,7 +120,7 @@ Phf_3=Ph_4.add(Vector(0,wFoot))
 # armadura transversal inferior
 lstRebarFam=list()
 rebarCount=0
-RF_foot_tr_bot=reinf_bars.rebarFamily(
+RF_foot_tr_bot=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_tr_bot['fi'],
@@ -139,7 +139,7 @@ lstRebarFam+=[RF_foot_tr_bot]
 rebarCount+=1
 
 # armadura transversal superior
-RF_foot_tr_top=reinf_bars.rebarFamily(
+RF_foot_tr_top=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_tr_top['fi'],
@@ -153,7 +153,7 @@ lstRebarFam+=[RF_foot_tr_top]
 rebarCount+=1
 
 # armadura longitudinal inferior
-RF_foot_ln_bot=reinf_bars.rebarFamily(
+RF_foot_ln_bot=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_ln_bot['fi'],
@@ -171,7 +171,7 @@ RF_foot_ln_bot=reinf_bars.rebarFamily(
 lstRebarFam+=[RF_foot_ln_bot]
 rebarCount+=1
 # armadura longitudinal superior
-RF_foot_ln_top=reinf_bars.rebarFamily(
+RF_foot_ln_top=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_ln_top['fi'],
@@ -187,7 +187,7 @@ lstRebarFam+=[RF_foot_ln_top]
 rebarCount+=1
 
 # armadura lateral puntera
-RF_foot_lat_heel=reinf_bars.rebarFamily(
+RF_foot_lat_heel=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
@@ -204,7 +204,7 @@ lstRebarFam+=[RF_foot_lat_heel]
 rebarCount+=1
 
 # armadura lateral talón
-RF_foot_lat_toe=reinf_bars.rebarFamily(
+RF_foot_lat_toe=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
@@ -223,7 +223,7 @@ lstRebarFam+=[RF_foot_lat_toe]
 rebarCount+=1
 
 # armadura lateral frontal
-RF_foot_lat_front=reinf_bars.rebarFamily(
+RF_foot_lat_front=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
@@ -242,7 +242,7 @@ lstRebarFam+=[RF_foot_lat_front]
 rebarCount+=1
 
 # armadura lateral dorsal
-RF_foot_lat_dors=reinf_bars.rebarFamily(
+RF_foot_lat_dors=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
@@ -262,7 +262,7 @@ rebarCount+=1
 
 #Armadura muro
 # Armadura vertical trasdós
-RF_wall_vert_back=reinf_bars.rebarFamily(
+RF_wall_vert_back=rb.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_vert_back['fi'],
@@ -280,7 +280,7 @@ rebarCount+=1
 
 
 # Armadura vertical intradós
-RF_wall_vert_front=reinf_bars.rebarFamily(
+RF_wall_vert_front=rb.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_vert_front['fi'],
@@ -296,7 +296,7 @@ lstRebarFam+=[RF_wall_vert_front]
 rebarCount+=1
 
 # Horizontal trasdós zona inferior
-RF_wall_horBottom_front=reinf_bars.rebarFamily(
+RF_wall_horBottom_front=rb.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horBottom_front['fi'],
@@ -314,7 +314,7 @@ lstRebarFam+=[RF_wall_horBottom_front]
 rebarCount+=1
 
 # Horizontal intradós zona inferior
-RF_wall_horBottom_back=reinf_bars.rebarFamily(
+RF_wall_horBottom_back=rb.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horBottom_back['fi'],
@@ -331,7 +331,7 @@ lstRebarFam+=[RF_wall_horBottom_back]
 rebarCount+=1
 
 # Horizontal trasdós zona inferior
-RF_wall_horTop_front=reinf_bars.rebarFamily(
+RF_wall_horTop_front=rb.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horTop_front['fi'],
@@ -349,7 +349,7 @@ lstRebarFam+=[RF_wall_horTop_front]
 rebarCount+=1
 
 # Horizontal intradós zona superior
-RF_wall_horTop_back=reinf_bars.rebarFamily(
+RF_wall_horTop_back=rb.rebarFamily(
     genConf=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horTop_back['fi'],
@@ -388,7 +388,7 @@ lstSectRebarFam=[RF_foot_ln_bot,RF_foot_ln_top,RF_wall_horBottom_back,RF_wall_ho
 #     rf.drawLstRebar(vTranslation=Vector(0,5,0))
 # for rf in lstSectRebarFam:
 #     rf.drawSectBars(vTranslation=Vector(0,5,0))
-reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
+rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
 
 #SECCIONES LONGITUDINALES
 #sección B-B
@@ -400,7 +400,7 @@ lstSectRebarFam=[RF_foot_tr_bot,RF_foot_tr_top]
 #     rf.drawLstRebar(vTranslation)
 # for rf in lstSectRebarFam:
 #     rf.drawSectBars(vTranslation)
-reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,5,0))
+rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,5,0))
 
 #SECCIÓN HORIZONTAL POR LA BASE DEL MURO
 lstPtsConcrSect=[[Ph_1,Ph1_2,Ph1_3,Ph_4,Ph_1]]
@@ -415,27 +415,27 @@ lstSectRebarFam=[RF_wall_vert_back,RF_wall_vert_front]
 #     rf.drawSectBars(vTranslation)
 
 
-reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))
+rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))
 
 
 #SECCIÓN HORIZONTAL SUPERIOR
 lstPtsConcrSect=[[Ph_1,Ph2_2,Ph2_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[RF_wall_horTop_front,RF_wall_horTop_back]
 lstSectRebarFam=[]
-reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,0,0))
+rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,0,0))
 
 #SECCIÓN HORIZONTAL ZAPATA
 lstPtsConcrSect=[[Ph_1,Phf_2,Phf_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[RF_foot_lat_heel,RF_foot_lat_toe,RF_foot_lat_front,RF_foot_lat_dors]
 lstSectRebarFam=[]
-reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(20,0,0))
+rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(20,0,0))
 
    #BAR SCHEDULE
 App.newDocument("despiece")
 #altura de las filas
 #altura textos
 
-reinf_bars.barSchedule(lstRebarFam,scheduleCfg,title=titSchedule)
+rb.barSchedule(lstRebarFam,scheduleCfg,title=titSchedule)
 
 # Bar quantities for PyCost
-#reinf_bars.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')
+#rb.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')

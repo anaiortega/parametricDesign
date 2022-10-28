@@ -48,8 +48,9 @@ class genericConf(object):
     :ivar decSpacing: decimal positions to express the spacing (defaults to 2).
     :ivar sketchScale: scale of the sketch that represents the rebar in the text
                        relative to the text size (defaults to 5)
+    :ivar factPosLabelSectReb: factor to locate labels of section-rebars (defaults to 2/3)
     '''
-    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,sketchScale=5):
+    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3):
         self.cover=cover
         self.texSize=texSize
         self.xcConcr=xcConcr
@@ -58,6 +59,7 @@ class genericConf(object):
         self.decLengths=decLengths
         self.decSpacing=decSpacing
         self.sketchScale=sketchScale
+        self.factPosLabelSectReb=factPosLabelSectReb
         if Code == 'EC2':
             from materials.ec2 import EC2_limit_state_checking as Lcalc # doesn't work if only imported here
             
@@ -239,12 +241,13 @@ class rebarFamily(object):
             c=Draft.makeCircle(self.diameter/2.0,cent,False)
             FreeCADGui.ActiveDocument.getObject(c.Name).LineColor =cfg.colorSectBars
             cent.move(incr)
-        p1=ptoIniEtiq.add(self.vectorLRefSec)
+        #p1=ptoIniEtiq.add(self.vectorLRefSec)
         vaux.normalize()
-        p2=p1.add(vaux.multiply(self.spacing*nesp)).sub(self.vectorLRefSec)
+        #p2=p1.add(vaux.multiply(self.spacing*nesp)).sub(self.vectorLRefSec)
+        endPnt=ptoIniEtiq+vaux.multiply(self.spacing*nesp)
         # w=Draft.makeWire([p1,p2]) # old labeling way
         # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-        sectRebarLabel(ptoIniEtiq,p2,vaux,vauxn,self.identifier,self.diameter,self.spacing,0,self.genConf.texSize)
+        sectRebarLabel(ptoIniEtiq,endPnt,vauxn,self.identifier,self.diameter,self.spacing,0,self.genConf.texSize,self.genConf.factPosLabelSectReb)
         return
 
     def drawLstRebar(self,vTranslation=Vector(0,0,0)):
@@ -497,32 +500,39 @@ class rebarFamily(object):
         return (angle,rbEndLenght)
         
                         
-def sectRebarLabel(startPnt,endPnt,vaux,vauxn,idArm,diamArm,sepArm,nBarr,hText):
+def sectRebarLabel(startPnt,endPnt,vauxn,idArm,diamArm,sepArm,nBarr,hText,factPos):
+    ''' Label (reference lines + text) a family of rebars sectioned.
+
+    :param startPnt: point position of the first rebar (center of the circle)
+    :param startPnt: point position of the last rebar (center of the circle)
+    :param vauxn: vector perpendicular to the line defined by the rebars pointing 
+                  from concrete towards the rebars
+    :param 
+    '''
+    vaux=endPnt-startPnt
     vaux.normalize()
     vnorm=-1*vauxn.normalize()
     print('startPnt',startPnt)
     print('endPnt',endPnt)
-    p1=startPnt+hText*vaux+hText*vnorm
-    print('p1',p1)
-    p2=endPnt-hText*vaux+hText*vnorm
-    print('p2',p2)
+    p1=startPnt+hText*vaux+1.5*hText*vnorm
+    p2=endPnt-hText*vaux+1.5*hText*vnorm
     pol=Part.makePolygon([startPnt,p1,p2,endPnt])
     w=Part.show(pol)
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorSectBars
-    pcent=p1+2/3*(p2-p1)
-    p2=pcent+hText*vnorm
-    w=Draft.makeWire([pcent,p2])
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorSectBars
-    pCentCirc=p2+hText*vnorm
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    pStartRefL=p1+factPos*(p2-p1)
+    pEndRefL=pStartRefL+hText*vnorm
+    w=Draft.makeWire([pStartRefL,pEndRefL])
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    pCentCirc=pEndRefL+hText*vnorm
     if vnorm.x < 0:
         justif="Right"
         pText=pCentCirc+hText/2*Vector(1,0)-hText/2*Vector(0,1)
     else:
         justif="Left"
         pText=pCentCirc-hText/2*Vector(1,0)-hText/2*Vector(0,1)
-    ptoSketch,pos=rebarText(pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText)
+    ptoSketch,pos=rebarText(pEndRefL,pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText)
     return ptoSketch,pos
-     
+    
 
 def rebarLabel(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
     '''Rotulacion de un grupo de barras de armado
@@ -537,19 +547,19 @@ def rebarLabel(ptoInic,vectorLRef,idArm,diamArm,sepArm,nBarr,hText):
     '''
     p2=ptoInic.add(vectorLRef)
     signo=1.0*vectorLRef.x/abs(vectorLRef.x)
-    p3=p2.add(Vector(signo*hText,0))
-    pCentCirc=p3.add(Vector(signo*hText,0))
-    pText=p3.add(Vector(signo*hText/2.0,-hText/2.0))
-    w=Draft.makeWire([ptoInic,p2,p3])
+    pEndRefL=p2.add(Vector(signo*hText,0))
+    pCentCirc=pEndRefL.add(Vector(signo*hText,0))
+    pText=pEndRefL.add(Vector(signo*hText/2.0,-hText/2.0))
+    w=Draft.makeWire([ptoInic,p2,pEndRefL])
     FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
     if vectorLRef.x > 0:
         justif="Left"
     else:
         justif="Right"
-    ptoSketch,pos=rebarText(pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText)
+    ptoSketch,pos=rebarText(pEndRefL,pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText)
     return ptoSketch,pos
 
-def rebarText(pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText):
+def rebarText(pEndRefL,pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText):
     if len(idArm)==1:
         pl=FreeCAD.Placement()
         pl.move(pCentCirc)
@@ -557,15 +567,16 @@ def rebarText(pCentCirc,justif,pText,idArm,diamArm,sepArm,nBarr,hText):
         c=Draft.make_circle(radius=hText*(len(idArm)+1)/2.0,placement=pl)
         FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = cfg.colorRefLines
     else:
+        signo=-1 if justif=="Right" else 1
         pp1=pCentCirc.add(Vector(0,hText))
         pp2=pCentCirc.add(Vector(signo*hText*(len(idArm)-1),hText))
-        pp3=pCentCirc.add(Vector(0,-hText))
+        ppEndRefL=pCentCirc.add(Vector(0,-hText))
         ppCentCirc=pCentCirc.add(Vector(signo*hText*(len(idArm)-1),-hText))
         ppText=pCentCirc.add(Vector(signo*hText*len(idArm),0))
-        c1=Part.Arc(pp1,p3,pp3)
+        c1=Part.Arc(pp1,pEndRefL,ppEndRefL)
         c2=Part.Arc(pp2,ppText,ppCentCirc)
         l1=Part.makeLine(pp1,pp2)
-        l2=Part.makeLine(pp3,ppCentCirc)
+        l2=Part.makeLine(ppEndRefL,ppCentCirc)
         etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
         p=Part.show(etiq)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = cfg.colorRefLines
