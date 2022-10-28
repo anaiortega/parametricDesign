@@ -112,9 +112,7 @@ class rebarFamily(object):
     :ivar coverSectBars: cover to draw the family as sectioned bars 
           (circles) ('l' left, 'r' right). Only needed if the bars are to be drawn.
           Defaults to the minimum cover given with 'genConf'. 
-    :ivar vectorLRefSec: vector to draw the leader line for labeling the 
-          sectioned bar drawing
-    :ivar wire: FreeCAD object of type wire that represents the rebar shape
+   :ivar wire: FreeCAD object of type wire that represents the rebar shape
                 ( or the rebar shape in section 1 when it is variable).
     :ivar wireSect: FreeCAD object of type wire that represents the rebar at
                     section 2 when the shape of rebars in the family varies 
@@ -180,7 +178,7 @@ class rebarFamily(object):
                     calculate lap lengths when splitting bars- (defaults to False)  
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text (defaults to True)
     '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',vectorLRefSec=Vector(0.3,0.3),spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
         self.genConf=genConf
         self.identifier=identifier 
         self.diameter=diameter
@@ -197,7 +195,6 @@ class rebarFamily(object):
         self.coverSectBars=coverSectBars if coverSectBars is not None else genConf.cover
         self.lateralCover=lateralCover if lateralCover is not None else genConf.cover
         self.sectBarsSide= sectBarsSide
-        self.vectorLRefSec=vectorLRefSec
         self.lstPtsConcrSect2=lstPtsConcrSect2
         self.listaPtosArm=[[],[]]
         self.nmbBars=nmbBars
@@ -234,19 +231,14 @@ class rebarFamily(object):
         cent=FreeCAD.Placement()
         cent.move(self.fromToExtPts[0].add(incrini).add(vTranslation))
         ptoIniEtiq=self.fromToExtPts[0].add(incrini).add(vTranslation)
-#        ptoSketch,pos=rebarLabel(ptoIniEtiq,self.vectorLRefSec,self.identifier,self.diameter,self.spacing,0,self.genConf.texSize) # old labeling way 
         vaux.normalize()
         incr=vaux.multiply(self.spacing)
         for i in range(0,nesp+1):
             c=Draft.makeCircle(self.diameter/2.0,cent,False)
             FreeCADGui.ActiveDocument.getObject(c.Name).LineColor =cfg.colorSectBars
             cent.move(incr)
-        #p1=ptoIniEtiq.add(self.vectorLRefSec)
         vaux.normalize()
-        #p2=p1.add(vaux.multiply(self.spacing*nesp)).sub(self.vectorLRefSec)
         endPnt=ptoIniEtiq+vaux.multiply(self.spacing*nesp)
-        # w=Draft.makeWire([p1,p2]) # old labeling way
-        # FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
         self.sectRebarLabel(ptoIniEtiq,endPnt,vauxn)
         return
 

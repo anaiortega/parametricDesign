@@ -83,7 +83,6 @@ familiasArmad['1E']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['1P']={
    'identificador':'1P',
@@ -102,7 +101,6 @@ familiasArmad['1P']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['2E']={
    'identificador':'2E',
@@ -121,7 +119,6 @@ familiasArmad['2E']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['2P']={
    'identificador':'2P',
@@ -140,7 +137,6 @@ familiasArmad['2P']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['3P']={
    'identificador':'3P',
@@ -159,7 +155,6 @@ familiasArmad['3P']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['4P']={
    'identificador':'4P',
@@ -178,7 +173,6 @@ familiasArmad['4P']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['6C']={
    'identificador':'6C',
@@ -197,7 +191,6 @@ familiasArmad['6C']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.5,1.0)
 }
 familiasArmad['5C']={
    'identificador':'5C',
@@ -216,7 +209,6 @@ familiasArmad['5C']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'i',
-   'vectorLRefSec':Base.Vector(0.5,1.0)
 }
 familiasArmad['7C']={
    'identificador':'7C',
@@ -235,7 +227,6 @@ familiasArmad['7C']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.5,1.0)
 }
 familiasArmad['8C']={
    'identificador':'8C',
@@ -254,7 +245,6 @@ familiasArmad['8C']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.5,1.0)
 }
 familiasArmad['9C']={
    'identificador':'9C',
@@ -273,7 +263,6 @@ familiasArmad['9C']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.5,1.0)
 }
 
 #Secciones-Alzados
@@ -289,7 +278,7 @@ for i in range (0,len(idArmad)):
 
 idArmaSec=('6C',)
 for i in range (0,len(idArmaSec)):
-   reinf_bars.armaSec(identificador=familiasArmad[idArmaSec[i]]['identificador'],diametro=familiasArmad[idArmaSec[i]]['diametro'],separacion=familiasArmad[idArmaSec[i]]['separacion'],recubrimiento=familiasArmad[idArmaSec[i]]['recSec'],reclateral=familiasArmad[idArmaSec[i]]['recLateral'],ptosExtension=familiasArmad[idArmaSec[i]]['ptosExtension'],ladoDibSec=familiasArmad[idArmaSec[i]]['ladoDibSec'],vectorLRefSec=familiasArmad[idArmaSec[i]]['vectorLRefSec'],hTexto=familiasArmad[idArmaSec[i]]['hTexto'])
+   reinf_bars.armaSec(identificador=familiasArmad[idArmaSec[i]]['identificador'],diametro=familiasArmad[idArmaSec[i]]['diametro'],separacion=familiasArmad[idArmaSec[i]]['separacion'],recubrimiento=familiasArmad[idArmaSec[i]]['recSec'],reclateral=familiasArmad[idArmaSec[i]]['recLateral'],ptosExtension=familiasArmad[idArmaSec[i]]['ptosExtension'],ladoDibSec=familiasArmad[idArmaSec[i]]['ladoDibSec'],hTexto=familiasArmad[idArmaSec[i]]['hTexto'])
 
 #alzado 2
 App.newDocument("alz2")
@@ -302,7 +291,7 @@ for i in range (0,len(idArmad)):
 
 idArmaSec=('6C','5C')
 for i in range (0,len(idArmaSec)):
-   reinf_bars.armaSec(identificador=familiasArmad[idArmaSec[i]]['identificador'],diametro=familiasArmad[idArmaSec[i]]['diametro'],separacion=familiasArmad[idArmaSec[i]]['separacion'],recubrimiento=familiasArmad[idArmaSec[i]]['recSec'],reclateral=familiasArmad[idArmaSec[i]]['recLateral'],ptosExtension=familiasArmad[idArmaSec[i]]['ptosExtension'],ladoDibSec=familiasArmad[idArmaSec[i]]['ladoDibSec'],vectorLRefSec=familiasArmad[idArmaSec[i]]['vectorLRefSec'],hTexto=familiasArmad[idArmaSec[i]]['hTexto'])
+   reinf_bars.armaSec(identificador=familiasArmad[idArmaSec[i]]['identificador'],diametro=familiasArmad[idArmaSec[i]]['diametro'],separacion=familiasArmad[idArmaSec[i]]['separacion'],recubrimiento=familiasArmad[idArmaSec[i]]['recSec'],reclateral=familiasArmad[idArmaSec[i]]['recLateral'],ptosExtension=familiasArmad[idArmaSec[i]]['ptosExtension'],ladoDibSec=familiasArmad[idArmaSec[i]]['ladoDibSec'],hTexto=familiasArmad[idArmaSec[i]]['hTexto'])
 
 #alzado 3
 App.newDocument("alz3")

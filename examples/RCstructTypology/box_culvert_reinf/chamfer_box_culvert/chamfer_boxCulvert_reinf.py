@@ -97,7 +97,6 @@ LW_ext_hor={'fi':0.016,
             'extrShapeStart':'fix270_len125',
             'extrShapeEnd':'fix270_len125',
             'vectorLRef':Vector(-0.3,0.5),
-            'vectorLRefSec':Vector(-0.3,0.5*boxC_int_hg),
             } 
 # left wall, external vert. rebars
 LW_ext_ver={'fi':0.016,
@@ -108,7 +107,6 @@ LW_ext_ver={'fi':0.016,
             'gapStart':-BS_th,
             'gapEnd':-cover,
             'extrShapeEnd': 'lap270_posPoor_tens_perc100',
-            'vectorLRefSec':Vector(-0.3,boxL/2),
             } 
 # left wall, internal horiz. rebars
 LW_int_hor={'fi':0.016,
@@ -121,7 +119,6 @@ LW_int_hor={'fi':0.016,
             'extrShapeStart':'fix90_len125',
             'extrShapeEnd':'fix90_len125',
             'vectorLRef':Vector(0.3,0.5),
-            'vectorLRefSec':Vector(0.3,0.35*boxC_int_hg),
              } 
 # left wall, internal vert. rebars
 LW_int_ver={'fi':0.016,
@@ -133,7 +130,6 @@ LW_int_ver={'fi':0.016,
             'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),
             'extrShapeEnd':'fix90_len150',
             'vectorLRef':Vector(0.3,0.3),
-            'vectorLRefSec': Vector(0.3,0.5*boxL),
             }
 # Right wall. Main rebars
  # right wall, external horiz. rebars
@@ -147,7 +143,6 @@ RW_ext_hor={'fi':0.016,
             'extrShapeStart':'fix90_len125',
             'extrShapeEnd':'fix90_len125',
             'vectorLRef':Vector(0.3,0.5),
-            'vectorLRefSec':Vector(0.3,0.5*boxC_int_hg)}
 # right wall, external vert. rebars
 RW_ext_ver={'fi':0.016,
             's':0.30,
@@ -158,7 +153,6 @@ RW_ext_ver={'fi':0.016,
             'gapEnd':-cover,
             'extrShapeEnd':'lap90_posPoor_tens_perc100',
             'vectorLRef':Vector(0.3,0.3),
-            'vectorLRefSec':Vector(0.3,0.5*boxL),
             } 
 # right wall, internal horiz. rebars
 RW_int_hor={'fi':0.016,
@@ -171,7 +165,6 @@ RW_int_hor={'fi':0.016,
             'extrShapeStart':'fix270_len125',
             'extrShapeEnd':'fix270_len125',
             'vectorLRef':Vector(-0.3,0.5),
-            'vectorLRefSec':Vector(-0.3,0.35*boxC_int_hg),
             }
  # right wall, internal vert. rebars
 RW_int_ver={'fi':0.016,
@@ -182,7 +175,6 @@ RW_int_ver={'fi':0.016,
             'gapStart':-BS_th,
             'gapEnd':-(cover+TS_top_tr['fi']+TS_top_ln['fi']),
             'extrShapeEnd':'fix270_len150',
-            'vectorLRefSec':Vector(-0.3,0.5*boxL),
             }
 
 # Bottom dowels

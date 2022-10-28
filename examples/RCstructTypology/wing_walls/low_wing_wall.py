@@ -131,7 +131,6 @@ RF_foot_tr_bot=rb.rebarFamily(
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[Plfoot_1,Plfoot_4],
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,0.3),
     spacing=foot_tr_bot['s'],
 #    lstPtsConcrSect2=[Ptfoot_2p,Ptfoot_1,Ptfoot_4,Ptfoot_3p]
 )
@@ -148,7 +147,6 @@ RF_foot_tr_top=rb.rebarFamily(
     gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Ptfoot_1,Ptfoot_2,Ptfoot_3,Ptfoot_4],
     fromToExtPts=[Plfoot_2,Plfoot_3],
-    vectorLRefSec=Vector(-0.3,0.3))
 lstRebarFam+=[RF_foot_tr_top]
 rebarCount+=1
 
@@ -167,7 +165,6 @@ RF_foot_ln_bot=rb.rebarFamily(
     fromToExtPts=[Ptfoot_1,Ptfoot_4],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3))
 lstRebarFam+=[RF_foot_ln_bot]
 rebarCount+=1
 # armadura longitudinal superior
@@ -182,7 +179,6 @@ RF_foot_ln_top=rb.rebarFamily(
     lstCover=[footGenConf.cover,footGenConf.cover+foot_tr_top['fi'],footGenConf.cover],
     fromToExtPts=[Ptfoot_2,Ptfoot_3],
     coverSectBars=footGenConf.cover+foot_tr_top['fi'],
-    vectorLRefSec=Vector(-0.3,0.3))
 lstRebarFam+=[RF_foot_ln_top]
 rebarCount+=1
 
@@ -199,7 +195,6 @@ RF_foot_lat_heel=rb.rebarFamily(
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
     extrShapeStart='anc270_posGood_tens',
     extrShapeEnd='anc270_posGood_tens',
-    vectorLRefSec=Vector(-0.3,0.3))
 lstRebarFam+=[RF_foot_lat_heel]
 rebarCount+=1
 
@@ -272,7 +267,6 @@ RF_wall_vert_back=rb.rebarFamily(
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ph_1,Ph_4],
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3),
     lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3]
     )
 lstRebarFam+=[RF_wall_vert_back]
@@ -289,7 +283,6 @@ RF_wall_vert_front=rb.rebarFamily(
     coverSide='l',
     gapStart=0,
     fromToExtPts=[Ph1_2,Ph1_3],
-    vectorLRefSec=Vector(-0.3,0.3),
     lstPtsConcrSect2=[Ptwall2_4,Ptwall2_3,Ptwall2_2]    
 )
 lstRebarFam+=[RF_wall_vert_front]
@@ -307,7 +300,6 @@ RF_wall_horBottom_front=rb.rebarFamily(
     fromToExtPts=[Ptwall1_4,Ptwall1_3p],
     coverSectBars=wallGenConf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
-    vectorLRefSec=Vector(0.3,0.7),
     lstPtsConcrSect2=[Ph_1,Ph2_2,Ph2_3,Ph_4]
 )
 lstRebarFam+=[RF_wall_horBottom_front]
@@ -325,7 +317,6 @@ RF_wall_horBottom_back=rb.rebarFamily(
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall_1,Ptwall2_2],
     coverSectBars=wallGenConf.cover+foot_ln_bot['fi'],
-    vectorLRefSec=Vector(-0.3,0.5),
 )
 lstRebarFam+=[RF_wall_horBottom_back]
 rebarCount+=1
@@ -342,7 +333,6 @@ RF_wall_horTop_front=rb.rebarFamily(
     fromToExtPts=[Ptwall1_3p,Ptwall1_3],
     coverSectBars=wallGenConf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
-    vectorLRefSec=Vector(0.3,0.7),
     lstPtsConcrSect2=[Ph_1,Ph3_2,Ph3_3,Ph3_4]
 )
 lstRebarFam+=[RF_wall_horTop_front]
@@ -360,7 +350,6 @@ RF_wall_horTop_back=rb.rebarFamily(
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall2_2,Ptwall1_2],
     coverSectBars=wallGenConf.cover+foot_ln_bot['fi'],
-    vectorLRefSec=Vector(-0.3,0.5),
     lstPtsConcrSect2=[Ph3_2,Ph_1,Ph3_4,Ph3_3]
 )
 lstRebarFam+=[RF_wall_horTop_back]

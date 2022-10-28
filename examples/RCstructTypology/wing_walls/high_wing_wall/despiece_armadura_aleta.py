@@ -147,7 +147,6 @@ Z1_1=reinf_bars.rebarFamily(
     fromToExtPts=[Plfoot_1,Plfoot_4],
     coverSectBars=cover,
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,0.3),
     spacing=s_Z1_1,
 #    lstPtsConcrSect2=[Ptfoot_2p,Ptfoot_1,Ptfoot_4,Ptfoot_3p]
 )
@@ -160,7 +159,6 @@ Z1_2=reinf_bars.rebarFamily(
     lstPtsConcrSect=[Ptfoot_1,Ptfoot_2,Ptfoot_3,Ptfoot_4],
     fromToExtPts=[Plfoot_2,Plfoot_3],
     coverSectBars=cover,
-    vectorLRefSec=Vector(-0.3,0.3))
 
 
 # armadura longitudinal inferior
@@ -175,8 +173,7 @@ Z1_3=reinf_bars.rebarFamily(
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[Ptfoot_1,Ptfoot_4],
     coverSectBars=cover+fi_Z1_1,
-    sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3))
+    sectBarsSide='l')
 # armadura longitudinal superior
 Z1_4=reinf_bars.rebarFamily(
     genConf=aletGenConf,
@@ -186,8 +183,7 @@ Z1_4=reinf_bars.rebarFamily(
     lstPtsConcrSect=[Plfoot_1,Plfoot_2,Plfoot_3,Plfoot_4],
     lstCover=[cover,cover+fi_Z1_2,cover],
     fromToExtPts=[Ptfoot_2,Ptfoot_3],
-    coverSectBars=cover+fi_Z1_2,
-    vectorLRefSec=Vector(-0.3,0.3))
+    coverSectBars=cover+fi_Z1_2)
 
 # armadura lateral puntera
 Z1_7=reinf_bars.rebarFamily(
@@ -198,8 +194,7 @@ Z1_7=reinf_bars.rebarFamily(
     lstPtsConcrSect=[Plfoot_1,Plfoot_4],
     lstCover=[cover+fi_Z1_1],
     fromToExtPts=[Ptfoot_1,Ptfoot_2],
-    coverSectBars=cover+fi_Z1_1,
-    vectorLRefSec=Vector(-0.3,0.3))
+    coverSectBars=cover+fi_Z1_1)
 
 # armadura lateral talón
 Z1_8=reinf_bars.rebarFamily(
@@ -242,7 +237,6 @@ M1_3=reinf_bars.rebarFamily(
     fromToExtPts=[Ph_1,Ph_4],
     coverSectBars=cover,
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3),
     lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3]
     )
 
@@ -274,7 +268,6 @@ M1_4=reinf_bars.rebarFamily(
     gapStart=0,
     fromToExtPts=[Ph1_2,Ph1_3],
     coverSectBars=cover,
-    vectorLRefSec=Vector(-0.3,0.3),
     lstPtsConcrSect2=[Ptwall2_4,Ptwall2_3,Ptwall2_2]    
 )
 
@@ -291,7 +284,6 @@ M1_1=reinf_bars.rebarFamily(
     gapEnd=LrefIntra,
     fromToExtPts=[Ph1_2,Ph1_3],
     coverSectBars=cover+fi_M1_4+fi_M1_7,
-    vectorLRefSec=Vector(-0.3,-0.3)
 )
 # Horizontal trasdós zona inferior
 M1_7=reinf_bars.rebarFamily(
@@ -306,7 +298,6 @@ M1_7=reinf_bars.rebarFamily(
     fromToExtPts=[Ptwall1_4,Ptwall1_3p],
     coverSectBars=cover+fi_Z1_1,
     sectBarsSide='l',
-    vectorLRefSec=Vector(0.3,0.7),
     lstPtsConcrSect2=[Ph_1,Ph2_2,Ph2_3,Ph_4]
 )
 
@@ -323,7 +314,6 @@ M1_9=reinf_bars.rebarFamily(
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall_1,Ptwall2_2],
     coverSectBars=cover+fi_Z1_3,
-    vectorLRefSec=Vector(-0.3,0.5),
 )
 
 # Horizontal trasdós zona inferior
@@ -339,7 +329,6 @@ M1_6=reinf_bars.rebarFamily(
     fromToExtPts=[Ptwall1_3p,Ptwall1_3],
     coverSectBars=cover+fi_Z1_1,
     sectBarsSide='l',
-    vectorLRefSec=Vector(0.3,0.7),
     lstPtsConcrSect2=[Ph_1,Ph3_2,Ph3_3,Ph3_4]
 )
 
@@ -356,7 +345,6 @@ M1_8=reinf_bars.rebarFamily(
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall2_2,Ptwall1_2],
     coverSectBars=cover+fi_Z1_3,
-    vectorLRefSec=Vector(-0.3,0.5),
     lstPtsConcrSect2=[Ph3_2,Ph_1,Ph3_4,Ph3_3]
 )
 

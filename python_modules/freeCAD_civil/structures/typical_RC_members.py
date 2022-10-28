@@ -53,7 +53,6 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         vectorLRef=Vector(-0.15,-0.35),
         fromToExtPts=[ln_bl+Vector(botTrnsRb['distRFstart'],0),ln_br-Vector(botTrnsRb['distRFend'],0)],
         sectBarsSide='l',
-        vectorLRefSec=Vector(0.6*length,-0.3),
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
         )
@@ -73,7 +72,6 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         vectorLRef=Vector(-0.15,0.35),
         fromToExtPts=[ln_tl+Vector(topTrnsRb['distRFstart'],0),ln_tr-Vector(topTrnsRb['distRFend'],0)],
         sectBarsSide='r',
-        vectorLRefSec=Vector(0.6*length,0.3),
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
          )
@@ -92,7 +90,6 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         fromToExtPts=[tr_bl+Vector(botLnRb['distRFstart'],0),tr_br-Vector(botLnRb['distRFend'],0)],
         coverSectBars=genConf.cover+botTrnsRb['fi'],
         sectBarsSide='l',
-        vectorLRefSec=Vector(0.5*width,-0.3),
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
         )
@@ -111,7 +108,6 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         fromToExtPts=[tr_tl+Vector(topLnRb['distRFstart'],0),tr_tr-Vector(topLnRb['distRFend'],0)],
         coverSectBars=genConf.cover+topTrnsRb['fi'],
         sectBarsSide='r',
-        vectorLRefSec=Vector(0.5*width,0.3),
         gapStart=-factGap*genConf.cover,
         gapEnd=-factGap*genConf.cover,
          )
@@ -171,7 +167,6 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[hor_bl+Vector(0,leftVertRb['distRFstart']),hor_tl-Vector(0,leftVertRb['distRFend'])],
         sectBarsSide='r',
-        vectorLRefSec=Vector(-0.3,0.6*length)
         )
     vert_left_rf.createLstRebar()
     vert_left_rf.drawSectBars()
@@ -187,7 +182,6 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         vectorLRef=Vector(-0.3,0.4),
         fromToExtPts=[hor_br+Vector(0,rightVertRb['distRFstart']),hor_tr-Vector(0,rightVertRb['distRFend'])],
         sectBarsSide='l',
-        vectorLRefSec=Vector(0.3,0.6*length)
         )
     vert_right_rf.createLstRebar()
     vert_right_rf.drawSectBars()
@@ -204,7 +198,6 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         fromToExtPts=[vert_bl+Vector(0,leftHorRb['distRFstart']),vert_tl-Vector(0,leftHorRb['distRFend'])],
         coverSectBars=genConf.cover+leftVertRb['fi'],
         sectBarsSide='r',
-        vectorLRefSec=Vector(-0.3,0.6*height)
         )
     hor_left_rf.createLstRebar()
     hor_left_rf.drawSectBars()
@@ -221,7 +214,6 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         fromToExtPts=[vert_br+Vector(0,rightHorRb['distRFstart']),vert_tr-Vector(0,rightHorRb['distRFend'])],
         coverSectBars=genConf.cover+rightVertRb['fi'],
         sectBarsSide='l',
-        vectorLRefSec=Vector(0.3,0.6*height)
         )
     hor_right_rf.createLstRebar()
     hor_right_rf.drawSectBars()
@@ -248,7 +240,6 @@ def set_FR_options(RF,RFdef):
     if 'fixLengthStart' in RFdef.keys(): RF.fixLengthStart=RFdef['fixLengthStart']
     if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
     if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
-    if 'vectorLRefSec' in RFdef.keys(): RF.vectorLRefSec=RFdef['vectorLRefSec']
            
 def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genConf,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConrTrSect='Y',drawConrLnSect='Y'):
     '''Typical reinforcement arrangement of an open brick 
@@ -304,7 +295,6 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             vectorLRef=Vector(-0.3,-0.4),
             fromToExtPts=[ln_bl+botTrnsRb['distRFstart']*vdirLn,ln_br-botTrnsRb['distRFend']*vdirLn],
             sectBarsSide='l',
-            vectorLRefSec=Vector(0.6*length,-0.3),
             gapStart=0,
             gapEnd=0,
             position=botTrnsRb['position'],
@@ -326,7 +316,6 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             vectorLRef=Vector(-0.3,0.4),
             fromToExtPts=[ln_tl+topTrnsRb['distRFstart']*vdirLn,ln_tr-topTrnsRb['distRFend']*vdirLn],
             sectBarsSide='r',
-            vectorLRefSec=Vector(0.6*length,0.3),
             gapStart=0,
             gapEnd=0,
             position=topTrnsRb['position'],
@@ -349,7 +338,6 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTr,tr_br-botLnRb['distRFend']*vdirTr],
             coverSectBars=genConf.cover+botTrnsRb['fi'],
             sectBarsSide='l',
-            vectorLRefSec=Vector(0.6*width,-0.3),
             gapStart=0,
             gapEnd=0,
             position=botLnRb['position'],
@@ -372,7 +360,6 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
             fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTr,tr_tr-topLnRb['distRFend']*vdirTr],
             coverSectBars=genConf.cover+topTrnsRb['fi'],
             sectBarsSide='r',
-            vectorLRefSec=Vector(0.6*width,0.3),
             gapStart=0,
             gapEnd=0,
             position=topLnRb['position'],

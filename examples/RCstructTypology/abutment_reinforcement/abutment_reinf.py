@@ -206,8 +206,6 @@ foot_LB_01=reinf_bars.rebarFamily(
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[foot_p5,foot_p8],
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3),
-#    lstPtsConcrSect2=[Ptzap_2p,Ptzap_1,Ptzap_4,Ptzap_3p]
 )
 #2 longitudinal bottom
 foot_LB_02=reinf_bars.rebarFamily(
@@ -223,7 +221,6 @@ foot_LB_02=reinf_bars.rebarFamily(
     fromToExtPts=[foot_p5,foot_p8],
     lateralCover=cover+foot_LB_02_dat['s']/2.0,
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.5),
 )
 #3 transversal bottom
 foot_TB_01=reinf_bars.rebarFamily(
@@ -240,7 +237,6 @@ foot_TB_01=reinf_bars.rebarFamily(
     fromToExtPts=[foot_p1,foot_p4],
     coverSectBars=cover+foot_LB_01_dat['fi'],
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3),
 )
 #4 longitudinal top
 foot_LT_01=reinf_bars.rebarFamily(
@@ -252,8 +248,6 @@ foot_LT_01=reinf_bars.rebarFamily(
     gapStart=-0.20,
     gapEnd=-0.20,
     fromToExtPts=[foot_p6,foot_p7],
-    vectorLRefSec=Vector(-0.3,0.3),
-#    lstPtsConcrSect2=[Ptzap_2p,Ptzap_1,Ptzap_4,Ptzap_3p]
 )
 #5 transversal top
 foot_TT_01=reinf_bars.rebarFamily(
@@ -267,7 +261,6 @@ foot_TT_01=reinf_bars.rebarFamily(
     gapEnd=-0.20,
     fromToExtPts=[foot_p2,foot_p3],
     coverSectBars=cover+foot_LT_01_dat['fi'],
-    vectorLRefSec=Vector(-0.3,0.3),
 )
 #6 transversal lateral
 foot_TL_01=reinf_bars.rebarFamily(
@@ -300,7 +293,6 @@ foot_TL_02=reinf_bars.rebarFamily(
     fromToExtPts=[foot_p1,foot_p2],
     coverSectBars=cover+foot_LB_01_dat['fi'],
     lateralCover=cover,
-    vectorLRefSec=Vector(-0.3,0.3),
 )
 
 #  Stem wall reinforcement
@@ -319,7 +311,6 @@ stemW_VF_01=reinf_bars.rebarFamily(
     fromToExtPts=[foot_p5,foot_p8],
     coverSectBars=cover+foot_LB_01_dat['fi']+foot_TB_01_dat['fi'],
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3),
 )
 #10 vertical front
 stemW_VF_02=reinf_bars.rebarFamily(

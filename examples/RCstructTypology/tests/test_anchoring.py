@@ -44,7 +44,6 @@ R1=reinf_bars.rebarFamily(
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[foot_p5,foot_p8],
     sectBarsSide='l',
-    vectorLRefSec=Vector(-0.3,-0.3),
     extrShapeStart='anc45_posPoor_compr',
     extrShapeEnd='anc90_posGood_tens',
 )

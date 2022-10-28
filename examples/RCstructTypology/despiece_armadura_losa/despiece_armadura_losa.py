@@ -81,7 +81,6 @@ F1S=reinf_bars.rebarFamily(
    gapStart=0.2,
    gapEnd=-0.10,
    fromToExtPts=[Pt8,Pt11],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F1I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -95,7 +94,6 @@ F1I=reinf_bars.rebarFamily(
    vectorLRef=Vector(0.5,-0.5),
    fromToExtPts=[Pt8i,Pt11i],
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F2S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -106,7 +104,6 @@ F2S=reinf_bars.rebarFamily(
    gapStart=0.2,
    gapEnd=-0.10,
    fromToExtPts=[Pt6,Pt8],
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F2I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -120,7 +117,6 @@ F2I=reinf_bars.rebarFamily(
    vectorLRef=Vector(0.5,-0.5),
    fromToExtPts=[Pt6i,Pt8i],
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F3S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -133,7 +129,6 @@ F3S=reinf_bars.rebarFamily(
    gapEnd=-0.10,
    fromToExtPts=[Pt5,Pt6],
    coverSectBars=recNominal+0.02,
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F3I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -147,7 +142,6 @@ F3I=reinf_bars.rebarFamily(
    vectorLRef=Vector(0.5,-0.5),
    fromToExtPts=[Pt5i,Pt6i],
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F4S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -159,7 +153,6 @@ F4S=reinf_bars.rebarFamily(
    gapStart=-0.10,
    gapEnd=0,
    fromToExtPts=[Pt2,Pt5],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F4I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -174,7 +167,6 @@ F4I=reinf_bars.rebarFamily(
    vectorLRef=Vector(0.5,-0.5),
    fromToExtPts=[Pt2i,Pt5i],
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F5S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -186,7 +178,6 @@ F5S=reinf_bars.rebarFamily(
    gapStart=0.60,
    gapEnd=-0.10,
    fromToExtPts=[Pt2,Pt5],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F5I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -201,7 +192,6 @@ F5I=reinf_bars.rebarFamily(
    vectorLRef=Vector(0.5,-0.5),
    fromToExtPts=[Pt2i,Pt5i],
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 
 F6S=reinf_bars.rebarFamily(
@@ -213,7 +203,6 @@ F6S=reinf_bars.rebarFamily(
    gapStart=-0.10,
    gapEnd=-0.10,
    fromToExtPts=[Pt5,Pt7],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F6I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -227,7 +216,6 @@ F6I=reinf_bars.rebarFamily(
    vectorLRef=Vector(0.5,-0.5),
    fromToExtPts=[Pt5i,Pt7i],
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 
 F7=reinf_bars.rebarFamily(
@@ -237,7 +225,6 @@ F7=reinf_bars.rebarFamily(
    spacing=0.20,
    lstPtsConcrSect=[Pl6i,Pl6,Pl7,Pl7i,Pl6i],
    fromToExtPts=[Pt7,Pt11],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F8S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -250,7 +237,6 @@ F8S=reinf_bars.rebarFamily(
    gapEnd=0.334,
    fromToExtPts=[Pl2,Pl3],
    coverSectBars=recNominal+0.016,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F8I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -266,7 +252,6 @@ F8I=reinf_bars.rebarFamily(
    fromToExtPts=[Pl2i,Pl3i],
    coverSectBars=recNominal+0.012,
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F9S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -280,7 +265,6 @@ F9S=reinf_bars.rebarFamily(
    fromToExtPts=[Pl3,Pl4],
    coverSectBars=recNominal+0.016,
    lateralCover=0,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F9I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -297,7 +281,6 @@ F9I=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.012,
    lateralCover=0,
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F10S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -310,7 +293,6 @@ F10S=reinf_bars.rebarFamily(
    gapEnd=-0.10,
    fromToExtPts=[Pl4,Pl5],
    coverSectBars=recNominal+0.016,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F10I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -326,7 +308,6 @@ F10I=reinf_bars.rebarFamily(
    fromToExtPts=[Pl4i,Pl5i],
    coverSectBars=recNominal+0.012,
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F11S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -337,7 +318,6 @@ F11S=reinf_bars.rebarFamily(
    gapStart=0.45,
    gapEnd=1.2,
    fromToExtPts=[Pl3,Pl5],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F12S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -348,7 +328,6 @@ F12S=reinf_bars.rebarFamily(
    gapStart=0.45,
    gapEnd=-0.10,
    fromToExtPts=[Pl5,Pl6],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F12I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -362,7 +341,6 @@ F12I=reinf_bars.rebarFamily(
    vectorLRef=Vector(0.5,-0.5),
    fromToExtPts=[Pl5i,Pl6i],
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F13S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -375,7 +353,6 @@ F13S=reinf_bars.rebarFamily(
    gapEnd=0.118,
    fromToExtPts=[Pl6,Pl7],
    coverSectBars=recNominal+0.012,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F13I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -391,7 +368,6 @@ F13I=reinf_bars.rebarFamily(
    fromToExtPts=[Pl6i,Pl7i],
    lateralCover=recNominal+0.012,
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F14S=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -404,7 +380,6 @@ F14S=reinf_bars.rebarFamily(
    gapEnd=-0.10,
    fromToExtPts=[Pl7,Pl8],
    coverSectBars=recNominal+0.012,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F14I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -420,7 +395,6 @@ F14I=reinf_bars.rebarFamily(
    fromToExtPts=[Pl7i,Pl8i],
    lateralCover=recNominal+0.012,
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 
 F15S=reinf_bars.rebarFamily(
@@ -435,7 +409,6 @@ F15S=reinf_bars.rebarFamily(
    fromToExtPts=[Pt3,Pt4],
    coverSectBars=recNominal+0.008,
    lateralCover=recNominal+0.008,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F15I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -452,7 +425,6 @@ F15I=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.008,
    lateralCover=recNominal+0.008,
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 
 F16S=reinf_bars.rebarFamily(
@@ -467,7 +439,6 @@ F16S=reinf_bars.rebarFamily(
    fromToExtPts=[Pt9,Pt10],
    coverSectBars=recNominal+0.008,
    lateralCover=recNominal+0.008,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F16I=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -484,7 +455,6 @@ F16I=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.008,
    lateralCover=recNominal+0.008,
    sectBarsSide='l',
-   vectorLRefSec=Vector(-0.3,-0.3)
 )
 F17=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -493,7 +463,6 @@ F17=reinf_bars.rebarFamily(
    spacing=0.15,
    lstPtsConcrSect=[Pt3i,Pt3,Pt4,Pt4i,Pt3i],
    fromToExtPts=[Pl2,Pl3],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 F18=reinf_bars.rebarFamily(
    genConf=losaGenConf,
@@ -502,7 +471,6 @@ F18=reinf_bars.rebarFamily(
    spacing=0.15,
    lstPtsConcrSect=[Pt9i,Pt9,Pt10,Pt10i,Pt9i],
    fromToExtPts=[Pl7,Pl8],
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 
 R1S=reinf_bars.rebarFamily(
@@ -517,7 +485,6 @@ R1S=reinf_bars.rebarFamily(
    fromToExtPts=[Pl3,Pl4],
    coverSectBars=recNominal+0.012,
    lateralCover=recNominal+0.1,
-   vectorLRefSec=Vector(-0.3,0.3)
 )
 
 # Plan of sections

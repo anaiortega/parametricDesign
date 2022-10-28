@@ -51,7 +51,6 @@ familiasArmad['1E']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['1P']={
    'identificador':'1P',
@@ -70,7 +69,6 @@ familiasArmad['1P']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['2P']={
    'identificador':'2P',
@@ -89,7 +87,6 @@ familiasArmad['2P']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.3,0.3)
 }
 familiasArmad['3C']={
    'identificador':'3C',
@@ -108,7 +105,6 @@ familiasArmad['3C']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'d',
-   'vectorLRefSec':Base.Vector(-0.5,1.0)
 }
 
 
@@ -129,7 +125,6 @@ familiasArmad['4H']={
    'recSec':recPral,
    'recLateral':recPral,
    'ladoDibSec':'i',
-   'vectorLRefSec':Base.Vector(0.5,1.0)
 }
 
 #Secciones-Alzados
@@ -145,7 +140,7 @@ for i in range (0,len(idArmad)):
 
 idArmaSec=('3C',)
 for i in range (0,len(idArmaSec)):
-   reinf_bars.armaSec(identificador=familiasArmad[idArmaSec[i]]['identificador'],diametro=familiasArmad[idArmaSec[i]]['diametro'],separacion=familiasArmad[idArmaSec[i]]['separacion'],recubrimiento=familiasArmad[idArmaSec[i]]['recSec'],reclateral=familiasArmad[idArmaSec[i]]['recLateral'],ptosExtension=familiasArmad[idArmaSec[i]]['ptosExtension'],ladoDibSec=familiasArmad[idArmaSec[i]]['ladoDibSec'],vectorLRefSec=familiasArmad[idArmaSec[i]]['vectorLRefSec'],hTexto=familiasArmad[idArmaSec[i]]['hTexto'])
+   reinf_bars.armaSec(identificador=familiasArmad[idArmaSec[i]]['identificador'],diametro=familiasArmad[idArmaSec[i]]['diametro'],separacion=familiasArmad[idArmaSec[i]]['separacion'],recubrimiento=familiasArmad[idArmaSec[i]]['recSec'],reclateral=familiasArmad[idArmaSec[i]]['recLateral'],ptosExtension=familiasArmad[idArmaSec[i]]['ptosExtension'],ladoDibSec=familiasArmad[idArmaSec[i]]['ladoDibSec'],hTexto=familiasArmad[idArmaSec[i]]['hTexto'])
 
 
 hTextosArmados=0.05 
