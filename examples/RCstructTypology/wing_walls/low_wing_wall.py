@@ -20,7 +20,7 @@ estrName='Aleta 1'
 titSchedule=estrName.upper()
 hTexts=0.125
 
-dowels=True # True if dowels in the stem start, otherwise, False
+dowels=False # True if dowels in the stem start, otherwise, False
 #Footing
 wFoot=5.05 #ancho zapata
 lWall=6.20 #longitud muro
@@ -129,7 +129,7 @@ RF_foot_tr_bot=rb.rebarFamily(
     gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Ptfoot_2,Ptfoot_1,Ptfoot_4,Ptfoot_3],
     coverSide='l',
-    vectorLRef=Vector(0.5,-0.5),
+    vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Plfoot_1,Plfoot_4],
     sectBarsSide='l',
     spacing=foot_tr_bot['s'],
@@ -148,6 +148,7 @@ RF_foot_tr_top=rb.rebarFamily(
     gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Ptfoot_1,Ptfoot_2,Ptfoot_3,Ptfoot_4],
     fromToExtPts=[Plfoot_2,Plfoot_3],
+    vectorLRef=Vector(0.05,0.65),
     )
 lstRebarFam+=[RF_foot_tr_top]
 rebarCount+=1
@@ -163,7 +164,7 @@ RF_foot_ln_bot=rb.rebarFamily(
     lstPtsConcrSect=[Plfoot_2,Plfoot_1,Plfoot_4,Plfoot_3],
     lstCover=[footGenConf.cover,footGenConf.cover+foot_tr_bot['fi'],footGenConf.cover],
     coverSide='l',
-    vectorLRef=Vector(0.5,-0.5),
+    vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptfoot_1,Ptfoot_4],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
@@ -182,12 +183,13 @@ RF_foot_ln_top=rb.rebarFamily(
     lstCover=[footGenConf.cover,footGenConf.cover+foot_tr_top['fi'],footGenConf.cover],
     fromToExtPts=[Ptfoot_2,Ptfoot_3],
     coverSectBars=footGenConf.cover+foot_tr_top['fi'],
+    vectorLRef=Vector(-0.5,0.5),
     )
 lstRebarFam+=[RF_foot_ln_top]
 rebarCount+=1
 
 # armadura lateral puntera
-RF_foot_lat_heel=rb.rebarFamily(
+RF_foot_lat_toe=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
@@ -195,16 +197,16 @@ RF_foot_lat_heel=rb.rebarFamily(
     nmbBars=foot_lat['nmbBars'],
     lstPtsConcrSect=[Ph_1,Phf_2],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
-    fromToExtPts=[Ptfoot_1,Ptfoot_2],
+    fromToExtPts=[Plfoot_1,Plfoot_2],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
     extrShapeStart='anc270_posGood_tens',
     extrShapeEnd='anc270_posGood_tens',
     )
-lstRebarFam+=[RF_foot_lat_heel]
+lstRebarFam+=[RF_foot_lat_tpe]
 rebarCount+=1
 
 # armadura lateral talón
-RF_foot_lat_toe=rb.rebarFamily(
+RF_foot_lat_heel=rb.rebarFamily(
     genConf=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
@@ -213,13 +215,13 @@ RF_foot_lat_toe=rb.rebarFamily(
     nmbBars=foot_lat['nmbBars'],
     lstPtsConcrSect=[Ph_4,Phf_3],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
-    fromToExtPts=[Ptfoot_4,Ptfoot_3],
+    fromToExtPts=[Plfoot_4,Plfoot_3],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
     extrShapeStart='anc90_posGood_tens',
     extrShapeEnd='anc90_posGood_tens',
     )
-lstRebarFam+=[RF_foot_lat_toe]
+lstRebarFam+=[RF_foot_lat_heel]
 rebarCount+=1
 
 # armadura lateral frontal
@@ -232,7 +234,7 @@ RF_foot_lat_front=rb.rebarFamily(
     nmbBars=foot_lat['nmbBars'],
     lstPtsConcrSect=[Ph_1,Ph_4],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
-    fromToExtPts=[Ptfoot_4,Ptfoot_3],
+    fromToExtPts=[Ptfoot_1,Ptfoot_2],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
     sectBarsSide='l',
     extrShapeStart='anc90_posGood_tens',
@@ -334,8 +336,44 @@ if dowels:
     lstRebarFam+=[RF_wall_vert_front]
     rebarCount+=1
 
-#else: # sin esperas
-    
+else: # sin esperas
+    #Armadura muro
+    # Armadura vertical trasdós
+    RF_wall_vert_back=rb.rebarFamily(
+        genConf=wallGenConf,
+        identifier=str(rebarCount+1),
+        diameter=wall_vert_back['fi'],
+        spacing=wall_vert_back['s'],
+        lstPtsConcrSect=[Ptwall_1+Vector(0,-thFoot),Ptwall1_2,Ptwall1_3],
+        gapStart=-(footGenConf.cover+foot_tr_bot['fi']+foot_ln_bot['fi']+wall_vert_back['fi']/2),
+        vectorLRef=Vector(-0.5,0.5),
+        extrShapeStart='fix90_len200',
+        fromToExtPts=[Ph_1,Ph_4],
+        sectBarsSide='l',
+        lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3]
+        )
+
+    lstRebarFam+=[RF_wall_vert_back]
+    rebarCount+=1
+    ang=int(270-math.degrees(math.atan(slopeBack)))
+    # Armadura vertical intradós
+    RF_wall_vert_front=rb.rebarFamily(
+        genConf=wallGenConf,
+        identifier=str(rebarCount+1),
+        diameter=wall_vert_front['fi'],
+        spacing=wall_vert_front['s'],
+        lstPtsConcrSect=[Ptwall1_4+Vector(slopeBack*thFoot,-thFoot),Ptwall1_3,Ptwall1_2],
+        coverSide='l',
+        gapStart=-(footGenConf.cover+foot_tr_bot['fi']+foot_ln_bot['fi']+wall_vert_back['fi']/2),
+        extrShapeStart='fix'+str(ang)+'_len200',
+        fromToExtPts=[Ph1_2,Ph1_3],
+        lstPtsConcrSect2=[Ptwall2_4,Ptwall2_3,Ptwall2_2]    
+        )
+    lstRebarFam+=[RF_wall_vert_front]
+    rebarCount+=1
+
+
+# Armadura muro    
 # Horizontal trasdós zona inferior
 RF_wall_horBottom_front=rb.rebarFamily(
     genConf=wallGenConf,
@@ -416,7 +454,7 @@ for fa in lstRebarFam:
 # Plan of sections
 App.newDocument("planRCsections")
 #SECCIONES TRANSVERSALES
-#sección A-A
+#sección A-A (muro + zapata)
 lstPtsConcrSect=[[Ptfoot_1,Ptfoot_2,Ptwall_1,Ptwall1_2,Ptwall1_3,Ptwall1_4,Ptfoot_3,Ptfoot_4,Ptfoot_1]]
 lstShapeRebarFam=[RF_foot_tr_bot,RF_foot_tr_top,RF_wall_vert_back,RF_wall_vert_front]
 
@@ -425,7 +463,7 @@ if dowels:
 
 
 lstSectRebarFam=[RF_foot_ln_bot,RF_foot_ln_top,RF_wall_horBottom_back,RF_wall_horBottom_front,RF_wall_horTop_front,RF_wall_horTop_back]
-
+lstSectRebarFam+=[RF_foot_lat_front,RF_foot_lat_dors]
 # for rf in lstShapeRebarFam:
 #     rf.drawLstRebar(vTranslation=Vector(0,5,0))
 # for rf in lstSectRebarFam:
@@ -437,7 +475,9 @@ rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=V
 lstPtsConcrSect=[[Plfoot_1,Plfoot_2,Plfoot_3,Plfoot_4,Plfoot_1]]
 lstShapeRebarFam=[RF_foot_ln_bot,RF_foot_ln_top]
 lstSectRebarFam=[RF_foot_tr_bot,RF_foot_tr_top]
+lstSectRebarFam+=[RF_foot_lat_toe,RF_foot_lat_heel]
 #vTranslation=Vector(10,5,0))
+
 # for rf in lstShapeRebarFam:
 #     rf.drawLstRebar(vTranslation)
 # for rf in lstSectRebarFam:
