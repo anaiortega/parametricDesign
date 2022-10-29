@@ -199,6 +199,7 @@ RF_foot_lat_toe=rb.rebarFamily(
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Plfoot_1,Plfoot_2],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
+    sectBarsSide='r',
     extrShapeStart='anc270_posGood_tens',
     extrShapeEnd='anc270_posGood_tens',
     )
@@ -236,7 +237,7 @@ RF_foot_lat_front=rb.rebarFamily(
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Ptfoot_1,Ptfoot_2],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='l',
+    sectBarsSide='r',
     extrShapeStart='anc90_posGood_tens',
     extrShapeEnd='anc90_posGood_tens',
     )

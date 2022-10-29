@@ -218,27 +218,36 @@ class rebarFamily(object):
         :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
         the drawing (defaults to Vector(0,0,0))
         '''
-        vaux=self.fromToExtPts[1].sub(self.fromToExtPts[0])
+        vaux=self.fromToExtPts[1]-self.fromToExtPts[0]
         Laux=vaux.Length
-        nesp=int((Laux-2.0*self.lateralCover-self.diameter)/self.spacing)
+        if self.spacing==0:
+            nesp=self.nmbBars-1
+            distReb=Laux/(nesp+1)
+        else:
+            nesp=int((Laux-2.0*self.lateralCover-self.diameter)/self.spacing)
+            distReb=self.spacing
         vaux.normalize()
         if self.sectBarsSide == 'l':
             vauxn=Vector(-vaux.y,vaux.x)
         else:
             vauxn=Vector(vaux.y,-vaux.x)
         vauxn.normalize()
-        incrini=vaux.multiply((Laux-nesp*self.spacing)/2.0).add(vauxn.multiply(self.coverSectBars+self.diameter/2.0))
+        # first rebar
+        if self.spacing==0:
+            incrini=vaux.multiply(1/2*distReb)+(vauxn.multiply(self.coverSectBars+self.diameter/2.0))
+        else:
+            incrini=vaux.multiply((Laux-nesp*distReb)/2.0)+(vauxn.multiply(self.coverSectBars+self.diameter/2.0))
         cent=FreeCAD.Placement()
         cent.move(self.fromToExtPts[0].add(incrini).add(vTranslation))
         ptoIniEtiq=self.fromToExtPts[0].add(incrini).add(vTranslation)
         vaux.normalize()
-        incr=vaux.multiply(self.spacing)
+        incr=vaux.multiply(distReb)
         for i in range(0,nesp+1):
             c=Draft.makeCircle(self.diameter/2.0,cent,False)
             FreeCADGui.ActiveDocument.getObject(c.Name).LineColor =cfg.colorSectBars
             cent.move(incr)
         vaux.normalize()
-        endPnt=ptoIniEtiq+vaux.multiply(self.spacing*nesp)
+        endPnt=ptoIniEtiq+vaux.multiply(distReb*nesp)
         self.sectRebarLabel(ptoIniEtiq,endPnt,vauxn)
         return
 
