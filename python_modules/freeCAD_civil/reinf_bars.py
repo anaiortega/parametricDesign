@@ -683,7 +683,7 @@ def drawMiniSketchRebar(rbFam,ptCOG,wSketch,hSketch):
     Part.show(sketch)
  
                 
-def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTlcorner=Vector(0,0),doc=FreeCAD.ActiveDocument):
+def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTLcorner=Vector(0,0),doc=FreeCAD.ActiveDocument):
     ''' Create the rebar schedule from a list of rebar families
 
     :param config: instance of scheduleConf class
@@ -696,7 +696,7 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTlcorner=Vect
     :param hText: text height
     :param hTextSketch: text height for the sketch.
     :param title: title for the rebar schedule (defaults to None)
-    :param pntTlcorner: point in top-left corner (defaults to Vector(0,0))
+    :param pntTLcorner: point in top-left corner (defaults to Vector(0,0))
     :param doc: document in which to put the schedule (defaults to the 
                 active document)
     '''
@@ -711,7 +711,7 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTlcorner=Vect
 #    totalWidth=sum(wColumns)
     numRows=sum([len(rb.lstWire) for rb in lstBarFamilies])
     totalWidth=sum(wColumns)
-    p1=tables.drawBoxWtitle(pntTlcorner,wColumns,title,hText,hRows,numRows,doc)
+    p1=tables.drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc)
     #Títulos para la tabla de despiece
     pLinea=p1.add(Vector(0,hRows/2.0))
     pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))

@@ -6,7 +6,8 @@ from freeCAD_utils import drawing_tools as dt
 
 
 def drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc):
-    '''Draws the skeleton of lines and title to make a table
+    '''Draws the skeleton of lines and title to make a table.
+    Return the point in the top left corner to start the new row
 
     :param pntTLcorner: vector(x,y) to place the top left corner of the table
     :param wColumns: list with the width of the columns
@@ -21,7 +22,7 @@ def drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc):
     pl.Rotation.Q = (0.0, 0.0, 0.0, 1.0)
     pl.Base = pntTLcorner-Vector(0,totalHeight)
     w=Draft.makeRectangle(totalWidth,totalHeight,placement=pl)
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorFrames
     p1=pntTLcorner-Vector(0,totalHeight)
     p2=p1.add(Vector(0,hRows*(numRows+1)))
     # Vertical lines
@@ -29,16 +30,16 @@ def drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc):
         p1=p1.add(Vector(wColumns[i],0))
         p2=p2.add(Vector(wColumns[i],0))
         w=Draft.makeLine(p1,p2)
-        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorLinesTables
     p1=pntTLcorner-Vector(0,2*hRows)
     p2=p1.add(Vector(totalWidth,0))
     w=Draft.makeLine(p1,p2)
     # Generate title of the table
     pLinea=p1.add(Vector(0,hRows))
     w=Draft.makeLine(pLinea,pLinea.add(Vector(totalWidth,0)))
-    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-    pPos=pLinea.add(Vector(totalWidth/2.0,hRows/2-hText/2))
-    dt.put_text_in_pnt(title,pPos,hText,cfg.colorTextCenter,"Center")
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorFrames
+    pPos=pLinea.add(Vector(totalWidth/2.0,hRows/2-1.25*hText/2))
+    dt.put_text_in_pnt(title,pPos,1.25*hText,cfg.colorTextCenter,"Center")
     FreeCAD.ActiveDocument.recompute()
     pntNextTLcorner=p1
     return pntNextTLcorner
@@ -50,7 +51,7 @@ def settingOutTable(lstPoints,title,pntTLcorner=Vector(0,100),preffixPnt='',hTex
     :param title: title for the table
     :param pntTLcorner: vector(x,y) to place the top left corner of the table (defaults 
            to Vector(0,100))
-    :param wColumns: list with the width of the columns (defaults to 
+    :param wColumns: list with the width of the columns (defaults to [10,18,20,14])
     :param preffixPnt: preffix to name the points
     :param hText: height of the text
     :param hRows: height of the rows
@@ -88,7 +89,39 @@ def settingOutTable(lstPoints,title,pntTLcorner=Vector(0,100),preffixPnt='',hTex
         dt.put_text_in_pnt(z,pZ, hText, cfg.colorTextRight,"Right")
     FreeCAD.ActiveDocument.recompute()
 
-                      
+
+def genericTable(lstData,title,colTitles,wColumns,formatColumns,hRows=4.00,hText=2.5,pntTLcorner=Vector(0,100),doc=FreeCAD.ActiveDocument):
+    '''Create a table with values in lstData.
+
+    :param lstData: list of data [[u1,u2,..],[v1,v2,..],...], each list corresponds to a row.
+    :param title: title for the table
+    :param colTitles: titles for the columns
+    :param wColumns: list with the width of the columns.
+    :param formatColumns: list with the format of numbers for each column 
+           (ex: ['{}','{:.0f}','{:.2f}', ...])
+    :param hRows: height of the rows
+    :param hText: height of the text
+    :param pntTLcorner: vector(x,y) to place the top left corner of the table (defaults 
+           to Vector(0,100))
+    :param doc: document in which to put the schedule (defaults to the 
+                active document)
+
+    '''
+    FreeCAD.setActiveDocument(doc.Name)
+    numRows=len(lstData)
+    p1=drawBoxWtitle(pntTLcorner,wColumns,title.upper(),hText,hRows,numRows,doc)
+    pLinea=p1.add(Vector(0,hRows/2.0-hText/2.0))
+    for i in range(len(colTitles)):
+        pPos=pLinea+Vector(sum(wColumns[:i])+wColumns[i]/2.0,0)
+        dt.put_text_in_pnt(colTitles[i],pPos,hText,cfg.colorTextCenter,"Center")
+    for l in range(len(lstData)):
+        pLinea=pLinea.add(Vector(0,-hRows))
+        dataRow=lstData[l]
+        for i in range(len(dataRow)):
+            pPos=pLinea+Vector(sum(wColumns[:(i+1)])-hText/2,0)
+            f=formatColumns[i] ; nmb=f.format(dataRow[i])
+            dt.put_text_in_pnt(nmb,pPos,hText, cfg.colorTextRight,"Right")
+    FreeCAD.ActiveDocument.recompute()
 
     
     
