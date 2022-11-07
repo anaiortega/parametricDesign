@@ -45,7 +45,9 @@ class genericConf(object):
           to 'N') 
     :ivar decLengths: decimal positions to calculate and express lengths and
                       their derivated magnitudes, like weight  (defaults to 2).
-    :ivar decSpacing: decimal positions to express the spacing (defaults to 2).
+    :ivar decSpacing: decimal positions to express the spacing (defaults to 2)
+                      if spacing has more than decSpacing positions, the 
+                      full number is written.
     :ivar sketchScale: scale of the sketch that represents the rebar in the text
                        relative to the text size (defaults to 5)
     :ivar factPosLabelSectReb: factor to locate labels of section-rebars (defaults to 2/3)
@@ -755,7 +757,11 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTLcorner=Vect
             if rbFam.spacing ==0:
                 tx='%%C' + str(int(1000*rbFam.diameter))
             else:
-                tx='%%C' + str(int(1000*rbFam.diameter)) + 'c/' + formatSpacing %rbFam.spacing
+                if dsu.get_number_decimal_positions(rbFam.spacing)>rbFam.genConf.decSpacing:
+                    txSpacing=str(rbFam.spacing) # all decimals are written
+                else:
+                    txSpacing=formatSpacing %rbFam.spacing
+                tx='%%C' + str(int(1000*rbFam.diameter)) + 'c/' + txSpacing
             dt.put_text_in_pnt(tx,pFiSep, hText,cfg.colorTextLeft)
             #number of bars
             pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
