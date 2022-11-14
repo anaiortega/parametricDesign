@@ -898,3 +898,111 @@ def rect_stirrup(genConf,identifier,diameter,nmbStirrups,width,height):
     return rbf
     
     
+class stirrupFamily(object):
+    ''' Family of shear reinforcement (for now, only rectangular stirrups)
+
+    :ivar genConf: instance of th class genericConf that defines generic
+          parameters like concrete and steel type, text format, ... 
+    :ivar identifier: identifier of the rebar family
+    :ivar diameter: diameter of the bar [m]
+    :ivar lstPtsConcrTransv: list of points in the transversal 
+          concrete section to which the first stirrup 
+          (rectangular drawing) is 'attached' (4 points)
+    :ivar lstPtsConcrLong: list of points in the longitudinal section to which 
+          the first stirrup (rectangular drawing) is 'attached'
+    :ivar spacStrpTransv: spacement between stirrups in the transversal 
+                  section (as in beams, where they are displayed as 
+                  rectangles)
+    :ivar spacStrpLong: spacement between stirrups in the longitudinal 
+          section (as in beams, where they are displayed as lines)
+    :ivar vDirLong: vector to define the longitudinal direction
+    :ivar nmbStrpTransv: number of stirrups displayed as rectangles
+    :ivar nmbStrpLong: number of stirrups displayed as lines
+    :ivar dispStrpTransv: displacement of stirrups in the
+          transversal section (defaults to None)
+    :ivar dispStrpLong: displacement of stirrups in the
+          longitudinal section (defaults to None)
+   
+    '''
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,dispStrpTransv=None,dispStrpLong=None):
+        self.genConf=genConf
+        self.identifier=identifier
+        self.diameter=diameter
+        self.lstPtsConcrTransv=lstPtsConcrTransv
+        self.lstPtsConcrLong=lstPtsConcrLong
+        self.spacStrpTransv=spacStrpTransv
+        self.spacStrpLong=spacStrpLong
+        self.vDirLong=vDirLong
+        self.nmbStrpTransv=nmbStrpTransv
+        self.nmbStrpLong=nmbStrpLong
+        self.dispStrpTransv=dispStrpTransv
+        self.dispStrpLong=dispStrpLong
+
+    def getVdirTrans(self):
+        '''return a unitary direction vector in transversal section'''
+        v=self.lstPtsConcrTransv[1]-self.lstPtsConcrTransv[0]
+        return v.normalize()
+    
+    def getVdirLong(self):
+        '''return a unitary direction vector in longitudinal section'''
+        return self.vDirLong.normalize()
+
+    def createRebar(self):
+        '''Note; This part should be transfered to the base class
+        '''
+        recAxis=self.genConf.cover+self.diameter/2
+        vTr=self.getVdirTrans()
+        vPerp=(self.lstPtsConcrTransv[0]-self.lstPtsConcrTransv[3]).normalize()
+        lstPtsRebar=[self.lstPtsConcrTransv[0]+recAxis*vTr-recAxis*vPerp,
+                       self.lstPtsConcrTransv[1]-recAxis*vTr-recAxis*vPerp,
+                       self.lstPtsConcrTransv[2]-recAxis*vTr+recAxis*vPerp,
+                       self.lstPtsConcrTransv[3]+recAxis*vTr+recAxis*vPerp]
+        lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
+        lstLinRebar+=[Part.makeLine(lstPtsRebar[-1],lstPtsRebar[0])]
+        self.rebarWire=Part.Wire(lstLinRebar)
+    
+    def drawRebars(self,vTranslation=Vector(0,0,0)):
+        if not self.rebarWire:
+            self.createRebar()
+        vTr=self.getVdirTrans()
+        rebarDraw=self.rebarWire.copy()
+        rebarDraw.translate(vTranslation)
+        if self.dispStrpTransv:
+            rebarDraw.translate(self.dispStrpTransv*vTr)
+        rebarFillet= Draft.make_wire(rebarDraw,closed=True,face=False)
+        rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
+        rebarFillet.FilletRadius=rad
+        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
+        for i in range(1,self.nmbStrpTransv):
+            stirr=rebarDraw.copy()
+            stirr.translate(i*self.spacStrpTransv*vTr)
+            stirrFillet=Draft.make_wire(stirr,closed=True,face=False)
+            stirrFillet.FilletRadius=rad
+            FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
+        FreeCADGui.ActiveDocument.Document.recompute()
+        
+    def drawLnRebars(self,vTranslation=Vector(0,0,0)):
+        recAxis=self.genConf.cover+self.diameter/2
+        vLn=self.getVdirLong()
+        vReb=(self.lstPtsConcrLong[1]-self.lstPtsConcrLong[0]).normalize()
+        lstPtsRebar=[self.lstPtsConcrLong[0]+recAxis*vReb,
+                     self.lstPtsConcrLong[1]-recAxis*vReb]
+        lstLinRebar=[Part.makeLine(lstPtsRebar[0],lstPtsRebar[1])]
+        rebarDraw=Part.Wire(lstLinRebar)
+        rebarDraw.translate(vTranslation)
+        if self.dispStrpLong:
+            rebarDraw.translate(self.dispStrpLong*vLn)
+        rebarFillet=Draft.make_wire(rebarDraw)
+        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
+        for i in range(1,self.nmbStrpLong):
+            stirr=rebarDraw.copy()
+            stirr.translate(i*self.spacStrpLong*vLn)
+            stirrFillet=Draft.make_wire(stirr)
+            FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
+        FreeCADGui.ActiveDocument.Document.recompute()
+        
+        
+    
+                      
+
+                    

@@ -31,4 +31,12 @@ def put_text_in_pnt(text,point,hText,color,justif="Left",rotation=None):
     return
 
    
-    
+def draw_triang_prism(p1,p2,p3,vAxis):
+    ''' Return a triangular prism whose base is defined by points p1,p2 and p3
+    and its axis is defined by vector vAxis.
+    '''
+    baseContour=Part.makePolygon([p1,p2,p3,p1])
+    base=Part.Face(baseContour)
+    retSh=base.extrude(vAxis)
+    return retSh
+
