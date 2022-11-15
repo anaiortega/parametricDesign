@@ -86,10 +86,164 @@ class rebarFamilyBase(object):
 
     :ivar genConf: instance of th class genericConf that defines generic
           parameters like concrete and steel type, text format, ... 
+    :ivar identifier: identifier of the rebar family
+    :ivar diameter: diameter of the bars of the family [m]
     '''
-    def __init__(self,genConf):
+    def __init__(self,genConf,identifier,diameter):
         self.genConf=genConf
-        
+        self.identifier=identifier
+        self.diameter=diameter
+
+    def getInitPntRebLref(self,rebarDraw):
+        '''Return the initial point to start the reference line for labeling the rebar
+        '''
+        rebarEdges=rebarDraw.Edges
+        #arrow in extremity 1
+        pExtr1=rebarEdges[0].Vertexes[0].Point #vertex at extremity 1
+        vArr=rebarEdges[0].tangentAt(0).multiply(0.9*self.genConf.texSize) #arrow vector
+        l=Draft.rotate(Draft.makeLine(pExtr1,pExtr1.add(vArr)),15,pExtr1)
+        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = cfg.colorArrows
+        #arrow in extremity 2
+        pExtr2=rebarEdges[-1].Vertexes[1].Point #vertex at extremity 2
+        vArr=rebarEdges[-1].tangentAt(1).multiply(0.9*self.genConf.texSize) #arrow vector
+        l=Draft.rotate(Draft.makeLine(pExtr2,pExtr2.add(vArr)),180-15,pExtr2)
+        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = cfg.colorArrows
+        # Texts pointing at the longest edge of the rebar
+        laux=[e.Length for e in rebarEdges]
+        ptoIniEtiq=rebarEdges[laux.index(max(laux))].CenterOfMass
+        return ptoIniEtiq
+    
+    def drawRebarLref(self,ptoInic,vectorLRef):
+        '''Draw the reference line for labeling a rebar family. Return the parameters to place the text
+
+        :param ptoInic: start point of the reference line
+        :param vectorLRef: vector to place the label
+        '''
+        hText=self.genConf.texSize
+        p2=ptoInic.add(vectorLRef)
+        signo=1.0*vectorLRef.x/abs(vectorLRef.x)
+        pEndRefL=p2.add(Vector(signo*hText,0))
+        pCentCirc=pEndRefL.add(Vector(signo*hText,0))
+        pText=pEndRefL.add(Vector(signo*hText/2.0,-hText/2.0))
+        w=Draft.makeWire([ptoInic,p2,pEndRefL])
+        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+        if self.vectorLRef.x > 0:
+            justif="Left"
+        else:
+            justif="Right"
+        return pEndRefL,pCentCirc,justif,pText
+
+    def drawDecorId(self,pEndRefL,pCentCirc,justif):
+        '''Draw the decoration of the identification in rebar label
+        '''
+        hText=self.genConf.texSize
+        if len(self.identifier)==1:
+            pl=FreeCAD.Placement()
+            pl.move(pCentCirc)
+    #        c=Draft.makeCircle(hText*(len(self.identifier)+1)/2.0,pl,False)
+            c=Draft.make_circle(radius=hText*(len(self.identifier)+1)/2.0,placement=pl)
+            FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = cfg.colorRefLines
+        else:
+            signo=-1 if justif=="Right" else 1
+            pp1=pCentCirc.add(Vector(0,hText))
+            pp2=pCentCirc.add(Vector(signo*hText*(len(self.identifier)-1),hText))
+            ppEndRefL=pCentCirc.add(Vector(0,-hText))
+            ppCentCirc=pCentCirc.add(Vector(signo*hText*(len(self.identifier)-1),-hText))
+            ppText=pCentCirc.add(Vector(signo*hText*len(self.identifier),0))
+            
+            if (pp1-pEndRefL).Length ==0  or (pp1-ppEndRefL).Length ==0 or (pEndRefL-ppEndRefL).Length == 0:
+                print('pp1=',pp1,'pp2=',pp2,'pEndRefL=',pEndRefL,'ppEndRefL=',ppEndRefL)
+                c1=Part.Arc(pCentCirc+Vector(0,hText),pCentCirc+Vector(-hText,0),pCentCirc-Vector(0,hText))
+            else:
+                c1=Part.Arc(pp1,pEndRefL,ppEndRefL)
+            c2=Part.Arc(pp2,ppText,ppCentCirc)
+            l1=Part.makeLine(pp1,pp2)
+            l2=Part.makeLine(ppEndRefL,ppCentCirc)
+            etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
+            p=Part.show(etiq)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = cfg.colorRefLines
+
+    def drawSectRebarLref(self,startPnt,endPnt,vauxn):
+        '''Draw the reference line for labeling a sectioned rebar family, or
+        a family of stirrups in longitudinal section 
+        Return the parameters to place the text
+
+        :param startPnt: point position of the first rebar (center of the circle)
+        :param startPnt: point position of the last rebar (center of the circle)
+        :param vauxn: vector perpendicular to the line defined by the rebars pointing 
+                      from concrete towards the rebars
+        '''
+        factPos=self.genConf.factPosLabelSectReb
+        hText=self.genConf.texSize
+        vaux=endPnt-startPnt
+        vaux.normalize()
+        vnorm=-1*vauxn.normalize()
+        p1=startPnt+hText*vaux+1.5*hText*vnorm
+        p2=endPnt-hText*vaux+1.5*hText*vnorm
+        pol=Part.makePolygon([startPnt,p1,p2,endPnt])
+        w=Part.show(pol)
+        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+        pStartRefL=p1+factPos*(p2-p1)
+        pEndRefL=pStartRefL+hText*vnorm
+        w=Draft.makeWire([pStartRefL,pEndRefL])
+        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+        pCentCirc=pEndRefL+hText*vnorm
+        if vnorm.x < 0:
+            justif="Right"
+            pText=pCentCirc+hText/2*Vector(1,0)-hText/2*Vector(0,1)
+        else:
+            justif="Left"
+            pText=pCentCirc-hText/2*Vector(1,0)-hText/2*Vector(0,1)
+        return justif,pText
+            
+    def labelSectRebar(self,startPnt,endPnt,vauxn):
+        ''' Label (reference lines + text) a family of rebars sectioned.
+
+        :param startPnt: point position of the first rebar (center of the circle)
+        :param startPnt: point position of the last rebar (center of the circle)
+        :param vauxn: vector perpendicular to the line defined by the rebars pointing 
+                      from concrete towards the rebars
+        '''
+        justif,pText=self.drawSectRebarLref(startPnt,endPnt,vauxn)
+        ptoSketch,pos=self.rebarText(justif,pText)
+        return ptoSketch,pos
+       
+    def rebarText(self,justif,pText):
+        '''Write the text that labels the rebar family
+
+        :param pEndRefL: point extremity of the reference line where to start the rotulation
+        :param pCentCirc: point to place the center of the cirle (wih id)
+        :param justif: justification of the text ('Left' or 'Right')
+        :param pText: point to place the text 
+        '''
+        hText=self.genConf.texSize
+        if justif=="Left":
+            txtColor=cfg.colorTextLeft
+            if self.spacing == 0:
+                tx=self.identifier + '  ' + str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter))
+            else:
+                tx=self.identifier + '  %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing)
+            ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
+            pos='l'
+        else:
+            txtColor=cfg.colorTextRight
+            if self.spacing == 0:
+                tx=str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter)) + '   ' + self.identifier
+            else:
+                tx='%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing) +'   ' + self.identifier
+            ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
+            pos='r'
+        dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
+        return ptoSketch,pos
+
+    def getUnitWeight(self):
+        '''Return the weigth [kg] per meter of bar
+        '''
+        if self.diameter <=12e-3:
+            unitWeigth=round(math.pi*self.diameter**2.0/4.*7850,3)
+        else:
+            unitWeigth=round(math.pi*self.diameter**2.0/4.*7850,2)
+        return unitWeigth
     
 class rebarFamily(rebarFamilyBase):
     '''Family of reinforcement bars
@@ -191,9 +345,7 @@ class rebarFamily(rebarFamilyBase):
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text (defaults to True)
     '''
     def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
-        super(rebarFamily,self).__init__(genConf)
-        self.identifier=identifier 
-        self.diameter=diameter
+        super(rebarFamily,self).__init__(genConf,identifier,diameter)
         self.spacing=spacing 
         self.lstPtsConcrSect=lstPtsConcrSect
         if lstCover is None:
@@ -260,7 +412,7 @@ class rebarFamily(rebarFamilyBase):
             cent.move(incr)
         vaux.normalize()
         endPnt=ptoIniEtiq+vaux.multiply(distReb*nesp)
-        self.sectRebarLabel(ptoIniEtiq,endPnt,vauxn)
+        self.labelSectRebar(ptoIniEtiq,endPnt,vauxn)
         return
 
     def drawLstRebar(self,vTranslation=Vector(0,0,0)):
@@ -285,22 +437,10 @@ class rebarFamily(rebarFamilyBase):
         rebarFillet.FilletRadius=rad
         FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
         FreeCADGui.ActiveDocument.Document.recompute()
-#        Part.show(rebarDraw)
-        rebarEdges=rebarDraw.Edges
-        #arrow in extremity 1
-        pExtr1=rebarEdges[0].Vertexes[0].Point #vertex at extremity 1
-        vArr=rebarEdges[0].tangentAt(0).multiply(0.9*self.genConf.texSize) #arrow vector
-        l=Draft.rotate(Draft.makeLine(pExtr1,pExtr1.add(vArr)),15,pExtr1)
-        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = cfg.colorArrows
-        #arrow in extremity 2
-        pExtr2=rebarEdges[-1].Vertexes[1].Point #vertex at extremity 2
-        vArr=rebarEdges[-1].tangentAt(1).multiply(0.9*self.genConf.texSize) #arrow vector
-        l=Draft.rotate(Draft.makeLine(pExtr2,pExtr2.add(vArr)),180-15,pExtr2)
-        FreeCADGui.ActiveDocument.getObject(l.Name).LineColor = cfg.colorArrows
-        # Texts pointing at the longest edge of the rebar
-        laux=[e.Length for e in rebarEdges]
-        ptoIniEtiq=rebarEdges[laux.index(max(laux))].CenterOfMass
-        ptoSketch,pos=self.rebarLabel(ptoIniEtiq)
+        ptoIniEtiq=self.getInitPntRebLref(rebarDraw)
+        pEndRefL,pCentCirc,justif,pText=self.drawRebarLref(ptoIniEtiq,self.vectorLRef)
+        self.drawDecorId(pEndRefL,pCentCirc,justif)
+        ptoSketch,pos=self.rebarText(justif,pText)
         # draw sketch
         if self.drawSketch:
             wSketch=self.genConf.sketchScale*self.genConf.texSize
@@ -469,14 +609,6 @@ class rebarFamily(rebarFamilyBase):
             nBar=nesp+1
         return nBar
 
-    def getUnitWeight(self):
-        '''Return the weigth [kg] per meter of bar
-        '''
-        if self.diameter <=12e-3:
-            unitWeigth=round(math.pi*self.diameter**2.0/4.*7850,3)
-        else:
-            unitWeigth=round(math.pi*self.diameter**2.0/4.*7850,2)
-        return unitWeigth
 
     def getExtrShapeParams(self,rbEndStrDef):
         '''For extremity rebar shapes 'anc' (anchor) or 'lap' (lapped bars), return 
@@ -511,113 +643,7 @@ class rebarFamily(rebarFamilyBase):
                 ratio=eval(paramAnc[3].replace('perc',''))/100
             rbEndLenght=contrReb.getLapLength(concrete= self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
         return (angle,rbEndLenght)
-        
-                        
-    def sectRebarLabel(self,startPnt,endPnt,vauxn):
-        ''' Label (reference lines + text) a family of rebars sectioned.
-
-        :param startPnt: point position of the first rebar (center of the circle)
-        :param startPnt: point position of the last rebar (center of the circle)
-        :param vauxn: vector perpendicular to the line defined by the rebars pointing 
-                      from concrete towards the rebars
-        '''
-        factPos=self.genConf.factPosLabelSectReb
-        hText=self.genConf.texSize
-        vaux=endPnt-startPnt
-        vaux.normalize()
-        vnorm=-1*vauxn.normalize()
-        p1=startPnt+hText*vaux+1.5*hText*vnorm
-        p2=endPnt-hText*vaux+1.5*hText*vnorm
-        pol=Part.makePolygon([startPnt,p1,p2,endPnt])
-        w=Part.show(pol)
-        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-        pStartRefL=p1+factPos*(p2-p1)
-        pEndRefL=pStartRefL+hText*vnorm
-        w=Draft.makeWire([pStartRefL,pEndRefL])
-        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-        pCentCirc=pEndRefL+hText*vnorm
-        if vnorm.x < 0:
-            justif="Right"
-            pText=pCentCirc+hText/2*Vector(1,0)-hText/2*Vector(0,1)
-        else:
-            justif="Left"
-            pText=pCentCirc-hText/2*Vector(1,0)-hText/2*Vector(0,1)
-        ptoSketch,pos=self.rebarText(pEndRefL,pCentCirc,justif,pText)
-        return ptoSketch,pos
-
-
-    def rebarLabel(self,ptoInic):
-        '''Rotulacion de un grupo de barras de armado
-
-        :param ptoInic: pto del que arranca la linea de referencia
-        '''
-        hText=self.genConf.texSize
-        p2=ptoInic.add(self.vectorLRef)
-        signo=1.0*self.vectorLRef.x/abs(self.vectorLRef.x)
-        pEndRefL=p2.add(Vector(signo*hText,0))
-        pCentCirc=pEndRefL.add(Vector(signo*hText,0))
-        pText=pEndRefL.add(Vector(signo*hText/2.0,-hText/2.0))
-        w=Draft.makeWire([ptoInic,p2,pEndRefL])
-        FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
-        if self.vectorLRef.x > 0:
-            justif="Left"
-        else:
-            justif="Right"
-        ptoSketch,pos=self.rebarText(pEndRefL,pCentCirc,justif,pText)
-        return ptoSketch,pos
-
-    def rebarText(self,pEndRefL,pCentCirc,justif,pText):
-        '''
-        :param pEndRefL: point extremity of the reference line where to start the rotulation
-        :param pCentCirc: point to place the center of the cirle (wih id)
-        :param justif: justification of the text ('Left' or 'Right')
-        :param pText: point to place the text 
-        '''
-        hText=self.genConf.texSize
-        if len(self.identifier)==1:
-            pl=FreeCAD.Placement()
-            pl.move(pCentCirc)
-    #        c=Draft.makeCircle(hText*(len(self.identifier)+1)/2.0,pl,False)
-            c=Draft.make_circle(radius=hText*(len(self.identifier)+1)/2.0,placement=pl)
-            FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = cfg.colorRefLines
-        else:
-            signo=-1 if justif=="Right" else 1
-            pp1=pCentCirc.add(Vector(0,hText))
-            pp2=pCentCirc.add(Vector(signo*hText*(len(self.identifier)-1),hText))
-            ppEndRefL=pCentCirc.add(Vector(0,-hText))
-            ppCentCirc=pCentCirc.add(Vector(signo*hText*(len(self.identifier)-1),-hText))
-            ppText=pCentCirc.add(Vector(signo*hText*len(self.identifier),0))
-            
-            if (pp1-pEndRefL).Length ==0  or (pp1-ppEndRefL).Length ==0 or (pEndRefL-ppEndRefL).Length == 0:
-                print('pp1=',pp1,'pp2=',pp2,'pEndRefL=',pEndRefL,'ppEndRefL=',ppEndRefL)
-                c1=Part.Arc(pCentCirc+Vector(0,hText),pCentCirc+Vector(-hText,0),pCentCirc-Vector(0,hText))
-            else:
-                c1=Part.Arc(pp1,pEndRefL,ppEndRefL)
-            c2=Part.Arc(pp2,ppText,ppCentCirc)
-            l1=Part.makeLine(pp1,pp2)
-            l2=Part.makeLine(ppEndRefL,ppCentCirc)
-            etiq=Part.Wire([l1,c1.toShape(),l2,c2.toShape()]) 
-            p=Part.show(etiq)
-            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = cfg.colorRefLines
-        if justif=="Left":
-            txtColor=cfg.colorTextLeft
-            if self.spacing == 0:
-                tx=self.identifier + '  ' + str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter))
-            else:
-                tx=self.identifier + '  %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing)
-            ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
-            pos='l'
-        else:
-            txtColor=cfg.colorTextRight
-            if self.spacing == 0:
-                tx=str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter)) + '   ' + self.identifier
-            else:
-                tx='%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing) +'   ' + self.identifier
-            ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
-            pos='r'
-        dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
-        return ptoSketch,pos
-
+ 
 
 def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
     '''Draw the shape skectch of the reinforcment bar in the bar 
@@ -667,14 +693,6 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
         edg=i[0]
         dt.put_text_in_pnt(text=i[1],point=edg.CenterOfMass,hText=hText,color=cfg.colorTextCenter,justif="Center",rotation=math.degrees(edg.tangentAt(0).getAngle(Vector(1,0,0))))
     return (totalLength,totalLengthTxt)
-
-
-
-
-
-
-
-
 
 
 
@@ -932,12 +950,11 @@ class stirrupFamily(rebarFamilyBase):
           transversal section (defaults to None)
     :ivar dispStrpLong: displacement of stirrups in the
           longitudinal section (defaults to None)
-   
+    :ivar vectorLRef: vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
+    :ivar sideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to 'l')
     '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,dispStrpTransv=None,dispStrpLong=None):
-        super(stirrupFamily,self).__init__(genConf)
-        self.identifier=identifier
-        self.diameter=diameter
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,dispStrpTransv=None,dispStrpLong=None,vectorLRef=Vector(0.5,0.5),sideLabelLn='l'):
+        super(stirrupFamily,self).__init__(genConf,identifier,diameter)
         self.lstPtsConcrTransv=lstPtsConcrTransv
         self.lstPtsConcrLong=lstPtsConcrLong
         self.spacStrpTransv=spacStrpTransv
@@ -947,6 +964,8 @@ class stirrupFamily(rebarFamilyBase):
         self.nmbStrpLong=nmbStrpLong
         self.dispStrpTransv=dispStrpTransv
         self.dispStrpLong=dispStrpLong
+        self.vectorLRef=vectorLRef
+        self.sideLabelLn=sideLabelLn
 
     def getVdirTrans(self):
         '''return a unitary direction vector in transversal section'''
@@ -990,6 +1009,10 @@ class stirrupFamily(rebarFamilyBase):
             stirrFillet.FilletRadius=rad
             FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
         FreeCADGui.ActiveDocument.Document.recompute()
+        ptoIniEtiq=self.getInitPntRebLref(rebarDraw)
+        pEndRefL,pCentCirc,justif,pText=self.drawRebarLref(ptoIniEtiq,self.vectorLRef)
+        self.drawDecorId(pEndRefL,pCentCirc,justif)
+        ptoSketch,pos=self.rebarText(justif,pText)
         
     def drawLnRebars(self,vTranslation=Vector(0,0,0)):
         recAxis=self.genConf.cover+self.diameter/2
@@ -1010,8 +1033,37 @@ class stirrupFamily(rebarFamilyBase):
             stirrFillet=Draft.make_wire(stirr)
             FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
         FreeCADGui.ActiveDocument.Document.recompute()
-        
-        
+        startPnt=rebarFillet.Points[0]
+        endPnt=stirrFillet.Points[0]
+        if self.sideLabelLn=='l':
+            vauxn=Vector(startPnt.y-endPnt.y,endPnt.x-startPnt.x)
+        else:
+            vauxn=Vector(endPnt.y-startPnt.y,startPnt.x-endPnt.x)
+        vauxn.normalize()
+        self.labelSectRebar(startPnt,endPnt,vauxn)
+
+    def rebarText(self,justif,pText):
+        '''Write the text that labels the rebar family
+
+        :param pEndRefL: point extremity of the reference line where to start the rotulation
+        :param pCentCirc: point to place the center of the cirle (wih id)
+        :param justif: justification of the text ('Left' or 'Right')
+        :param pText: point to place the text 
+        '''
+        hText=self.genConf.texSize
+        if justif=="Left":
+            txtColor=cfg.colorTextLeft
+            tx=self.identifier + ' c. %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacStrpTransv)+'/'+str(self.spacStrpLong)
+            ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
+            pos='l'
+        else:
+            txtColor=cfg.colorTextRight
+            tx='c. %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacStrpTransv)+'/'+str(self.spacStrpLong) +'   ' + self.identifier
+            ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
+            pos='r'
+        dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
+        return ptoSketch,pos
+       
     
                       
 
