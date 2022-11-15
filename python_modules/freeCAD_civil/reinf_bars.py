@@ -81,7 +81,17 @@ class scheduleConf(object):
         self.heightText=heightText
         self.heigthTextSketch=heigthTextSketch
 
-class rebarFamily(object):
+class rebarFamilyBase(object):
+    ''' Base class for families of reinforcement bars
+
+    :ivar genConf: instance of th class genericConf that defines generic
+          parameters like concrete and steel type, text format, ... 
+    '''
+    def __init__(self,genConf):
+        self.genConf=genConf
+        
+    
+class rebarFamily(rebarFamilyBase):
     '''Family of reinforcement bars
 
     :ivar genConf: instance of th class genericConf that defines generic
@@ -181,7 +191,7 @@ class rebarFamily(object):
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text (defaults to True)
     '''
     def __init__(self,genConf,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,coverSide='r',vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,sectBarsSide='r',spacing=0,nmbBars=0,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
-        self.genConf=genConf
+        super(rebarFamily,self).__init__(genConf)
         self.identifier=identifier 
         self.diameter=diameter
         self.spacing=spacing 
@@ -898,7 +908,7 @@ def rect_stirrup(genConf,identifier,diameter,nmbStirrups,width,height):
     return rbf
     
     
-class stirrupFamily(object):
+class stirrupFamily(rebarFamilyBase):
     ''' Family of shear reinforcement (for now, only rectangular stirrups)
 
     :ivar genConf: instance of th class genericConf that defines generic
@@ -925,7 +935,7 @@ class stirrupFamily(object):
    
     '''
     def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,dispStrpTransv=None,dispStrpLong=None):
-        self.genConf=genConf
+        super(stirrupFamily,self).__init__(genConf)
         self.identifier=identifier
         self.diameter=diameter
         self.lstPtsConcrTransv=lstPtsConcrTransv
