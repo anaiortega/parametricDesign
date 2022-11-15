@@ -162,13 +162,31 @@ class Underpass(object):
         according to startLAxPoint -> endLAxPoint)
         
         '''
-        linDeck=Part.makePolygon([self.kpETL,self.kpETR,self.ptDeckBR,self.ptDeckBL])
+        linDeck=Part.makePolygon([self.kpETL,self.kpETR,self.ptDeckBR,self.ptDeckBL,self.kpETL])
         deck=Part.Face(linDeck)
         retComp=Part.makeCompound([deck])
         retComp=self.placeAndExtrudeShape(retComp)
         stakingPoints=[retComp.Vertexes[1].Point,retComp.Vertexes[0].Point,retComp.Vertexes[2].Point,retComp.Vertexes[3].Point] #see sketch for staking-point's position
         return retComp,stakingPoints
 
+    def genGenericDeck(self,lstPntOrthTrSect):
+        '''creates a generic deck from the points lstPntOrthTrSect that define the 
+        orthogonal transverse section (only horizontal decks)
+        '''
+        skewAngleRad=math.radians(self.skewAngle)
+        tanSkewAngl=math.tan(skewAngleRad)
+        xOrig=self.ptLAxis.x
+        for i in range(len(lstPntOrthTrSect)):
+            p=lstPntOrthTrSect[i]
+            deltaY=tanSkewAngl*(p.x-xOrig)
+            lstPntOrthTrSect[i]=p+Vector(0,deltaY,0)
+        linDeck=Part.makePolygon(lstPntOrthTrSect)
+        deck=Part.Face(linDeck)
+        retComp=Part.makeCompound([deck])
+        retComp=self.placeAndExtrudeShape(retComp)
+        return retComp
+       
+        
     def genLeftWall(self):
         ''' Return the compound with the left wall '''
         linLeftWall=Part.makePolygon([self.ptDeckBL,self.kpITL,self.kpIBL,self.kpEBL,self.ptDeckBL])
