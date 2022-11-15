@@ -194,6 +194,7 @@ class rebarFamilyBase(object):
         else:
             justif="Left"
             pText=pCentCirc-hText/2*Vector(1,0)-hText/2*Vector(0,1)
+        self.drawDecorId(pEndRefL,pCentCirc,justif)
         return justif,pText
             
     def labelSectRebar(self,startPnt,endPnt,vauxn):
@@ -543,12 +544,8 @@ class rebarFamily(rebarFamilyBase):
                 vauxHook.normalize()
                 endPoint=lstPtsRebar[-1].add(vauxHook.multiply(extrShLn))
                 lstPtsRebar.append(endPoint)
-                 
-#                self.lstCover.append(0)
-        
         return lstPtsRebar
         
-        # return rebarWire
                  
     def getLstRebars(self,lstPtsRebar):
         '''Checks the length of the rebar defined by the list of points lstPtsRebar. If 
@@ -593,8 +590,7 @@ class rebarFamily(rebarFamilyBase):
             lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
             lstRebars.append(Part.Wire(lstLinRebar))
         return lstRebars
-        
- 
+    
     def getNumberOfBars(self):
         '''Return the number of bars in the family.
         '''
@@ -608,7 +604,6 @@ class rebarFamily(rebarFamilyBase):
             nesp=int((Laux-2.0*self.lateralCover-self.diameter)/self.spacing)
             nBar=nesp+1
         return nBar
-
 
     def getExtrShapeParams(self,rbEndStrDef):
         '''For extremity rebar shapes 'anc' (anchor) or 'lap' (lapped bars), return 
@@ -643,6 +638,18 @@ class rebarFamily(rebarFamilyBase):
                 ratio=eval(paramAnc[3].replace('perc',''))/100
             rbEndLenght=contrReb.getLapLength(concrete= self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
         return (angle,rbEndLenght)
+    
+    def getTextFiSpacing(self):
+        '''Return the text for column '%%C/SEP.' of the bar schedule'''
+        if self.spacing ==0:
+            txt='%%C' + str(int(1000*self.diameter))
+        else:
+            if dsu.get_number_decimal_positions(self.spacing)>self.genConf.decSpacing:
+                txSpacing=str(self.spacing) # all decimals are written
+            else:
+                txSpacing=formatSpacing %self.spacing
+            txt='%%C' + str(int(1000*self.diameter)) + 'c/' + txSpacing
+        return txt
  
 
 def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
@@ -694,8 +701,163 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
         dt.put_text_in_pnt(text=i[1],point=edg.CenterOfMass,hText=hText,color=cfg.colorTextCenter,justif="Center",rotation=math.degrees(edg.tangentAt(0).getAngle(Vector(1,0,0))))
     return (totalLength,totalLengthTxt)
 
+    
+class stirrupFamily(rebarFamilyBase):
+    ''' Family of shear reinforcement (for now, only rectangular stirrups)
 
+    :ivar genConf: instance of th class genericConf that defines generic
+          parameters like concrete and steel type, text format, ... 
+    :ivar identifier: identifier of the rebar family
+    :ivar diameter: diameter of the bar [m]
+    :ivar lstPtsConcrTransv: list of points in the transversal 
+          concrete section to which the first stirrup 
+          (rectangular drawing) is 'attached' (4 points)
+    :ivar lstPtsConcrLong: list of points in the longitudinal section to which 
+          the first stirrup (rectangular drawing) is 'attached'
+    :ivar spacStrpTransv: spacement between stirrups in the transversal 
+                  section (as in beams, where they are displayed as 
+                  rectangles)
+    :ivar spacStrpLong: spacement between stirrups in the longitudinal 
+          section (as in beams, where they are displayed as lines)
+    :ivar vDirLong: vector to define the longitudinal direction
+    :ivar nmbStrpTransv: number of stirrups displayed as rectangles
+    :ivar nmbStrpLong: number of stirrups displayed as lines
+    :ivar dispStrpTransv: displacement of stirrups in the
+          transversal section (defaults to None)
+    :ivar dispStrpLong: displacement of stirrups in the
+          longitudinal section (defaults to None)
+    :ivar vectorLRef: vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
+    :ivar sideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to 'l')
+    '''
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,dispStrpTransv=None,dispStrpLong=None,vectorLRef=Vector(0.5,0.5),sideLabelLn='l'):
+        super(stirrupFamily,self).__init__(genConf,identifier,diameter)
+        self.lstPtsConcrTransv=lstPtsConcrTransv
+        self.lstPtsConcrLong=lstPtsConcrLong
+        self.spacStrpTransv=spacStrpTransv
+        self.spacStrpLong=spacStrpLong
+        self.vDirLong=vDirLong
+        self.nmbStrpTransv=nmbStrpTransv
+        self.nmbStrpLong=nmbStrpLong
+        self.dispStrpTransv=dispStrpTransv
+        self.dispStrpLong=dispStrpLong
+        self.vectorLRef=vectorLRef
+        self.sideLabelLn=sideLabelLn
+        self.rebarWire=None
+        self.lstWire=None
+        self.wireSect2=None
 
+    def getVdirTrans(self):
+        '''return a unitary direction vector in transversal section'''
+        v=self.lstPtsConcrTransv[1]-self.lstPtsConcrTransv[0]
+        return v.normalize()
+    
+    def getVdirLong(self):
+        '''return a unitary direction vector in longitudinal section'''
+        return self.vDirLong.normalize()
+
+    def createLstRebar(self):
+        '''Note; This part should be transfered to the base class
+        '''
+        recAxis=self.genConf.cover+self.diameter/2
+        vTr=self.getVdirTrans()
+        vPerp=(self.lstPtsConcrTransv[0]-self.lstPtsConcrTransv[3]).normalize()
+        lstPtsRebar=[self.lstPtsConcrTransv[0]+recAxis*vTr-recAxis*vPerp,
+                       self.lstPtsConcrTransv[1]-recAxis*vTr-recAxis*vPerp,
+                       self.lstPtsConcrTransv[2]-recAxis*vTr+recAxis*vPerp,
+                       self.lstPtsConcrTransv[3]+recAxis*vTr+recAxis*vPerp]
+        lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
+        lstLinRebar+=[Part.makeLine(lstPtsRebar[-1],lstPtsRebar[0])]
+        self.rebarWire=Part.Wire(lstLinRebar)
+        self.lstWire=[self.rebarWire]
+    
+    def drawRebars(self,vTranslation=Vector(0,0,0)):
+        if not self.rebarWire:
+            self.createLstRebar()
+        vTr=self.getVdirTrans()
+        rebarDraw=self.rebarWire.copy()
+        rebarDraw.translate(vTranslation)
+        if self.dispStrpTransv:
+            rebarDraw.translate(self.dispStrpTransv*vTr)
+        rebarFillet= Draft.make_wire(rebarDraw,closed=True,face=False)
+        rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
+        rebarFillet.FilletRadius=rad
+        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
+        for i in range(1,self.nmbStrpTransv):
+            stirr=rebarDraw.copy()
+            stirr.translate(i*self.spacStrpTransv*vTr)
+            stirrFillet=Draft.make_wire(stirr,closed=True,face=False)
+            stirrFillet.FilletRadius=rad
+            FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
+        FreeCADGui.ActiveDocument.Document.recompute()
+        ptoIniEtiq=self.getInitPntRebLref(rebarDraw)
+        pEndRefL,pCentCirc,justif,pText=self.drawRebarLref(ptoIniEtiq,self.vectorLRef)
+        self.drawDecorId(pEndRefL,pCentCirc,justif)
+        ptoSketch,pos=self.rebarText(justif,pText)
+        
+    def drawLnRebars(self,vTranslation=Vector(0,0,0)):
+        recAxis=self.genConf.cover+self.diameter/2
+        vLn=self.getVdirLong()
+        vReb=(self.lstPtsConcrLong[1]-self.lstPtsConcrLong[0]).normalize()
+        lstPtsRebar=[self.lstPtsConcrLong[0]+recAxis*vReb,
+                     self.lstPtsConcrLong[1]-recAxis*vReb]
+        lstLinRebar=[Part.makeLine(lstPtsRebar[0],lstPtsRebar[1])]
+        rebarDraw=Part.Wire(lstLinRebar)
+        rebarDraw.translate(vTranslation)
+        if self.dispStrpLong:
+            rebarDraw.translate(self.dispStrpLong*vLn)
+        rebarFillet=Draft.make_wire(rebarDraw)
+        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
+        for i in range(1,self.nmbStrpLong):
+            stirr=rebarDraw.copy()
+            stirr.translate(i*self.spacStrpLong*vLn)
+            stirrFillet=Draft.make_wire(stirr)
+            FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
+        FreeCADGui.ActiveDocument.Document.recompute()
+        startPnt=rebarFillet.Points[0]
+        endPnt=stirrFillet.Points[0]
+        if self.sideLabelLn=='l':
+            vauxn=Vector(startPnt.y-endPnt.y,endPnt.x-startPnt.x)
+        else:
+            vauxn=Vector(endPnt.y-startPnt.y,startPnt.x-endPnt.x)
+        vauxn.normalize()
+        self.labelSectRebar(startPnt,endPnt,vauxn)
+
+    def rebarText(self,justif,pText):
+        '''Write the text that labels the rebar family
+
+        :param pEndRefL: point extremity of the reference line where to start the rotulation
+        :param pCentCirc: point to place the center of the cirle (wih id)
+        :param justif: justification of the text ('Left' or 'Right')
+        :param pText: point to place the text 
+        '''
+        hText=self.genConf.texSize
+        txt=self.getTextFiSpacing()
+        if justif=="Left":
+            txtColor=cfg.colorTextLeft
+            tx=self.identifier + '   '+ txt
+            ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
+            pos='l'
+        else:
+            txtColor=cfg.colorTextRight
+            tx=txt+'   ' + self.identifier
+            ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
+            pos='r'
+        dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
+        return ptoSketch,pos
+    
+    def getNumberOfBars(self):
+        '''Return the number of bars in the family.
+        '''
+        nBar=self.nmbStrpTransv*self.nmbStrpLong
+        return nBar
+
+    def getTextFiSpacing(self):
+        '''Return the text for column '%%C/SEP.' of the bar schedule'''
+        txt='c.%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacStrpTransv)+'/'+str(self.spacStrpLong)
+        return txt
+        
+       
+    
 def drawMiniSketchRebar(rbFam,ptCOG,wSketch,hSketch):
     '''Draw the shape sketch of the rebar (not rotated).
 
@@ -713,7 +875,7 @@ def drawMiniSketchRebar(rbFam,ptCOG,wSketch,hSketch):
     Part.show(sketch)
  
                 
-def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTLcorner=Vector(0,0),doc=FreeCAD.ActiveDocument):
+def barSchedule(lstBarFamilies,config=scheduleConf(),title='  ',pntTLcorner=Vector(0,0),doc=FreeCAD.ActiveDocument):
     ''' Create the rebar schedule from a list of rebar families
 
     :param config: instance of scheduleConf class
@@ -782,14 +944,7 @@ def barSchedule(lstBarFamilies,config=scheduleConf(),title=None,pntTLcorner=Vect
             rW2=rbFam.wireSect2[i] if rbFam.wireSect2 else None
             barLength,barLengthTxt=drawSketchRebarShape(rbFam.lstWire[i],pEsq,wColumns[1],hRows,hTextSketch,rbFam.genConf.decLengths,rW2)
             pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
-            if rbFam.spacing ==0:
-                tx='%%C' + str(int(1000*rbFam.diameter))
-            else:
-                if dsu.get_number_decimal_positions(rbFam.spacing)>rbFam.genConf.decSpacing:
-                    txSpacing=str(rbFam.spacing) # all decimals are written
-                else:
-                    txSpacing=formatSpacing %rbFam.spacing
-                tx='%%C' + str(int(1000*rbFam.diameter)) + 'c/' + txSpacing
+            tx=rbFam.getTextFiSpacing()
             dt.put_text_in_pnt(tx,pFiSep, hText,cfg.colorTextLeft)
             #number of bars
             pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
@@ -878,33 +1033,6 @@ def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFa
 
 
 
-# Armadura 3D
-def arma8ptos(fi,recubrN,sepFi,radDobl,pto1,pto2,pto3,pto4,pto5,pto6,pto7,pto8,gap1,gap2):
-    recubrG=recubrN+float(fi)/1000/2.0
-    v=pto6.sub(pto2)
-    recArmPlano=(v.Length-2*recubrG-int((v.Length-2.0*recubrG)/sepFi)*sepFi)/2.0
-    v1=GeomUtils.vectorUnitario(pto2,pto1)
-    v2=GeomUtils.vectorUnitario(pto2,pto3)
-    v3=GeomUtils.vectorUnitario(pto3,pto4)
-    v4=GeomUtils.vectorUnitario(pto2,pto6)
-    v5=GeomUtils.vectorUnitario(pto3,pto7)
-    v6=GeomUtils.vectorUnitario(pto6,pto5)
-    v7=GeomUtils.vectorUnitario(pto6,pto7)
-    v8=GeomUtils.vectorUnitario(pto7,pto8)
-    pto1a=pto1.add(GeomUtils.escalarPorVector(recArmPlano,v4)).add(GeomUtils.escalarPorVector(recubrG,v2)).add(GeomUtils.escalarPorVector(gap1,v1))
-    pto2a=pto2.add(GeomUtils.escalarPorVector(recArmPlano,v4)).add(GeomUtils.escalarPorVector(recubrG,v2)).add(GeomUtils.escalarPorVector(recubrG,v1))
-    pto3a=pto3.add(GeomUtils.escalarPorVector(recArmPlano,v5)).sub(GeomUtils.escalarPorVector(recubrG,v2)).add(GeomUtils.escalarPorVector(recubrG,v3))
-    pto4a=pto4.add(GeomUtils.escalarPorVector(recArmPlano,v5)).sub(GeomUtils.escalarPorVector(recubrG,v2)).add(GeomUtils.escalarPorVector(gap2,v3))
-    pto5a=pto5.sub(GeomUtils.escalarPorVector(recArmPlano,v4)).add(GeomUtils.escalarPorVector(recubrG,v7)).add(GeomUtils.escalarPorVector(gap1,v6))
-    pto6a=pto6.sub(GeomUtils.escalarPorVector(recArmPlano,v4)).add(GeomUtils.escalarPorVector(recubrG,v7)).add(GeomUtils.escalarPorVector(recubrG,v6))
-    pto7a=pto7.sub(GeomUtils.escalarPorVector(recArmPlano,v5)).sub(GeomUtils.escalarPorVector(recubrG,v7)).add(GeomUtils.escalarPorVector(recubrG,v8))
-    pto8a=pto8.sub(GeomUtils.escalarPorVector(recArmPlano,v5)).sub(GeomUtils.escalarPorVector(recubrG,v7)).add(GeomUtils.escalarPorVector(gap2,v8))
-    cara1=Part.Face(Part.makePolygon([pto1a,pto2a,pto6a,pto5a,pto1a]))
-    cara2=Part.Face(Part.makePolygon([pto2a,pto6a,pto7a,pto3a,pto2a]))
-    cara3=Part.Face(Part.makePolygon([pto3a,pto4a,pto8a,pto7a,pto3a]))
-    arma=cara1.fuse(cara2.fuse(cara3))
-    armadura=arma.makeFillet(radDobl,arma.Edges)
-    return armadura
 
 def rect_stirrup(genConf,identifier,diameter,nmbStirrups,width,height):
     ''' define a closed rectangular stirrup for the quantities schedule
@@ -924,146 +1052,6 @@ def rect_stirrup(genConf,identifier,diameter,nmbStirrups,width,height):
     paux4=Vector(0,0)
     rbf=rebarFamily(genConf=genConf,identifier=identifier,diameter=diameter,nmbBars=nmbStirrups,lstPtsConcrSect=[paux1,paux2,paux3,paux4,paux1])
     return rbf
-    
-    
-class stirrupFamily(rebarFamilyBase):
-    ''' Family of shear reinforcement (for now, only rectangular stirrups)
-
-    :ivar genConf: instance of th class genericConf that defines generic
-          parameters like concrete and steel type, text format, ... 
-    :ivar identifier: identifier of the rebar family
-    :ivar diameter: diameter of the bar [m]
-    :ivar lstPtsConcrTransv: list of points in the transversal 
-          concrete section to which the first stirrup 
-          (rectangular drawing) is 'attached' (4 points)
-    :ivar lstPtsConcrLong: list of points in the longitudinal section to which 
-          the first stirrup (rectangular drawing) is 'attached'
-    :ivar spacStrpTransv: spacement between stirrups in the transversal 
-                  section (as in beams, where they are displayed as 
-                  rectangles)
-    :ivar spacStrpLong: spacement between stirrups in the longitudinal 
-          section (as in beams, where they are displayed as lines)
-    :ivar vDirLong: vector to define the longitudinal direction
-    :ivar nmbStrpTransv: number of stirrups displayed as rectangles
-    :ivar nmbStrpLong: number of stirrups displayed as lines
-    :ivar dispStrpTransv: displacement of stirrups in the
-          transversal section (defaults to None)
-    :ivar dispStrpLong: displacement of stirrups in the
-          longitudinal section (defaults to None)
-    :ivar vectorLRef: vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
-    :ivar sideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to 'l')
-    '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,dispStrpTransv=None,dispStrpLong=None,vectorLRef=Vector(0.5,0.5),sideLabelLn='l'):
-        super(stirrupFamily,self).__init__(genConf,identifier,diameter)
-        self.lstPtsConcrTransv=lstPtsConcrTransv
-        self.lstPtsConcrLong=lstPtsConcrLong
-        self.spacStrpTransv=spacStrpTransv
-        self.spacStrpLong=spacStrpLong
-        self.vDirLong=vDirLong
-        self.nmbStrpTransv=nmbStrpTransv
-        self.nmbStrpLong=nmbStrpLong
-        self.dispStrpTransv=dispStrpTransv
-        self.dispStrpLong=dispStrpLong
-        self.vectorLRef=vectorLRef
-        self.sideLabelLn=sideLabelLn
-
-    def getVdirTrans(self):
-        '''return a unitary direction vector in transversal section'''
-        v=self.lstPtsConcrTransv[1]-self.lstPtsConcrTransv[0]
-        return v.normalize()
-    
-    def getVdirLong(self):
-        '''return a unitary direction vector in longitudinal section'''
-        return self.vDirLong.normalize()
-
-    def createRebar(self):
-        '''Note; This part should be transfered to the base class
-        '''
-        recAxis=self.genConf.cover+self.diameter/2
-        vTr=self.getVdirTrans()
-        vPerp=(self.lstPtsConcrTransv[0]-self.lstPtsConcrTransv[3]).normalize()
-        lstPtsRebar=[self.lstPtsConcrTransv[0]+recAxis*vTr-recAxis*vPerp,
-                       self.lstPtsConcrTransv[1]-recAxis*vTr-recAxis*vPerp,
-                       self.lstPtsConcrTransv[2]-recAxis*vTr+recAxis*vPerp,
-                       self.lstPtsConcrTransv[3]+recAxis*vTr+recAxis*vPerp]
-        lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
-        lstLinRebar+=[Part.makeLine(lstPtsRebar[-1],lstPtsRebar[0])]
-        self.rebarWire=Part.Wire(lstLinRebar)
-    
-    def drawRebars(self,vTranslation=Vector(0,0,0)):
-        if not self.rebarWire:
-            self.createRebar()
-        vTr=self.getVdirTrans()
-        rebarDraw=self.rebarWire.copy()
-        rebarDraw.translate(vTranslation)
-        if self.dispStrpTransv:
-            rebarDraw.translate(self.dispStrpTransv*vTr)
-        rebarFillet= Draft.make_wire(rebarDraw,closed=True,face=False)
-        rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
-        rebarFillet.FilletRadius=rad
-        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
-        for i in range(1,self.nmbStrpTransv):
-            stirr=rebarDraw.copy()
-            stirr.translate(i*self.spacStrpTransv*vTr)
-            stirrFillet=Draft.make_wire(stirr,closed=True,face=False)
-            stirrFillet.FilletRadius=rad
-            FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
-        FreeCADGui.ActiveDocument.Document.recompute()
-        ptoIniEtiq=self.getInitPntRebLref(rebarDraw)
-        pEndRefL,pCentCirc,justif,pText=self.drawRebarLref(ptoIniEtiq,self.vectorLRef)
-        self.drawDecorId(pEndRefL,pCentCirc,justif)
-        ptoSketch,pos=self.rebarText(justif,pText)
-        
-    def drawLnRebars(self,vTranslation=Vector(0,0,0)):
-        recAxis=self.genConf.cover+self.diameter/2
-        vLn=self.getVdirLong()
-        vReb=(self.lstPtsConcrLong[1]-self.lstPtsConcrLong[0]).normalize()
-        lstPtsRebar=[self.lstPtsConcrLong[0]+recAxis*vReb,
-                     self.lstPtsConcrLong[1]-recAxis*vReb]
-        lstLinRebar=[Part.makeLine(lstPtsRebar[0],lstPtsRebar[1])]
-        rebarDraw=Part.Wire(lstLinRebar)
-        rebarDraw.translate(vTranslation)
-        if self.dispStrpLong:
-            rebarDraw.translate(self.dispStrpLong*vLn)
-        rebarFillet=Draft.make_wire(rebarDraw)
-        FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
-        for i in range(1,self.nmbStrpLong):
-            stirr=rebarDraw.copy()
-            stirr.translate(i*self.spacStrpLong*vLn)
-            stirrFillet=Draft.make_wire(stirr)
-            FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
-        FreeCADGui.ActiveDocument.Document.recompute()
-        startPnt=rebarFillet.Points[0]
-        endPnt=stirrFillet.Points[0]
-        if self.sideLabelLn=='l':
-            vauxn=Vector(startPnt.y-endPnt.y,endPnt.x-startPnt.x)
-        else:
-            vauxn=Vector(endPnt.y-startPnt.y,startPnt.x-endPnt.x)
-        vauxn.normalize()
-        self.labelSectRebar(startPnt,endPnt,vauxn)
-
-    def rebarText(self,justif,pText):
-        '''Write the text that labels the rebar family
-
-        :param pEndRefL: point extremity of the reference line where to start the rotulation
-        :param pCentCirc: point to place the center of the cirle (wih id)
-        :param justif: justification of the text ('Left' or 'Right')
-        :param pText: point to place the text 
-        '''
-        hText=self.genConf.texSize
-        if justif=="Left":
-            txtColor=cfg.colorTextLeft
-            tx=self.identifier + ' c. %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacStrpTransv)+'/'+str(self.spacStrpLong)
-            ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
-            pos='l'
-        else:
-            txtColor=cfg.colorTextRight
-            tx='c. %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacStrpTransv)+'/'+str(self.spacStrpLong) +'   ' + self.identifier
-            ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
-            pos='r'
-        dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
-        return ptoSketch,pos
-       
     
                       
 
