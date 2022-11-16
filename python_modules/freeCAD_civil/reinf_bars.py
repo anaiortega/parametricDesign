@@ -1001,18 +1001,22 @@ def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0)):
     
 
 
-def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,vTranslation=Vector(0,0,0)):
+def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,lstShapeStirrupFam=None,lstEdgeStirrupFam=None,vTranslation=Vector(0,0,0)):
     '''Draw a reinforced concrete section in the FreeCAD active document
 
     :param lstOfLstPtsConcrSect: list of ordered lists of points to draw the 
            concrete section. Each list of points originates an open wire.
            (defaults to None)
     :param lstShapeRebarFam: list of rebar families that are going to be 
-           drawn with their true shape.
+           drawn with their true shape. 
            (defaults to None)
     :param lstSectRebarFam: list of rebar families that are going to be 
            drawn as sectioned bars (circles).
            (defaults to None)
+    :param lstShapeStirrupFam: list of stirrup families that are going to be 
+           drawn with their true shape.
+    :param lstEdgeStirrupFam:  list of stirrup families that are going to be 
+           drawn as edge lines.
     :param vTranslation: Vector to apply a traslation to the RC section drawing.
            It facilitates the adding of several RC-sections to the same sheet of
            FreeCAD. (defaults to Vector(0,0,0))
@@ -1029,6 +1033,13 @@ def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFa
         #draw the sectioned rebars
         for rbFam in lstSectRebarFam:
             rbFam.drawSectBars(vTranslation)
+    if lstShapeStirrupFam:
+        for stFam in lstShapeStirrupFam:
+            stFam.drawRebars(vTranslation)
+    if lstEdgeStirrupFam:
+        for stFam in lstEdgeStirrupFam:
+            stFam.drawLnRebars(vTranslation)       
+            
 
 
 
