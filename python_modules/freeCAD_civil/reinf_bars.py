@@ -853,7 +853,13 @@ class stirrupFamily(rebarFamilyBase):
 
     def getTextFiSpacing(self):
         '''Return the text for column '%%C/SEP.' of the bar schedule'''
-        txt='c.%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacStrpTransv)+'/'+str(self.spacStrpLong)
+        txt='c.%%C' + str(int(1000*self.diameter)) + 'c/'
+        if self.spacStrpTransv>0:
+            txt+=str(self.spacStrpTransv)+'/'
+        if self.spacStrpLong>0:
+            txt+=str(self.spacStrpLong)
+        else:
+            txt=txt[:-1] 
         return txt
         
        
