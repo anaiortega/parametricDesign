@@ -48,7 +48,7 @@ muret_hg=0.30
 muret_th=0.30
 # Data  reinforcements
 cover=0.03
-reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=0.45)
+reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 docName=estrName+'_armados'
 FreeCAD.newDocument(docName)
 
