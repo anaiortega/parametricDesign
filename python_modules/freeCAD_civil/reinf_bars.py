@@ -723,6 +723,8 @@ class stirrupFamily(rebarFamilyBase):
     :ivar vDirLong: vector to define the longitudinal direction
     :ivar nmbStrpTransv: number of stirrups displayed as rectangles
     :ivar nmbStrpLong: number of stirrups displayed as lines
+    :ivar lstCover: list of covers for each side of the stirrup. If 
+          None, genConf.cover is taken for all sides.
     :ivar dispStrpTransv: displacement of stirrups in the
           transversal section (defaults to None)
     :ivar dispStrpLong: displacement of stirrups in the
@@ -730,7 +732,7 @@ class stirrupFamily(rebarFamilyBase):
     :ivar vectorLRef: vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
     :ivar sideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to 'l')
     '''
-    def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,dispStrpTransv=None,dispStrpLong=None,vectorLRef=Vector(0.5,0.5),sideLabelLn='l'):
+    def __init__(self,genConf,identifier,diameter,lstPtsConcrTransv,lstPtsConcrLong,spacStrpTransv,spacStrpLong,vDirLong,nmbStrpTransv,nmbStrpLong,lstCover=None,dispStrpTransv=None,dispStrpLong=None,vectorLRef=Vector(0.5,0.5),sideLabelLn='l'):
         super(stirrupFamily,self).__init__(genConf,identifier,diameter)
         self.lstPtsConcrTransv=lstPtsConcrTransv
         self.lstPtsConcrLong=lstPtsConcrLong
@@ -743,6 +745,7 @@ class stirrupFamily(rebarFamilyBase):
         self.dispStrpLong=dispStrpLong
         self.vectorLRef=vectorLRef
         self.sideLabelLn=sideLabelLn
+        self.lstCover=lstCover
         self.rebarWire=None
         self.lstWire=None
         self.wireSect2=None
@@ -756,16 +759,22 @@ class stirrupFamily(rebarFamilyBase):
         '''return a unitary direction vector in longitudinal section'''
         return self.vDirLong.normalize()
 
+    def getLstCoverAxis(self):
+        if not self.lstCover:
+            self.lstCover=4*[self.genConf.cover]
+        lstCoverAxis=[c+self.diameter/2 for c in self.lstCover]
+        return lstCoverAxis
+        
     def createLstRebar(self):
         '''Note; This part should be transfered to the base class
         '''
-        recAxis=self.genConf.cover+self.diameter/2
+        lstCoverAxis=self.getLstCoverAxis()
         vTr=self.getVdirTrans()
         vPerp=(self.lstPtsConcrTransv[0]-self.lstPtsConcrTransv[3]).normalize()
-        lstPtsRebar=[self.lstPtsConcrTransv[0]+recAxis*vTr-recAxis*vPerp,
-                       self.lstPtsConcrTransv[1]-recAxis*vTr-recAxis*vPerp,
-                       self.lstPtsConcrTransv[2]-recAxis*vTr+recAxis*vPerp,
-                       self.lstPtsConcrTransv[3]+recAxis*vTr+recAxis*vPerp]
+        lstPtsRebar=[self.lstPtsConcrTransv[0]+lstCoverAxis[3]*vTr-lstCoverAxis[0]*vPerp,
+                       self.lstPtsConcrTransv[1]-lstCoverAxis[1]*vTr-lstCoverAxis[0]*vPerp,
+                       self.lstPtsConcrTransv[2]-lstCoverAxis[1]*vTr+lstCoverAxis[2]*vPerp,
+                       self.lstPtsConcrTransv[3]+lstCoverAxis[3]*vTr+lstCoverAxis[2]*vPerp]
         lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
         lstLinRebar+=[Part.makeLine(lstPtsRebar[-1],lstPtsRebar[0])]
         self.rebarWire=Part.Wire(lstLinRebar)
@@ -796,11 +805,11 @@ class stirrupFamily(rebarFamilyBase):
         ptoSketch,pos=self.rebarText(justif,pText)
         
     def drawLnRebars(self,vTranslation=Vector(0,0,0)):
-        recAxis=self.genConf.cover+self.diameter/2
+        lstCoverAxis=self.getLstCoverAxis()
         vLn=self.getVdirLong()
         vReb=(self.lstPtsConcrLong[1]-self.lstPtsConcrLong[0]).normalize()
-        lstPtsRebar=[self.lstPtsConcrLong[0]+recAxis*vReb,
-                     self.lstPtsConcrLong[1]-recAxis*vReb]
+        lstPtsRebar=[self.lstPtsConcrLong[0]+lstCoverAxis[2]*vReb,
+                     self.lstPtsConcrLong[1]-lstCoverAxis[0]*vReb]
         lstLinRebar=[Part.makeLine(lstPtsRebar[0],lstPtsRebar[1])]
         rebarDraw=Part.Wire(lstLinRebar)
         rebarDraw.translate(vTranslation)
