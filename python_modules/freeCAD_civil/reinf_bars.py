@@ -51,8 +51,9 @@ class genericConf(object):
     :ivar sketchScale: scale of the sketch that represents the rebar in the text
                        relative to the text size (defaults to 5)
     :ivar factPosLabelSectReb: factor to locate labels of section-rebars (defaults to 2/3)
+    :ivar factDispReflinSectReb: factor to locate reference lines of section-rebars (defaults to 1)
     '''
-    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3):
+    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3,factDispReflinSectReb=1.0):
         self.cover=cover
         self.texSize=texSize
         self.xcConcr=xcConcr
@@ -62,6 +63,7 @@ class genericConf(object):
         self.decSpacing=decSpacing
         self.sketchScale=sketchScale
         self.factPosLabelSectReb=factPosLabelSectReb
+        self.factDispReflinSectReb=factDispReflinSectReb
         if Code == 'EC2':
             from materials.ec2 import EC2_limit_state_checking as Lcalc # doesn't work if only imported here
             
@@ -178,8 +180,8 @@ class rebarFamilyBase(object):
         vaux=endPnt-startPnt
         vaux.normalize()
         vnorm=-1*vauxn.normalize()
-        p1=startPnt+hText*vaux+1.5*hText*vnorm
-        p2=endPnt-hText*vaux+1.5*hText*vnorm
+        p1=startPnt+hText*vaux+self.genConf.factDispReflinSectReb*1.5*hText*vnorm
+        p2=endPnt-hText*vaux+self.genConf.factDispReflinSectReb*1.5*hText*vnorm
         pol=Part.makePolygon([startPnt,p1,p2,endPnt])
         w=Part.show(pol)
         FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
@@ -826,9 +828,9 @@ class stirrupFamily(rebarFamilyBase):
         startPnt=rebarFillet.Points[0]
         endPnt=stirrFillet.Points[0]
         if self.sideLabelLn=='l':
-            vauxn=Vector(startPnt.y-endPnt.y,endPnt.x-startPnt.x)
-        else:
             vauxn=Vector(endPnt.y-startPnt.y,startPnt.x-endPnt.x)
+        else:
+            vauxn=Vector(startPnt.y-endPnt.y,endPnt.x-startPnt.x)
         vauxn.normalize()
         self.labelSectRebar(startPnt,endPnt,vauxn)
 
