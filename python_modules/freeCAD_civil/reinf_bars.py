@@ -374,7 +374,7 @@ class rebarFamily(rebarFamilyBase):
         self.lstWire=None 
         self.wireSect2=None
         self.maxLrebar=maxLrebar
-        self.position=position
+        self.position=position.lower()
         self.compression=compression
         self.drawSketch=drawSketch
     
@@ -565,7 +565,7 @@ class rebarFamily(rebarFamilyBase):
             lstRebars.append(rebarWire)
         else:
             # calculate slap length
-            eta1=1.0 if self.position=='good' else 0.7
+            eta1=1.0 if 'good' in self.position else 0.7
             contrReb=Lcalc.RebarController(concreteCover=self.genConf.cover, spacing=self.spacing, eta1=eta1, compression= self.compression) # create rebar controllers to calculate anchor or gap lengths
             lapLenght=contrReb.getLapLength(concrete= self.genConf.xcConcr, rebarDiameter=self.diameter, steel=self.genConf.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= 1.0)
             
