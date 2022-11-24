@@ -34,7 +34,7 @@ lstRebarFam=trcm.generic_brick_reinf(width=width,length=length,thickness=thickne
            anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,genConf=genConf,
            angTrns=5,angLn=10,
            botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,
-           drawConrTrSect='Y',drawConrLnSect='Y') 
+           drawConcrTrSect=True,drawConcrLnSect=True) 
 
 App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,

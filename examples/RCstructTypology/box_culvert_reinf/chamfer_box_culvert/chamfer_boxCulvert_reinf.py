@@ -285,10 +285,10 @@ for lsc in lstPtsConcrSect:
 # Reinforcement
 lstRebarFam=list()
 ## bottom slab
-lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),genConf=reinfConf,drawConrTrSect='N',drawConrLnSect='Y',factGap=2)          
+lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),genConf=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
 
 ## top slab
-lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),genConf=reinfConf,drawConrTrSect='N',drawConrLnSect='Y',factGap=2)          
+lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),genConf=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
 
 ## left wall
 lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
@@ -303,8 +303,8 @@ lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
                                       topTrnsRb=LW_ext_ver,
                                       botLnRb=LW_int_hor,
                                       topLnRb=LW_ext_hor,
-                                      drawConrTrSect='N',
-                                      drawConrLnSect='Y')
+                                      drawConcrTrSect=False,
+                                      drawConcrLnSect=True)
 
 ## right wall
 lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
@@ -319,8 +319,8 @@ lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
                                       topTrnsRb=RW_int_ver,
                                       botLnRb=RW_ext_hor,
                                       topLnRb=RW_int_hor,
-                                      drawConrTrSect='N',
-                                      drawConrLnSect='Y')
+                                      drawConcrTrSect=False,
+                                      drawConcrLnSect=True)
 
 
 ## Dowels left wall
@@ -336,8 +336,8 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       topTrnsRb=LD_ext,
                                       botLnRb=None,
                                       topLnRb=None,
-                                      drawConrTrSect='N',
-                                      drawConrLnSect='N',
+                                      drawConcrTrSect=False,
+                                      drawConcrLnSect=False,
                                       ) 
 
 ## Dowels right wall
@@ -353,8 +353,8 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       topTrnsRb=RD_int,
                                       botLnRb=None,
                                       topLnRb=None,
-                                      drawConrTrSect='N',
-                                      drawConrLnSect='N',
+                                      drawConcrTrSect=False,
+                                      drawConcrLnSect=False,
                                       )
 
 muret_rf=rb.rebarFamily(

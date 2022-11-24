@@ -8,22 +8,22 @@ import FreeCADGui
 
 colorConcrete=(0.00,1.00,1.00) #cyan
 
-def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=1,coverLat=None):
+def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConcrTrSect=True,drawConcrLnSect=True,factGap=1,coverLat=None):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
 
-    :param width: dimension of the slab in the direction of the transversal rebars
+    :param width: dimension of the slab in the direction of the transverse rebars
     :param length: dimension of the slab in the direction of the longitudinal rebars
     :param thickness: thickness of the slab
-    :param botTrnsRb: data for bottom transversal rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family, 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the slab (as it is drawn in the section),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the slab (as it is drawn in the section)
-    :param topTrnsRb: same for the top transversal rebar family
+    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family, 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the slab (as it is drawn in the section),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the slab (as it is drawn in the section)
+    :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
-    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transversal cross-section
+    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
     :param genConf: instance of the reinf_bars.genericConf class
-    :param drawConrTrSect: 'Y' to draw the transversal concrete cross-section  (defaults to 'Y')
-    :param drawConrLnSect: 'Y' to draw the longitudinal concrete cross-section  (defaults to 'Y')
+    :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
+    :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :param factGap: the gapSart and gapEnd are made equal to factGap*cover
     :param coverLat: lateral cover (if None, genConf.cover is used)
     '''
@@ -41,7 +41,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     ln_tr=ln_tl+Vector(length,0)
     ln_br= ln_bl+Vector(length,0)
     # Families of rebars
-    # transversal bottom rebar family
+    # transverse bottom rebar family
     tr_bot_rf=rb.rebarFamily(
         genConf=genConf,
         identifier=botTrnsRb['id'],
@@ -60,7 +60,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     tr_bot_rf.drawSectBars()
     tr_bot_rf.drawLstRebar()
     
-    # transversal bottom rebar family
+    # transverse bottom rebar family
     tr_top_rf=rb.rebarFamily(
         genConf=genConf,
         identifier=topTrnsRb['id'],
@@ -114,12 +114,12 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     ln_top_rf.createLstRebar()
     ln_top_rf.drawSectBars()
     ln_top_rf.drawLstRebar()
-    # Concrete transversal cross-section
-    if drawConrTrSect[0].lower()=='y':
+    # Concrete transverse cross-section
+    if drawConcrTrSect:
         s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
         p=Part.show(s)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    if drawConrLnSect[0].lower()=='y':
+    if drawConcrLnSect:
         s=Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
         p=Part.show(s)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
@@ -127,7 +127,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     return [tr_bot_rf,tr_top_rf,ln_bot_rf,ln_top_rf]
     
 
-def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConrVertSect='Y',drawConrHorSect='Y'):
+def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConcrVertSect=True,drawConcrHorSect=True):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: l-left, r-right, vert-vertical, hor-horizontal
 
@@ -141,8 +141,8 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     :param anchPtVertSect: anchor point to place the left left corner of the concrete vertical cross-section
     :param anchPtHorSect:  anchor point to place the left left corner of the concrete horizontal cross-section
     :param genConf: instance of the reinf_bars.genericConf class
-    :param drawConrVertSect: 'Y' to draw the vertical concrete cross-section  (defaults to 'Y')
-    :param drawConrHorSect: 'Y' to draw the horizontal concrete cross-section  (defaults to 'Y')
+    :param drawConcrVertSect: 'Y' to draw the vertical concrete cross-section  (defaults to 'Y')
+    :param drawConcrHorSect: 'Y' to draw the horizontal concrete cross-section  (defaults to 'Y')
     '''
            
     # Concrete points of the vertical section
@@ -219,11 +219,11 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     hor_right_rf.drawSectBars()
     hor_right_rf.drawLstRebar()
     # Concrete vertical cross-section
-    if drawConrVertSect[0].lower()=='y':
+    if drawConcrVertSect:
         s=Part.makePolygon([vert_bl,vert_tl,vert_tr,vert_br,vert_bl])
         p=Part.show(s)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    if drawConrHorSect[0].lower()=='y':
+    if drawConcrHorSect:
         s=Part.makePolygon([hor_bl,hor_tl,hor_tr,hor_br,hor_bl])
         p=Part.show(s)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
@@ -241,20 +241,20 @@ def set_FR_options(RF,RFdef):
     if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
     if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
            
-def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genConf,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConrTrSect='Y',drawConrLnSect='Y'):
+def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genConf,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,stirrHoldTrReinf=None,stirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
 
-    :param width: dimension of the brick in the direction of the transversal rebars
+    :param width: dimension of the brick in the direction of the transverse rebars
     :param length: dimension of the brick in the direction of the longitudinal rebars
     :param thickness: thickness of the brick
-    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transversal cross-section
+    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
     :param genConf: instance of the reinf_bars.genericConf class
     :param angTrns: angle (degrees) between the horizontal and the brick width dimension
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
-    :param botTrnsRb: data for bottom transversal rebar family expressed as a dictionary of type 
+    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
            where 'id' is the identificacion of the rebar family, 
                   'fi' is the diameter of the rebar, 
@@ -263,14 +263,29 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
                    'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
                               slap length when splitting rebars
-    :param topTrnsRb: same for the top transversal rebar family
+    :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
-    :param drawConrTrSect: 'Y' to draw the transversal concrete cross-section  (defaults to 'Y')
-    :param drawConrLnSect: 'Y' to draw the longitudinal concrete cross-section  (defaults to 'Y')
+    :param stirrHoldTrReinf: data for stirrup rebar family that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+The data of the family is given as a dictionary of type:
+            {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
+            where 'id' is the identificacion of the stirrup family, 
+                  'fi' is the diameter of the stirrup, 
+                  'sRealSh' is the spacement between stirrups represented as real shape,
+                  'sPerp'  is the spacement between stirrups in the orthogonal direction,
+                  'widthStirr' is the width of the stirrup (internal),
+                  'nStirrRealSh' is the number of stirrups in real shape
+                  'nStirrPerp' is the number of stirrups in orthogonal direction
+                  'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
+                  'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
+    :param stirrHoldLnReinf: data for stirrup rebar family that holds longitudinal top and bottom rebar families
+    :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
+    :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     '''
     vdirTr=Vector(math.cos(math.radians(angTrns)),math.sin(math.radians(angTrns)))
     vdirLn=Vector(math.cos(math.radians(angLn)),math.sin(math.radians(angLn)))
+    vdirTrPerp=Vector(-1*vdirTr.y,vdirTr.x)
+    vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
     # Concrete points of the transverse section
     tr_bl=anchPtTrnsSect
     tr_tl=tr_bl+thickness*Vector(-vdirTr.y,vdirTr.x)
@@ -283,7 +298,8 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
     ln_br= ln_bl+length*vdirLn
     # Families of rebars
     lstRebFam=list()
-    # transversal bottom rebar family
+    lstStirrFam=list()
+    # transverse bottom rebar family
     if botTrnsRb:
         tr_bot_rf=rb.rebarFamily(
             genConf=genConf,
@@ -304,7 +320,7 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
         tr_bot_rf.drawSectBars()
         tr_bot_rf.drawLstRebar()
         lstRebFam+=[tr_bot_rf]
-    # transversal bottom rebar family
+    # transverse bottom rebar family
     if topTrnsRb:
         tr_top_rf=rb.rebarFamily(
             genConf=genConf,
@@ -369,14 +385,82 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
         ln_top_rf.drawSectBars()
         ln_top_rf.drawLstRebar()
         lstRebFam+=[ln_top_rf]
-    # Concrete transversal cross-section
-    if drawConrTrSect[0].lower()=='y':
+    # Stirrups holding the transverse top and bottom rebar families
+    if stirrHoldTrReinf:
+        stDic=stirrHoldTrReinf
+        bStirr=stDic['widthStirr']+stDic['fi']
+        coverStirr=genConf.cover-stDic['fi']
+        if dispStrpTransv<0: # stirrups rigth towards left
+            lstPtsConcrTransv=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr]
+        else: # stirrups left towards right
+            lstPtsConcrTransv=[ln_bl,ln_bl+bStirr*vdirLn,ln_tl+bStirr*vdirLn,ln_tl]
+        if dispStrpLong<0: # stirrups rigth towards left
+            lstPtsConcrLong=[tr_tr,tr_br]
+        else:
+            lstPtsConcrLong=[tr_tl,tr_bl]
+        hold_tr_sf=rb.stirrupFamily(
+            genConf=genConf,
+            identifier=stDic['id'],
+            diameter=stDic['fi'],
+            lstPtsConcrTransv=lstPtsConcrTransv,
+            lstCover=[coverStirr,0,coverStirr,0],
+            lstPtsConcrLong=lstPtsConcrLong,
+            spacStrpTransv=abs(stDic['sRealSh']),
+            spacStrpLong=stDic['sPerp'],
+            vDirLong=vdirTr,
+            nmbStrpTransv=stDic['nStirrRealSh'],
+            nmbStrpLong=stDic['nStirrPerp'],
+            dispStrpTransv=stDic['dispRealSh'],
+            dispStrpLong=stDic['dispPerp'],
+            vectorLRef=stDic['vectorLref'],
+            sideLabelLn=stDic['sideLabelLn'],
+            )
+        hold_tr_sf.drawRebars()
+        hold_tr_sf.drawLnRebars()
+        lstStirrFam+=[hold_tr_sf]
+    # Stirrups holding the longitudinal top and bottom rebar families
+    if stirrHoldLnReinf:
+        if dispStrpTransv<0: # stirrups rigth towards left
+            lstPtsConcrTransv=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr]
+        else: # stirrups left towards right
+            lstPtsConcrTransv=[tr_bl,tr_bl+bStirr*vdirTr,tr_tl+bStirr*vdirTr,tr_tl]
+        if dispStrpLong<0: # stirrups rigth towards left
+            lstPtsConcrLong=[ln_tr,ln_br]
+        else:
+            lstPtsConcrLong=[ln_tl,ln_bl]
+        
+        stDic=stirrHoldLnReinf
+        bStirr=stDic['widthStirr']+stDic['fi']
+        coverStirr=genConf.cover+min(topTrnsRb['fi'],botTrnsRb['fi'])-stDic['fi']
+        hold_ln_sf=rb.stirrupFamily(
+            genConf=genConf,
+            identifier=stDic['id'],
+            diameter=stDic['fi'],
+            lstPtsConcrTransv=lstPtsConcrTransv,
+            lstCover=[coverStirr,0,coverStirr,0],
+            lstPtsConcrLong=lstPtsConcrLong,
+            spacStrpTransv=stDicabs(['sRealSh']),
+            spacStrpLong=stDic['sPerp'],
+            vDirLong=vdirLn,
+            nmbStrpTransv=stDic['nStirrRealSh'],
+            nmbStrpLong=stDic['nStirrPerp'],
+            dispStrpTransv=stDic['dispRealSh'],
+            dispStrpLong=stDic['dispPerp'],
+            vectorLRef=stDic['vectorLref'],
+            sideLabelLn=stDic['sideLabelLn'],
+            )
+        hold_ln_sf.drawRebars()
+        hold_ln_sf.drawLnRebars()
+        lstStirrFam+=[hold_ln_sf]
+    
+    # Concrete transverse cross-section
+    if drawConcrTrSect:
         s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
         p=Part.show(s)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    if drawConrLnSect[0].lower()=='y':
+    if drawConcrLnSect:
         s=Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
         p=Part.show(s)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
     FreeCAD.ActiveDocument.recompute()
-    return lstRebFam
+    return lstRebFam,lstStirrFam

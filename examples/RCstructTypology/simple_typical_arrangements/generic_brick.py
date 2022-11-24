@@ -26,12 +26,17 @@ botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5,'extrSha
 topTrnsRb={'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'extrShapeEnd':'anc90_posPoor_compr','position':'poor'}
 # top longitudinal rebars data
 topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,'extrShapeEnd':'anc270_posGood_tens','position':'poor'}
+# stirrups holding transverse rebars
+stirrHoldTr={'id':'5' ,'fi':8e-3 ,'sRealSh':0.30 ,'sPerp':0.15 ,'nStirrRealSh': 3 , 'nStirrPerp':4 ,'widthStirr': 0.25, 'dispRealSh': 0.4, 'dispPerp':0.1,'vectorLref':Vector(0.2,0.2),'sideLabelLn':'l'}
+
+# stirrups holding longitudinal rebars
+stirrHoldLn={'id':'6' ,'fi':10e-3 ,'sRealSh':0.20 ,'sPerp':0.30 ,'nStirrRealSh': 5 , 'nStirrPerp':2 ,'widthStirr': 0.40, 'dispRealSh': 0.8, 'dispPerp':0.8,'vectorLref':Vector(0.2,0.2),'sideLabelLn':'r'}
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
 
 
-lstRebarFam=trcm.generic_brick_reinf(
+lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(
     width=width,
     length=length,
     thickness=thickness,
@@ -44,8 +49,10 @@ lstRebarFam=trcm.generic_brick_reinf(
     topTrnsRb=topTrnsRb,
     botLnRb=botLnRb,
     topLnRb=topLnRb,
-    drawConrTrSect='Y',
-    drawConrLnSect='Y') 
+    stirrHoldTrReinf=stirrHoldTr,
+    stirrHoldLnReinf=stirrHoldLn,
+    drawConcrTrSect=True,
+    drawConcrLnSect=True) 
 
 App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,

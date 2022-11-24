@@ -38,7 +38,7 @@ genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Cod
 docName='closed_slab'
 FreeCAD.newDocument(docName)
 
-lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConrTrSect='Y',drawConrLnSect='Y',factGap=2)
+lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConcrTrSect=True,drawConcrLnSect=True,factGap=2)
 
 doc=App.newDocument("despiece","despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,

@@ -37,7 +37,7 @@ genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Cod
 docName='simpleWall'
 FreeCAD.newDocument(docName)
 
-lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConrVertSect='N',drawConrHorSect='N')           
+lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConcrVertSect=False,drawConcrHorSect=False)           
 
 App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
