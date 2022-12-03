@@ -308,7 +308,6 @@ The data of the family is given as a dictionary of type:
             spacing=botTrnsRb['s'],
             lstPtsConcrSect=[tr_bl,tr_br],
             coverSide='l',
-            vectorLRef=Vector(-0.3,-0.4),
             fromToExtPts=[ln_bl+botTrnsRb['distRFstart']*vdirLn,ln_br-botTrnsRb['distRFend']*vdirLn],
             sectBarsSide='l',
             gapStart=0,
@@ -329,7 +328,6 @@ The data of the family is given as a dictionary of type:
             spacing=topTrnsRb['s'],
             lstPtsConcrSect=[tr_tl,tr_tr],
             coverSide='r',
-            vectorLRef=Vector(-0.3,0.4),
             fromToExtPts=[ln_tl+topTrnsRb['distRFstart']*vdirLn,ln_tr-topTrnsRb['distRFend']*vdirLn],
             sectBarsSide='r',
             gapStart=0,
@@ -350,7 +348,6 @@ The data of the family is given as a dictionary of type:
             lstPtsConcrSect=[ln_bl,ln_br],
             coverSide='l',
             lstCover=[genConf.cover+botTrnsRb['fi']],
-            vectorLRef=Vector(-0.3,-0.4),
             fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTr,tr_br-botLnRb['distRFend']*vdirTr],
             coverSectBars=genConf.cover+botTrnsRb['fi'],
             sectBarsSide='l',
@@ -372,7 +369,6 @@ The data of the family is given as a dictionary of type:
             lstPtsConcrSect=[ln_tl,ln_tr],
             coverSide='r',
             lstCover=[genConf.cover+topTrnsRb['fi']],
-            vectorLRef=Vector(-0.3,0.4),
             fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTr,tr_tr-topLnRb['distRFend']*vdirTr],
             coverSectBars=genConf.cover+topTrnsRb['fi'],
             sectBarsSide='r',
@@ -390,14 +386,16 @@ The data of the family is given as a dictionary of type:
         stDic=stirrHoldTrReinf
         bStirr=stDic['widthStirr']+stDic['fi']
         coverStirr=genConf.cover-stDic['fi']
-        if dispStrpTransv<0: # stirrups rigth towards left
+        if stDic['dispRealSh']<0: # stirrups rigth towards left
             lstPtsConcrTransv=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr]
         else: # stirrups left towards right
             lstPtsConcrTransv=[ln_bl,ln_bl+bStirr*vdirLn,ln_tl+bStirr*vdirLn,ln_tl]
-        if dispStrpLong<0: # stirrups rigth towards left
+        if stDic['dispPerp']<0: # stirrups rigth towards left
             lstPtsConcrLong=[tr_tr,tr_br]
+            vDirLong=-1*vdirTr
         else:
             lstPtsConcrLong=[tr_tl,tr_bl]
+            vDirLong=vdirTr
         hold_tr_sf=rb.stirrupFamily(
             genConf=genConf,
             identifier=stDic['id'],
@@ -407,11 +405,11 @@ The data of the family is given as a dictionary of type:
             lstPtsConcrLong=lstPtsConcrLong,
             spacStrpTransv=abs(stDic['sRealSh']),
             spacStrpLong=stDic['sPerp'],
-            vDirLong=vdirTr,
+            vDirLong=vDirLong,
             nmbStrpTransv=stDic['nStirrRealSh'],
             nmbStrpLong=stDic['nStirrPerp'],
-            dispStrpTransv=stDic['dispRealSh'],
-            dispStrpLong=stDic['dispPerp'],
+            dispStrpTransv=abs(stDic['dispRealSh']),
+            dispStrpLong=abs(stDic['dispPerp']),
             vectorLRef=stDic['vectorLref'],
             sideLabelLn=stDic['sideLabelLn'],
             )
@@ -420,15 +418,16 @@ The data of the family is given as a dictionary of type:
         lstStirrFam+=[hold_tr_sf]
     # Stirrups holding the longitudinal top and bottom rebar families
     if stirrHoldLnReinf:
-        if dispStrpTransv<0: # stirrups rigth towards left
+        if stDic['dispRealSh']<0: # stirrups rigth towards left
             lstPtsConcrTransv=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr]
         else: # stirrups left towards right
             lstPtsConcrTransv=[tr_bl,tr_bl+bStirr*vdirTr,tr_tl+bStirr*vdirTr,tr_tl]
-        if dispStrpLong<0: # stirrups rigth towards left
+        if stDic['dispPerp']<0: # stirrups rigth towards left
             lstPtsConcrLong=[ln_tr,ln_br]
+            vDirLong=-1*vdirLn
         else:
             lstPtsConcrLong=[ln_tl,ln_bl]
-        
+            vDirLong=vdirLn
         stDic=stirrHoldLnReinf
         bStirr=stDic['widthStirr']+stDic['fi']
         coverStirr=genConf.cover+min(topTrnsRb['fi'],botTrnsRb['fi'])-stDic['fi']
@@ -439,13 +438,13 @@ The data of the family is given as a dictionary of type:
             lstPtsConcrTransv=lstPtsConcrTransv,
             lstCover=[coverStirr,0,coverStirr,0],
             lstPtsConcrLong=lstPtsConcrLong,
-            spacStrpTransv=stDicabs(['sRealSh']),
+            spacStrpTransv=abs(stDic['sRealSh']),
             spacStrpLong=stDic['sPerp'],
-            vDirLong=vdirLn,
+            vDirLong=vDirLong,
             nmbStrpTransv=stDic['nStirrRealSh'],
             nmbStrpLong=stDic['nStirrPerp'],
-            dispStrpTransv=stDic['dispRealSh'],
-            dispStrpLong=stDic['dispPerp'],
+            dispStrpTransv=abs(stDic['dispRealSh']),
+            dispStrpLong=abs(stDic['dispPerp']),
             vectorLRef=stDic['vectorLref'],
             sideLabelLn=stDic['sideLabelLn'],
             )

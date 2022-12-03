@@ -12,7 +12,7 @@ steel=EC2_materials.S500C
 estrName='Generic brick'
 titSchedule=estrName.upper()
 
-genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=1/3)
 FreeCAD.newDocument(estrName+'genericBrick')
 
 width=4 #dimension of the slab in the direction of the transversal rebars
@@ -23,14 +23,14 @@ botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0,'gapStar
 # top transverse rebars data
 botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5,'extrShapeStart':'anc0_posPoor_compr','position':'good','vectorLref':Vector(0.1,-0.3)}
 # bottom longitudinal rebars data
-topTrnsRb={'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'extrShapeEnd':'anc90_posPoor_compr','position':'poor','vectorLRef':Vector(-0.3,0.15)}
+topTrnsRb={'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'extrShapeEnd':'anc90_posPoor_compr','position':'poor','vectorLRef':Vector(-0.1,0.25)}
 # top longitudinal rebars data
 topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,'extrShapeEnd':'anc270_posGood_tens','position':'poor','vectorLref':Vector(-0.2,0.3)}
 # stirrups holding transverse rebars
-stirrHoldTr={'id':'5' ,'fi':8e-3 ,'sRealSh':0.30 ,'sPerp':0.15 ,'nStirrRealSh': 3 , 'nStirrPerp':4 ,'widthStirr': 0.25, 'dispRealSh': 0.4, 'dispPerp':0.1,'vectorLref':Vector(0.3,-0.5),'sideLabelLn':'l'}
+stirrHoldTr={'id':'5' ,'fi':8e-3 ,'sRealSh':0.30 ,'sPerp':0.15 ,'nStirrRealSh': 3 , 'nStirrPerp':4 ,'widthStirr': 0.25, 'dispRealSh': -0.4, 'dispPerp':-0.1,'vectorLref':Vector(0.3,-0.5),'sideLabelLn':'r'}
 
 # stirrups holding longitudinal rebars
-stirrHoldLn={'id':'6' ,'fi':10e-3 ,'sRealSh':0.20 ,'sPerp':0.30 ,'nStirrRealSh': 5 , 'nStirrPerp':2 ,'widthStirr': 0.40, 'dispRealSh': 1.5, 'dispPerp':1.3,'vectorLref':Vector(0.2,-0.5),'sideLabelLn':'l'}
+stirrHoldLn={'id':'6' ,'fi':10e-3 ,'sRealSh':0.20 ,'sPerp':0.30 ,'nStirrRealSh': 5 , 'nStirrPerp':2 ,'widthStirr': 0.40, 'dispRealSh': -1.5, 'dispPerp':-1.3,'vectorLref':Vector(0.2,-0.5),'sideLabelLn':'r'}
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
