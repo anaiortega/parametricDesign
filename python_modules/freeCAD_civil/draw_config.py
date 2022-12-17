@@ -10,3 +10,5 @@ colorTextRight=(0.50,0.00,0.50) #purple (color 214 Autocad)
 colorRebarSketch=(0.50,0.50,0.00) # olive (color 54 Autocad)
 colorFrames=(0.00,0.00,0.00) # black (color 7 Autocad)
 colorLinesTables=(1.00,0.50,0.50)# gray (color 11 Autocad)
+colorHidden=(0.5058,0.00,0.00) # color 14 Autocad
+colorAxis=(0.31,0.00,0.00) # color 12 AutoCad

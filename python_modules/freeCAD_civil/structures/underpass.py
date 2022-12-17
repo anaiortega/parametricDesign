@@ -102,6 +102,8 @@ class Underpass(object):
         self.kpIBR=(intSpanSkew/2)*skewUnitVector+intVectorIncrZskew     #internal bottom right
         if self.deltaHRightWall:
             self.kpIBR=self.kpIBR+self.deltaHRightWall*Vector(0,0,-1)
+            hIntR+=self.deltaHRightWall
+            hExtR+=self.deltaHRightWall
         self.kpEBL=-(extSpanSkew/2)*skewUnitVector-extVectorIncrZskew  #external bottom left
         self.kpEBR=(extSpanSkew/2)*skewUnitVector+extVectorIncrZskew   #external bottom right
         if self.deltaHRightWall:

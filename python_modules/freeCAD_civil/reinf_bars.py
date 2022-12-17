@@ -1002,7 +1002,7 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
         f.write(s)
     f.close()
         
-def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0)):
+def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete):
     ''' Draw a section of concrete defined by a list of points in the FreeCAD 
     active document
 
@@ -1015,7 +1015,8 @@ def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0)):
     l=Part.makePolygon(lstPtsConcrSect)
     l.translate(vTranslation)
     p=Part.show(l)
-    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
+    return p
     
 
 
