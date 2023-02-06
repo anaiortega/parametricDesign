@@ -30,13 +30,14 @@ genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Cod
 docName='genericBrick'
 FreeCAD.newDocument(docName)
 
-lstRebarFam=trcm.generic_brick_reinf(width=width,length=length,thickness=thickness,
+lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(width=width,length=length,thickness=thickness,
            anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,genConf=genConf,
            angTrns=5,angLn=10,
            botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,
            drawConcrTrSect=True,drawConcrLnSect=True) 
 
-App.newDocument("despiece")
+doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-               title=titSchedule
+               title=titSchedule,
+               doc=doc
 )

@@ -39,7 +39,8 @@ FreeCAD.newDocument(docName)
 
 lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConcrVertSect=False,drawConcrHorSect=False)           
 
-App.newDocument("despiece")
+doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
-               title=titSchedule
+               title=titSchedule,
+               doc=doc
 )

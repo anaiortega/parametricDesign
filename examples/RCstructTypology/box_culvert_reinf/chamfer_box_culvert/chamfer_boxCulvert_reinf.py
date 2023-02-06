@@ -291,7 +291,7 @@ lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb
 lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),genConf=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
 
 ## left wall
-lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
+mainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
                                       length=boxL,
                                       thickness=LW_th,
                                       anchPtTrnsSect=ext_p1+Vector(LW_th,0),
@@ -306,8 +306,9 @@ lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
                                       drawConcrTrSect=False,
                                       drawConcrLnSect=True)
 
+lstRebarFam+=mainLst+stirrLst
 ## right wall
-lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
+lmainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
                                       length=boxL,
                                       thickness=RW_th,
                                       anchPtTrnsSect=ext_p4,
@@ -322,9 +323,10 @@ lstRebarFam+=trcm.generic_brick_reinf(width=ext_hg,
                                       drawConcrTrSect=False,
                                       drawConcrLnSect=True)
 
+lstRebarFam+=mainLst+stirrLst
 
 ## Dowels left wall
-lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
+mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
                                       length=boxL,
                                       thickness=LW_th,
                                       anchPtTrnsSect=ext_p1+Vector(LW_th,0),
@@ -339,9 +341,10 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       drawConcrTrSect=False,
                                       drawConcrLnSect=False,
                                       ) 
+lstRebarFam+=mainLst+stirrLst
 
 ## Dowels right wall
-lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
+mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
                                       length=boxL,
                                       thickness=RW_th,
                                       anchPtTrnsSect=ext_p4,
@@ -356,6 +359,7 @@ lstRebarFam+=trcm.generic_brick_reinf(width=BS_th,
                                       drawConcrTrSect=False,
                                       drawConcrLnSect=False,
                                       )
+lstRebarFam+=mainLst+stirrLst
 
 muret_rf=rb.rebarFamily(
     genConf=reinfConf,

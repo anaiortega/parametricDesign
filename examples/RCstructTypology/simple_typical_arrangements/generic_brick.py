@@ -54,7 +54,8 @@ lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(
     drawConcrTrSect=True,
     drawConcrLnSect=True) 
 
-App.newDocument("despiece")
+doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam+lstStirrupFam,
-               title=titSchedule
+               title=titSchedule,
+               doc=doc
 )

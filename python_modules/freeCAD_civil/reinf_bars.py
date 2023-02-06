@@ -154,7 +154,6 @@ class rebarFamilyBase(object):
             ppText=pCentCirc.add(Vector(signo*hText*len(self.identifier),0))
             
             if (pp1-pEndRefL).Length ==0  or (pp1-ppEndRefL).Length ==0 or (pEndRefL-ppEndRefL).Length == 0:
-                print('pp1=',pp1,'pp2=',pp2,'pEndRefL=',pEndRefL,'ppEndRefL=',ppEndRefL)
                 c1=Part.Arc(pCentCirc+Vector(0,hText),pCentCirc+Vector(-hText,0),pCentCirc-Vector(0,hText))
             else:
                 c1=Part.Arc(pp1,pEndRefL,ppEndRefL)
