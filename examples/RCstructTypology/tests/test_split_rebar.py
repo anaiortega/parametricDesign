@@ -2,6 +2,7 @@
 
 import bisect
 import Part, FreeCAD, math
+from freeCAD_civil import  draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
@@ -18,7 +19,7 @@ H=0.65
 Lmax_rebar=12 # maxium lenght of rebar
 cover=0
 
-reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 FreeCAD.newDocument(estrName+'_armados')
 pt0=Vector(0,H)
 pt1=Vector(0,0)
@@ -26,7 +27,7 @@ pt2=Vector(B,0)
 pt3=Vector(B,H)
 
 rfam=rb.rebarFamily(
-    genConf=reinfConf,
+    reinfCfg=reinfConf,
     identifier='1',
     diameter=12e-3,
     spacing=0.20,

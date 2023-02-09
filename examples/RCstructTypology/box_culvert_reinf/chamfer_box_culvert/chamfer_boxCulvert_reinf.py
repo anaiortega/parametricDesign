@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 
 import Part, FreeCAD, math
+from freeCAD_civil import  draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
@@ -48,7 +49,7 @@ muret_hg=0.30
 muret_th=0.30
 # Data  reinforcements
 cover=0.03
-reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 docName=estrName+'_armados'
 FreeCAD.newDocument(docName)
 
@@ -285,10 +286,10 @@ for lsc in lstPtsConcrSect:
 # Reinforcement
 lstRebarFam=list()
 ## bottom slab
-lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),genConf=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
+lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),reinfCfg=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
 
 ## top slab
-lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),genConf=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
+lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),reinfCfg=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
 
 ## left wall
 mainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
@@ -296,7 +297,7 @@ mainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
                                       thickness=LW_th,
                                       anchPtTrnsSect=ext_p1+Vector(LW_th,0),
                                       anchPtLnSect=ext_p1+Vector(0,2*ext_hg),
-                                      genConf=reinfConf,
+                                      reinfCfg=reinfConf,
                                       angTrns=90,
                                       angLn=90,
                                       botTrnsRb=LW_int_ver,
@@ -313,7 +314,7 @@ lmainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
                                       thickness=RW_th,
                                       anchPtTrnsSect=ext_p4,
                                       anchPtLnSect=ext_p4+Vector(0,2*ext_hg),
-                                      genConf=reinfConf,
+                                      reinfCfg=reinfConf,
                                       angTrns=90,
                                       angLn=90,
                                       botTrnsRb=RW_ext_ver,
@@ -331,7 +332,7 @@ mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
                                       thickness=LW_th,
                                       anchPtTrnsSect=ext_p1+Vector(LW_th,0),
                                       anchPtLnSect=ext_p1+Vector(0,20),
-                                      genConf=reinfConf,
+                                      reinfCfg=reinfConf,
                                       angTrns=90,
                                       angLn=90,
                                       botTrnsRb=LD_int,
@@ -349,7 +350,7 @@ mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
                                       thickness=RW_th,
                                       anchPtTrnsSect=ext_p4,
                                       anchPtLnSect=ext_p4+Vector(0,20),
-                                      genConf=reinfConf,
+                                      reinfCfg=reinfConf,
                                       angTrns=90,
                                       angLn=90,
                                       botTrnsRb=RD_ext,
@@ -362,7 +363,7 @@ mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
 lstRebarFam+=mainLst+stirrLst
 
 muret_rf=rb.rebarFamily(
-    genConf=reinfConf,
+    reinfCfg=reinfConf,
     identifier=muret_ln['id'],
     diameter=muret_ln['fi'],
     lstPtsConcrSect=[Vector(0,0),Vector(0,muret_hg),Vector(boxL,muret_hg),Vector(boxL,0)],
@@ -375,7 +376,7 @@ lstRebarFam+=[muret_rf]
 
 lastId=15
 chamfer1_rf=rb.rebarFamily(
-    genConf=reinfConf,
+    reinfCfg=reinfConf,
     identifier=str(lastId+1),
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
@@ -391,7 +392,7 @@ chamfer1_rf=rb.rebarFamily(
 chamfer1_rf.drawLstRebar()
 lastId+=1
 chamfer2_rf=rb.rebarFamily(
-    genConf=reinfConf,
+    reinfCfg=reinfConf,
     identifier=str(lastId+1),
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
@@ -407,7 +408,7 @@ chamfer2_rf=rb.rebarFamily(
 chamfer2_rf.drawLstRebar()
 lastId+=1
 chamfer3_rf=rb.rebarFamily(
-    genConf=reinfConf,
+    reinfCfg=reinfConf,
     identifier=str(lastId+1),
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
@@ -423,7 +424,7 @@ chamfer3_rf=rb.rebarFamily(
 chamfer3_rf.drawLstRebar()
 lastId+=1
 chamfer4_rf=rb.rebarFamily(
-    genConf=reinfConf,
+    reinfCfg=reinfConf,
     identifier=str(lastId+1),
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
@@ -440,7 +441,7 @@ chamfer4_rf.drawLstRebar()
 lastId+=1
 lstRebarFam+=[chamfer1_rf,chamfer2_rf,chamfer3_rf,chamfer4_rf]
 # cercos del murete
-cercosMurete_rf=rb.rect_stirrup(genConf=reinfConf,
+cercosMurete_rf=rb.rect_stirrup(reinfCfg=reinfConf,
                              identifier=str(lastId)+'cm',
                              diameter=muret_st['fi'],
                              nmbStirrups=muret_st['nmStirr'],
@@ -451,7 +452,7 @@ lastId+=1
 lstRebarFam+=[cercosMurete_rf]
 
 if botSlab_st['nmStirr'] > 0:
-    stirBotSlab_rf=rb.rect_stirrup(genConf=reinfConf,
+    stirBotSlab_rf=rb.rect_stirrup(reinfCfg=reinfConf,
                              identifier=str(lastId)+'lc',
                              diameter=botSlab_st['fi'],
                              nmbStirrups=botSlab_st['nmStirr'],
@@ -463,7 +464,7 @@ if botSlab_st['nmStirr'] > 0:
 
     
 if topSlab_st['nmStirr'] > 0:
-    stirTopSlab_rf=rb.rect_stirrup(genConf=reinfConf,
+    stirTopSlab_rf=rb.rect_stirrup(reinfCfg=reinfConf,
                              identifier=str(lastId)+'di',
                              diameter=topSlab_st['fi'],
                              nmbStirrups=topSlab_st['nmStirr'],
@@ -475,7 +476,7 @@ if topSlab_st['nmStirr'] > 0:
 
     
 if walls_st['nmStirr']>0:
-    stirWalls_rf=rb.rect_stirrup(genConf=reinfConf,
+    stirWalls_rf=rb.rect_stirrup(reinfCfg=reinfConf,
                              identifier=str(lastId)+'lc',
                              diameter=walls_st['fi'],
                              nmbStirrups=walls_st['nmStirr'],

@@ -3,6 +3,7 @@
 import Part, FreeCAD, math
 import Draft
 import freeCAD_civil 
+from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
@@ -132,13 +133,13 @@ Ph3_2=Vector(0,wTop+0.2*slopeBack)
 Ph3_3=Vector(lWall/(hWallMax-hWallMin)*0.2,wTop)
 Ph3_4=Vector(lWall/(hWallMax-hWallMin)*0.2,0)
 
-aletGenConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+aletGenConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 FreeCAD.newDocument(estrName+'_armados')
 
 # Armaduras zapata
 # armadura transversal inferior
 Z1_1=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='Z1/1',
     diameter=fi_Z1_1,
     lstPtsConcrSect=[Ptfoot_2,Ptfoot_1,Ptfoot_4,Ptfoot_3],
@@ -152,7 +153,7 @@ Z1_1=reinf_bars.rebarFamily(
 )
 # armadura transversal superior
 Z1_2=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='Z1/2',
     diameter=fi_Z1_2,
     spacing=s_Z1_2,
@@ -163,7 +164,7 @@ Z1_2=reinf_bars.rebarFamily(
 
 # armadura longitudinal inferior
 Z1_3=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='Z1/3',
     diameter=fi_Z1_3,
     spacing=s_Z1_3,
@@ -176,7 +177,7 @@ Z1_3=reinf_bars.rebarFamily(
     sectBarsSide='l')
 # armadura longitudinal superior
 Z1_4=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='Z1/4',
     diameter=fi_Z1_4,
     spacing=s_Z1_4,
@@ -187,7 +188,7 @@ Z1_4=reinf_bars.rebarFamily(
 
 # armadura lateral puntera
 Z1_7=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='Z1/7',
     diameter=fi_Z1_7,
     spacing=s_Z1_7,
@@ -198,7 +199,7 @@ Z1_7=reinf_bars.rebarFamily(
 
 # armadura lateral talón
 Z1_8=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='Z1/8',
     diameter=fi_Z1_8,
     spacing=s_Z1_8,
@@ -212,7 +213,7 @@ Z1_8=reinf_bars.rebarFamily(
 #Armadura muro
 # Esperas vertical trasdós
 M1_2=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/2',
     diameter=fi_M1_3,
     spacing=s_M1_3,
@@ -227,7 +228,7 @@ M1_2=reinf_bars.rebarFamily(
 )
 # Armadura vertical trasdós
 M1_3=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/3',
     diameter=fi_M1_3,
     spacing=s_M1_3,
@@ -242,7 +243,7 @@ M1_3=reinf_bars.rebarFamily(
 
 # Esperas vertical intradós
 M1_5=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/5',
     diameter=fi_M1_4,
     spacing=s_M1_4,
@@ -259,7 +260,7 @@ M1_5=reinf_bars.rebarFamily(
 
 # Armadura vertical intradós
 M1_4=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/4',
     diameter=fi_M1_4,
     spacing=s_M1_4,
@@ -273,7 +274,7 @@ M1_4=reinf_bars.rebarFamily(
 
 # Refuerzo vertical intradós
 M1_1=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/1',
     diameter=fi_M1_1,
     spacing=s_M1_1,
@@ -287,7 +288,7 @@ M1_1=reinf_bars.rebarFamily(
 )
 # Horizontal trasdós zona inferior
 M1_7=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/7',
     diameter=fi_M1_7,
     spacing=s_M1_7,
@@ -303,7 +304,7 @@ M1_7=reinf_bars.rebarFamily(
 
 # Horizontal intradós zona inferior
 M1_9=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/9',
     diameter=fi_M1_9,
     spacing=s_M1_9,
@@ -318,7 +319,7 @@ M1_9=reinf_bars.rebarFamily(
 
 # Horizontal trasdós zona inferior
 M1_6=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/6',
     diameter=fi_M1_6,
     spacing=s_M1_6,
@@ -334,7 +335,7 @@ M1_6=reinf_bars.rebarFamily(
 
 # Horizontal intradós zona superior
 M1_8=reinf_bars.rebarFamily(
-    genConf=aletGenConf,
+    reinfCfg=aletGenConf,
     identifier='M1/8',
     diameter=fi_M1_8,
     spacing=s_M1_8,

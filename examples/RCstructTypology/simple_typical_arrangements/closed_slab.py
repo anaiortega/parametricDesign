@@ -11,6 +11,7 @@ import math
 import Part, FreeCAD
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
+from freeCAD_civil import  draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from materials.ec2 import EC2_materials
 
@@ -33,12 +34,12 @@ topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
-
-genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 docName='closed_slab'
 FreeCAD.newDocument(docName)
 
-lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConcrTrSect=True,drawConcrLnSect=True,factGap=2)
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+
+lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=2)
 
 doc=App.newDocument("despiece","despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,

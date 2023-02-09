@@ -3,6 +3,7 @@
 import Part, FreeCAD, math
 import Draft
 import freeCAD_civil 
+from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
@@ -190,12 +191,12 @@ AS_p2=AS_p1.add(Vector(0,aprSl_th))
 AS_p3=AS_p2.add(Vector(aprSl_ln,aprSl_ln/aprSl_sl))
 AS_p4=AS_p3.add(Vector(0,-aprSl_th))
 
-abutConf=reinf_bars.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+abutConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 
 # Reinforcement footing
 #1 longitudinal bottom
 foot_LB_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=foot_LB_01_dat['id'],
     diameter=foot_LB_01_dat['fi'],
     spacing=foot_LB_01_dat['s'],
@@ -209,7 +210,7 @@ foot_LB_01=reinf_bars.rebarFamily(
 )
 #2 longitudinal bottom
 foot_LB_02=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=foot_LB_02_dat['id'],
     diameter=foot_LB_02_dat['fi'],
     spacing=foot_LB_02_dat['s'],
@@ -224,7 +225,7 @@ foot_LB_02=reinf_bars.rebarFamily(
 )
 #3 transversal bottom
 foot_TB_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=foot_TB_01_dat['id'],
     diameter=foot_TB_01_dat['fi'],
     spacing=foot_TB_01_dat['s'],
@@ -240,7 +241,7 @@ foot_TB_01=reinf_bars.rebarFamily(
 )
 #4 longitudinal top
 foot_LT_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=foot_LT_01_dat['id'],
     diameter=foot_LT_01_dat['fi'],
     spacing=foot_LT_01_dat['s'],
@@ -251,7 +252,7 @@ foot_LT_01=reinf_bars.rebarFamily(
 )
 #5 transversal top
 foot_TT_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=foot_TT_01_dat['id'],
     diameter=foot_TT_01_dat['fi'],
     spacing=foot_TT_01_dat['s'],
@@ -264,7 +265,7 @@ foot_TT_01=reinf_bars.rebarFamily(
 )
 #6 transversal lateral
 foot_TL_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=foot_TL_01_dat['id'],
     diameter=foot_TL_01_dat['fi'],
     spacing=foot_TL_01_dat['s'],
@@ -280,7 +281,7 @@ foot_TL_01=reinf_bars.rebarFamily(
 )
 #7 transversal lateral
 foot_TL_02=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=foot_TL_02_dat['id'],
     diameter=foot_TL_02_dat['fi'],
     spacing=foot_TL_02_dat['s'],
@@ -299,7 +300,7 @@ foot_TL_02=reinf_bars.rebarFamily(
 ptaux=wall_p1.add(Vector(0,-footing_th))
 #9 vertical front
 stemW_VF_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_VF_01_dat['id'],
     diameter=stemW_VF_01_dat['fi'],
     spacing=stemW_VF_01_dat['s'],
@@ -314,7 +315,7 @@ stemW_VF_01=reinf_bars.rebarFamily(
 )
 #10 vertical front
 stemW_VF_02=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_VF_02_dat['id'],
     diameter=stemW_VF_02_dat['fi'],
     spacing=stemW_VF_02_dat['s'],
@@ -327,7 +328,7 @@ stemW_VF_02=reinf_bars.rebarFamily(
 )
 #11 horizontal front
 stemW_HF_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_HF_01_dat['id'],
     diameter=stemW_HF_01_dat['fi'],
     spacing=stemW_HF_01_dat['s'],
@@ -343,7 +344,7 @@ stemW_HF_01=reinf_bars.rebarFamily(
 #12 vertical back
 ptaux=wall_p10.add(Vector(0,-footing_th))
 stemW_VB_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_VB_01_dat['id'],
     diameter=stemW_VB_01_dat['fi'],
     spacing=stemW_VB_01_dat['s'],
@@ -359,7 +360,7 @@ stemW_VB_01=reinf_bars.rebarFamily(
 #13 vertical back
 ptaux=wall_p2.add(Vector(stemW_th,0))
 stemW_VB_02=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_VB_02_dat['id'],
     diameter=stemW_VB_02_dat['fi'],
     spacing=stemW_VB_02_dat['s'],
@@ -371,7 +372,7 @@ stemW_VB_02=reinf_bars.rebarFamily(
 )
 #14a horizontal back
 stemW_HB_01a=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_HB_01_dat['id']+'a',
     diameter=stemW_HB_01_dat['fi'],
     spacing=stemW_HB_01_dat['s'],
@@ -386,7 +387,7 @@ stemW_HB_01a=reinf_bars.rebarFamily(
 )
 #14b horizontal back
 stemW_HB_01b=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_HB_01_dat['id']+'b',
     diameter=stemW_HB_01_dat['fi'],
     spacing=stemW_HB_01_dat['s'],
@@ -402,7 +403,7 @@ stemW_HB_01b=reinf_bars.rebarFamily(
 )
 #20 transversal top
 stemW_TT_01=reinf_bars.rebarFamily(
-    genConf=abutConf,
+    reinfCfg=abutConf,
     identifier=stemW_TT_01_dat['id'],
     diameter=stemW_TT_01_dat['fi'],
     lstPtsConcrSect=[wall_p11.add(Vector(0,-1)),wall_p11,wall_p18,wall_p18.add(Vector(0,-1))],

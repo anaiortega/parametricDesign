@@ -2,13 +2,14 @@
 
 import math
 import Part, FreeCAD
+from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 import FreeCADGui
 
 colorConcrete=(0.00,1.00,1.00) #cyan
 
-def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,genConf,drawConcrTrSect=True,drawConcrLnSect=True,factGap=1,coverLat=None):
+def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=1,coverLat=None):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
 
@@ -21,15 +22,15 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     :param topLnRb: same for the top longitudinal rebar family
     :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
-    :param genConf: instance of the reinf_bars.genericConf class
+    :param reinfCfg: instance of the reinfConf class
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :param factGap: the gapSart and gapEnd are made equal to factGap*cover
-    :param coverLat: lateral cover (if None, genConf.cover is used)
+    :param coverLat: lateral cover (if None, reinfCfg.cover is used)
     '''
-    cover=genConf.cover
+    cover=reinfCfg.cover
     if not coverLat:
-        coverLat=genConf.cover
+        coverLat=reinfCfg.cover
     # Concrete points of the transverse section
     tr_bl=anchPtTrnsSect
     tr_tl=tr_bl+Vector(0,thickness)
@@ -43,7 +44,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     # Families of rebars
     # transverse bottom rebar family
     tr_bot_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=botTrnsRb['id'],
         diameter=botTrnsRb['fi'],
         spacing=botTrnsRb['s'],
@@ -53,8 +54,8 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         vectorLRef=Vector(-0.15,-0.35),
         fromToExtPts=[ln_bl+Vector(botTrnsRb['distRFstart'],0),ln_br-Vector(botTrnsRb['distRFend'],0)],
         sectBarsSide='l',
-        gapStart=-factGap*genConf.cover,
-        gapEnd=-factGap*genConf.cover,
+        gapStart=-factGap*reinfCfg.cover,
+        gapEnd=-factGap*reinfCfg.cover,
         )
     tr_bot_rf.createLstRebar()
     tr_bot_rf.drawSectBars()
@@ -62,7 +63,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     
     # transverse bottom rebar family
     tr_top_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=topTrnsRb['id'],
         diameter=topTrnsRb['fi'],
         spacing=topTrnsRb['s'],
@@ -72,44 +73,44 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         vectorLRef=Vector(-0.15,0.35),
         fromToExtPts=[ln_tl+Vector(topTrnsRb['distRFstart'],0),ln_tr-Vector(topTrnsRb['distRFend'],0)],
         sectBarsSide='r',
-        gapStart=-factGap*genConf.cover,
-        gapEnd=-factGap*genConf.cover,
+        gapStart=-factGap*reinfCfg.cover,
+        gapEnd=-factGap*reinfCfg.cover,
          )
     tr_top_rf.createLstRebar()
     tr_top_rf.drawSectBars()
     tr_top_rf.drawLstRebar()
     ln_bot_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=botLnRb['id'],
         diameter=botLnRb['fi'],
         spacing=botLnRb['s'],
         lstPtsConcrSect=[ln_tl,ln_bl,ln_br,ln_tr],
         coverSide='l',
-        lstCover=[coverLat,genConf.cover+botTrnsRb['fi'],coverLat],
+        lstCover=[coverLat,reinfCfg.cover+botTrnsRb['fi'],coverLat],
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[tr_bl+Vector(botLnRb['distRFstart'],0),tr_br-Vector(botLnRb['distRFend'],0)],
-        coverSectBars=genConf.cover+botTrnsRb['fi'],
+        coverSectBars=reinfCfg.cover+botTrnsRb['fi'],
         sectBarsSide='l',
-        gapStart=-factGap*genConf.cover,
-        gapEnd=-factGap*genConf.cover,
+        gapStart=-factGap*reinfCfg.cover,
+        gapEnd=-factGap*reinfCfg.cover,
         )
     ln_bot_rf.createLstRebar()
     ln_bot_rf.drawSectBars()
     ln_bot_rf.drawLstRebar()
     ln_top_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=topLnRb['id'],
         diameter=topLnRb['fi'],
         spacing=topLnRb['s'],
         lstPtsConcrSect=[ln_bl,ln_tl,ln_tr,ln_br],
         coverSide='r',
-        lstCover=[coverLat,genConf.cover+topTrnsRb['fi'],coverLat],
+        lstCover=[coverLat,reinfCfg.cover+topTrnsRb['fi'],coverLat],
         vectorLRef=Vector(-0.3,0.4),
         fromToExtPts=[tr_tl+Vector(topLnRb['distRFstart'],0),tr_tr-Vector(topLnRb['distRFend'],0)],
-        coverSectBars=genConf.cover+topTrnsRb['fi'],
+        coverSectBars=reinfCfg.cover+topTrnsRb['fi'],
         sectBarsSide='r',
-        gapStart=-factGap*genConf.cover,
-        gapEnd=-factGap*genConf.cover,
+        gapStart=-factGap*reinfCfg.cover,
+        gapEnd=-factGap*reinfCfg.cover,
          )
     ln_top_rf.createLstRebar()
     ln_top_rf.drawSectBars()
@@ -127,7 +128,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     return [tr_bot_rf,tr_top_rf,ln_bot_rf,ln_top_rf]
     
 
-def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConcrVertSect=True,drawConcrHorSect=True):
+def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,reinfCfg,drawConcrVertSect=True,drawConcrHorSect=True):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: l-left, r-right, vert-vertical, hor-horizontal
 
@@ -140,7 +141,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     :param rightHorRb: same for the right horizontal rebar family
     :param anchPtVertSect: anchor point to place the left left corner of the concrete vertical cross-section
     :param anchPtHorSect:  anchor point to place the left left corner of the concrete horizontal cross-section
-    :param genConf: instance of the reinf_bars.genericConf class
+    :param reinfCfg: instance of the reinfConf class
     :param drawConcrVertSect: 'Y' to draw the vertical concrete cross-section  (defaults to 'Y')
     :param drawConcrHorSect: 'Y' to draw the horizontal concrete cross-section  (defaults to 'Y')
     '''
@@ -158,7 +159,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     # Families of rebars
     # vertical left rebar family
     vert_left_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=leftVertRb['id'],
         diameter=leftVertRb['fi'],
         spacing=leftVertRb['s'],
@@ -173,7 +174,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     vert_left_rf.drawLstRebar()
     # vertical left rebar family
     vert_right_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=rightVertRb['id'],
         diameter=rightVertRb['fi'],
         spacing=rightVertRb['s'],
@@ -187,32 +188,32 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     vert_right_rf.drawSectBars()
     vert_right_rf.drawLstRebar()
     hor_left_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=leftHorRb['id'],
         diameter=leftHorRb['fi'],
         spacing=leftHorRb['s'],
         lstPtsConcrSect=[hor_br,hor_bl,hor_tl,hor_tr],
         coverSide='r',
-        lstCover=[genConf.cover,genConf.cover+leftVertRb['fi'],genConf.cover],
+        lstCover=[reinfCfg.cover,reinfCfg.cover+leftVertRb['fi'],reinfCfg.cover],
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[vert_bl+Vector(0,leftHorRb['distRFstart']),vert_tl-Vector(0,leftHorRb['distRFend'])],
-        coverSectBars=genConf.cover+leftVertRb['fi'],
+        coverSectBars=reinfCfg.cover+leftVertRb['fi'],
         sectBarsSide='r',
         )
     hor_left_rf.createLstRebar()
     hor_left_rf.drawSectBars()
     hor_left_rf.drawLstRebar()
     hor_right_rf=rb.rebarFamily(
-        genConf=genConf,
+        reinfCfg=reinfCfg,
         identifier=rightHorRb['id'],
         diameter=rightHorRb['fi'],
         spacing=rightHorRb['s'],
         lstPtsConcrSect=[hor_bl,hor_br,hor_tr,hor_tl],
         coverSide='l',
-        lstCover=[genConf.cover,genConf.cover+rightVertRb['fi'],genConf.cover],
+        lstCover=[reinfCfg.cover,reinfCfg.cover+rightVertRb['fi'],reinfCfg.cover],
         vectorLRef=Vector(0.3,0.4),
         fromToExtPts=[vert_br+Vector(0,rightHorRb['distRFstart']),vert_tr-Vector(0,rightHorRb['distRFend'])],
-        coverSectBars=genConf.cover+rightVertRb['fi'],
+        coverSectBars=reinfCfg.cover+rightVertRb['fi'],
         sectBarsSide='l',
         )
     hor_right_rf.createLstRebar()
@@ -241,7 +242,7 @@ def set_FR_options(RF,RFdef):
     if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
     if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
            
-def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genConf,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,stirrHoldTrReinf=None,stirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True):
+def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,stirrHoldTrReinf=None,stirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -251,7 +252,7 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,genCo
     :param thickness: thickness of the brick
     :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
-    :param genConf: instance of the reinf_bars.genericConf class
+    :param reinfCfg: instance of the cfg.reinfConf class
     :param angTrns: angle (degrees) between the horizontal and the brick width dimension
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
     :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
@@ -302,7 +303,7 @@ The data of the family is given as a dictionary of type:
     # transverse bottom rebar family
     if botTrnsRb:
         tr_bot_rf=rb.rebarFamily(
-            genConf=genConf,
+            reinfCfg=reinfCfg,
             identifier=botTrnsRb['id'],
             diameter=botTrnsRb['fi'],
             spacing=botTrnsRb['s'],
@@ -322,7 +323,7 @@ The data of the family is given as a dictionary of type:
     # transverse bottom rebar family
     if topTrnsRb:
         tr_top_rf=rb.rebarFamily(
-            genConf=genConf,
+            reinfCfg=reinfCfg,
             identifier=topTrnsRb['id'],
             diameter=topTrnsRb['fi'],
             spacing=topTrnsRb['s'],
@@ -341,15 +342,15 @@ The data of the family is given as a dictionary of type:
         lstRebFam+=[tr_top_rf]
     if botLnRb:
         ln_bot_rf=rb.rebarFamily(
-            genConf=genConf,
+            reinfCfg=reinfCfg,
             identifier=botLnRb['id'],
             diameter=botLnRb['fi'],
             spacing=botLnRb['s'],
             lstPtsConcrSect=[ln_bl,ln_br],
             coverSide='l',
-            lstCover=[genConf.cover+botTrnsRb['fi']],
+            lstCover=[reinfCfg.cover+botTrnsRb['fi']],
             fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTr,tr_br-botLnRb['distRFend']*vdirTr],
-            coverSectBars=genConf.cover+botTrnsRb['fi'],
+            coverSectBars=reinfCfg.cover+botTrnsRb['fi'],
             sectBarsSide='l',
             gapStart=0,
             gapEnd=0,
@@ -362,15 +363,15 @@ The data of the family is given as a dictionary of type:
         lstRebFam+=[ln_bot_rf]
     if topLnRb:
         ln_top_rf=rb.rebarFamily(
-            genConf=genConf,
+            reinfCfg=reinfCfg,
             identifier=topLnRb['id'],
             diameter=topLnRb['fi'],
             spacing=topLnRb['s'],
             lstPtsConcrSect=[ln_tl,ln_tr],
             coverSide='r',
-            lstCover=[genConf.cover+topTrnsRb['fi']],
+            lstCover=[reinfCfg.cover+topTrnsRb['fi']],
             fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTr,tr_tr-topLnRb['distRFend']*vdirTr],
-            coverSectBars=genConf.cover+topTrnsRb['fi'],
+            coverSectBars=reinfCfg.cover+topTrnsRb['fi'],
             sectBarsSide='r',
             gapStart=0,
             gapEnd=0,
@@ -385,7 +386,7 @@ The data of the family is given as a dictionary of type:
     if stirrHoldTrReinf:
         stDic=stirrHoldTrReinf
         bStirr=stDic['widthStirr']+stDic['fi']
-        coverStirr=genConf.cover-stDic['fi']
+        coverStirr=reinfCfg.cover-stDic['fi']
         if stDic['dispRealSh']<0: # stirrups rigth towards left
             lstPtsConcrTransv=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr]
         else: # stirrups left towards right
@@ -397,7 +398,7 @@ The data of the family is given as a dictionary of type:
             lstPtsConcrLong=[tr_tl,tr_bl]
             vDirLong=vdirTr
         hold_tr_sf=rb.stirrupFamily(
-            genConf=genConf,
+            reinfCfg=reinfCfg,
             identifier=stDic['id'],
             diameter=stDic['fi'],
             lstPtsConcrTransv=lstPtsConcrTransv,
@@ -430,9 +431,9 @@ The data of the family is given as a dictionary of type:
             vDirLong=vdirLn
         stDic=stirrHoldLnReinf
         bStirr=stDic['widthStirr']+stDic['fi']
-        coverStirr=genConf.cover+min(topTrnsRb['fi'],botTrnsRb['fi'])-stDic['fi']
+        coverStirr=reinfCfg.cover+min(topTrnsRb['fi'],botTrnsRb['fi'])-stDic['fi']
         hold_ln_sf=rb.stirrupFamily(
-            genConf=genConf,
+            reinfCfg=reinfCfg,
             identifier=stDic['id'],
             diameter=stDic['fi'],
             lstPtsConcrTransv=lstPtsConcrTransv,

@@ -9,6 +9,7 @@ __email__= "ana.ortega@xcengineering.xyz "
 
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
+from freeCAD_civil import  draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from materials.ec2 import EC2_materials
 
@@ -33,11 +34,11 @@ rightHorRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
 anchPtVertSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete vertical cross-section
 anchPtHorSect=anchPtVertSect+Vector(thickness+3,0) #anchor point to place the bottom left corner of the concrete horizontal cross-section
 
-genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 docName='simpleWall'
 FreeCAD.newDocument(docName)
 
-lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,genConf,drawConcrVertSect=False,drawConcrHorSect=False)           
+lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,reinfCfg,drawConcrVertSect=False,drawConcrHorSect=False)           
 
 doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,

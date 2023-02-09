@@ -1,6 +1,7 @@
 import Part, FreeCAD, math
 import Draft
 import freeCAD_civil 
+from freeCAD_civil import  draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from Draft import *
@@ -26,9 +27,6 @@ steelWall=EC2_materials.S500C # steel for wall stem
 
 dowels=False # True if dowels in the stem start, otherwise, False
 
-#rebar schedule dimensions
-scheduleCfg=rb.scheduleConf(widthColumns=[10,30,20,10,20,12],heightRows=10,heightText=2.5,heigthTextSketch=2.0)
-
 #Footing
 wFoot=2.35 #ancho zapata
 lWall=3.50 #longitud muro
@@ -44,9 +42,9 @@ slopeBack=0  #pendiente del trasdós (H/V)
 coverWall=0.03
 alpha_degrees=math.degrees(math.atan(slopeBack)) 
 
-footGenConf=rb.genericConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+footGenConf=cfg.reinfConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 
-wallGenConf=rb.genericConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 
 # #  Armados zapata
 # armadura transversal inferior
@@ -129,7 +127,7 @@ Phf_3=Ph_4.add(Vector(0,wFoot))
 lstRebarFam=list()
 rebarCount=0
 RF_foot_tr_bot=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_tr_bot['fi'],
     gapStart=-2.5*footGenConf.cover,
@@ -147,7 +145,7 @@ rebarCount+=1
 
 # armadura transversal superior
 RF_foot_tr_top=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_tr_top['fi'],
     spacing=foot_tr_top['s'],
@@ -162,7 +160,7 @@ rebarCount+=1
 
 # armadura longitudinal inferior
 RF_foot_ln_bot=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_ln_bot['fi'],
     spacing=foot_ln_bot['s'],
@@ -180,7 +178,7 @@ lstRebarFam+=[RF_foot_ln_bot]
 rebarCount+=1
 # armadura longitudinal superior
 RF_foot_ln_top=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_ln_top['fi'],
     spacing=foot_ln_top['s'],
@@ -197,7 +195,7 @@ rebarCount+=1
 
 # armadura lateral puntera
 RF_foot_lat_toe=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
 #    spacing=foot_lat_heel['s'],
@@ -215,7 +213,7 @@ rebarCount+=1
 
 # armadura lateral talón
 RF_foot_lat_heel=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
     spacing=foot_lat['s'],
@@ -234,7 +232,7 @@ rebarCount+=1
 
 # armadura lateral frontal
 RF_foot_lat_front=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
     spacing=foot_lat['s'],
@@ -255,7 +253,7 @@ rebarCount+=1
 
 # armadura lateral dorsal
 RF_foot_lat_dors=rb.rebarFamily(
-    genConf=footGenConf,
+    reinfCfg=footGenConf,
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
     spacing=foot_lat['s'],
@@ -276,7 +274,7 @@ if dowels:
     # Esperas trasdós
     ang=int(90-math.degrees(math.atan(slopeBack)))
     RF_dowel_back=rb.rebarFamily(
-        genConf=wallGenConf,
+        reinfCfg=wallGenConf,
         identifier=str(rebarCount+1),
         diameter=wall_vert_back['fi'],
         spacing=wall_vert_back['s'],
@@ -295,7 +293,7 @@ if dowels:
     ang=270 if wToe>0 else 90
     # Esperas intradós
     RF_dowel_front=rb.rebarFamily(
-        genConf=wallGenConf,
+        reinfCfg=wallGenConf,
         identifier=str(rebarCount+1),
         diameter=wall_vert_front['fi'],
         spacing=wall_vert_front['s'],
@@ -316,7 +314,7 @@ if dowels:
     #Armadura muro
     # Armadura vertical trasdós
     RF_wall_vert_back=rb.rebarFamily(
-        genConf=wallGenConf,
+        reinfCfg=wallGenConf,
         identifier=str(rebarCount+1),
         diameter=wall_vert_back['fi'],
         spacing=wall_vert_back['s'],
@@ -332,7 +330,7 @@ if dowels:
 
     # Armadura vertical intradós
     RF_wall_vert_front=rb.rebarFamily(
-        genConf=wallGenConf,
+        reinfCfg=wallGenConf,
         identifier=str(rebarCount+1),
         diameter=wall_vert_front['fi'],
         spacing=wall_vert_front['s'],
@@ -352,7 +350,7 @@ else: # sin esperas
     # Armadura vertical trasdós (en contacto con las tierras)
     ang=int(270-math.degrees(math.atan(slopeBack)))
     RF_wall_vert_back=rb.rebarFamily(
-        genConf=wallGenConf,
+        reinfCfg=wallGenConf,
         identifier=str(rebarCount+1),
         diameter=wall_vert_back['fi'],
         spacing=wall_vert_back['s'],
@@ -370,7 +368,7 @@ else: # sin esperas
     # Armadura vertical intradós
     ang=90 if wToe>0 else 270
     RF_wall_vert_front=rb.rebarFamily(
-        genConf=wallGenConf,
+        reinfCfg=wallGenConf,
         identifier=str(rebarCount+1),
         diameter=wall_vert_front['fi'],
         spacing=wall_vert_front['s'],
@@ -390,7 +388,7 @@ else: # sin esperas
 # Armadura muro    
 # Horizontal trasdós zona inferior
 RF_wall_horBottom_front=rb.rebarFamily(
-    genConf=wallGenConf,
+    reinfCfg=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horBottom_front['fi'],
     spacing=wall_horBottom_front['s'],
@@ -407,7 +405,7 @@ rebarCount+=1
 
 # Horizontal intradós zona inferior
 RF_wall_horBottom_back=rb.rebarFamily(
-    genConf=wallGenConf,
+    reinfCfg=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horBottom_back['fi'],
     spacing=wall_horBottom_back['s'],
@@ -423,7 +421,7 @@ rebarCount+=1
 
 # Horizontal trasdós zona inferior
 RF_wall_horTop_front=rb.rebarFamily(
-    genConf=wallGenConf,
+    reinfCfg=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horTop_front['fi'],
     spacing=wall_horTop_front['s'],
@@ -440,7 +438,7 @@ rebarCount+=1
 
 # Horizontal intradós zona superior
 RF_wall_horTop_back=rb.rebarFamily(
-    genConf=wallGenConf,
+    reinfCfg=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_horTop_back['fi'],
     spacing=wall_horTop_back['s'],
@@ -458,7 +456,7 @@ rebarCount+=1
 angle1=math.degrees((Plwall_2-Plwall_1).getAngle(Vector(0,-1,0)))
 angle1=round(angle1,2)
 RF_wall_top=rb.rebarFamily(
-    genConf=wallGenConf,
+    reinfCfg=wallGenConf,
     identifier=str(rebarCount+1),
     diameter=wall_top['fi'],
     spacing=wall_top['s'],
@@ -554,9 +552,8 @@ rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=V
 
 #altura de las filas
 #altura textos
-schedulewidth=sum(scheduleCfg.widthColumns)
 pntSchedule=Vector((nmbAleta-1)*(schedulewidth+10),0,0)
-rb.barSchedule(lstRebarFam,scheduleCfg,title=titSchedule,pntTLcorner=pntSchedule,doc=docDespiece)
+rb.barSchedule(lstRebarFam,title=titSchedule,pntTLcorner=pntSchedule,doc=docDespiece)
 
 # Bar quantities for PyCost
 #rb.bars_quantities_for_budget(lstBarFamilies=listafamiliasArmad,outputFileName='/home/ana/pruebas/presupuesto_rev2/quant_arm.py')

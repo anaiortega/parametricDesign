@@ -3,7 +3,8 @@
 import Part, FreeCAD, math
 import Draft
 import freeCAD_civil 
-from freeCAD_civil import reinf_bars
+ffrom freeCAD_civil import draw_config as cfg
+rom freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
 from materials.ec2 import EC2_materials
@@ -70,10 +71,10 @@ Pt10i=Pt10.add(Vector(0,-elosa))
 Pt11i=Pt11.add(Vector(0,-elosa))
 Pt12i=Pt12.add(Vector(0,-elosa))
 
-losaGenConf=reinf_bars.genericConf(cover=recNominal,xcConcr=concr,xcSteel=steel,texSize=hTextsArmados,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+losaGenConf=cfg.reinfConf(cover=recNominal,xcConcr=concr,xcSteel=steel,texSize=hTextsArmados,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 
 F1S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='1S',
    diameter=0.016,
    spacing=0.20,
@@ -83,7 +84,7 @@ F1S=reinf_bars.rebarFamily(
    fromToExtPts=[Pt8,Pt11],
 )
 F1I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='1I',
    diameter=0.012,
    spacing=0.20,
@@ -96,7 +97,7 @@ F1I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F2S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='2S',
    diameter=0.016,
    spacing=0.20,
@@ -106,7 +107,7 @@ F2S=reinf_bars.rebarFamily(
    fromToExtPts=[Pt6,Pt8],
 )
 F2I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='2I',
    diameter=0.012,
    spacing=0.20,
@@ -119,7 +120,7 @@ F2I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F3S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='3S',
    diameter=0.016,
    spacing=0.20,
@@ -131,7 +132,7 @@ F3S=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.02,
 )
 F3I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='3I',
    diameter=0.012,
    spacing=0.20,
@@ -144,7 +145,7 @@ F3I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F4S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='4S',
    diameter=0.012,
    spacing=0.20,
@@ -155,7 +156,7 @@ F4S=reinf_bars.rebarFamily(
    fromToExtPts=[Pt2,Pt5],
 )
 F4I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='4I',
    diameter=0.012,
    spacing=0.20,
@@ -169,7 +170,7 @@ F4I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F5S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='5S',
    diameter=0.012,
    spacing=0.20,
@@ -180,7 +181,7 @@ F5S=reinf_bars.rebarFamily(
    fromToExtPts=[Pt2,Pt5],
 )
 F5I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='5I',
    diameter=0.012,
    spacing=0.20,
@@ -195,7 +196,7 @@ F5I=reinf_bars.rebarFamily(
 )
 
 F6S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='6S',
    diameter=0.012,
    spacing=0.20,
@@ -205,7 +206,7 @@ F6S=reinf_bars.rebarFamily(
    fromToExtPts=[Pt5,Pt7],
 )
 F6I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='6I',
    diameter=0.012,
    spacing=0.20,
@@ -219,7 +220,7 @@ F6I=reinf_bars.rebarFamily(
 )
 
 F7=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='7',
    diameter=0.012,
    spacing=0.20,
@@ -227,7 +228,7 @@ F7=reinf_bars.rebarFamily(
    fromToExtPts=[Pt7,Pt11],
 )
 F8S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='8S',
    diameter=0.012,
    spacing=0.20,
@@ -239,7 +240,7 @@ F8S=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.016,
 )
 F8I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='8I',
    diameter=0.012,
    spacing=0.20,
@@ -254,7 +255,7 @@ F8I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F9S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='9S',
    diameter=0.012,
    spacing=0.20,
@@ -267,7 +268,7 @@ F9S=reinf_bars.rebarFamily(
    lateralCover=0,
 )
 F9I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='9I',
    diameter=0.012,
    spacing=0.20,
@@ -283,7 +284,7 @@ F9I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F10S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='10S',
    diameter=0.012,
    spacing=0.20,
@@ -295,7 +296,7 @@ F10S=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.016,
 )
 F10I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='10I',
    diameter=0.012,
    spacing=0.20,
@@ -310,7 +311,7 @@ F10I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F11S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='11S',
    diameter=0.020,
    spacing=0.20,
@@ -320,7 +321,7 @@ F11S=reinf_bars.rebarFamily(
    fromToExtPts=[Pl3,Pl5],
 )
 F12S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='12S',
    diameter=0.020,
    spacing=0.20,
@@ -330,7 +331,7 @@ F12S=reinf_bars.rebarFamily(
    fromToExtPts=[Pl5,Pl6],
 )
 F12I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='12I',
    diameter=0.012,
    spacing=0.20,
@@ -343,7 +344,7 @@ F12I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F13S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='13S',
    diameter=0.012,
    spacing=0.20,
@@ -355,7 +356,7 @@ F13S=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.012,
 )
 F13I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='13I',
    diameter=0.012,
    spacing=0.20,
@@ -370,7 +371,7 @@ F13I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F14S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='14S',
    diameter=0.012,
    spacing=0.20,
@@ -382,7 +383,7 @@ F14S=reinf_bars.rebarFamily(
    coverSectBars=recNominal+0.012,
 )
 F14I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='14I',
    diameter=0.012,
    spacing=0.20,
@@ -398,7 +399,7 @@ F14I=reinf_bars.rebarFamily(
 )
 
 F15S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='15S',
    diameter=0.016,
    spacing=0.10,
@@ -411,7 +412,7 @@ F15S=reinf_bars.rebarFamily(
    lateralCover=recNominal+0.008,
 )
 F15I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='15I',
    diameter=0.016,
    spacing=0.10,
@@ -428,7 +429,7 @@ F15I=reinf_bars.rebarFamily(
 )
 
 F16S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='16S',
    diameter=0.016,
    spacing=0.10,
@@ -441,7 +442,7 @@ F16S=reinf_bars.rebarFamily(
    lateralCover=recNominal+0.008,
 )
 F16I=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='16I',
    diameter=0.016,
    spacing=0.10,
@@ -457,7 +458,7 @@ F16I=reinf_bars.rebarFamily(
    sectBarsSide='l',
 )
 F17=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='17',
    diameter=0.008,
    spacing=0.15,
@@ -465,7 +466,7 @@ F17=reinf_bars.rebarFamily(
    fromToExtPts=[Pl2,Pl3],
 )
 F18=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='18',
    diameter=0.008,
    spacing=0.15,
@@ -474,7 +475,7 @@ F18=reinf_bars.rebarFamily(
 )
 
 R1S=reinf_bars.rebarFamily(
-   genConf=losaGenConf,
+   reinfCfg=losaGenConf,
    identifier='R1S',
    diameter=0.012,
    spacing=0.20,

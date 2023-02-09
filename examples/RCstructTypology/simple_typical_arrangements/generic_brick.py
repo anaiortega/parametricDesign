@@ -3,6 +3,7 @@ from __future__ import division
 
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
+from freeCAD_civil import  draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from materials.ec2 import EC2_materials
 
@@ -12,7 +13,7 @@ steel=EC2_materials.S500C
 estrName='Generic brick'
 titSchedule=estrName.upper()
 
-genConf=rb.genericConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 FreeCAD.newDocument(estrName+'genericBrick')
 
 width=4 #dimension of the slab in the direction of the transversal rebars
@@ -42,7 +43,7 @@ lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(
     thickness=thickness,
     anchPtTrnsSect=anchPtTrnsSect,
     anchPtLnSect=anchPtLnSect,
-    genConf=genConf,
+    reinfCfg=reinfCfg,
     angTrns=20,
     angLn=40,
     botTrnsRb=botTrnsRb,

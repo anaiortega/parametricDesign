@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 
 import Part, FreeCAD, math
+from freeCAD_civil import  draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
@@ -15,7 +16,7 @@ B=0.20
 H=0.30
 cover=0.03
 
-reinfConf=rb.genericConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 FreeCAD.newDocument(estrName+'_armados')
 
 pt1=Vector(0,H)
@@ -25,7 +26,7 @@ pt4=Vector(0,0)
 
 
 stirrup=rb.rebarFamily(
-    genConf=reinfConf,
+    reinfCfg=reinfConf,
     identifier='ST',
     diameter=12e-3,
     nmbBars=10,

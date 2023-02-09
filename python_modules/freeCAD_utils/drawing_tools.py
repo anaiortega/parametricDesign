@@ -12,7 +12,7 @@ import Draft
 from FreeCAD import Vector
 import FreeCADGui
 
-def put_text_in_pnt(text,point,hText,color,justif="Left",rotation=None):
+def put_text_in_pnt(text,point,hText,color=(1.00,0.00,0.00),justif="Left",rotation=None):
     '''Draws in the active document of FreeCAD the text in the specified point 
     with the font size, justificacion ("Left", "Center" or "Right") and rotation
     (expressed in degrees) given as parameters. 
@@ -28,7 +28,7 @@ def put_text_in_pnt(text,point,hText,color,justif="Left",rotation=None):
     tx.ViewObject.FontSize = hText
     tx.ViewObject.Justification=justif
     tx.ViewObject.TextColor=color
-    return
+    return tx
 
    
 def draw_triang_prism(p1,p2,p3,vAxis):

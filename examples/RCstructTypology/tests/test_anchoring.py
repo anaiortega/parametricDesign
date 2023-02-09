@@ -3,6 +3,7 @@
 import Part, FreeCAD, math
 import Draft
 import freeCAD_civil 
+from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import reinf_bars
 from FreeCAD import Vector
 from Draft import *
@@ -32,10 +33,10 @@ foot_p7=foot_p5.add(Vector(footing_ln,footing_th))
 foot_p8=foot_p5.add(Vector(footing_ln,0))
 
 #rebars definition
-gConf=reinf_bars.genericConf(cover=0.05,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+gConf=cfg.reinfConf(cover=0.05,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
 
 R1=reinf_bars.rebarFamily(
-    genConf=gConf,
+    reinfCfg=gConf,
     identifier='R1',
     diameter=0.016,
     spacing=0.20,
@@ -48,7 +49,7 @@ R1=reinf_bars.rebarFamily(
     extrShapeEnd='anc90_posGood_tens',
 )
 R2=reinf_bars.rebarFamily(
-    genConf=gConf,
+    reinfCfg=gConf,
     identifier='R2',
     diameter=0.025,
     spacing=0.20,
