@@ -1,0 +1,34 @@
+# Model wing-wall and chamfer (IL) - initial left
+vDir=(stackPinitHeadWall[1]-stackPinitHeadWall[0]).normalize()
+ptILwingwall=stackPinitHeadWall[0]+struct.getSkewWallTh()*vDir
+if 'deltaZ_top_aletaIL' in locals():
+    ptILwingwall=ptILwingwall+deltaZ_top_aletaIL*Vector(0,0,1)
+v=struct.getVectFrontalView()
+vDirLn=gu.getRotatedVector(v,vZneg,angILww)
+vDirTr=vDirLn.cross(vZpos)
+wingWallIL=underpass.Wingwall(placementPoint=ptILwingwall,
+                              foundLevel=Z_ILww-vTransfCoord.z,
+                              wallLenght=lenILww,
+                              wallSlope=wallSlopeILww,
+                              wallTopWidth=ILww_data['wallTopWidth'],
+                              backFaceSlope=ILww_data['backFaceSlope'],
+                              frontFaceSlope=ILww_data['frontFaceSlope'],
+                              vDirTr=vDirTr,
+                              vDirLn=vDirLn,
+                              dispLn=dispLnIL,
+                              )
+wwIL,stackPntWwIL=wingWallIL.genWingwall()
+footIL,stackPntFootIL=wingWallIL.genWingwallFoundation(
+    footsLength=[lenILww],
+    footsHeight=[ILww_data['footHeight']],
+    footsWidth=[ILww_data['footWidth']],
+    footsToeWidth=[ILww_data['footToeWidth']])
+chamferIL=dt.draw_triang_prism(
+    p1=ptILwingwall,
+    p2=ptILwingwall-struct.getSkewWallTh()*vDir,
+    p3=ptILwingwall+vDirLn*dispLnIL,
+    vAxis=Vector(0,0,-hMaxIL),
+    )
+Part.show(wwIL,'wwIL')
+Part.show(footIL,'footIL')
+Part.show(chamferIL,'chamferIL')
