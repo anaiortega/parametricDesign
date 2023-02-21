@@ -1,13 +1,16 @@
 # Replanteo zapata aleta
+from aux_sharing import sharing_docs as shd
+from aux_sharing import sharing_vars as shv
+
 tables.settingOutTable(
-    lstPoints=pntLst,
-    title='Replanteo zapata aleta '+nmbAleta,
-    pntTLcorner=nextCorner,
-    preffixPnt='ZA'+nmbAleta+'-',
+    lstPoints=shv.pntLst,
+    title='Replanteo zapata aleta '+shv.nmbAleta,
+    pntTLcorner=shv.nextCorner,
+    preffixPnt='ZA'+shv.nmbAleta+'-',
     hText=hText,
     hRows=hRows,
     wColumns=wColumns,
-    vCooRel2Abs=vTransfCoord,
-    doc=docSetout,
+    vCooRel2Abs=shp.vTransfCoord,
+    doc=shd.docSetout,
     )
-nextCorner=nextCorner-Vector(0,(len(pntLst)+2)*hRows+desfaseTablas)
+shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*hRows+desfaseTablas)

@@ -1,30 +1,33 @@
 # Pilotes lado izquierdo
-pntLst=stakPpilesLeft
+from aux_sharing import sharing_docs as shd
+from aux_sharing import sharing_vars as shv
+
+shv.pntLst=stakPpilesLeft
 tables.settingOutTable(
-    lstPoints=pntLst,
+    lstPoints=shv.pntLst,
     title='Replanteo pilotes (izq.)',
-    pntTLcorner=nextCorner,
+    pntTLcorner=shv.nextCorner,
     preffixPnt='PI-',
     hText=hText,
     hRows=hRows,
     wColumns=wColumns,
-    vCooRel2Abs=vTransfCoord,
-    doc=docSetout,
+    vCooRel2Abs=shp.vTransfCoord,
+    doc=shd.docSetout,
     )
-nextCorner=nextCorner-Vector(0,(len(pntLst)+2)*hRows+desfaseTablas)
+shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*hRows+desfaseTablas)
 
 
 # Pilotes lado derecho
-pntLst=stakPpilesRight
+shv.pntLst=stakPpilesRight
 tables.settingOutTable(
-    lstPoints=pntLst,
+    lstPoints=shv.pntLst,
     title='Replanteo pilotes (der.)',
-    pntTLcorner=nextCorner,
+    pntTLcorner=shv.nextCorner,
     preffixPnt='PD-',
     hText=hText,
     hRows=hRows,
     wColumns=wColumns,
-    vCooRel2Abs=vTransfCoord,
-    doc=docSetout,
+    vCooRel2Abs=shp.vTransfCoord,
+    doc=shd.docSetout,
     )
-nextCorner=nextCorner-Vector(0,(len(pntLst)+2)*hRows+desfaseTablas)
+shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*hRows+desfaseTablas)

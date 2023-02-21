@@ -1,89 +1,94 @@
-
+import FreeCAD
 import math
-from freeCAD_civil.structures import underpass
-from freeCAD_utils import geom_utils as gu
 from freeCAD_utils import drawing_tools as dt
-import Part
 from FreeCAD import Vector
-# PF ría de Tuero FFCC
-path='/home/ana/projects/variante-rincon-de-soto/work/montaje_planos_losas/PF_ria_Tuero_FFCC/aletas/'
-pathDeck=path.replace('aletas/','')
-exec(open(pathDeck+'datosGeom.py').read())
-docGeom=App.newDocument(obraNm+'_GEOM',obraNm+'_GEOM')
+import sys
 
-P1=Vector(P1_coo[0],P1_coo[1],P1_coo[2])
-P2=Vector(P2_coo[0],P2_coo[1],P2_coo[2])
-vTransfCoord=Vector(vTransfCoord_coo[0],vTransfCoord_coo[1],vTransfCoord_coo[2])
+currentPath='/usr/local/src/prg/parametricDesign/examples/RCstructTypology/three_sided_box_culvert_pilefound'
+sys.path.append(currentPath)
+from data import geomData as gd
+from aux_sharing import sharing_docs as shd
+
+shd.docGeom=FreeCAD.newDocument(gd.obraNm+'_GEOM',gd.obraNm+'_GEOM')
+
 
 ww_type1a={'wallTopWidth':0.25,'backFaceSlope':0,'frontFaceSlope':0,'footHeight':0.35,'footWidth':1.9,'footToeWidth':0}
 
 
 # Aleta 1 (EL)
-exec(open(path+'datos_aleta1.py').read())
-ELww_data=ww_type1a
-angELww=33*90/100 # ángulo con el eje en sexagesimales
-lenELww=lWall #longitud medida desde el arranque interno
-Z_ELww=Z_baseWall
-wallSlopeELww=(hWallMax-hWallMin)/lWall
-dispLnEL=thWall*math.cos(math.radians(90+skew-angELww))
-hMaxEL=hWallMax
+from data import data_wingwall1 as dww1
+from aux_sharing import sharing_EL_wingwall as EL
+EL.ww_data=ww_type1a
+EL.angww=33*90/100 # ángulo con el eje en sexagesimales
+EL.lenww=dww1.lWall #longitud medida desde el arranque interno
+EL.Zww=gd.Z_baseWall
+EL.wallSlopeww=(dww1.hWallMax-dww1.hWallMin)/dww1.lWall
+EL.dispLn=gd.thWall*math.cos(math.radians(90+gd.skew-EL.angww))
+EL.hMax=dww1.hWallMax
 
 # Aleta 2 (IL)
-exec(open(path+'datos_aleta2.py').read())
-ILww_data=ww_type1a
-angILww=33*90/100 # ángulo con el eje en sexagesimales
-lenILww=lWall #longitud medida desde el arranque interno
-Z_ILww=Z_baseWall
-wallSlopeILww=(hWallMax-hWallMin)/lWall
-dispLnIL=skewThwall*math.cos(math.radians(90-skew-angILww))
-hMaxIL=hWallMax
+from data import data_wingwall1 as dww2
+from aux_sharing import sharing_IL_wingwall as IL
+IL.ww_data=ww_type1a
+IL.angww=33*90/100 # ángulo con el eje en sexagesimales
+IL.lenww=dww2.lWall #longitud medida desde el arranque interno
+IL.Zww=gd.Z_baseWall
+IL.wallSlopeww=(dww2.hWallMax-dww2.hWallMin)/dww2.lWall
+IL.dispLn=gd.skewThwall*math.cos(math.radians(90-gd.skew-IL.angww))
+IL.hMax=dww2.hWallMax
 
 # Aleta 3 (IR)
-exec(open(path+'datos_aleta3.py').read())
-IRww_data=ww_type1a
-angIRww=33*90/100 # ángulo con el eje en sexagesimales
-lenIRww=lWall #longitud medida desde el arranque interno
-Z_IRww=Z_baseWall
-wallSlopeIRww=(hWallMax-hWallMin)/lWall
-dispLnIR=thWall/math.sin(skewRad)*math.cos((90-skewRad)+math.radians(angIRww))
-dispLnIR=thWall*math.cos(math.radians(90+skew-angIRww))
-hMaxIR=hWallMax
+from data import data_wingwall1 as dww3
+from aux_sharing import sharing_IR_wingwall as IR
+IR.ww_data=ww_type1a
+IR.angww=33*90/100 # ángulo con el eje en sexagesimales
+IR.lenww=dww3.lWall #longitud medida desde el arranque interno
+IR.Zww=gd.Z_baseWall
+IR.wallSlopeww=(dww3.hWallMax-dww3.hWallMin)/dww3.lWall
+IR.dispLn=gd.thWall/math.sin(gd.skewRad)*math.cos((90-gd.skewRad)+math.radians(IR.angww))
+IR.dispLn=gd.thWall*math.cos(math.radians(90+gd.skew-IR.angww))
+IR.hMax=dww3.hWallMax
 
 
 # Aleta 4 (ER)
-exec(open(path+'datos_aleta4.py').read())
-ERww_data=ww_type1a
-angERww=33*90/100 # ángulo con el eje en sexagesimales
-lenERww=lWall  #longitud medida desde el arranque interno
-Z_ERww=Z_baseWall
-wallSlopeERww=(hWallMax-hWallMin)/lWall
-dispLnER=skewThwall*math.cos(math.radians(90-skew-angERww))
-hMaxER=hWallMax
+from data import data_wingwall1 as dww4
+from aux_sharing import sharing_ER_wingwall as ER
+ER.ww_data=ww_type1a
+ER.angww=33*90/100 # ángulo con el eje en sexagesimales
+ER.lenww=dww4.lWall  #longitud medida desde el arranque interno
+ER.Zww=gd.Z_baseWall
+ER.wallSlopeww=(dww4.hWallMax-dww4.hWallMin)/dww4.lWall
+ER.dispLn=gd.skewThwall*math.cos(math.radians(90-gd.skew-ER.angww))
+ER.hMax=dww4.hWallMax
 
 # fin datos
+
+
 # Deck and walls
-exec(open(pathDeck+'../base_models/model_deck_and_walls.py').read())
+from base_models import model_deck_and_walls
 
 # Piles
-exec(open(pathDeck+'../base_models/model_piles_deck_plus_walls.py').read())
-
+from base_models import model_piles_deck_plus_walls
 
 # angle structure axis with X global axis
 # Aleta 1 (EL)
-exec(open(pathDeck+'../base_models/model_aleta_EL.py').read())
+from base_models import model_wingwall_EL
 
 # Aleta 2 (IL)
 ## aleta izquierda sección inicial
-exec(open(pathDeck+'../base_models/model_aleta_IL.py').read())
+from base_models import model_wingwall_IL
 
 # Aleta 3 (IR)
 ## aleta derecha sección inicial
-exec(open(pathDeck+'../base_models/model_aleta_IR.py').read())
-
+from base_models import model_wingwall_IR
 
 # Aleta 4 (ER)
 ## aleta derecha sección final
-exec(open(pathDeck+'../base_models/model_aleta_ER.py').read())
-
+from base_models import model_wingwall_ER
 #Vistas
-exec(open(pathDeck+'../base_models/views_deck_plus_walls.py').read())
+from base_models import views_deck_plus_walls
+
+# go to combo view -> show drawing vistas
+
+# Setting-out
+import setout_drawings

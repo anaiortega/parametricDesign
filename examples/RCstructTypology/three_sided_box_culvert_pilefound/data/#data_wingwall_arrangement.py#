@@ -1,0 +1,13 @@
+
+ww_type1a={'wallTopWidth':0.25,'backFaceSlope':0,'frontFaceSlope':0,'footHeight':0.35,'footWidth':1.9,'footToeWidth':0}
+
+from data import 
+# Aleta 1 (EL)
+exec(open(path+'datos_aleta1.py').read())
+ELww_data=ww_type1a
+angELww=33*90/100 # ángulo con el eje en sexagesimales
+lenELww=lWall #longitud medida desde el arranque interno
+Z_ELww=Z_baseWall
+wallSlopeELww=(hWallMax-hWallMin)/lWall
+dispLnEL=thWall*math.cos(math.radians(90+skew-angELww))
+hMaxEL=hWallMax

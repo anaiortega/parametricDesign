@@ -1,6 +1,8 @@
 from freeCAD_civil import tables
+from aux_sharing import sharing_docs as shd
+from aux_sharing import sharing_vars as shv
 
-docSetout=App.newDocument(obraNm+'_REPL',obraNm+'_REPL')
+shd.docSetout=FreeCAD.newDocument(obraNm+'_REPL',obraNm+'_REPL')
 hText=2.5
 hRows=5
 wColumns=[15,25,25,18]
@@ -13,41 +15,41 @@ exec(open(pathDeck+'../base_models/setout_deck.py').read())
 exec(open(pathDeck+'../base_models/setout_piles.py').read())
 
 # Alzado aleta 1 (EL)
-nmbAleta='1'
-pntLst=stackPntWwEL
+shv.nmbAleta='1'
+shv.pntLst=stackPntWwEL
 exec(open(pathDeck+'../base_models/setout_wall_wingWall.py').read())
 
 # Zapata aleta 1 (EL)
-nmbAleta='1'
-pntLst=stackPntFootEL[0]
+shv.nmbAleta='1'
+shv.pntLst=stackPntFootEL[0]
 exec(open(pathDeck+'../base_models/setout_foot_wingWall.py').read())
 
 # Alzado aleta 2 (IL)
-nmbAleta='2'
-pntLst=stackPntWwIL
+shv.nmbAleta='2'
+shv.pntLst=stackPntWwIL
 exec(open(pathDeck+'../base_models/setout_wall_wingWall.py').read())
 
 # Zapata aleta 2 (IL)
-nmbAleta='2'
-pntLst=stackPntFootIL[0]
+shv.nmbAleta='2'
+shv.pntLst=stackPntFootIL[0]
 exec(open(pathDeck+'../base_models/setout_foot_wingWall.py').read())
 
 # Alzado aleta 3 (IR)
-nmbAleta='3'
-pntLst=stackPntWwIR
+shv.nmbAleta='3'
+shv.pntLst=stackPntWwIR
 exec(open(pathDeck+'../base_models/setout_wall_wingWall.py').read())
 
 # Zapata aleta 3 (IR)
-nmbAleta='3'
-pntLst=stackPntFootIR[0]
+shv.nmbAleta='3'
+shv.pntLst=stackPntFootIR[0]
 exec(open(pathDeck+'../base_models/setout_foot_wingWall.py').read())
 
 # Alzado aleta 4 (ER)
-nmbAleta='4'
-pntLst=stackPntWwER
+shv.nmbAleta='4'
+shv.pntLst=stackPntWwER
 exec(open(pathDeck+'../base_models/setout_wall_wingWall.py').read())
 
 # Zapata aleta 4 (ER)
-nmbAleta='4'
-pntLst=stackPntFootER[0]
+shv.nmbAleta='4'
+shv.pntLst=stackPntFootER[0]
 exec(open(pathDeck+'../base_models/setout_foot_wingWall.py').read())

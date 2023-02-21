@@ -1,18 +1,21 @@
 # Tablero
-pntLst=[P1-vTransfCoord]
-pntLst+=[P1+gd.distAxisStartPnt*struct.getDirecVectLAxis()-vTransfCoord]
-pntLst+=[P2-vTransfCoord]
-pntLst+=deck_stakingPt
-nextCorner=Vector(0,0)
+from aux_sharing import sharing_docs as shd
+from aux_sharing import sharing_vars as shv
+
+shv.pntLst=[P1-shp.vTransfCoord]
+shv.pntLst+=[P1+gd.distAxisStartPnt*struct.getDirecVectLAxis()-shp.vTransfCoord]
+shv.pntLst+=[P2-shp.vTransfCoord]
+shv.pntLst+=shp.deck_stakingPt
+shv.nextCorner=Vector(0,0)
 tables.settingOutTable(
-    lstPoints=pntLst,
+    lstPoints=shv.pntLst,
     title='Replanteo tablero',
-    pntTLcorner=nextCorner,
+    pntTLcorner=shv.nextCorner,
     preffixPnt='',
     hText=hText,
     hRows=hRows,
     wColumns=wColumns,
-    vCooRel2Abs=vTransfCoord,
-    doc=docSetout,
+    vCooRel2Abs=shp.vTransfCoord,
+    doc=shd.docSetout,
     )
-nextCorner=nextCorner-Vector(0,(len(pntLst)+2)*hRows+desfaseTablas)
+shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*hRows+desfaseTablas)

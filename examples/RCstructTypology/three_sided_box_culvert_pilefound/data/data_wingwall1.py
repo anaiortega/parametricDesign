@@ -1,3 +1,4 @@
+import math
 estrName='Aleta 1'
 nmbAleta=1
 titSchedule=estrName.upper()
