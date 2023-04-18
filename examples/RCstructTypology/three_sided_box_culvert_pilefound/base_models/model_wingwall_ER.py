@@ -5,6 +5,7 @@ from FreeCAD import Vector
 from freeCAD_utils import drawing_tools as dt
 import Part
 from aux_sharing import sharing_ER_wingwall as ER
+from aux_sharing import sharing_vars as shv
 
 # Model wing-wall and chamfer (ER) - end right
 vDir=(shp.stackPendHeadWall[1]-shp.stackPendHeadWall[0]).normalize()
@@ -16,7 +17,7 @@ vDirLn=gu.getRotatedVector(v,Vector(0,0,-1),ER.angww)
 vDirTr=vDirLn.cross(Vector(0,0,1))
 shp.wingWallER=underpass.Wingwall(
     placementPoint=ptERwingwall,
-    foundLevel=ER.Zww-shp.vTransfCoord.z,
+    foundLevel=ER.Zww-shv.vTransfCoord.z,
     wallLenght=ER.lenww,
     wallSlope=ER.wallSlopeww,
     wallTopWidth=ER.ww_data['wallTopWidth'],

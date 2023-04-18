@@ -1,33 +1,32 @@
 # Pilotes lado izquierdo
+from FreeCAD import Vector
+from freeCAD_civil import tables
+from aux_sharing import sharing_parts as shp
 from aux_sharing import sharing_docs as shd
 from aux_sharing import sharing_vars as shv
 
-shv.pntLst=stakPpilesLeft
+shv.pntLst=shp.stakPpilesLeft
 tables.settingOutTable(
     lstPoints=shv.pntLst,
     title='Replanteo pilotes (izq.)',
     pntTLcorner=shv.nextCorner,
     preffixPnt='PI-',
-    hText=hText,
-    hRows=hRows,
-    wColumns=wColumns,
-    vCooRel2Abs=shp.vTransfCoord,
+    tbCfg=shv.setoutCfg,
+    vCooRel2Abs=shv.vTransfCoord,
     doc=shd.docSetout,
     )
-shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*hRows+desfaseTablas)
+shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*shv.setoutCfg.hRows+shv.desfaseTablas)
 
 
 # Pilotes lado derecho
-shv.pntLst=stakPpilesRight
+shv.pntLst=shp.stakPpilesRight
 tables.settingOutTable(
     lstPoints=shv.pntLst,
     title='Replanteo pilotes (der.)',
     pntTLcorner=shv.nextCorner,
     preffixPnt='PD-',
-    hText=hText,
-    hRows=hRows,
-    wColumns=wColumns,
-    vCooRel2Abs=shp.vTransfCoord,
+    tbCfg=shv.setoutCfg,
+    vCooRel2Abs=shv.vTransfCoord,
     doc=shd.docSetout,
     )
-shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*hRows+desfaseTablas)
+shv.nextCorner=shv.nextCorner-Vector(0,(len(shv.pntLst)+2)*shv.setoutCfg.hRows+shv.desfaseTablas)

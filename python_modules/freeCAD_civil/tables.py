@@ -45,48 +45,47 @@ def drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc):
     return pntNextTLcorner
    
 
-def settingOutTable(lstPoints,title,pntTLcorner=Vector(0,100),preffixPnt='',hText=2.5,hRows=4.00,wColumns=[10,18,20,14],vCooRel2Abs=Vector(0,0,0),doc=FreeCAD.ActiveDocument):
+def settingOutTable(lstPoints,title,pntTLcorner=Vector(0,100),preffixPnt='',tbCfg=cfg.setoutCfg,vCooRel2Abs=Vector(0,0,0),doc=FreeCAD.ActiveDocument):
     '''Create a survey coordinate table from the points in list lstPoints.
     :param lstPoints: list of staking points (freeCAD vectors)
     :param title: title for the table
     :param pntTLcorner: vector(x,y) to place the top left corner of the table (defaults 
            to Vector(0,100))
-    :param wColumns: list with the width of the columns (defaults to [10,18,20,14])
     :param preffixPnt: preffix to name the points
-    :param hText: height of the text
-    :param hRows: height of the rows
+    :param tbCfg: instance of class tableConf, where the width of columns, 
+                            the rows height and the text height are defined.
     :param vCooRel2Ab: vector to add to points to convert model coordinates in
-           survey coordinates 
+           survey coordinates (defaults to Vector(0,0,0))
     :param doc: document in which to put the schedule (defaults to the 
                 active document)
     '''
     FreeCAD.setActiveDocument(doc.Name)
     numRows=len(lstPoints)
-    p1=drawBoxWtitle(pntTLcorner,wColumns,title.upper(),hText,hRows,numRows,doc)
-    pLinea=p1.add(Vector(0,hRows/2.0))
-    pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
-    dt.put_text_in_pnt('PUNTO',pPos,hText,cfg.colorTextLeft)
-    pX=pLinea.add(Vector(wColumns[0]+wColumns[1]/2.0,-hText/2.0))
-    dt.put_text_in_pnt('X',pX,hText,cfg.colorTextCenter,"Center")
-    pY=pLinea.add(Vector(sum(wColumns[:2])+wColumns[2]/2.0,-hText/2.0))
-    dt.put_text_in_pnt('Y',pY,hText,cfg.colorTextCenter,"Center")
-    pZ=pLinea.add(Vector(sum(wColumns[:3])+wColumns[3]/2.0,-hText/2.0))
-    dt.put_text_in_pnt('Z',pZ,hText,cfg.colorTextCenter,"Center")
+    p1=drawBoxWtitle(pntTLcorner,tbCfg.wColumns,title.upper(),tbCfg.hText,tbCfg.hRows,numRows,doc)
+    pLinea=p1.add(Vector(0,tbCfg.hRows/2.0))
+    pPos=pLinea.add(Vector(tbCfg.hText/2.0,-tbCfg.hText/2.0))
+    dt.put_text_in_pnt('PUNTO',pPos,tbCfg.hText,cfg.colorTextLeft)
+    pX=pLinea.add(Vector(tbCfg.wColumns[0]+tbCfg.wColumns[1]/2.0,-tbCfg.hText/2.0))
+    dt.put_text_in_pnt('X',pX,tbCfg.hText,cfg.colorTextCenter,"Center")
+    pY=pLinea.add(Vector(sum(tbCfg.wColumns[:2])+tbCfg.wColumns[2]/2.0,-tbCfg.hText/2.0))
+    dt.put_text_in_pnt('Y',pY,tbCfg.hText,cfg.colorTextCenter,"Center")
+    pZ=pLinea.add(Vector(sum(tbCfg.wColumns[:3])+tbCfg.wColumns[3]/2.0,-tbCfg.hText/2.0))
+    dt.put_text_in_pnt('Z',pZ,tbCfg.hText,cfg.colorTextCenter,"Center")
     for i in range(len(lstPoints)):
         pnt=preffixPnt+str(i+1)
         p=lstPoints[i].add(vCooRel2Abs)
         x='{:.3f}'.format(p.x)
         y='{:.3f}'.format(p.y)
         z='{:.3f}'.format(p.z)
-        pLinea=pLinea.add(Vector(0,-hRows))
-        pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
-        dt.put_text_in_pnt(pnt,pPos,hText,cfg.colorTextLeft)
-        pX=pLinea.add(Vector(sum(wColumns[:2])-hText/2.0,-hText/2.0))
-        dt.put_text_in_pnt(x,pX, hText, cfg.colorTextRight,"Right")
-        pY=pLinea.add(Vector(sum(wColumns[:3])-hText/2.0,-hText/2.0))
-        dt.put_text_in_pnt(y,pY, hText, cfg.colorTextRight,"Right")
-        pZ=pLinea.add(Vector(sum(wColumns)-hText/2.0,-hText/2.0))
-        dt.put_text_in_pnt(z,pZ, hText, cfg.colorTextRight,"Right")
+        pLinea=pLinea.add(Vector(0,-tbCfg.hRows))
+        pPos=pLinea.add(Vector(tbCfg.hText/2.0,-tbCfg.hText/2.0))
+        dt.put_text_in_pnt(pnt,pPos,tbCfg.hText,cfg.colorTextLeft)
+        pX=pLinea.add(Vector(sum(tbCfg.wColumns[:2])-tbCfg.hText/2.0,-tbCfg.hText/2.0))
+        dt.put_text_in_pnt(x,pX, tbCfg.hText, cfg.colorTextRight,"Right")
+        pY=pLinea.add(Vector(sum(tbCfg.wColumns[:3])-tbCfg.hText/2.0,-tbCfg.hText/2.0))
+        dt.put_text_in_pnt(y,pY, tbCfg.hText, cfg.colorTextRight,"Right")
+        pZ=pLinea.add(Vector(sum(tbCfg.wColumns)-tbCfg.hText/2.0,-tbCfg.hText/2.0))
+        dt.put_text_in_pnt(z,pZ, tbCfg.hText, cfg.colorTextRight,"Right")
     FreeCAD.ActiveDocument.recompute()
 
 

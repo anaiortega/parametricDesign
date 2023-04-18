@@ -67,6 +67,8 @@ class tableConf(object):
         self.hRows=hRows
         self.hText=hText
 
+setoutCfg=tableConf(wColumns=[15,25,25,18],hRows=5,hText=2.5)
+
 class scheduleConf(tableConf):
      '''  Parameters to configure the geometry of  a rebars schedule
    

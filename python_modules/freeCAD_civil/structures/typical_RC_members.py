@@ -388,9 +388,9 @@ The data of the family is given as a dictionary of type:
         bStirr=stDic['widthStirr']+stDic['fi']
         coverStirr=reinfCfg.cover-stDic['fi']
         if stDic['dispRealSh']<0: # stirrups rigth towards left
-            lstPtsConcrTransv=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr]
+            lstPtsConcrSect=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr]
         else: # stirrups left towards right
-            lstPtsConcrTransv=[ln_bl,ln_bl+bStirr*vdirLn,ln_tl+bStirr*vdirLn,ln_tl]
+            lstPtsConcrSect=[ln_bl,ln_bl+bStirr*vdirLn,ln_tl+bStirr*vdirLn,ln_tl]
         if stDic['dispPerp']<0: # stirrups rigth towards left
             lstPtsConcrLong=[tr_tr,tr_br]
             vDirLong=-1*vdirTr
@@ -401,7 +401,7 @@ The data of the family is given as a dictionary of type:
             reinfCfg=reinfCfg,
             identifier=stDic['id'],
             diameter=stDic['fi'],
-            lstPtsConcrTransv=lstPtsConcrTransv,
+            lstPtsConcrSect=lstPtsConcrSect,
             lstCover=[coverStirr,0,coverStirr,0],
             lstPtsConcrLong=lstPtsConcrLong,
             spacStrpTransv=abs(stDic['sRealSh']),
@@ -420,9 +420,9 @@ The data of the family is given as a dictionary of type:
     # Stirrups holding the longitudinal top and bottom rebar families
     if stirrHoldLnReinf:
         if stDic['dispRealSh']<0: # stirrups rigth towards left
-            lstPtsConcrTransv=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr]
+            lstPtsConcrSect=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr]
         else: # stirrups left towards right
-            lstPtsConcrTransv=[tr_bl,tr_bl+bStirr*vdirTr,tr_tl+bStirr*vdirTr,tr_tl]
+            lstPtsConcrSect=[tr_bl,tr_bl+bStirr*vdirTr,tr_tl+bStirr*vdirTr,tr_tl]
         if stDic['dispPerp']<0: # stirrups rigth towards left
             lstPtsConcrLong=[ln_tr,ln_br]
             vDirLong=-1*vdirLn
@@ -436,7 +436,7 @@ The data of the family is given as a dictionary of type:
             reinfCfg=reinfCfg,
             identifier=stDic['id'],
             diameter=stDic['fi'],
-            lstPtsConcrTransv=lstPtsConcrTransv,
+            lstPtsConcrSect=lstPtsConcrSect,
             lstCover=[coverStirr,0,coverStirr,0],
             lstPtsConcrLong=lstPtsConcrLong,
             spacStrpTransv=abs(stDic['sRealSh']),

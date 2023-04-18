@@ -5,6 +5,7 @@ from freeCAD_civil.structures import underpass
 from FreeCAD import Vector
 from freeCAD_utils import drawing_tools as dt
 import Part
+from aux_sharing import sharing_vars as shv
 
 # Model aleta and chamfer EL (end left)
 vDir=(shp.stackPendHeadWall[1]-shp.stackPendHeadWall[0]).normalize()
@@ -15,7 +16,7 @@ v=shp.struct.getVectDorsalView()
 vDirLn=gu.getRotatedVector(v,Vector(0,0,1),EL.angww)
 vDirTr=vDirLn.cross(Vector(0,0,-1))
 shp.wingWallEL=underpass.Wingwall(placementPoint=ptELwingwall,
-                              foundLevel=EL.Zww-shp.vTransfCoord.z,
+                              foundLevel=EL.Zww-shv.vTransfCoord.z,
                               wallLenght=EL.lenww,
                               wallSlope=EL.wallSlopeww,
                               wallTopWidth=EL.ww_data['wallTopWidth'],
