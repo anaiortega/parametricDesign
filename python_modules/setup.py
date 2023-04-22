@@ -53,5 +53,5 @@ if not myPrefix or not len (myPrefix):
 
 setup(name='parametricDesign',
       author='Ana Ortega',
-      packages=['freeCAD_civil','freeCAD_civil/structures','freeCAD_utils','geometry_utils','landXMLtoFreeCAD','RC_utils','setting_out']
+      packages=['freeCAD_civil','freeCAD_civil/structures','freeCAD_utils','geometry_utils','landXMLtoFreeCAD','RC_utils','setting_out','layout_utils']
       )
