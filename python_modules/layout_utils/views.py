@@ -27,14 +27,14 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
     topView.Direction = (0.0, 0.0, -1.0)
 #    topView.Rotation=str(round(angRot,2))+' deg'
 #    topView.Source= lstObjects
-    topView.HardHidden=True
+    topView.HardHidden=False
     rc = docViews.addView(topView)
 
     bottomView=docGeom.addObject('TechDraw::DrawViewPart', 'bottom_view')
     bottomView.Caption='BOTTOM VIEW'
     bottomView.Direction = (0.0, 0.0, 1.0)
     bottomView.Source= lstObjects
-    bottomView.HardHidden=True
+    bottomView.HardHidden=False
     if scale:
         bottomView.ScaleType = u"Custom"
         bottomView.Scale=scale
@@ -46,7 +46,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
     frontView.Direction = (-1.0, 0.0, 0.0)
     #frontView.Scale=escalaAlzados*1000
     frontView.Source= lstObjects
-    frontView.HardHidden=True
+    frontView.HardHidden=False
     if scale:
         frontView.ScaleType = u"Custom"
         frontView.Scale=scale
@@ -58,7 +58,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
     backView.Direction = (1.0, 0.0, 0.0)
     #backView.Scale=escalaAlzados*1000
     backView.Source= lstObjects
-    backView.HardHidden=True
+    backView.HardHidden=False
     if scale:
         backView.ScaleType = u"Custom"
         backView.Scale=scale
@@ -71,7 +71,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
     #leftView.Scale=escalaAlzados*1000
     rc = docViews.addView(leftView)
     leftView.Source= lstObjects
-    leftView.HardHidden=True
+    leftView.HardHidden=False
     if scale:
         leftView.ScaleType = u"Custom"
         leftView.Scale=scale
@@ -84,7 +84,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
     #rightView.Scale=escalaAlzados*1000
     rc = docViews.addView(rightView)
     rightView.Source= lstObjects
-    rightView.HardHidden=True
+    rightView.HardHidden=False
     if scale:
         rightView.ScaleType = u"Custom"
         rightView.Scale=scale

@@ -10,9 +10,13 @@ from freeCAD_civil  import metallic_profiles
 from freeCAD_civil  import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
+
 #Cruce de diagonales con manguito (ver página 298 del libro publicado por APTA
 #"Naves industriales con acero"
 
+docName='cruce_diag_manguito3D'
+docGeom=App.newDocument(docName,docName)
 
 
 #NOTA: todas las cotas se dan en mm
@@ -59,21 +63,12 @@ giroSec=0
 diag2=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(diag2)
 
+Part.show(pieza,'pieza')
+
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
+
 #Agujero para manguito
 
 #no está programado
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
-
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Ant'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
 
