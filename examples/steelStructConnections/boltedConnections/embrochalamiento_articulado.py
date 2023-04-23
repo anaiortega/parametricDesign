@@ -15,7 +15,7 @@ from layout_utils import views
 #casquillo de angular (L, de lados iguales). La viga principal se representa en la dirección del eje 
 #Y global y la secundaria en la dirección del eje X global
 
-docName='cruce_diag_manguito3D'
+docName='embrochalamiento_articulado'
 docGeom=App.newDocument(docName,docName)
 
 

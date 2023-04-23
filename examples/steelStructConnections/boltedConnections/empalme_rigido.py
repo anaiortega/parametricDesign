@@ -14,7 +14,7 @@ from layout_utils import views
 #Empalme atornillado entre 2 tramos del mismo perfil. El eje longitudinal del perfil
 #se representa en la dirección del eje Y global y el eje fuerte de la sección en la
 #dirección del eje Z global
-docName='cruce_diag_manguito3D'
+docName='emplame_rigido'
 docGeom=App.newDocument(docName,docName)
 
 
