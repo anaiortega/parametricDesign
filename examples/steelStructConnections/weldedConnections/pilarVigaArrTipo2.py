@@ -10,8 +10,14 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
 
 #Unión de viga de atado a ambos lados del pilar
+
+docName='pilar_vigaarr_tipo2'
+docGeom=App.newDocument(docName,docName)
+
+
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -128,22 +134,7 @@ rig4=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL
 
 pieza=pieza.fuse(rig1.fuse(rig2.fuse(rig3.fuse(rig4))))
 
-Part.show(pieza)
+Part.show(pieza,'pieza')
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 
-geometry_3D.vistaIsoAnterosup(App,escala,Pieza)
-geometry_3D.vistaIsoAnteroinf(App,escala,Pieza)
-geometry_3D.vistaIsoPosterosup(App,escala,Pieza)
-geometry_3D.vistaIsoPosteroinf(App,escala,Pieza)
-
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Post'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)

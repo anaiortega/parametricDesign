@@ -10,8 +10,12 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
 
 #Arriostramiento tipo 1 
+docName='arriostr_tipo1'
+docGeom=App.newDocument(docName,docName)
+
 #****Datos****
 #Viga
 tipoPerfilViga='W'        
@@ -106,21 +110,9 @@ incrIni=slpArrCart
 incrFin=0
 giroSec=0
 arriostr=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
-arriostr.add(arrI)
-arriostr.add(pieza)
+Part.show(arrI,'arrI')
+Part.show(pieza,'pieza')
+Part.show(arriostr,'arriostr')
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.arrI,docGeom.pieza,docGeom.arriostr],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 
-Part.show(arriostr)
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=arriostr
-FreeCADGui.Selection.addSelection(Pieza)
-
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Ant'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
 

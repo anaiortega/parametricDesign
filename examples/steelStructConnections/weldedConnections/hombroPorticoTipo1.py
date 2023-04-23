@@ -10,10 +10,14 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
+
 #Hombro de pórtico soldado con viga de arriostramiento
 #El pórtico está en el plano YZ y la viga de arriostramiento 
 #se representa en la dirección del eje X global
 
+docName='hombro_portico_tipo1'
+docGeom=App.newDocument(docName,docName)
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -121,19 +125,6 @@ rig2=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL
 rig2=rig2.cut(pilar)
 pieza=pieza.fuse(rig2)
 
-Part.show(pieza)
+Part.show(pieza,'pieza')
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
-
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Ant'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
-
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')

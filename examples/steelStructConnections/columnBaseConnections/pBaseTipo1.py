@@ -10,10 +10,14 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
+
 #Placa base tipo 1
 #El origen de coordenadas (X,Y) se sitúa sobre el eje del pilar. El
 #origen de Z está en la cara inferior de la placa base.
 
+docName='placa_base_tipo1'
+docGeom=App.newDocument(docName,docName)
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -140,13 +144,6 @@ for i in range(0,nXFilasAg):
 aguj=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(aguj)
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
+Part.show(pieza,'pieza')
 
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,'Sup')
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,'Ant')
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,'Izq')
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-i#*    2013   Ana Ortega    *
+#*    2013   Ana Ortega    *
 
-mport Part, FreeCAD, math, TechDraw, FreeCADGui
+import Part, FreeCAD, math, TechDraw, FreeCADGui
 import Draft
 import freeCAD_civil
 from freeCAD_civil import geometry_3D
@@ -10,8 +10,11 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
 
 #Unión de viga de atado a ambos lados del pilar
+docName='pilar_vatado_arr_tipo1'
+docGeom=App.newDocument(docName,docName)
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -106,6 +109,7 @@ listaCoordAgujL=[]
 espesorChapa=eRigAla
 diamAguj=0
 rig1=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
+pieza=pieza.fuse(rig1)
 
 vOrigenL=geometry_3D.simYZPto(Pto1)
 vDirXL=Base.Vector(0,1,0)
@@ -116,6 +120,7 @@ listaCoordAgujL=[]
 espesorChapa=eRigAla
 diamAguj=0
 rig2=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL2,listaCoordAgujL,espesorChapa,diamAguj)
+pieza=pieza.fuse(rig2)
 
 Pto1=geometry_3D.simXYPto(Pto1)
 
@@ -128,6 +133,7 @@ listaCoordAgujL=[]
 espesorChapa=eRigAla
 diamAguj=0
 rig3=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
+pieza=pieza.fuse(rig3)
 
 vOrigenL=geometry_3D.simYZPto(Pto1)
 vDirXL=Base.Vector(0,1,0)
@@ -137,12 +143,14 @@ listaCoordChapaL=geometry_3D.simYZlistaCoord(listaCoordChapaL)
 listaCoordAgujL=[]
 espesorChapa=eRigAla
 diamAguj=0
+
 rig4=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
 
-pieza=pieza.fuse(rig1.fuse(rig2.fuse(rig3.fuse(rig4))))
+pieza=pieza.fuse(rig4)
+
 
 #Rigidizadores en el alma de la viga
-Pto1=Base.Vector(eAlmaPerfilPilar/2.0,-eRigAlma/2.0-eAlmaPerfilVAtado/2,,0)
+Pto1=Base.Vector(eAlmaPerfilPilar/2.0,-eRigAlma/2.0- eAlmaPerfilVAtado/2,0)
 auxX=(cantoPerfilVAtado-2*eRigAla)/2.0
 auxY=(anchoPerfilPilar-eAlmaPerfilPilar)/2.0+holgAlaPilarVAtado+solapeRAlmaV
 
@@ -183,22 +191,10 @@ alfa2=ang2
 VPte=VPteArr
 HPte=HPteArr
 LPerf=LArr
-todo=metallic_struct.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
-todo.add(pieza)
+diagonal=metallic_struct.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
 
-Part.show(todo)
+Part.show(diagonal,'diagonal')
+Part.show(pieza,'pieza')
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=todo
-FreeCADGui.Selection.addSelection(Pieza)
-
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Ant'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.diagonal,docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 

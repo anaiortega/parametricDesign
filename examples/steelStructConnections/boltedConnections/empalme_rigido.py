@@ -10,9 +10,13 @@ from freeCAD_civil  import metallic_profiles
 from freeCAD_civil  import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
 #Empalme atornillado entre 2 tramos del mismo perfil. El eje longitudinal del perfil
 #se representa en la dirección del eje Y global y el eje fuerte de la sección en la
 #dirección del eje Z global
+docName='cruce_diag_manguito3D'
+docGeom=App.newDocument(docName,docName)
+
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -157,22 +161,6 @@ for i in range(0,nYFilasTAlma):
 agujAlma=geometry_3D.conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura)
 pieza=pieza.cut(agujAlma)
 
-Part.show(pieza)
+Part.show(pieza,'pieza')
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
-
-geometry_3D.vistaIsoAnterosup(App,escala,Pieza)
-geometry_3D.vistaIsoAnteroinf(App,escala,Pieza)
-geometry_3D.vistaIsoPosterosup(App,escala,Pieza)
-geometry_3D.vistaIsoPosteroinf(App,escala,Pieza)
-
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Ant'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')

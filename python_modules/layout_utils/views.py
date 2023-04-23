@@ -24,7 +24,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
         topView.ScaleType = u"Custom"
         topView.Scale=scale
         topView.Caption+='. Scale: '+ str(scale)
-    topView.Direction = (0.0, 0.0, -1.0)
+    topView.Direction = (0.0, 0.0, 1.0)
 #    topView.Rotation=str(round(angRot,2))+' deg'
 #    topView.Source= lstObjects
     topView.HardHidden=False
@@ -32,7 +32,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
 
     bottomView=docGeom.addObject('TechDraw::DrawViewPart', 'bottom_view')
     bottomView.Caption='BOTTOM VIEW'
-    bottomView.Direction = (0.0, 0.0, 1.0)
+    bottomView.Direction = (0.0, 0.0, -1.0)
     bottomView.Source= lstObjects
     bottomView.HardHidden=False
     if scale:
@@ -43,7 +43,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
 
     frontView=docGeom.addObject('TechDraw::DrawViewPart', 'front_view')
     frontView.Caption='FRONT VIEW'
-    frontView.Direction = (-1.0, 0.0, 0.0)
+    frontView.Direction = (1.0, 0.0, 0.0)
     #frontView.Scale=escalaAlzados*1000
     frontView.Source= lstObjects
     frontView.HardHidden=False
@@ -55,7 +55,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
 
     backView=docGeom.addObject('TechDraw::DrawViewPart', 'back_view')
     backView.Caption='BACK VIEW'
-    backView.Direction = (1.0, 0.0, 0.0)
+    backView.Direction = (-1.0, 0.0, 0.0)
     #backView.Scale=escalaAlzados*1000
     backView.Source= lstObjects
     backView.HardHidden=False
@@ -67,7 +67,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
 
     leftView=docGeom.addObject('TechDraw::DrawViewPart', 'left_view')
     leftView.Caption='LEFT VIEW'
-    leftView.Direction = (0.0,1.0,0.0)
+    leftView.Direction = (0.0,-1.0,0.0)
     #leftView.Scale=escalaAlzados*1000
     rc = docViews.addView(leftView)
     leftView.Source= lstObjects
@@ -80,7 +80,7 @@ def basic_views(docGeom,title,lstObjects,scale=None,pageTemplate='A1_Landscape_b
 
     rightView=docGeom.addObject('TechDraw::DrawViewPart', 'right_view')
     rightView.Caption='RIGHT VIEW'
-    rightView.Direction =(0.0,-1.0,0.0)
+    rightView.Direction =(0.0,1.0,0.0)
     #rightView.Scale=escalaAlzados*1000
     rc = docViews.addView(rightView)
     rightView.Source= lstObjects

@@ -10,8 +10,13 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
 
-#Arriostramiento tipo 1 
+#Arriostramiento tipo 1
+
+docName='arriostr_vigacarr_tipo1'
+docGeom=App.newDocument(docName,docName)
+
 #****Datos****
 #Viga de atado (y de acompañamiento de la carrilera)
 tipoPerfilViga='W'        
@@ -149,20 +154,11 @@ diamAguj=0
 chapa=metallic_struct.chapaAgSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordChapaL,listaCoordAgujL,espesorChapa,diamAguj)
 pieza=pieza.fuse(chapa)
 
-
-arriostr.add(pieza)
-Part.show(arriostr)
-
-
+Part.show(pieza,'pieza')
+Part.show(arriostr,'arriostr')
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.arriostr,docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=arriostr
-FreeCADGui.Selection.addSelection(Pieza)
 
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='n'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,'Sup')
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,'Ant')
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,'Izq')
+
+

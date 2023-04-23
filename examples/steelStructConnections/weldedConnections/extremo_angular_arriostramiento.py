@@ -10,9 +10,14 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
+
 #Unión dúctil soldada de un angular simple L (de lados iguales) en su extremo
 #(ver página 308 del libro publicado por APTA
 #"Naves industriales con acero")
+
+docName='extremo_angular_arriostr'
+docGeom=App.newDocument(docName,docName)
 
 
 #NOTA: todas las cotas se dan en mm
@@ -92,19 +97,7 @@ pieza=pieza.fuse(sold1)
 sold2=metallic_struct.soldadura2Ptos(pieza,pieza,0.7*ladoDiag/10,P5.add(Base.Vector(espCartela,0,0)),P9.add(Base.Vector(espCartela,0,0)))
 pieza=pieza.fuse(sold2)
 
-Part.show(pieza)
+Part.show(pieza,'pieza')
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
-
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Ant'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 

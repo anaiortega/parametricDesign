@@ -10,8 +10,13 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
 
 #Unión de viga de atado a ambos lados del pilar
+docName='pilar_vatado_arr_tipo3'
+docGeom=App.newDocument(docName,docName)
+
+
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -154,25 +159,12 @@ alfa2=ang2
 VPte=VPteArr
 HPte=HPteArr
 LPerf=LArr
-todo=metallic_struct.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
-todo.add(pieza)
+diagonal=metallic_struct.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
 
-Part.show(todo)
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=todo
-FreeCADGui.Selection.addSelection(Pieza)
+Part.show(pieza,'pieza')
+Part.show(diagonal,'diagonal')
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.diagonal,docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 
-geometry_3D.vistaIsoAnterosup(App,escala,Pieza)
-geometry_3D.vistaIsoAnteroinf(App,escala,Pieza)
-geometry_3D.vistaIsoPosterosup(App,escala,Pieza)
-geometry_3D.vistaIsoPosteroinf(App,escala,Pieza)
 
-ocultas='s'
-SupInf='Inf'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Post'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Izq'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+

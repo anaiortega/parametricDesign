@@ -12,6 +12,9 @@ from FreeCAD import Base
 from Draft import *
 
 #Unión de viga de atado a ambos lados del pilar
+docName='pilar_vatado_vcarr_tipo1'
+docGeom=App.newDocument(docName,docName)
+
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -269,19 +272,9 @@ rigid=metallic_struct.parRigOrtAlma(ptoCentral,vDirAlma,vDirAla,cantoPerfil,anch
 eRigid=erigAlaMens
 pieza=pieza.fuse(rigid)
 
-Part.show(pieza)
+Part.show(piez'a,pieza')
 
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Post'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+
 

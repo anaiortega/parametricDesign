@@ -10,8 +10,12 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
 
 #Unión de viga de atado a ambos lados del pilar
+
+docName='pilar_varr_vcarr_tipo1'
+docGeom=App.newDocument(docName,docName)
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****

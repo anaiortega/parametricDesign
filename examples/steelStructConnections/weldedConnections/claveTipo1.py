@@ -10,10 +10,14 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
+
 #Clave de pórtico con viga de arriostramiento soldada
 #El pórtico está en el plano YZ y la viga de arriostramiento 
 #se representa en la dirección del eje X global
 
+docName='clave_tipo1'
+docGeom=App.newDocument(docName,docName)
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -74,21 +78,9 @@ incrFin=0
 giroSec=0
 vriost=metallic_struct.barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec)
 pieza=pieza.fuse(vriost)
+Part.show(pieza,'pieza')
+Part.show(vriost,'vriost')
 
 
-Part.show(pieza)
-
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=pieza
-FreeCADGui.Selection.addSelection(Pieza)
-
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-SupInf='Sup'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,SupInf)
-AntPost='Ant'
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,AntPost)
-IzqDer='Der'
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,IzqDer)
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.vriost,docGeom.pieza],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 

@@ -10,10 +10,14 @@ from freeCAD_civil import metallic_profiles
 from freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
+from layout_utils import views 
+
 #Placa base tipo 2
 #El origen de coordenadas (X,Y) se sitúa sobre el eje del pilar. El
 #origen de Z está en la cara inferior de la placa base.
 
+docName='placa_base_tipo3'
+docGeom=App.newDocument(docName,docName)
 
 #NOTA: todas las cotas se dan en mm
 #****Datos****
@@ -174,18 +178,10 @@ alfa2=ang2
 VPte=VPteArr
 HPte=HPteArr
 LPerf=LArr
-todo=metallic_struct.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
+diagonal=metallic_struct.arriostr1Tubo(PtoTrabajo,PtoOrigenCart,plano,tipoPerfilDiag,idPerfilDiag,VOrigenPerf,eCartela,solapePerfCart,holguraCart,alfa1,alfa2,VPte,HPte,LPerf)
 
-todo.add(pieza)
+Part.show(pieza,'pieza')
+Part.show(diagonal,'diagonal')
 
-Part.show(todo)
-#****Representación en planos
-Pieza=FreeCAD.ActiveDocument.addObject("Part::Feature","Pieza")
-Pieza.Shape=todo
-FreeCADGui.Selection.addSelection(Pieza)
+views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.pieza,docGeom.diagonal],scale=0.10,pageTemplate='A3_Landscape_blank.svg')
 
-geometry_3D.vistasIsom(App,escala,Pieza)
-ocultas='s'
-geometry_3D.vistaPlanta(App,escala,Pieza,ocultas,'Sup')
-geometry_3D.vistaFront(App,escala,Pieza,ocultas,'Ant')
-geometry_3D.vistaLat(App,escala,Pieza,ocultas,'Izq')
