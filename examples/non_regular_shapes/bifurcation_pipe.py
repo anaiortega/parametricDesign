@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import math
-import Part,  math, FreeCADGui
+import Part,
 from FreeCAD import Vector
 from layout_utils import views 
 
