@@ -47,7 +47,7 @@ vert_rf1=rb.rebarFamily(
     lstPtsConcrSect=[pl1,pl2],
     lstCover=[Whex/2],
     coverSide='r',
-    vectorLRef=Vector(0.30,-0.15),
+    vectorLRef=Vector(0.70,-0.15),
     fromToExtPts=[pt1,pt2,pt3],
     lateralCover=0,
     sectBarsSide='r',
@@ -64,7 +64,7 @@ vert_rf2=rb.rebarFamily(
     lstPtsConcrSect=[pl1,pl2],
     lstCover=[Whex/4],
     coverSide='r',
-    vectorLRef=Vector(-0.20,-0.15),
+    vectorLRef=Vector(-0.50,-0.15),
     fromToExtPts=[pt1,pt6,pt5,pt4,pt3],
     lateralCover=0.1,
     sectBarsSide='l',
@@ -131,7 +131,7 @@ rb.drawRCSection(
                  lstSectRebarFam=None,
                  lstShapeStirrupFam=None,
                  lstEdgeStirrupFam=[stirr1,stirr2],
-                 vTranslation=Vector(0,Hhex+0.5),
+                 vTranslation=Vector(0,Hhex+0.7),
     )
 docArm.recompute()
 

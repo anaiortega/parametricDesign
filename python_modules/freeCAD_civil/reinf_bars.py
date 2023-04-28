@@ -195,7 +195,7 @@ class rebarFamilyBase(object):
             p=Part.show(etiq)
             FreeCADGui.ActiveDocument.getObject(p.Name).LineColor = cfg.colorRefLines
 
-    def drawSectRebarLref(self,startPnt,endPnt,vauxn):
+    def drawSectRebarLref(self,startPnt,endPnt,vauxn,wireCenters):
         '''Draw the reference line for labeling a sectioned rebar family, or
         a family of stirrups in longitudinal section 
         Return the parameters to place the text
@@ -207,13 +207,38 @@ class rebarFamilyBase(object):
         '''
         factPos=self.reinfCfg.factPosLabelSectReb
         hText=self.reinfCfg.texSize
-        vaux=endPnt-startPnt
-        vaux.normalize()
-        vnorm=-1*vauxn.normalize()
-        p1=startPnt+hText*vaux+self.reinfCfg.factDispReflinSectReb*1.5*hText*vnorm
-        p2=endPnt-hText*vaux+self.reinfCfg.factDispReflinSectReb*1.5*hText*vnorm
-        pol=Part.makePolygon([startPnt,p1,p2,endPnt])
-        w=Part.show(pol)
+        if wireCenters:
+            # Reference line
+            # if self.sectBarsSide == 'r':
+            #     offset=-(self.reinfCfg.factDispReflinSectReb*1.5*self.reinfCfg.texSize)
+            # else:
+            #     offset=self.reinfCfg.factDispReflinSectReb*1.5*self.reinfCfg.texSize
+            offset=abs(self.reinfCfg.factDispReflinSectReb*1.5*self.reinfCfg.texSize)
+            initLref=wireCenters.makeOffset2D(offset,join=2,openResult=True)
+            if initLref.Length < wireCenters.Length:
+                initLref=wireCenters.makeOffset2D(-1*offset,join=2,openResult=True)
+            initLrefVertex=initLref.OrderedVertexes
+            initLrefPoints=[vtx.Point for vtx in initLrefVertex]
+            v1=Vector(initLrefPoints[1]-initLrefPoints[0]).normalize()
+            v2=Vector(initLrefPoints[-2]-initLrefPoints[-1]).normalize()
+            p1=initLrefPoints[0]+v1*self.reinfCfg.texSize
+            p2=initLrefPoints[-1]+v2*self.reinfCfg.texSize
+            if startPnt.distanceToPoint(p1) < startPnt.distanceToPoint(p2):
+                lstPtsLref=[startPnt,p1]+initLrefPoints[1:-1]+[p2,endPnt]
+            else:
+                lstPtsLref=[endPnt,p1]+initLrefPoints[1:-1]+[p2,startPnt]
+            lref=Part.makePolygon(lstPtsLref)
+            w= Part.show(lref)
+            p2=lstPtsLref[2]
+            vnorm=Vector(p1.y-p2.y,-p1.x+p2.x).normalize()
+        else:
+            vaux=endPnt-startPnt
+            vaux.normalize()
+            vnorm=-1*vauxn.normalize()
+            p1=startPnt+hText*vaux+self.reinfCfg.factDispReflinSectReb*1.5*hText*vnorm
+            p2=endPnt-hText*vaux+self.reinfCfg.factDispReflinSectReb*1.5*hText*vnorm
+            lref=Part.makePolygon([startPnt,p1,p2,endPnt])
+            w=Part.show(lref)
         FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
         pStartRefL=p1+factPos*(p2-p1)
         pEndRefL=pStartRefL+hText*vnorm
@@ -229,7 +254,7 @@ class rebarFamilyBase(object):
         self.drawDecorId(pEndRefL,pCentCirc,justif)
         return justif,pText
             
-    def labelSectRebar(self,startPnt,endPnt,vauxn):
+    def labelSectRebar(self,startPnt,endPnt,vauxn,wireCenters=None):
         ''' Label (reference lines + text) a family of rebars sectioned.
 
         :param startPnt: point position of the first rebar (center of the circle)
@@ -237,7 +262,7 @@ class rebarFamilyBase(object):
         :param vauxn: vector perpendicular to the line defined by the rebars pointing 
                       from concrete towards the rebars
         '''
-        justif,pText=self.drawSectRebarLref(startPnt,endPnt,vauxn)
+        justif,pText=self.drawSectRebarLref(startPnt,endPnt,vauxn,wireCenters)
         ptoSketch,pos=self.rebarText(justif,pText)
         return ptoSketch,pos
        
@@ -413,14 +438,12 @@ class rebarFamily(rebarFamilyBase):
         vEnd=(self.fromToExtPts[-2]-self.fromToExtPts[-1]).normalize()
         concrWire=Part.makePolygon(self.fromToExtPts)
         concrWire.translate(vTranslation)
-        Part.show(concrWire,'concrWire')
         if self.sectBarsSide == 'r':
             offset=self.coverSectBars+self.diameter/2.0
         else:
             offset=-(self.coverSectBars+self.diameter/2.0)
         if len(self.fromToExtPts)>2:
-            initCentersWire=concrWire.makeOffset2D(offset,openResult=True)
-            Part.show(initCentersWire,'initCentersWire')
+            initCentersWire=concrWire.makeOffset2D(offset,join=2,openResult=True)
         else:
             vauxn=Vector(vStart.y,-vStart.x).normalize()
             initCentersWire=concrWire.translated(offset*vauxn) 
@@ -430,41 +453,32 @@ class rebarFamily(rebarFamilyBase):
         initCentersWirePoints=[vtx.Point for vtx in initCentersWireVertex]
         vAux=Vector(initCentersWirePoints[1]-initCentersWirePoints[0]).normalize()
         if vAux != vStart:
-            print('*******')
             initCentersWirePoints.reverse()
-        print('initCentersWirePoints=',initCentersWirePoints)
-        if self.spacing==0:
+        if self.spacing==0: # number of rebars is given
             firstPoint=initCentersWirePoints[0]+vStart*(self.lateralCover+self.diameter/2.0)
             endPoint=initCentersWirePoints[-1]+vEnd*(self.lateralCover+self.diameter/2.0)
             centersWirePoints=[firstPoint]+initCentersWirePoints[1:-1]+[endPoint]
-            centersWire=Part.makePolygon(centersWirePoints)
-            Part.show(centersWire,'centersWire')
-            centersSectBars=centersWire.discretize(Number=self.nmbBars)
+            centersWire=Part.makePolygon(centersWirePoints) # polyline jointing the cernters of rebars
+            centersSectBars=centersWire.discretize(Number=self.nmbBars) # list of points representing the centers of rebars
         else:
             nesp=int((Laux-2.0*self.lateralCover-self.diameter)/self.spacing)
             distrL=(Laux-self.spacing*nesp)/2.0
-            print('distrL=',distrL)
-            print('vStart=',vStart)
-            print('vEnd=',vEnd)
-            print('initCentersWirePoints[0]',initCentersWirePoints[0])
             firstPoint=initCentersWirePoints[0]+vStart*distrL
-            print('firstPoint=',firstPoint)
-            print('initCentersWirePoints[-1]',initCentersWirePoints[-1])
             endPoint=initCentersWirePoints[-1]+vEnd*distrL
-            print('endPoint=',endPoint)
             centersWirePoints=[firstPoint]+initCentersWirePoints[1:-1]+[endPoint]
-            print('centersWirePoints=',centersWirePoints)
             centersWire=Part.makePolygon(centersWirePoints)
-            Part.show(centersWire)
             centersSectBars=centersWire.discretize(Distance=self.spacing)
-        # Draw sectioned rebars
-        zaxis = FreeCAD.Vector(0, 0, 1)
+        vAux=(centersWirePoints[1]-centersWirePoints[0])
+        if vAux != vStart:
+            centersWire.reverse()
+        #Draw sectioned rebars
+        zaxis = Vector(0, 0, 1)
         for cent in centersSectBars:
             place=FreeCAD.Placement(); place.move(cent)
             c=Draft.makeCircle(self.diameter/2.0,placement=place,face=False)
             FreeCADGui.ActiveDocument.getObject(c.Name).LineColor =cfg.colorSectBars
-        # Label
-        ptoIniEtiq=centersSectBars[0]
+        # Data to draw reference line
+        startPnt=centersSectBars[0]
         endPnt=centersSectBars[-1]
         vaux=self.fromToExtPts[1]-self.fromToExtPts[0]
         vaux.normalize()
@@ -473,7 +487,10 @@ class rebarFamily(rebarFamilyBase):
         else:
             vauxn=Vector(vaux.y,-vaux.x)
         vauxn.normalize()
-        self.labelSectRebar(ptoIniEtiq,endPnt,vauxn)
+        if len(self.fromToExtPts) > 2:
+            self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=centersWire)
+        else:
+            self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=None) 
         return
         
            
@@ -870,7 +887,7 @@ class stirrupFamily(rebarFamilyBase):
         else:
             vauxn=Vector(startPnt.y-endPnt.y,endPnt.x-startPnt.x)
         vauxn.normalize()
-        self.labelSectRebar(startPnt,endPnt,vauxn)
+        self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=None)
 
     def rebarText(self,justif,pText):
         '''Write the text that labels the rebar family
@@ -1031,7 +1048,7 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
         if rbFam.wireSect2 != None:
             totalLength=(totalLength+sum(rbFam.wireSect2Lengths))/2.0
         s='currentUnitPriceQ.quantities.append(MeasurementRecord(c= \"'+ str(rbFam.identifier) +'\", uds= ' +str(rbFam.getNumberOfBars()) + ', l= ' + str(totalLength) + ', an= ' + str(rbFam.getUnitWeight())  + ')) \n'
-        print(s)
+#        print(s)
         f.write(s)
     f.close()
         
