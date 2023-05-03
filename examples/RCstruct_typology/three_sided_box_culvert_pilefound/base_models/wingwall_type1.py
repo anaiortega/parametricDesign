@@ -31,9 +31,9 @@ scheduleCfg=cfg.scheduleConf(wColumns=[10,30,20,10,20,12],hRows=10,hText=2.5,hTe
 
 #  DATA
 
-footGenConf=cfg.reinfConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+footGenConf=cfg.reinfConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 
-wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 
 # #  Armados zapata
 # armadura transversal inferior
@@ -122,10 +122,10 @@ RF_foot_tr_bot=rb.rebarFamily(
     gapStart=-2.5*footGenConf.cover,
     gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Ptfoot_2,Ptfoot_1,Ptfoot_4,Ptfoot_3],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.3,-0.3),
     fromToExtPts=[Plfoot_1,Plfoot_4],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     spacing=foot_tr_bot['s'],
 #    lstPtsConcrSect2=[Ptfoot_2p,Ptfoot_1,Ptfoot_4,Ptfoot_3p]
 )
@@ -157,11 +157,11 @@ RF_foot_ln_bot=rb.rebarFamily(
     gapEnd=-2.5*footGenConf.cover,
     lstPtsConcrSect=[Plfoot_2,Plfoot_1,Plfoot_4,Plfoot_3],
     lstCover=[footGenConf.cover,footGenConf.cover+foot_tr_bot['fi'],footGenConf.cover],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.3,-0.3),
     fromToExtPts=[Ptfoot_1,Ptfoot_4],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     )
 lstRebarFam+=[RF_foot_ln_bot]
 rebarCount+=1
@@ -193,7 +193,7 @@ RF_foot_lat_toe=rb.rebarFamily(
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Plfoot_1,Plfoot_2],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     extrShapeStart='anc270_posGood_tens',
     extrShapeEnd='anc270_posGood_tens',
     )
@@ -206,13 +206,13 @@ RF_foot_lat_heel=rb.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
     spacing=foot_lat['s'],
-    coverSide='l',
+    rightSideCover='l',
     nmbBars=foot_lat['nmbBars'],
     lstPtsConcrSect=[Ph_4,Phf_3],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Plfoot_4,Plfoot_3],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     extrShapeStart='anc90_posGood_tens',
     extrShapeEnd='anc90_posGood_tens',
     )
@@ -225,13 +225,13 @@ RF_foot_lat_front=rb.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
     spacing=foot_lat['s'],
-    coverSide='l',
+    rightSideCover='l',
     nmbBars=foot_lat['nmbBars'],
     lstPtsConcrSect=[Ph_1,Ph_4],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Ptfoot_1,Ptfoot_2],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     extrShapeStart='anc90_posGood_tens',
     extrShapeEnd='anc90_posGood_tens',
     )
@@ -246,13 +246,13 @@ RF_foot_lat_dors=rb.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=foot_lat['fi'],
     spacing=foot_lat['s'],
-    coverSide='r',
+    rightSideCover=True,
     nmbBars=foot_lat['nmbBars'],
     lstPtsConcrSect=[Phf_2,Phf_3],
     lstCover=[footGenConf.cover+foot_tr_bot['fi']],
     fromToExtPts=[Ptfoot_4,Ptfoot_3],
     coverSectBars=footGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     extrShapeStart='anc270_posGood_tens',
     extrShapeEnd='anc270_posGood_tens',
     )
@@ -268,7 +268,7 @@ if dowels:
         diameter=wall_vert_back['fi'],
         spacing=wall_vert_back['s'],
         lstPtsConcrSect=[Ptwall1_4,Ptwall1_4+Vector(slopeBack*thFoot,-thFoot)],
-        coverSide='r',
+        rightSideCover=True,
         gapStart=0,
         gapEnd=-(footGenConf.cover+foot_tr_bot['fi']+foot_ln_bot['fi']+wall_vert_back['fi']/2),
         extrShapeStart='lap0_posGood_tens',
@@ -286,7 +286,7 @@ if dowels:
         identifier=str(rebarCount+1),
         diameter=wall_vert_front['fi'],
         spacing=wall_vert_front['s'],
-        coverSide='l',
+        rightSideCover='l',
         lstPtsConcrSect=[Ptwall_1,Ptwall_1+Vector(0,-thFoot)],
         gapStart=0,
         gapEnd=-(footGenConf.cover+foot_tr_bot['fi']+foot_ln_bot['fi']+wall_vert_front['fi']/2),
@@ -294,7 +294,7 @@ if dowels:
         extrShapeEnd='fix'+str(ang)+'_len200',
         vectorLRef=Vector(-0.25,0.2),
         fromToExtPts=[Ph_1,Ph_4],
-        sectBarsSide='l',
+        rightSideSectBars='l',
 #        lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3]
         )
     lstRebarFam+=[RF_dowel_front]
@@ -308,7 +308,7 @@ if dowels:
         diameter=wall_vert_back['fi'],
         spacing=wall_vert_back['s'],
         lstPtsConcrSect=[Ptwall1_4,Ptwall1_3,Ptwall1_2],
-        coverSide='l',
+        rightSideCover='l',
         gapStart=0,
         fromToExtPts=[Ph1_2,Ph1_3],
         lstPtsConcrSect2=[Ptwall2_4,Ptwall2_3,Ptwall2_2],    
@@ -327,7 +327,7 @@ if dowels:
         gapStart=0,
         vectorLRef=Vector(-0.25,0.2),
         fromToExtPts=[Ph_1,Ph_4],
-        sectBarsSide='l',
+        rightSideSectBars='l',
         lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3]
         )
 
@@ -344,7 +344,7 @@ else: # sin esperas
         diameter=wall_vert_back['fi'],
         spacing=wall_vert_back['s'],
         lstPtsConcrSect=[Ptwall1_4+Vector(slopeBack*thFoot,-thFoot),Ptwall1_3,Ptwall1_2],
-        coverSide='l',
+        rightSideCover='l',
         gapStart=-(footGenConf.cover+foot_tr_bot['fi']+foot_ln_bot['fi']+wall_vert_back['fi']/2),
         extrShapeStart='fix'+str(ang)+'_len200',
         fromToExtPts=[Ph1_2,Ph1_3],
@@ -366,7 +366,7 @@ else: # sin esperas
         vectorLRef=Vector(-0.3,0.3),
         extrShapeStart='fix'+str(ang)+'_len200',
         fromToExtPts=[Ph_1,Ph_4],
-        sectBarsSide='l',
+        rightSideSectBars='l',
         lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3],
         )
 
@@ -386,7 +386,7 @@ RF_wall_horBottom_front=rb.rebarFamily(
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ptwall1_4,Ptwall1_3p],
     coverSectBars=wallGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     lstPtsConcrSect2=[Ph_1,Ph2_2,Ph2_3,Ph_4]
     )
 lstRebarFam+=[RF_wall_horBottom_front]
@@ -400,7 +400,7 @@ RF_wall_horBottom_back=rb.rebarFamily(
     spacing=wall_horBottom_back['s'],
     lstPtsConcrSect=[Ph_1+Vector(0,wTop),Ph_1,Ph_4,Ph2_3],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_ln_bot['fi'],wallGenConf.cover],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall_1,Ptwall2_2],
     coverSectBars=wallGenConf.cover+foot_ln_bot['fi'],
@@ -419,7 +419,7 @@ RF_wall_horTop_front=rb.rebarFamily(
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ptwall1_3p,Ptwall1_3],
     coverSectBars=wallGenConf.cover+foot_tr_bot['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     lstPtsConcrSect2=[Ph_1,Ph3_2,Ph3_3,Ph3_4]
     )
 lstRebarFam+=[RF_wall_horTop_front]
@@ -433,7 +433,7 @@ RF_wall_horTop_back=rb.rebarFamily(
     spacing=wall_horTop_back['s'],
     lstPtsConcrSect=[Ph2_2,Ph_1,Ph_4,Ph2_3],
     lstCover=[wallGenConf.cover,wallGenConf.cover+foot_ln_bot['fi'],wallGenConf.cover],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall2_2,Ptwall1_2],
     coverSectBars=wallGenConf.cover+foot_ln_bot['fi'],
@@ -449,13 +449,13 @@ RF_wall_top=rb.rebarFamily(
     identifier=str(rebarCount+1),
     diameter=wall_top['fi'],
     spacing=wall_top['s'],
-    coverSide='r',
+    rightSideCover=True,
     nmbBars=wall_top['nmbBars'],
     lstPtsConcrSect=[Plwall_1,Plwall_2],
     lstCover=[wallGenConf.cover+wall_vert_back['fi']],
     fromToExtPts=[Ptwall1_2,Ptwall1_3],
     coverSectBars=wallGenConf.cover+wall_vert_back['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     gapStart=-1.5*wallGenConf.cover-wall_top['fi']/2,
     gapEnd=-wallGenConf.cover-wall_top['fi']/2,
     extrShapeStart='anc'+str(360-angle1)+'_posPoor_tens',

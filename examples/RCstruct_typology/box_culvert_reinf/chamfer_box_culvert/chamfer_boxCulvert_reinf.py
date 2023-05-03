@@ -49,7 +49,7 @@ muret_hg=0.30
 muret_th=0.30
 # Data  reinforcements
 cover=0.03
-reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 docName=estrName+'_armados'
 FreeCAD.newDocument(docName)
 
@@ -58,23 +58,25 @@ ch_rb={'fi':12e-3,'s':0.30}
 # armadura longitudinal muretes (no se dibujan, sólo aparecen en despiece)
 muret_ln={'fi':0.016,'id':'15','nmBars':2*3,'gap':0.15} # diameter, ID, number of rebars, extension of the rebar through the deck of the box
 
-# cercos muretes (no se dibujan, sólo aparecen en despiece)
-fiStirr=12e-3
-sepStirr=0.20
-nmStirr=2*(int((boxC_int_wd+LW_th+RW_th)/sepStirr+1))
-bStirr=muret_th-2*cover-fiStirr
-hStirr=muret_hg+TS_th-2*cover-fiStirr
-muret_st={'fi':fiStirr,'nmStirr':nmStirr,'B':bStirr,'H':hStirr} # definición de los cercos del murete (diámetro, número de cercos, ancho y alto medidos en el eje del cerco)
+# Stirrup definition (see interpretartion of variables in handwritten notes)
+# Cercos losa de cimentación (envolviendo a armadura transversal)
+sRS=0.30
+nRS=int(boxL/sRS)
+dispRS=(boxL-nRS*sRS)/2
+botSlab_stTr1={'id':'20','fi':8e-3,'sRealSh':sRS,'sPerp':0.15,'nStirrRealSh':nRS,'nStirrPerp':5,
+               'widthStirr':0.2,'dispRealSh':dispRS,'dispPerp':LW_th,
+               'vectorLRef':Vector(-0.3,-0.3),'rightSideLabelLn':True,
+               'rightSideCover':True,
+               }
+botSlab_stTr2={'id':'21','fi':8e-3,'sRealSh':sRS,'sPerp':0.15,'nStirrRealSh':nRS,'nStirrPerp':5,
+               'widthStirr':0.2,'dispRealSh':dispRS,'dispPerp':-LW_th,
+               'vectorLRef':Vector(-0.3,-0.3),'rightSideLabelLn':False,
+                'rightSideCover':False,
+               }
 
-# Cercos losa de cimentación (si no hay cercos definir nmStirr=0)
-fiStirr=12e-3
-botSlab_st={'fi':fiStirr,'nmStirr':20,'B':0.2+fiStirr,'H':BS_th-2*cover-fiStirr}
 # Cercos dintel
-fiStirr=12e-3
-topSlab_st={'fi':fiStirr,'nmStirr':20,'B':0.2+fiStirr,'H':TS_th-2*cover-fiStirr}
-# Cercos muros  (NO)
-fiStirr=12e-3
-walls_st={'fi':fiStirr,'nmStirr':0,'B':0.2+fiStirr,'H':LW_th-2*cover-fiStirr}
+
+
 
 #Armadura principal marco 
 BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0,'position':'good'} # bottom slab, bottom long. rebars
@@ -286,7 +288,25 @@ for lsc in lstPtsConcrSect:
 # Reinforcement
 lstRebarFam=list()
 ## bottom slab
-lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),reinfCfg=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
+#lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),reinfCfg=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)
+
+mainLst,stirrLst=trcm.generic_brick_reinf(width=ext_wd,
+                                          length=boxL,
+                                          thickness=BS_th,
+                                          anchPtTrnsSect=ext_p1,
+                                          anchPtLnSect=ext_p1+Vector(ext_wd+1,0),
+                                          reinfCfg=reinfConf,
+                                          angTrns=0,
+                                          angLn=0,
+                                          botTrnsRb=BS_bot_tr,
+                                          topTrnsRb=BS_top_tr,
+                                          botLnRb=BS_bot_ln,
+                                          topLnRb=BS_top_ln,
+                                          lstStirrHoldTrReinf=[botSlab_stTr1,botSlab_stTr2],
+                                          drawConcrTrSect=False,
+                                          drawConcrLnSect=True,
+                                          )  
+lstRebarFam+=mainLst+stirrLst
 
 ## top slab
 lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),reinfCfg=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
@@ -367,12 +387,12 @@ muret_rf=rb.rebarFamily(
     identifier=muret_ln['id'],
     diameter=muret_ln['fi'],
     lstPtsConcrSect=[Vector(0,0),Vector(0,muret_hg),Vector(boxL,muret_hg),Vector(boxL,0)],
-    coverSide='l',
+    rightSideCover=False,
     nmbBars=muret_ln['nmBars'],
     gapStart=muret_ln['gap'],
     gapEnd=muret_ln['gap'],
     )
-lstRebarFam+=[muret_rf]
+#lstRebarFam+=[muret_rf]
 
 lastId=15
 chamfer1_rf=rb.rebarFamily(
@@ -381,7 +401,7 @@ chamfer1_rf=rb.rebarFamily(
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
     lstPtsConcrSect=[int_p1a,int_p1b],
-    coverSide='l',
+    rightSideCover=False,
     vectorLRef=Vector(0.15,0.15),
     extensionLength=boxL,
     gapStart=math.sqrt(2)*(BS_th-3*cover),
@@ -397,7 +417,7 @@ chamfer2_rf=rb.rebarFamily(
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
     lstPtsConcrSect=[int_p2b,int_p2a],
-    coverSide='l',
+    rightSideCover=False,
     vectorLRef=Vector(0.15,-0.15),
     extensionLength=boxL,
     gapStart=math.sqrt(2)*(BS_th-3*cover),
@@ -413,7 +433,7 @@ chamfer3_rf=rb.rebarFamily(
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
     lstPtsConcrSect=[int_p3a,int_p3b],
-    coverSide='l',
+    rightSideCover=False,
     vectorLRef=Vector(-0.15,-0.15),
     extensionLength=boxL,
     gapStart=math.sqrt(2)*(BS_th-3*cover),
@@ -429,7 +449,7 @@ chamfer4_rf=rb.rebarFamily(
     diameter=ch_rb['fi'],
     spacing=ch_rb['s'],
     lstPtsConcrSect=[int_p4b,int_p4a],
-    coverSide='l',
+    rightSideCover=False,
     vectorLRef=Vector(-0.15,0.15),
     extensionLength=boxL,
     gapStart=math.sqrt(2)*(BS_th-3*cover),
@@ -439,59 +459,14 @@ chamfer4_rf=rb.rebarFamily(
     )
 chamfer4_rf.drawLstRebar()
 lastId+=1
+
 lstRebarFam+=[chamfer1_rf,chamfer2_rf,chamfer3_rf,chamfer4_rf]
-# cercos del murete
-cercosMurete_rf=rb.rect_stirrup(reinfCfg=reinfConf,
-                             identifier=str(lastId)+'cm',
-                             diameter=muret_st['fi'],
-                             nmbStirrups=muret_st['nmStirr'],
-                             width=muret_st['B'],
-                             height=muret_st['H'],
-                             )
-lastId+=1
-lstRebarFam+=[cercosMurete_rf]
-
-if botSlab_st['nmStirr'] > 0:
-    stirBotSlab_rf=rb.rect_stirrup(reinfCfg=reinfConf,
-                             identifier=str(lastId)+'lc',
-                             diameter=botSlab_st['fi'],
-                             nmbStirrups=botSlab_st['nmStirr'],
-                             width=botSlab_st['B'],
-                             height=botSlab_st['H'],
-                             )
-    lastId+=1
-    lstRebarFam+=[stirBotSlab_rf]
-
-    
-if topSlab_st['nmStirr'] > 0:
-    stirTopSlab_rf=rb.rect_stirrup(reinfCfg=reinfConf,
-                             identifier=str(lastId)+'di',
-                             diameter=topSlab_st['fi'],
-                             nmbStirrups=topSlab_st['nmStirr'],
-                             width=topSlab_st['B'],
-                             height=topSlab_st['H'],
-                             )
-    lastId+=1
-    lstRebarFam+=[stirTopSlab_rf]
-
-    
-if walls_st['nmStirr']>0:
-    stirWalls_rf=rb.rect_stirrup(reinfCfg=reinfConf,
-                             identifier=str(lastId)+'lc',
-                             diameter=walls_st['fi'],
-                             nmbStirrups=walls_st['nmStirr'],
-                             width=walls_st['B'],
-                             height=walls_st['H'],
-                             )
-    lastId+=1
-    lstRebarFam+=[stirWalls_rf]
-    
-
 doc=FreeCAD.newDocument(estrName+"_despiece",estrName+"_despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
                title=titSchedule,
                doc=doc
-)
+               )
+
 
 
 

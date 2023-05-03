@@ -37,7 +37,7 @@ anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of 
 docName='closed_slab'
 FreeCAD.newDocument(docName)
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 
 lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=2)
 

@@ -33,7 +33,7 @@ foot_p7=foot_p5.add(Vector(footing_ln,footing_th))
 foot_p8=foot_p5.add(Vector(footing_ln,0))
 
 #rebars definition
-gConf=cfg.reinfConf(cover=0.05,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+gConf=cfg.reinfConf(cover=0.05,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 
 R1=reinf_bars.rebarFamily(
     reinfCfg=gConf,
@@ -41,10 +41,10 @@ R1=reinf_bars.rebarFamily(
     diameter=0.016,
     spacing=0.20,
     lstPtsConcrSect=[foot_p1,foot_p4],
-    coverSide='l',
+    rightSideCover=False,
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[foot_p5,foot_p8],
-    sectBarsSide='l',
+    rightSideSectBars=False,
     extrShapeStart='anc45_posPoor_compr',
     extrShapeEnd='anc90_posGood_tens',
 )

@@ -27,14 +27,14 @@ leftVertRb={'id':'1','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0}
 # right vertical rebars data
 leftHorRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5}
 # lefttom horizontal rebars data
-rightVertRb={'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1} 
+rightVertRb={'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'vectorLRef':Vector(0.3,-0.5)} 
 # right horizontal rebars data
 rightHorRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
 
 anchPtVertSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete vertical cross-section
 anchPtHorSect=anchPtVertSect+Vector(thickness+3,0) #anchor point to place the bottom left corner of the concrete horizontal cross-section
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 docName='simpleWall'
 FreeCAD.newDocument(docName)
 

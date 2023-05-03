@@ -50,13 +50,14 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         spacing=botTrnsRb['s'],
         lstPtsConcrSect=[tr_tl,tr_bl,tr_br,tr_tr],
         lstCover=[coverLat,cover,coverLat],
-        coverSide='l',
+        rightSideCover=False,
         vectorLRef=Vector(-0.15,-0.35),
         fromToExtPts=[ln_bl+Vector(botTrnsRb['distRFstart'],0),ln_br-Vector(botTrnsRb['distRFend'],0)],
-        sectBarsSide='l',
+        rightSideSectBars=False,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
         )
+    set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
     tr_bot_rf.createLstRebar()
     tr_bot_rf.drawSectBars()
     tr_bot_rf.drawLstRebar()
@@ -69,13 +70,14 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         spacing=topTrnsRb['s'],
         lstPtsConcrSect=[tr_bl,tr_tl,tr_tr,tr_br],
         lstCover=[coverLat,cover,coverLat],
-        coverSide='r',
+        rightSideCover=True,
         vectorLRef=Vector(-0.15,0.35),
         fromToExtPts=[ln_tl+Vector(topTrnsRb['distRFstart'],0),ln_tr-Vector(topTrnsRb['distRFend'],0)],
-        sectBarsSide='r',
+        rightSideSectBars=True,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
          )
+    set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)
     tr_top_rf.createLstRebar()
     tr_top_rf.drawSectBars()
     tr_top_rf.drawLstRebar()
@@ -85,15 +87,16 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         diameter=botLnRb['fi'],
         spacing=botLnRb['s'],
         lstPtsConcrSect=[ln_tl,ln_bl,ln_br,ln_tr],
-        coverSide='l',
+        rightSideCover=False,
         lstCover=[coverLat,reinfCfg.cover+botTrnsRb['fi'],coverLat],
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[tr_bl+Vector(botLnRb['distRFstart'],0),tr_br-Vector(botLnRb['distRFend'],0)],
         coverSectBars=reinfCfg.cover+botTrnsRb['fi'],
-        sectBarsSide='l',
+        rightSideSectBars=False,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
         )
+    set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
     ln_bot_rf.createLstRebar()
     ln_bot_rf.drawSectBars()
     ln_bot_rf.drawLstRebar()
@@ -103,15 +106,16 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         diameter=topLnRb['fi'],
         spacing=topLnRb['s'],
         lstPtsConcrSect=[ln_bl,ln_tl,ln_tr,ln_br],
-        coverSide='r',
+        rightSideCover=True,
         lstCover=[coverLat,reinfCfg.cover+topTrnsRb['fi'],coverLat],
         vectorLRef=Vector(-0.3,0.4),
         fromToExtPts=[tr_tl+Vector(topLnRb['distRFstart'],0),tr_tr-Vector(topLnRb['distRFend'],0)],
         coverSectBars=reinfCfg.cover+topTrnsRb['fi'],
-        sectBarsSide='r',
+        rightSideSectBars=True,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
          )
+    set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
     ln_top_rf.createLstRebar()
     ln_top_rf.drawSectBars()
     ln_top_rf.drawLstRebar()
@@ -164,11 +168,12 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         diameter=leftVertRb['fi'],
         spacing=leftVertRb['s'],
         lstPtsConcrSect=[vert_bl,vert_tl,vert_tr],
-        coverSide='r',
+        rightSideCover=True,
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[hor_bl+Vector(0,leftVertRb['distRFstart']),hor_tl-Vector(0,leftVertRb['distRFend'])],
-        sectBarsSide='r',
+        rightSideSectBars=True,
         )
+    set_FR_options(RF=vert_left_rf,RFdef=leftVertRb)
     vert_left_rf.createLstRebar()
     vert_left_rf.drawSectBars()
     vert_left_rf.drawLstRebar()
@@ -179,11 +184,12 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         diameter=rightVertRb['fi'],
         spacing=rightVertRb['s'],
         lstPtsConcrSect=[vert_br,vert_tr,vert_tl],
-        coverSide='l',
+        rightSideCover=False,
         vectorLRef=Vector(-0.3,0.4),
         fromToExtPts=[hor_br+Vector(0,rightVertRb['distRFstart']),hor_tr-Vector(0,rightVertRb['distRFend'])],
-        sectBarsSide='l',
+        rightSideSectBars=False,
         )
+    set_FR_options(RF=vert_right_rf,RFdef=rightVertRb)
     vert_right_rf.createLstRebar()
     vert_right_rf.drawSectBars()
     vert_right_rf.drawLstRebar()
@@ -193,13 +199,14 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         diameter=leftHorRb['fi'],
         spacing=leftHorRb['s'],
         lstPtsConcrSect=[hor_br,hor_bl,hor_tl,hor_tr],
-        coverSide='r',
+        rightSideCover=True,
         lstCover=[reinfCfg.cover,reinfCfg.cover+leftVertRb['fi'],reinfCfg.cover],
         vectorLRef=Vector(-0.3,-0.4),
         fromToExtPts=[vert_bl+Vector(0,leftHorRb['distRFstart']),vert_tl-Vector(0,leftHorRb['distRFend'])],
         coverSectBars=reinfCfg.cover+leftVertRb['fi'],
-        sectBarsSide='r',
+        rightSideSectBars=True,
         )
+    set_FR_options(RF=hor_left_rf,RFdef=leftHorRb)
     hor_left_rf.createLstRebar()
     hor_left_rf.drawSectBars()
     hor_left_rf.drawLstRebar()
@@ -209,13 +216,14 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         diameter=rightHorRb['fi'],
         spacing=rightHorRb['s'],
         lstPtsConcrSect=[hor_bl,hor_br,hor_tr,hor_tl],
-        coverSide='l',
+        rightSideCover=False,
         lstCover=[reinfCfg.cover,reinfCfg.cover+rightVertRb['fi'],reinfCfg.cover],
         vectorLRef=Vector(0.3,0.4),
         fromToExtPts=[vert_br+Vector(0,rightHorRb['distRFstart']),vert_tr-Vector(0,rightHorRb['distRFend'])],
         coverSectBars=reinfCfg.cover+rightVertRb['fi'],
-        sectBarsSide='l',
+        rightSideSectBars=False,
         )
+    set_FR_options(RF=hor_right_rf,RFdef=rightHorRb)
     hor_right_rf.createLstRebar()
     hor_right_rf.drawSectBars()
     hor_right_rf.drawLstRebar()
@@ -242,7 +250,7 @@ def set_FR_options(RF,RFdef):
     if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
     if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
            
-def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,stirrHoldTrReinf=None,stirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True):
+def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -267,7 +275,7 @@ def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinf
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
-    :param stirrHoldTrReinf: data for stirrup rebar family that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
             where 'id' is the identificacion of the stirrup family, 
@@ -279,7 +287,7 @@ The data of the family is given as a dictionary of type:
                   'nStirrPerp' is the number of stirrups in orthogonal direction
                   'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
                   'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
-    :param stirrHoldLnReinf: data for stirrup rebar family that holds longitudinal top and bottom rebar families
+    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     '''
@@ -308,9 +316,9 @@ The data of the family is given as a dictionary of type:
             diameter=botTrnsRb['fi'],
             spacing=botTrnsRb['s'],
             lstPtsConcrSect=[tr_bl,tr_br],
-            coverSide='l',
+            rightSideCover=False,
             fromToExtPts=[ln_bl+botTrnsRb['distRFstart']*vdirLn,ln_br-botTrnsRb['distRFend']*vdirLn],
-            sectBarsSide='l',
+            rightSideSectBars=False,
             gapStart=0,
             gapEnd=0,
             position=botTrnsRb['position'],
@@ -320,7 +328,7 @@ The data of the family is given as a dictionary of type:
         tr_bot_rf.drawSectBars()
         tr_bot_rf.drawLstRebar()
         lstRebFam+=[tr_bot_rf]
-    # transverse bottom rebar family
+    # transverse top rebar family
     if topTrnsRb:
         tr_top_rf=rb.rebarFamily(
             reinfCfg=reinfCfg,
@@ -328,9 +336,9 @@ The data of the family is given as a dictionary of type:
             diameter=topTrnsRb['fi'],
             spacing=topTrnsRb['s'],
             lstPtsConcrSect=[tr_tl,tr_tr],
-            coverSide='r',
+            rightSideCover=True,
             fromToExtPts=[ln_tl+topTrnsRb['distRFstart']*vdirLn,ln_tr-topTrnsRb['distRFend']*vdirLn],
-            sectBarsSide='r',
+            rightSideSectBars=True,
             gapStart=0,
             gapEnd=0,
             position=topTrnsRb['position'],
@@ -340,6 +348,7 @@ The data of the family is given as a dictionary of type:
         tr_top_rf.drawSectBars()
         tr_top_rf.drawLstRebar()
         lstRebFam+=[tr_top_rf]
+    # longitudinal bottom rebar family
     if botLnRb:
         ln_bot_rf=rb.rebarFamily(
             reinfCfg=reinfCfg,
@@ -347,11 +356,11 @@ The data of the family is given as a dictionary of type:
             diameter=botLnRb['fi'],
             spacing=botLnRb['s'],
             lstPtsConcrSect=[ln_bl,ln_br],
-            coverSide='l',
+            rightSideCover=False,
             lstCover=[reinfCfg.cover+botTrnsRb['fi']],
             fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTr,tr_br-botLnRb['distRFend']*vdirTr],
             coverSectBars=reinfCfg.cover+botTrnsRb['fi'],
-            sectBarsSide='l',
+            rightSideSectBars=False,
             gapStart=0,
             gapEnd=0,
             position=botLnRb['position'],
@@ -361,6 +370,7 @@ The data of the family is given as a dictionary of type:
         ln_bot_rf.drawSectBars()
         ln_bot_rf.drawLstRebar()
         lstRebFam+=[ln_bot_rf]
+    # longitudinal top rebar family
     if topLnRb:
         ln_top_rf=rb.rebarFamily(
             reinfCfg=reinfCfg,
@@ -368,11 +378,11 @@ The data of the family is given as a dictionary of type:
             diameter=topLnRb['fi'],
             spacing=topLnRb['s'],
             lstPtsConcrSect=[ln_tl,ln_tr],
-            coverSide='r',
+            rightSideCover=True,
             lstCover=[reinfCfg.cover+topTrnsRb['fi']],
             fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTr,tr_tr-topLnRb['distRFend']*vdirTr],
             coverSectBars=reinfCfg.cover+topTrnsRb['fi'],
-            sectBarsSide='r',
+            rightSideSectBars=True,
             gapStart=0,
             gapEnd=0,
             position=topLnRb['position'],
@@ -383,75 +393,78 @@ The data of the family is given as a dictionary of type:
         ln_top_rf.drawLstRebar()
         lstRebFam+=[ln_top_rf]
     # Stirrups holding the transverse top and bottom rebar families
-    if stirrHoldTrReinf:
-        stDic=stirrHoldTrReinf
-        bStirr=stDic['widthStirr']+stDic['fi']
-        coverStirr=reinfCfg.cover-stDic['fi']
-        if stDic['dispRealSh']<0: # stirrups rigth towards left
-            lstPtsConcrSect=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr]
-        else: # stirrups left towards right
-            lstPtsConcrSect=[ln_bl,ln_bl+bStirr*vdirLn,ln_tl+bStirr*vdirLn,ln_tl]
-        if stDic['dispPerp']<0: # stirrups rigth towards left
-            lstPtsConcrLong=[tr_tr,tr_br]
-            vDirLong=-1*vdirTr
-        else:
-            lstPtsConcrLong=[tr_tl,tr_bl]
-            vDirLong=vdirTr
-        hold_tr_sf=rb.stirrupFamily(
-            reinfCfg=reinfCfg,
-            identifier=stDic['id'],
-            diameter=stDic['fi'],
-            lstPtsConcrSect=lstPtsConcrSect,
-            lstCover=[coverStirr,0,coverStirr,0],
-            lstPtsConcrLong=lstPtsConcrLong,
-            spacStrpTransv=abs(stDic['sRealSh']),
-            spacStrpLong=stDic['sPerp'],
-            vDirLong=vDirLong,
-            nmbStrpTransv=stDic['nStirrRealSh'],
-            nmbStrpLong=stDic['nStirrPerp'],
-            dispStrpTransv=abs(stDic['dispRealSh']),
-            dispStrpLong=abs(stDic['dispPerp']),
-            vectorLRef=stDic['vectorLref'],
-            sideLabelLn=stDic['sideLabelLn'],
-            )
-        hold_tr_sf.drawRebars()
-        hold_tr_sf.drawLnRebars()
-        lstStirrFam+=[hold_tr_sf]
+    if lstStirrHoldTrReinf:
+        for stirrHoldTrReinf in lstStirrHoldTrReinf:
+            stDic=stirrHoldTrReinf
+            bStirr=stDic['widthStirr']+stDic['fi']
+            coverStirr=reinfCfg.cover-stDic['fi']
+            if stDic['dispRealSh']<0: # stirrups rigth towards left
+                lstPtsConcrSect=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr,ln_br]
+            else: # stirrups left towards right
+                lstPtsConcrSect=[ln_bl,ln_bl+bStirr*vdirLn,ln_tl+bStirr*vdirLn,ln_tl,ln_bl]
+            if stDic['dispPerp']<0: # stirrups rigth towards left
+                lstPtsConcrLong=[tr_tr,tr_br]
+                vDirLong=-1*vdirTr
+            else:
+                lstPtsConcrLong=[tr_tl,tr_bl]
+                vDirLong=vdirTr
+            hold_tr_sf=rb.stirrupFamily(
+                reinfCfg=reinfCfg,
+                identifier=stDic['id'],
+                diameter=stDic['fi'],
+                lstPtsConcrSect=lstPtsConcrSect,
+                lstCover=[coverStirr,0,coverStirr,0],
+                lstPtsConcrLong=lstPtsConcrLong,
+                spacStrpTransv=abs(stDic['sRealSh']),
+                spacStrpLong=stDic['sPerp'],
+                vDirLong=vDirLong,
+                nmbStrpTransv=stDic['nStirrRealSh'],
+                nmbStrpLong=stDic['nStirrPerp'],
+                dispStrpTransv=abs(stDic['dispRealSh']),
+                dispStrpLong=abs(stDic['dispPerp']),
+                vectorLRef=stDic['vectorLRef'],
+                rightSideLabelLn=stDic['rightSideLabelLn'],
+                )
+            hold_tr_sf.drawRebars()
+            hold_tr_sf.drawLnRebars()
+            lstStirrFam+=[hold_tr_sf]
     # Stirrups holding the longitudinal top and bottom rebar families
-    if stirrHoldLnReinf:
-        if stDic['dispRealSh']<0: # stirrups rigth towards left
-            lstPtsConcrSect=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr]
-        else: # stirrups left towards right
-            lstPtsConcrSect=[tr_bl,tr_bl+bStirr*vdirTr,tr_tl+bStirr*vdirTr,tr_tl]
-        if stDic['dispPerp']<0: # stirrups rigth towards left
-            lstPtsConcrLong=[ln_tr,ln_br]
-            vDirLong=-1*vdirLn
-        else:
-            lstPtsConcrLong=[ln_tl,ln_bl]
-            vDirLong=vdirLn
-        stDic=stirrHoldLnReinf
-        bStirr=stDic['widthStirr']+stDic['fi']
-        coverStirr=reinfCfg.cover+min(topTrnsRb['fi'],botTrnsRb['fi'])-stDic['fi']
-        hold_ln_sf=rb.stirrupFamily(
-            reinfCfg=reinfCfg,
-            identifier=stDic['id'],
-            diameter=stDic['fi'],
-            lstPtsConcrSect=lstPtsConcrSect,
-            lstCover=[coverStirr,0,coverStirr,0],
-            lstPtsConcrLong=lstPtsConcrLong,
-            spacStrpTransv=abs(stDic['sRealSh']),
-            spacStrpLong=stDic['sPerp'],
-            vDirLong=vDirLong,
-            nmbStrpTransv=stDic['nStirrRealSh'],
-            nmbStrpLong=stDic['nStirrPerp'],
-            dispStrpTransv=abs(stDic['dispRealSh']),
-            dispStrpLong=abs(stDic['dispPerp']),
-            vectorLRef=stDic['vectorLref'],
-            sideLabelLn=stDic['sideLabelLn'],
-            )
-        hold_ln_sf.drawRebars()
-        hold_ln_sf.drawLnRebars()
-        lstStirrFam+=[hold_ln_sf]
+    if lstStirrHoldLnReinf:
+        for stirrHoldLnReinf in lstStirrHoldLnReinf:
+            stDic=stirrHoldLnReinf
+            if stDic['dispRealSh']<0: # stirrups rigth towards left
+                lstPtsConcrSect=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr,tr_br]
+            else: # stirrups left towards right
+                lstPtsConcrSect=[tr_bl,tr_bl+bStirr*vdirTr,tr_tl+bStirr*vdirTr,tr_tl,tr_bl]
+            if stDic['dispPerp']<0: # stirrups rigth towards left
+                lstPtsConcrLong=[ln_tr,ln_br]
+                vDirLong=-1*vdirLn
+            else:
+                lstPtsConcrLong=[ln_tl,ln_bl]
+                vDirLong=vdirLn
+#            stDic=stirrHoldLnReinf
+            bStirr=stDic['widthStirr']+stDic['fi']
+            coverStirr=reinfCfg.cover+min(topTrnsRb['fi'],botTrnsRb['fi'])-stDic['fi']
+            hold_ln_sf=rb.stirrupFamily(
+                reinfCfg=reinfCfg,
+                identifier=stDic['id'],
+                diameter=stDic['fi'],
+                lstPtsConcrSect=lstPtsConcrSect,
+                lstCover=[coverStirr,0,coverStirr,0],
+                lstPtsConcrLong=lstPtsConcrLong,
+                spacStrpTransv=abs(stDic['sRealSh']),
+                spacStrpLong=stDic['sPerp'],
+                vDirLong=vDirLong,
+                nmbStrpTransv=stDic['nStirrRealSh'],
+                nmbStrpLong=stDic['nStirrPerp'],
+                dispStrpTransv=abs(stDic['dispRealSh']),
+                dispStrpLong=abs(stDic['dispPerp']),
+                vectorLRef=stDic['vectorLRef'],
+                rightSideLabelLn=stDic['rightSideLabelLn'],
+                )
+            hold_ln_sf.drawRebars()
+            hold_ln_sf.drawLnRebars()
+            lstStirrFam+=[hold_ln_sf]
     
     # Concrete transverse cross-section
     if drawConcrTrSect:

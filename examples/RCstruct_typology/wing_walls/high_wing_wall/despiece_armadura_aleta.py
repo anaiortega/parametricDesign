@@ -133,7 +133,7 @@ Ph3_2=Vector(0,wTop+0.2*slopeBack)
 Ph3_3=Vector(lWall/(hWallMax-hWallMin)*0.2,wTop)
 Ph3_4=Vector(lWall/(hWallMax-hWallMin)*0.2,0)
 
-aletGenConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+aletGenConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 FreeCAD.newDocument(estrName+'_armados')
 
 # Armaduras zapata
@@ -143,11 +143,11 @@ Z1_1=reinf_bars.rebarFamily(
     identifier='Z1/1',
     diameter=fi_Z1_1,
     lstPtsConcrSect=[Ptfoot_2,Ptfoot_1,Ptfoot_4,Ptfoot_3],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[Plfoot_1,Plfoot_4],
     coverSectBars=cover,
-    sectBarsSide='l',
+    rightSideSectBars='l',
     spacing=s_Z1_1,
 #    lstPtsConcrSect2=[Ptfoot_2p,Ptfoot_1,Ptfoot_4,Ptfoot_3p]
 )
@@ -170,11 +170,11 @@ Z1_3=reinf_bars.rebarFamily(
     spacing=s_Z1_3,
     lstPtsConcrSect=[Plfoot_2,Plfoot_1,Plfoot_4,Plfoot_3],
     lstCover=[cover,cover+fi_Z1_1,cover],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[Ptfoot_1,Ptfoot_4],
     coverSectBars=cover+fi_Z1_1,
-    sectBarsSide='l')
+    rightSideSectBars='l')
 # armadura longitudinal superior
 Z1_4=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
@@ -207,7 +207,7 @@ Z1_8=reinf_bars.rebarFamily(
     lstCover=[cover+fi_Z1_1],
     fromToExtPts=[Ptfoot_4,Ptfoot_3],
     coverSectBars=cover+fi_Z1_1,
-    sectBarsSide='l',
+    rightSideSectBars='l',
 )
 
 #Armadura muro
@@ -224,7 +224,7 @@ M1_2=reinf_bars.rebarFamily(
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ph_1,Ph_4],
     coverSectBars=cover,
-    sectBarsSide='l',
+    rightSideSectBars='l',
 )
 # Armadura vertical trasdós
 M1_3=reinf_bars.rebarFamily(
@@ -237,7 +237,7 @@ M1_3=reinf_bars.rebarFamily(
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ph_1,Ph_4],
     coverSectBars=cover,
-    sectBarsSide='l',
+    rightSideSectBars='l',
     lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3]
     )
 
@@ -249,13 +249,13 @@ M1_5=reinf_bars.rebarFamily(
     spacing=s_M1_4,
     lstPtsConcrSect=[Ptwall1_5+Vector(Lpatas,0),Ptwall1_5,Ptwall1_4],
     lstCover=[-cover,cover],
-    coverSide='l',
+    rightSideCover='l',
     gapStart=0,
     gapEnd=LsolapeIntra,
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ph1_2,Ph1_3],
     coverSectBars=cover,
-    sectBarsSide='l',
+    rightSideSectBars='l',
 )
 
 # Armadura vertical intradós
@@ -265,7 +265,7 @@ M1_4=reinf_bars.rebarFamily(
     diameter=fi_M1_4,
     spacing=s_M1_4,
     lstPtsConcrSect=[Ptwall1_4,Ptwall1_3,Ptwall1_2],
-    coverSide='l',
+    rightSideCover='l',
     gapStart=0,
     fromToExtPts=[Ph1_2,Ph1_3],
     coverSectBars=cover,
@@ -280,7 +280,7 @@ M1_1=reinf_bars.rebarFamily(
     spacing=s_M1_1,
     lstPtsConcrSect=[Ptwall1_5+Vector(Lpatas,0),Ptwall1_5,Ptwall1_4],
     lstCover=[-cover,cover+fi_M1_4+fi_M1_7],
-    coverSide='l',
+    rightSideCover='l',
     gapStart=0,
     gapEnd=LrefIntra,
     fromToExtPts=[Ph1_2,Ph1_3],
@@ -298,7 +298,7 @@ M1_7=reinf_bars.rebarFamily(
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ptwall1_4,Ptwall1_3p],
     coverSectBars=cover+fi_Z1_1,
-    sectBarsSide='l',
+    rightSideSectBars='l',
     lstPtsConcrSect2=[Ph_1,Ph2_2,Ph2_3,Ph_4]
 )
 
@@ -310,7 +310,7 @@ M1_9=reinf_bars.rebarFamily(
     spacing=s_M1_9,
     lstPtsConcrSect=[Ph_1+Vector(0,wTop),Ph_1,Ph_4,Ph2_3],
     lstCover=[cover,cover+fi_Z1_3,cover],
-    coverSide='l',
+    rightSideCover='l',
     gapStart=0,
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall_1,Ptwall2_2],
@@ -329,7 +329,7 @@ M1_6=reinf_bars.rebarFamily(
     vectorLRef=Vector(-0.5,0.5),
     fromToExtPts=[Ptwall1_3p,Ptwall1_3],
     coverSectBars=cover+fi_Z1_1,
-    sectBarsSide='l',
+    rightSideSectBars='l',
     lstPtsConcrSect2=[Ph_1,Ph3_2,Ph3_3,Ph3_4]
 )
 
@@ -341,7 +341,7 @@ M1_8=reinf_bars.rebarFamily(
     spacing=s_M1_8,
     lstPtsConcrSect=[Ph2_2,Ph_1,Ph_4,Ph2_3],
     lstCover=[cover,cover+fi_Z1_3,cover],
-    coverSide='l',
+    rightSideCover='l',
     gapStart=0,
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[Ptwall2_2,Ptwall1_2],

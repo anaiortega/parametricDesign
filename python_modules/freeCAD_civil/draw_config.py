@@ -28,8 +28,7 @@ class reinfConf(object):
     :ivar xcConcr: XC concrete material object (ex: EC2_materials.C25)
     :ivar xcSteel: XC steel material object (ex: EC2_materials.S500C)
 
-    :ivar dynamEff: 'Y' 'yes' 'Yes' ... if dynamic effects may occur (defaults 
-          to 'N') 
+    :ivar dynamEff: True if dynamic effects may occur (defaults  to False)
     :ivar decLengths: decimal positions to calculate and express lengths and
                       their derivated magnitudes, like weight  (defaults to 2).
     :ivar decSpacing: decimal positions to express the spacing (defaults to 2)
@@ -40,7 +39,7 @@ class reinfConf(object):
     :ivar factPosLabelSectReb: factor to locate labels of section-rebars (defaults to 2/3)
     :ivar factDispReflinSectReb: factor to locate reference lines of section-rebars (defaults to 1)
     '''
-    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3,factDispReflinSectReb=1.0):
+    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3,factDispReflinSectReb=1.0):
         self.cover=cover
         self.texSize=texSize
         self.xcConcr=xcConcr
@@ -53,6 +52,7 @@ class reinfConf(object):
         self.factDispReflinSectReb=factDispReflinSectReb
         if Code == 'EC2':
             from materials.ec2 import EC2_limit_state_checking as Lcalc # doesn't work if only imported here
+        print('texSize', texSize)
 
             
 class tableConf(object):

@@ -23,10 +23,10 @@ steelDeck=EC2_materials.S500C # steel for footing
 
 #rebar schedule dimensions
 scheduleCfg=cfg.scheduleConf(wColumns=[10,30,30,10,20,12],hRows=10,hText=2.5,hTextSketch=2.0)
-deckGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
-deckLatGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.0)
-wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
-stirrGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2,factPosLabelSectReb=0.65,factDispReflinSectReb=1.9)
+deckGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
+deckLatGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.0)
+wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
+stirrGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.65,factDispReflinSectReb=1.9)
 
 docName=gd.obraNm.replace(' ','')+'_armados'
 docArmados=App.newDocument(docName,docName)
@@ -108,11 +108,11 @@ RF_deck_tr_bot=rb.rebarFamily(
     lstCover=[deckGenConf.cover,rdef['fi'],deckGenConf.cover],
     gapStart=-1.0*deckGenConf.cover,
     gapEnd=-1.0*deckGenConf.cover,
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.3,-0.3),
     fromToExtPts=fromToExtPts,
     coverSectBars=rdef['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     spacing=rdef['s'],
     position='posGood',
 )
@@ -131,11 +131,11 @@ if rd.deck_tr_bot_b1:
         lstCover=[deckGenConf.cover,rdef['fi'],deckGenConf.cover],
         gapStart=-1.0*deckGenConf.cover,
         gapEnd=-1.0*deckGenConf.cover,
-        coverSide='l',
+        rightSideCover='l',
         vectorLRef=Vector(-0.3,-0.3),
         fromToExtPts=fromToExtPts,
         coverSectBars=rdef['fi'],
-        sectBarsSide='l',
+        rightSideSectBars='l',
         spacing=rdef['s'],
         position='posGood',
     )
@@ -152,11 +152,11 @@ if rd.deck_tr_bot_b1:
         lstCover=[deckGenConf.cover,rdef['fi'],deckGenConf.cover],
         gapStart=-1.0*deckGenConf.cover,
         gapEnd=-1.0*deckGenConf.cover,
-        coverSide='l',
+        rightSideCover='l',
         vectorLRef=Vector(-0.3,-0.3),
         fromToExtPts=fromToExtPts,
         coverSectBars=rdef['fi'],
-        sectBarsSide='l',
+        rightSideSectBars='l',
         spacing=rdef['s'],
         position='posGood',
     )
@@ -176,7 +176,7 @@ RF_deck_tr_top=rb.rebarFamily(
     gapEnd=-1.5*deckGenConf.cover,
     lstPtsConcrSect=[pt_TC1,pt_TC4,pt_TC3,pt_TC2],
     lstCover=[deckGenConf.cover,deckGenConf.cover+rd.stirr_paral_pile['fi'],deckGenConf.cover],
-    coverSide='r',
+    rightSideCover=True,
     fromToExtPts=[pt_extLC6,pt_extLC5],
     coverSectBars=deckGenConf.cover+rd.stirr_paral_pile['fi'],
     vectorLRef=Vector(-0.3,0.3),
@@ -203,10 +203,10 @@ RF_deck_ln_bot=rb.rebarFamily(
     lstPtsConcrSect=[pt_extLC6,pt_LC1,pt_LC2,pt_extLC5],
     lstCover=[deckGenConf.cover,rencCent,deckGenConf.cover],
     coverSectBars=2*rd.deck_tr_bot['fi'],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.1,-0.4),
     fromToExtPts=[pt_TC7+Vector(0,gd.thPrelosa),pt_TC10+Vector(0,gd.thPrelosa)],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     position='posGood',
     )
 #    extrShapeStart='anc90_posGood_tens',
@@ -240,7 +240,7 @@ RF_hwall1_top=rb.rebarFamily(
     lstCover=[stirrGenConf.cover+rd.hwall_stirrup['fi']],
     fromToExtPts=[pt_LC8,pt_LC7],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     extrShapeStart='fix270_len250',
     extrShapeEnd='fix270_len250',
     vectorLRef=Vector(0.3,0.25),
@@ -258,7 +258,7 @@ RF_hwall2_top=rb.rebarFamily(
     lstCover=[stirrGenConf.cover+rd.hwall_stirrup['fi']],
     fromToExtPts=[pt_LC4,pt_LC3],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     extrShapeStart='anc270_posPoor_tens',
     extrShapeEnd='anc270_posPoor_tens',
     )
@@ -274,7 +274,7 @@ RF_hwall1_lat_ext=rb.rebarFamily(
     lstCover=[stirrGenConf.cover,stirrGenConf.cover+rd.hwall_stirrup['fi'],stirrGenConf.cover],
     fromToExtPts=[pt_LC1,pt_LC8],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     gapStart=-1.0*stirrGenConf.cover,
     gapEnd=-1.0*stirrGenConf.cover,
     )
@@ -290,7 +290,7 @@ RF_hwall2_lat_ext=rb.rebarFamily(
     lstCover=[stirrGenConf.cover,stirrGenConf.cover+rd.hwall_stirrup['fi'],stirrGenConf.cover],
     fromToExtPts=[pt_LC2,pt_LC3],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     gapStart=-1.0*stirrGenConf.cover,
     gapEnd=-1.0*stirrGenConf.cover,
     )
@@ -307,7 +307,7 @@ RF_hwall1_lat_int=rb.rebarFamily(
     lstCover=[stirrGenConf.cover,stirrGenConf.cover+rd.hwall_stirrup['fi'],stirrGenConf.cover],
     fromToExtPts=[pt_LC6,pt_LC7],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     gapStart=-1.0*stirrGenConf.cover,
     gapEnd=-1.0*stirrGenConf.cover,
     )
@@ -323,7 +323,7 @@ RF_hwall1_lat_int=rb.rebarFamily(
     lstCover=[stirrGenConf.cover,stirrGenConf.cover+rd.hwall_stirrup['fi'],stirrGenConf.cover],
     fromToExtPts=[pt_LC6,pt_LC7],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     gapStart=-1.0*stirrGenConf.cover,
     gapEnd=-1.0*stirrGenConf.cover,
     )
@@ -339,7 +339,7 @@ RF_hwall2_lat_int=rb.rebarFamily(
     lstCover=[stirrGenConf.cover,stirrGenConf.cover+rd.hwall_stirrup['fi'],stirrGenConf.cover],
     fromToExtPts=[pt_LC5,pt_LC4],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     gapStart=-1.0*stirrGenConf.cover,
     gapEnd=-1.0*stirrGenConf.cover,
     )
@@ -358,11 +358,11 @@ RF_Lwall_vert_ext=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
 #    gapEnd=-(RF_deck_ln_top.lstCover[1]+RF_deck_ln_top.diameter+rdef['fi']/2),
     lstPtsConcrSect=[pt_TC6,pt_TC5,pt_TC4,pt_TC4+Vector(gd.thWall+rdef['extend'])],
-    coverSide='r',
+    rightSideCover=True,
     vectorLRef=Vector(-0.3,-0.3),
     fromToExtPts=[pt_WLH1,pt_WLH4],
     extrShapeEnd='anc0_posPoor_tens',
-    sectBarsSide='r',
+    rightSideSectBars=True,
     position='posGood',
     )
 #    extrShapeStart='anc90_posGood_tens',
@@ -379,10 +379,10 @@ RF_Lwall_vert_int=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_TC5,pt_TC6,pt_TC7,pt_TC7-Vector(gd.skewThwall,0)],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(0.3,-0.2),
     fromToExtPts=[pt_WLH2,pt_WLH3],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     position='posGood',
     )
 #    extrShapeStart='anc90_posGood_tens',
@@ -399,11 +399,11 @@ RF_Lwall_vert_int_dowel=rb.rebarFamily(
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_TC1_prelosa,pt_TC1_prelosa+Vector(0,gd.thDeck),pt_TC4],
     lstCover=[wallGenConf.cover,RF_deck_ln_top.lstCover[1]+RF_deck_ln_top.diameter],
-    coverSide='l',
+    rightSideCover='l',
     extrShapeStart='anc0_posGood_tens',
     vectorLRef=Vector(0.3,-0.3),
     fromToExtPts=[pt_WLH2,pt_WLH3],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     position='posGood',
     )
 #    extrShapeStart='anc90_posGood_tens',
@@ -421,11 +421,11 @@ RF_Lwall_hor_ext=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_WLH2,pt_WLH1,pt_WLH4,pt_WLH3],
-    coverSide='r',
+    rightSideCover=True,
     vectorLRef=Vector(-0.3,0.32),
     fromToExtPts=[pt_TC5,pt_TC4],
     coverSectBars=wallGenConf.cover+rd.wall_vert_ext['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     position='posGood',
     )
 lstRebarFam+=[RF_Lwall_hor_ext]
@@ -441,11 +441,11 @@ RF_Lwall_hor_int=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_WLH1,pt_WLH2,pt_WLH3,pt_WLH4],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.3,-0.3),
     fromToExtPts=[pt_TC6,pt_TC7],
     coverSectBars=wallGenConf.cover+rd.wall_vert_int['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     position='posGood',
     )
 lstRebarFam+=[RF_Lwall_hor_int]
@@ -463,11 +463,11 @@ RF_Rwall_vert_ext=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
 #    gapEnd=-(RF_deck_ln_top.lstCover[1]+RF_deck_ln_top.diameter+rdef['fi']/2),
     lstPtsConcrSect=[pt_TC9,pt_TC8,pt_TC3,pt_TC3-Vector(gd.thWall+rdef['extend'])],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(0.3,-0.3),
     fromToExtPts=[pt_WLH2,pt_WLH3],
     extrShapeEnd='anc0_posPoor_tens',
-    sectBarsSide='l',
+    rightSideSectBars='l',
     position='posGood',
     )
 #    extrShapeStart='anc90_posGood_tens',
@@ -484,10 +484,10 @@ RF_Rwall_vert_int=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_TC8,pt_TC9,pt_TC10,pt_TC10+Vector(gd.skewThwall,0)],
-    coverSide='r',
+    rightSideCover=True,
     vectorLRef=Vector(-0.3,-0.2),
     fromToExtPts=[pt_WLH1,pt_WLH4],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     position='posGood',
     )
 #    extrShapeStart='anc90_posGood_tens',
@@ -504,11 +504,11 @@ RF_Rwall_vert_int_dowel=rb.rebarFamily(
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_TC2_prelosa,pt_TC2_prelosa+Vector(0,gd.thDeck),pt_TC3],
     lstCover=[wallGenConf.cover,RF_deck_ln_top.lstCover[1]+RF_deck_ln_top.diameter],
-    coverSide='r',
+    rightSideCover=True,
     extrShapeStart='anc0_posGood_tens',
     vectorLRef=Vector(-0.3,-0.4),
     fromToExtPts=[pt_WLH1,pt_WLH4],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     position='posGood',
     )
 lstRebarFam+=[RF_Rwall_vert_int_dowel]
@@ -525,11 +525,11 @@ RF_Rwall_hor_ext=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_WLH1,pt_WLH2,pt_WLH3,pt_WLH4],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(-0.3,0.2),
     fromToExtPts=[pt_TC8,pt_TC3],
     coverSectBars=wallGenConf.cover+rd.wall_vert_ext['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     position='posGood',
     )
 lstRebarFam+=[RF_Rwall_hor_ext]
@@ -545,11 +545,11 @@ RF_Rwall_hor_int=rb.rebarFamily(
     gapStart=-2.0*wallGenConf.cover,
     gapEnd=-2.0*wallGenConf.cover,
     lstPtsConcrSect=[pt_WLH2,pt_WLH1,pt_WLH4,pt_WLH3],
-    coverSide='l',
+    rightSideCover='l',
     vectorLRef=Vector(0.3,0.2),
     fromToExtPts=[pt_TC9,pt_TC10],
     coverSectBars=wallGenConf.cover+rd.wall_vert_int['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     position='posGood',
     )
 lstRebarFam+=[RF_Rwall_hor_int]
@@ -575,7 +575,7 @@ RF_hwall1_stirrup=rb.stirrupFamily(
     dispStrpTransv=0.0,
     dispStrpLong=rd.hwall_stirrup['dispLn'],
     vectorLRef=Vector(-0.36,-0.2),
-    sideLabelLn='r',
+    rightSideLabelLn=True,
     )
 
 lstRebarFam+=[RF_hwall1_stirrup]
@@ -596,7 +596,7 @@ RF_hwall2_stirrup=rb.stirrupFamily(
     dispStrpTransv=0.0,
     dispStrpLong=rd.hwall_stirrup['dispLn'],
     vectorLRef=Vector(0.36,-0.2),
-    sideLabelLn='r',
+    rightSideLabelLn=True,
 
 )
 
@@ -611,7 +611,7 @@ RF_Lbeam_pile_bot=rb.rebarFamily(
     diameter=rdef['fi'],
     nmbBars=rdef['nmbBars'],
     lstPtsConcrSect=[pt_BP1,pt_BP2],
-    coverSide='l',
+    rightSideCover='l',
     gapStart=-(wallGenConf.cover+rdef['fi']/2),
     gapEnd=-(wallGenConf.cover+rdef['fi']/2),
     extrShapeStart='anc90_posGood_tens',
@@ -619,7 +619,7 @@ RF_Lbeam_pile_bot=rb.rebarFamily(
     lstCover=[wallGenConf.cover+rd.pile_stirrup['fi']],
     fromToExtPts=[pt_TC5+Vector(rdef['extraLatCover'],0),pt_TC6-Vector(rdef['extraLatCover'],0)],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     vectorLRef=Vector(0.2,-0.1),
     )
 lstRebarFam+=[RF_Lbeam_pile_bot]
@@ -633,7 +633,7 @@ RF_Lbeam_pile_top=rb.rebarFamily(
     diameter=rdef['fi'],
     nmbBars=rdef['nmbBars'],
     lstPtsConcrSect=[pt_BP4,pt_BP3],
-    coverSide='r',
+    rightSideCover=True,
     gapStart=-(wallGenConf.cover+rdef['fi']/2),
     gapEnd=-(wallGenConf.cover+rdef['fi']/2),
     extrShapeStart='anc270_posGood_tens',
@@ -641,7 +641,7 @@ RF_Lbeam_pile_top=rb.rebarFamily(
     lstCover=[wallGenConf.cover+rd.pile_stirrup['fi']],
     fromToExtPts=[pt_TC5+Vector(rdef['extraLatCover'],hBeamPile),pt_TC6+Vector(-rdef['extraLatCover'],hBeamPile)],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     )
 lstRebarFam+=[RF_Lbeam_pile_top]
 rebarCount+=1
@@ -654,7 +654,7 @@ RF_Rbeam_pile_bot=rb.rebarFamily(
     diameter=rdef['fi'],
     nmbBars=rdef['nmbBars'],
     lstPtsConcrSect=[pt_BP1,pt_BP2],
-    coverSide='l',
+    rightSideCover='l',
     gapStart=-(wallGenConf.cover+rdef['fi']/2),
     gapEnd=-(wallGenConf.cover+rdef['fi']/2),
     extrShapeStart='anc90_posGood_tens',
@@ -662,7 +662,7 @@ RF_Rbeam_pile_bot=rb.rebarFamily(
     lstCover=[wallGenConf.cover+rd.pile_stirrup['fi']],
     fromToExtPts=[pt_TC9+Vector(rdef['extraLatCover'],0),pt_TC8-Vector(rdef['extraLatCover'],0)],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='l',
+    rightSideSectBars='l',
     )
 lstRebarFam+=[RF_Rbeam_pile_bot]
 rebarCount+=1
@@ -675,7 +675,7 @@ RF_Rbeam_pile_top=rb.rebarFamily(
     diameter=rdef['fi'],
     nmbBars=rdef['nmbBars'],
     lstPtsConcrSect=[pt_BP4,pt_BP3],
-    coverSide='r',
+    rightSideCover=True,
     gapStart=-(wallGenConf.cover+rdef['fi']/2),
     gapEnd=-(wallGenConf.cover+rdef['fi']/2),
     extrShapeStart='anc270_posGood_tens',
@@ -683,7 +683,7 @@ RF_Rbeam_pile_top=rb.rebarFamily(
     lstCover=[wallGenConf.cover+rd.pile_stirrup['fi']],
     fromToExtPts=[pt_TC9+Vector(rdef['extraLatCover'],hBeamPile),pt_TC8+Vector(-rdef['extraLatCover'],hBeamPile)],
     coverSectBars=stirrGenConf.cover+rd.hwall_stirrup['fi'],
-    sectBarsSide='r',
+    rightSideSectBars=True,
     )
 lstRebarFam+=[RF_Rbeam_pile_top]
 rebarCount+=1
@@ -707,7 +707,7 @@ RF_pileIzq_stirrup=rb.stirrupFamily(
     dispStrpTransv=rdef['dispTr'],
     dispStrpLong=rdef['dispLn'],
     vectorLRef=Vector(0.45,-0.2),
-    sideLabelLn='l',
+    rightSideLabelLn='l',
     )
 
 lstRebarFam+=[RF_pileIzq_stirrup]
@@ -729,7 +729,7 @@ RF_pileDer_stirrup=rb.stirrupFamily(
     dispStrpTransv=rdef['dispTr'],
     dispStrpLong=rdef['dispLn'],
     vectorLRef=Vector(0.45,-0.2),
-    sideLabelLn='r',
+    rightSideLabelLn=True,
     )
 
 lstRebarFam+=[RF_pileDer_stirrup]
@@ -777,7 +777,7 @@ if rd.stirr_paral_pile['fi'] >0:
         dispStrpTransv=stirrGenConf.cover+rdef['dispTr'],
         dispStrpLong=gd.skewThwall+rdef['dispLn'],
         vectorLRef=Vector(-0.2,-0.3),
-        sideLabelLn='r',
+        rightSideLabelLn=True,
         )
 
     lstRebarFam+=[RF_bndParPileDer_stirrup]
@@ -825,7 +825,7 @@ if rd.stirr_paral_headwall['fi'] >0:
         dispStrpTransv=gd.skewThwall+rdef['dispTr'],
         dispStrpLong=rdef['dispLn'],
         vectorLRef=Vector(-0.2,-0.15),
-        sideLabelLn='r',
+        rightSideLabelLn=True,
         )
 
     lstRebarFam+=[RF_bndParHeadwEnd_stirrup]

@@ -13,7 +13,7 @@ steel=EC2_materials.S500C
 estrName='Hexagonal column'
 titSchedule=estrName.upper()
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 docArm=FreeCAD.newDocument(estrName+'_arm')
 
 Hcol= 3 # height of the column
@@ -46,11 +46,11 @@ vert_rf1=rb.rebarFamily(
     spacing=0.1,
     lstPtsConcrSect=[pl1,pl2],
     lstCover=[Whex/2],
-    coverSide='r',
+    rightSideCover=True,
     vectorLRef=Vector(0.30,-0.15),
     fromToExtPts=[pt1,pt2,pt3,pt4,pt5,pt6,pt1],
     lateralCover=0.05,
-    sectBarsSide='l',
+    rightSideSectBars='l',
     coverSectBars=reinfCfg.cover+fi_stirr,
     gapStart=0.5,
     extrShapeStart='anc90_posGood_compr',
@@ -69,11 +69,11 @@ stirr1=rb.stirrupFamily(
     nmbStrpTransv=1,
     nmbStrpLong=int(Hcol/.15),
     lstCover=None,
-    coverSide='r',
+    rightSideCover=True,
     dispStrpTransv=None,
     dispStrpLong=0.1,
     vectorLRef=Vector(0.5,0.5),
-    sideLabelLn='l')
+    rightSideLabelLn='l')
 
 stirr2=rb.stirrupFamily(
     reinfCfg=reinfCfg,
@@ -88,11 +88,11 @@ stirr2=rb.stirrupFamily(
     nmbStrpTransv=2,
     nmbStrpLong=int(Hcol/.15),
     lstCover=None,
-    coverSide='r',
+    rightSideCover=True,
     dispStrpTransv=0.10,
     dispStrpLong=0.15,
     vectorLRef=Vector(-0.5,0.5),
-    sideLabelLn='r',
+    rightSideLabelLn=True,
     closed=False,
     fixAnchorStart='fix45_len60',
     fixAnchorEnd='fix135_len60',

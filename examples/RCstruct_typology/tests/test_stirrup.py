@@ -16,7 +16,7 @@ B=0.20
 H=0.30
 cover=0.03
 
-reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff='N',decLengths=2,decSpacing=2)
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 FreeCAD.newDocument(estrName+'_armados')
 
 pt1=Vector(0,H)
