@@ -46,13 +46,32 @@ vert_rf1=rb.rebarFamily(
     gapStart=0.5,
     extrShapeStart='anc90_posGood_compr',
     )
-    
+
+stirr1=rb.stirrupFamily(
+    reinfCfg=reinfCfg,
+    identifier='2',
+    diameter=fi_stirr,
+    lstPtsConcrSect=None,
+    concrSectRadius=Rad,
+    lstPtsConcrLong=[pl1,pl4],
+    spacStrpTransv=None,
+    spacStrpLong=0.15,
+    vDirLong=Vector(0,1),
+    nmbStrpTransv=1,
+    nmbStrpLong=int(Hcol/.15),
+    lstCover=None,
+    rightSideCover=True,
+    dispStrpTransv=None,
+    dispStrpLong=0.1,
+    vectorLRef=Vector(0.5,-0.5),
+    rightSideLabelLn=False)
+
 # Cross section
 rb.drawRCSection(
     radiusConcrSect=Rad,
     lstShapeRebarFam=None,
     lstSectRebarFam=[vert_rf1],
-    lstShapeStirrupFam=None,
+    lstShapeStirrupFam=[stirr1],
     lstEdgeStirrupFam=None,
     vTranslation=Vector(0,0,0),
     )
@@ -63,13 +82,13 @@ rb.drawRCSection(
     lstShapeRebarFam=[vert_rf1],
     lstSectRebarFam=None,
     lstShapeStirrupFam=None,
-    lstEdgeStirrupFam=None,
+    lstEdgeStirrupFam=[stirr1],
     vTranslation=Vector(0,2*Rad+0.7),
     )
 docArm.recompute()
 
 docSch=FreeCAD.newDocument(estrName+"_schedule",estrName+"_schedule")
-rb.barSchedule(lstBarFamilies=[vert_rf1],
+rb.barSchedule(lstBarFamilies=[vert_rf1,stirr1],
                title='cylindrical column',
                doc=docSch
 )

@@ -53,7 +53,10 @@ class rebarFamilyBase(object):
         self.diameter=diameter
         self.lstPtsConcrSect=lstPtsConcrSect
         if lstCover is None:
-            self.lstCover=(len(lstPtsConcrSect)-1)*[reinfCfg.cover]
+            if lstPtsConcrSect:
+                self.lstCover=(len(lstPtsConcrSect)-1)*[reinfCfg.cover]
+            else:
+                self.lstCover=[reinfCfg.cover]
         else:
             self.lstCover= lstCover
         self.rightSideCover=rightSideCover
@@ -511,7 +514,7 @@ class rebarFamily(rebarFamilyBase):
         :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
         the drawing (defaults to Vector(0,0,0))
         '''
-        centersWire=Part.makeCircle(self.sectBarsConcrRadius-self.coverSectBars+self.diameter/2.0)
+        centersWire=Part.makeCircle(self.sectBarsConcrRadius-self.coverSectBars-self.diameter/2.0)
         Laux=centersWire.Length
         if self.spacing:
             self.nbarsAux=int(Laux/self.spacing)
@@ -641,6 +644,11 @@ class rebarFamily(rebarFamilyBase):
                 lstPtsRebar.append(endPoint)
         return lstPtsRebar
         
+    def getNumberOfBars(self):
+        if self.extensionLength:
+            self.nbarsAux=int(self.extensionLength/self.spacing)+1
+        return self.nbarsAux
+
                  
     def getLstRebars(self,lstPtsRebar):
         '''Checks the length of the rebar defined by the list of points lstPtsRebar. If 
@@ -685,11 +693,6 @@ class rebarFamily(rebarFamilyBase):
             lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
             lstRebars.append(Part.Wire(lstLinRebar))
         return lstRebars
-
-    def getNumberOfBars(self):
-        if self.extensionLength:
-            self.nbarsAux=int(self.extensionLength/self.spacing)+1
-        return self.nbarsAux
 
     def getTextFiSpacing(self):
         '''Return the text for column '%%C/SEP.' of the bar schedule'''
@@ -761,9 +764,13 @@ class stirrupFamily(rebarFamilyBase):
           parameters like concrete and steel type, text format, ... 
     :ivar identifier: identifier of the rebar family
     :ivar diameter: diameter of the bar [m]
-    :ivar lstPtsConcrSect: list of points in the transversal concrete section to which the first stirrup 
-          is 'attached'
     :ivar lstPtsConcrLong: list of points in the longitudinal section to which the first stirrup is 'attached'
+    :ivar lstPtsConcrSect: list of points in the transversal concrete section to which the first stirrup 
+          is 'attached'. Defaults to None, in which case, the concrete section is circular and defined by
+            attribute 'concrSectRadius'
+    :ivar concrSectRadius: radius of the circular concrete section
+           Defaults to None, in which case, the concrete section is polygonal and defined by
+            attribute 'lstPtsConcrSect'
     :ivar spacStrpTransv: spacement between stirrups in the transversal section (true shape)
     :ivar spacStrpLong: spacement between stirrups in the longitudinal 
           section (as in beams, where they are displayed as lines)
@@ -789,9 +796,10 @@ class stirrupFamily(rebarFamilyBase):
             Examples: 'fix45_len150'
     
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,lstPtsConcrLong,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,fixAnchorStart=None,fixAnchorEnd=None):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,fixAnchorStart=None,fixAnchorEnd=None):
         super(stirrupFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
         self.lstPtsConcrLong=lstPtsConcrLong
+        self.concrSectRadius=concrSectRadius
         self.spacStrpTransv=spacStrpTransv
         self.spacStrpLong=spacStrpLong
         self.vDirTrans=vDirTrans
@@ -812,7 +820,10 @@ class stirrupFamily(rebarFamilyBase):
     def getVdirTrans(self):
         '''return a unitary direction vector in transversal section'''
         if self.vDirTrans is None:
-            self.vDirTrans=self.lstPtsConcrSect[1]-self.lstPtsConcrSect[0]
+            if self.concrSectRadius:
+                self.vDirTrans=Vector(0,1)
+            else:
+                self.vDirTrans=self.lstPtsConcrSect[1]-self.lstPtsConcrSect[0]
         return self.vDirTrans.normalize()
     
     def getVdirLong(self):
@@ -826,39 +837,42 @@ class stirrupFamily(rebarFamilyBase):
     def createLstRebar(self):
         '''Note; This part should be transfered to the base class
         '''
-        lstCoverAxis=self.getLstCoverAxis()
-###        vPerp=(self.lstPtsConcrSect[0]-self.lstPtsConcrSect[3]).normalize()
-        # lstPtsRebar=[self.lstPtsConcrSect[0]+lstCoverAxis[3]*vTr-lstCoverAxis[0]*vPerp,
-        #                self.lstPtsConcrSect[1]-lstCoverAxis[1]*vTr-lstCoverAxis[0]*vPerp,
-        #                self.lstPtsConcrSect[2]-lstCoverAxis[1]*vTr+lstCoverAxis[2]*vPerp,
-        #                self.lstPtsConcrSect[3]+lstCoverAxis[3]*vTr+lstCoverAxis[2]*vPerp]
-        lstPtsRebar=self.getLstPtsBasicRebar(self.lstPtsConcrSect)
-        if self.lstPtsConcrSect[0] == self.lstPtsConcrSect[-1]:
-            pint=geom_utils.int2lines(lstPtsRebar[0],lstPtsRebar[1],lstPtsRebar[-2],lstPtsRebar[-1])
-            lstPtsRebar[0]=pint; lstPtsRebar[-1]=pint
-        if self.fixAnchorStart is not None:
-            extrShAng,extrShLn=self.getExtrShapeParams(self.fixAnchorStart)
-            vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
-            lstPtsRebar[0]=lstPtsRebar[0].add(vaux.multiply(self.diameter/2.))
-            vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
-            vauxHook.normalize()
-            firstPoint=lstPtsRebar[0].add(vauxHook.multiply(extrShLn))
-            lstPtsRebar.insert(0,firstPoint)
-        if self.fixAnchorEnd is not None:
-            extrShAng,extrShLn=self.getExtrShapeParams(self.fixAnchorEnd)
-            vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
-            lstPtsRebar[-1]=lstPtsRebar[-1].sub(vaux.multiply(self.diameter/2.))
-            vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
-            vauxHook.normalize()
-            endPoint=lstPtsRebar[-1].add(vauxHook.multiply(extrShLn))
-            lstPtsRebar.append(endPoint)
+        if self.concrSectRadius: #circular section
+            radAxisStirr=self.concrSectRadius-self.lstCover[0]-self.diameter/2
+            self.rebarWire=Part.makeCircle(radAxisStirr)
+            self.lstWire=[self.rebarWire]
+        elif self.lstPtsConcrSect:
+            lstCoverAxis=self.getLstCoverAxis()
+            lstPtsRebar=self.getLstPtsBasicRebar(self.lstPtsConcrSect)
+            if self.lstPtsConcrSect[0] == self.lstPtsConcrSect[-1]:
+                pint=geom_utils.int2lines(lstPtsRebar[0],lstPtsRebar[1],lstPtsRebar[-2],lstPtsRebar[-1])
+                lstPtsRebar[0]=pint; lstPtsRebar[-1]=pint
+            if self.fixAnchorStart is not None:
+                extrShAng,extrShLn=self.getExtrShapeParams(self.fixAnchorStart)
+                vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
+                lstPtsRebar[0]=lstPtsRebar[0].add(vaux.multiply(self.diameter/2.))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
+                vauxHook.normalize()
+                firstPoint=lstPtsRebar[0].add(vauxHook.multiply(extrShLn))
+                lstPtsRebar.insert(0,firstPoint)
+            if self.fixAnchorEnd is not None:
+                extrShAng,extrShLn=self.getExtrShapeParams(self.fixAnchorEnd)
+                vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
+                lstPtsRebar[-1]=lstPtsRebar[-1].sub(vaux.multiply(self.diameter/2.))
+                vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
+                vauxHook.normalize()
+                endPoint=lstPtsRebar[-1].add(vauxHook.multiply(extrShLn))
+                lstPtsRebar.append(endPoint)
+                lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
+                self.rebarWire=Part.Wire(lstLinRebar)
+                self.lstWire=[self.rebarWire]
+            else:
+                lmsg.error('for rebar family:'+ self.identifier+ '-> either lstPtsConcrSect or concrSectRadius must be defined.')
             
-        lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
-#        lstLinRebar+=[Part.makeLine(lstPtsRebar[-1],lstPtsRebar[0])]
-        self.rebarWire=Part.Wire(lstLinRebar)
-        self.lstWire=[self.rebarWire]
-    
-    def drawRebars(self,vTranslation=Vector(0,0,0)):
+
+
+
+    def drawPolyRebars(self,vTranslation=Vector(0,0,0)):
         self.getVdirTrans()
         if self.rebarWire is None:
             self.createLstRebar()
@@ -866,9 +880,12 @@ class stirrupFamily(rebarFamilyBase):
         rebarDraw.translate(vTranslation)
         if self.dispStrpTransv:
             rebarDraw.translate(self.dispStrpTransv*self.vDirTrans)
-        rebarFillet= Draft.make_wire(rebarDraw,closed=self.closed,face=False)
-        rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
-        rebarFillet.FilletRadius=rad
+        if self.concrSectRadius:
+            rebarFillet=rebarDraw
+        else:
+            rebarFillet= Draft.make_wire(rebarDraw,closed=self.closed,face=False)
+            rad=RCutils.bend_rad_hooks_EHE(self.diameter*1e3)/1e3
+            rebarFillet.FilletRadius=rad
         FreeCADGui.ActiveDocument.getObject(rebarFillet.Name).LineColor = cfg.colorRebars
         for i in range(1,self.nmbStrpTransv):
             stirr=rebarDraw.copy()
@@ -878,6 +895,19 @@ class stirrupFamily(rebarFamilyBase):
             FreeCADGui.ActiveDocument.getObject(stirrFillet.Name).LineColor = cfg.colorRebars
         FreeCADGui.ActiveDocument.Document.recompute()
         ptoIniEtiq=self.getInitPntRebLref(rebarDraw)
+        pEndRefL,pCentCirc,justif,pText=self.drawRebarLref(ptoIniEtiq,self.vectorLRef)
+        self.drawDecorId(pEndRefL,pCentCirc,justif)
+        ptoSketch,pos=self.rebarText(justif,pText)
+
+    def drawCircRebar(self,vTranslation=Vector(0,0,0)):
+        if self.rebarWire is None:
+            self.createLstRebar()
+        radAxisStirr=self.concrSectRadius-self.lstCover[0]-self.diameter/2
+        pl=FreeCAD.Placement()
+        pl.move(vTranslation)
+        c=Draft.make_circle(radius=radAxisStirr,placement=pl,face=False)
+        FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = cfg.colorRebars
+        ptoIniEtiq=vTranslation+Vector(radAxisStirr,0)
         pEndRefL,pCentCirc,justif,pText=self.drawRebarLref(ptoIniEtiq,self.vectorLRef)
         self.drawDecorId(pEndRefL,pCentCirc,justif)
         ptoSketch,pos=self.rebarText(justif,pText)
@@ -910,6 +940,8 @@ class stirrupFamily(rebarFamilyBase):
         vauxn.normalize()
         self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=None)
 
+    
+
     def rebarText(self,justif,pText):
         '''Write the text that labels the rebar family
 
@@ -932,7 +964,7 @@ class stirrupFamily(rebarFamilyBase):
             pos='r'
         dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
         return ptoSketch,pos
-    
+
     def getNumberOfBars(self):
         '''Return the number of bars in the family.
         '''
@@ -1135,7 +1167,10 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
                 rbFam.drawPolySectBars(vTranslation)
     if lstShapeStirrupFam:
         for stFam in lstShapeStirrupFam:
-            stFam.drawRebars(vTranslation)
+            if stFam.concrSectRadius: #circular section
+                stFam.drawCircRebar(vTranslation)
+            else:
+                stFam.drawPolyRebars(vTranslation)
     if lstEdgeStirrupFam:
         for stFam in lstEdgeStirrupFam:
             stFam.drawLnRebars(vTranslation)       
