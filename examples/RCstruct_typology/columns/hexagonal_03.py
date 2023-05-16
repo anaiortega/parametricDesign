@@ -140,3 +140,4 @@ rb.barSchedule(lstBarFamilies=[vert_rf1,vert_rf2,stirr1,stirr2],
                title='hexagonal column',
                doc=docSch
 )
+docSch.recompute()

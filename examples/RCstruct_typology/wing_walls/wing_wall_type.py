@@ -503,7 +503,7 @@ lstSectRebarFam+=[RF_foot_lat_front,RF_foot_lat_dors,RF_wall_top]
 # for rf in lstShapeRebarFam:
 #     rf.drawLstRebar(vTranslation=Vector(0,5,0))
 # for rf in lstSectRebarFam:
-#     rf.drawSectBars(vTranslation=Vector(0,5,0))
+#     rf.drawPolySectBars(vTranslation=Vector(0,5,0))
 rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
 
 #SECCIONES LONGITUDINALES
@@ -517,7 +517,7 @@ lstSectRebarFam+=[RF_foot_lat_toe,RF_foot_lat_heel]
 # for rf in lstShapeRebarFam:
 #     rf.drawLstRebar(vTranslation)
 # for rf in lstSectRebarFam:
-#     rf.drawSectBars(vTranslation)
+#     rf.drawPolySectBars(vTranslation)
 rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(lWall+1,5,0))
 
 #SECCIÓN HORIZONTAL POR LA BASE DEL MURO
@@ -530,7 +530,7 @@ lstSectRebarFam=[RF_wall_vert_back,RF_wall_vert_front]
 
     
 # for rf in lstSectRebarFam:
-#     rf.drawSectBars(vTranslation)
+#     rf.drawPolySectBars(vTranslation)
 
 
 rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))

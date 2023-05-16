@@ -39,7 +39,7 @@ rfam=rb.rebarFamily(
 pts=rfam.getLstPtsRebar(rfam.lstPtsConcrSect)
 wires=rfam.getLstRebars(pts)
 rfam.drawLstRebar()
-rfam.drawSectBars()
+rfam.drawPolySectBars()
 
 lstBarFamilies=[rfam]
 rb.barSchedule(lstBarFamilies,title=estrName)

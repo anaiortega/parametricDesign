@@ -59,7 +59,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         )
     set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
     tr_bot_rf.createLstRebar()
-    tr_bot_rf.drawSectBars()
+    tr_bot_rf.drawPolySectBars()
     tr_bot_rf.drawLstRebar()
     
     # transverse bottom rebar family
@@ -79,7 +79,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
          )
     set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)
     tr_top_rf.createLstRebar()
-    tr_top_rf.drawSectBars()
+    tr_top_rf.drawPolySectBars()
     tr_top_rf.drawLstRebar()
     ln_bot_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
@@ -98,7 +98,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         )
     set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
     ln_bot_rf.createLstRebar()
-    ln_bot_rf.drawSectBars()
+    ln_bot_rf.drawPolySectBars()
     ln_bot_rf.drawLstRebar()
     ln_top_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
@@ -117,7 +117,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
          )
     set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
     ln_top_rf.createLstRebar()
-    ln_top_rf.drawSectBars()
+    ln_top_rf.drawPolySectBars()
     ln_top_rf.drawLstRebar()
     # Concrete transverse cross-section
     if drawConcrTrSect:
@@ -175,7 +175,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         )
     set_FR_options(RF=vert_left_rf,RFdef=leftVertRb)
     vert_left_rf.createLstRebar()
-    vert_left_rf.drawSectBars()
+    vert_left_rf.drawPolySectBars()
     vert_left_rf.drawLstRebar()
     # vertical left rebar family
     vert_right_rf=rb.rebarFamily(
@@ -191,7 +191,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         )
     set_FR_options(RF=vert_right_rf,RFdef=rightVertRb)
     vert_right_rf.createLstRebar()
-    vert_right_rf.drawSectBars()
+    vert_right_rf.drawPolySectBars()
     vert_right_rf.drawLstRebar()
     hor_left_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
@@ -208,7 +208,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         )
     set_FR_options(RF=hor_left_rf,RFdef=leftHorRb)
     hor_left_rf.createLstRebar()
-    hor_left_rf.drawSectBars()
+    hor_left_rf.drawPolySectBars()
     hor_left_rf.drawLstRebar()
     hor_right_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
@@ -225,7 +225,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         )
     set_FR_options(RF=hor_right_rf,RFdef=rightHorRb)
     hor_right_rf.createLstRebar()
-    hor_right_rf.drawSectBars()
+    hor_right_rf.drawPolySectBars()
     hor_right_rf.drawLstRebar()
     # Concrete vertical cross-section
     if drawConcrVertSect:
@@ -325,7 +325,7 @@ The data of the family is given as a dictionary of type:
             )
         set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
         tr_bot_rf.createLstRebar()
-        tr_bot_rf.drawSectBars()
+        tr_bot_rf.drawPolySectBars()
         tr_bot_rf.drawLstRebar()
         lstRebFam+=[tr_bot_rf]
     # transverse top rebar family
@@ -345,7 +345,7 @@ The data of the family is given as a dictionary of type:
             )
         set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)    
         tr_top_rf.createLstRebar()
-        tr_top_rf.drawSectBars()
+        tr_top_rf.drawPolySectBars()
         tr_top_rf.drawLstRebar()
         lstRebFam+=[tr_top_rf]
     # longitudinal bottom rebar family
@@ -367,7 +367,7 @@ The data of the family is given as a dictionary of type:
            )
         set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
         ln_bot_rf.createLstRebar()
-        ln_bot_rf.drawSectBars()
+        ln_bot_rf.drawPolySectBars()
         ln_bot_rf.drawLstRebar()
         lstRebFam+=[ln_bot_rf]
     # longitudinal top rebar family
@@ -389,7 +389,7 @@ The data of the family is given as a dictionary of type:
             )
         set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
         ln_top_rf.createLstRebar()
-        ln_top_rf.drawSectBars()
+        ln_top_rf.drawPolySectBars()
         ln_top_rf.drawLstRebar()
         lstRebFam+=[ln_top_rf]
     # Stirrups holding the transverse top and bottom rebar families
