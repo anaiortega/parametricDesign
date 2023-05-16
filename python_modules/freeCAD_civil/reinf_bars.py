@@ -515,7 +515,7 @@ class rebarFamily(rebarFamilyBase):
         Laux=centersWire.Length
         if self.spacing:
             self.nbarsAux=int(Laux/self.spacing)
-        elif self.nbarsAux:
+        elif self.nmbBars:
             self.nbarsAux=self.nmbBars
         else:
             lmsg.error('for rebar family:'+ self.identifier+ '-> either spacing or nmbBars must be defined.')
