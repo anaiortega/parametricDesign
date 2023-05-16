@@ -325,16 +325,21 @@ class rebarFamily(rebarFamilyBase):
     :ivar rightSideCover: side to give cover  (False for left side, True for right side)
           (defaults to True)
     :ivar vectorLRef: vector to draw the leader line for labeling the bar
-    :ivar fromToExtPts: list of starting and end points that delimit the stretch of 
-          rebars. Defaults to None, in which case this length must be defined 
-          by means of the attribute' extensionLength'.
+    :ivar fromToExtPts: list of starting and end concrete points that delimit the 
+          stretch of  sectioned rebars. Defaults to None, in which case this length 
+          must be defined  by means of the attributes  'sectBarsConcrRadius' 
+          or 'extensionLength'.
+    :ivar sectBarsConcrRadius: radius of the concrete circular section to 
+            which ara attached the sectioned rebars. Defaults to None, 
+            in which case the stretch of sectioned rebars must be defined 
+            with attributes 'fromToExtPts' or 'extensionLength'.
     :ivar extensionLength: length of the stretch in which the rebar family extends.
           Defaults to None, in which case  this length must be defined 
-          by means of the attribute 'fromToExtPts'.
+          by means of the attributes 'fromToExtPts' or 'sectBarsConcrRadius'
     :ivar lateralCover: minimal lateral cover to place the rebar family.
           Defaults to the minimum cover given with 'reinfCfg'.
     :ivar rightSideSectBars: side of cover to draw the family as sectioned bars 
-          (circles) (False ' left, True right) (defaults to True)
+           (circles) (False ' left, True right) (defaults to True)
     :ivar coverSectBars: cover to draw the family as sectioned bars 
           (circles) . Only needed if the bars are to be drawn.
           Defaults to the minimum cover given with 'reinfCfg'. 
@@ -404,11 +409,12 @@ class rebarFamily(rebarFamilyBase):
                     calculate lap lengths when splitting bars- (defaults to False)  
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text (defaults to True)
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
         super(rebarFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
         self.spacing=spacing 
         self.vectorLRef= vectorLRef
         self.fromToExtPts= fromToExtPts
+        self.sectBarsConcrRadius=sectBarsConcrRadius
         self.extensionLength=extensionLength
         self.coverSectBars=coverSectBars if coverSectBars is not None else reinfCfg.cover
         self.lateralCover=lateralCover if lateralCover is not None else reinfCfg.cover
@@ -428,10 +434,11 @@ class rebarFamily(rebarFamilyBase):
         self.position=position.lower()
         self.compression=compression
         self.drawSketch=drawSketch
+
     
-    def drawSectBars(self,vTranslation=Vector(0,0,0)):
+    def drawPolySectBars(self,vTranslation=Vector(0,0,0)):
         '''Draw the rebar family as sectioned bars represented by circles in 
-        the RC section.
+        the RC section (straight or polygonal shape).
 
         :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
         the drawing (defaults to Vector(0,0,0))
@@ -498,7 +505,30 @@ class rebarFamily(rebarFamilyBase):
             self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=None) 
         return
         
-           
+    def drawCircSectBars(self,vTranslation=Vector(0,0,0)):
+        '''Draw the rebar family as sectioned bars represented by circles in 
+        the RC section (circular shape).
+
+        :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
+        the drawing (defaults to Vector(0,0,0))
+        '''
+        centersWire=Part.makeCircle(self.sectBarsConcrRadius-self.coverSectBars+self.diameter/2.0)
+        Laux=centersWire.Length
+        if self.spacing:
+            nbars=int(Laux/self.spacing)
+        else:
+            nbars=self.nmbBars
+        centersSectBars=centersWire.discretize(Number=nbars)
+        #Draw sectioned rebars
+        for cent in centersSectBars:
+            place=FreeCAD.Placement(); place.move(cent)
+            c=Draft.makeCircle(self.diameter/2.0,placement=place,face=False)
+            FreeCADGui.ActiveDocument.getObject(c.Name).LineColor =cfg.colorSectBars
+        vaux=centersSectBars[2]-centersSectBars[0]
+        vauxn=Vector(-vaux.y,vaux.x)
+        vauxn.normalize()
+        self.labelSectRebar(centersSectBars[0],centersSectBars[2],vauxn)
+      
 
     def drawLstRebar(self,vTranslation=Vector(0,0,0)):
         if self.lstWire==None:
@@ -1057,7 +1087,7 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
         
 def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete):
     ''' Draw a section of concrete defined by a list of points in the FreeCAD 
-    active document
+    active document (polygonal shape)
 
     :param lstPtsConcrSect: list of ordered lists of points to draw the 
            concrete section. Each list of points originates an open wire.
@@ -1071,14 +1101,20 @@ def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.col
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
     return p
     
-
-
-def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,lstShapeStirrupFam=None,lstEdgeStirrupFam=None,vTranslation=Vector(0,0,0)):
+def drawCircConcreteSection(radiusConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete):
+    c=Part.makeCircle(radiusConcrSect)
+    c.translate(vTranslation)
+    p=Part.show(c)
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
+    return p
+   
+def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,lstShapeStirrupFam=None,lstEdgeStirrupFam=None,vTranslation=Vector(0,0,0)):
     '''Draw a reinforced concrete section in the FreeCAD active document
 
     :param lstOfLstPtsConcrSect: list of ordered lists of points to draw the 
            concrete section. Each list of points originates an open wire.
            (defaults to None)
+    :param radiusConcrSect: radius of  the concrete section (for circular shape)
     :param lstShapeRebarFam: list of rebar families that are going to be 
            drawn with their true shape. 
            (defaults to None)
@@ -1097,6 +1133,8 @@ def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFa
         #draw the concrete section
         for lp in lstOfLstPtsConcrSect:
             drawConcreteSection(lp,vTranslation)
+    if radiusConcrSect:
+        drawCircConcreteSection(radiusConcrSect,vTranslation)
     if lstShapeRebarFam:
         #draw the rebars in their true shape
         for rbFam in lstShapeRebarFam:
@@ -1104,7 +1142,10 @@ def drawRCSection(lstOfLstPtsConcrSect=None,lstShapeRebarFam=None,lstSectRebarFa
     if lstSectRebarFam:
         #draw the sectioned rebars
         for rbFam in lstSectRebarFam:
-            rbFam.drawSectBars(vTranslation)
+            if rbFam.sectBarsConcrRadius:
+                rbFam.drawCircSectBars(vTranslation)
+            else:
+                rbFam.drawPolySectBars(vTranslation)
     if lstShapeStirrupFam:
         for stFam in lstShapeStirrupFam:
             stFam.drawRebars(vTranslation)
