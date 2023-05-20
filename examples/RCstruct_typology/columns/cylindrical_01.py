@@ -12,9 +12,12 @@ steel=EC2_materials.S500C
 
 estrName='Cylindrical column'
 titSchedule=estrName.upper()
+docArm=FreeCAD.newDocument(estrName+'_arm')
+scale=1/50
 
 reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
-docArm=FreeCAD.newDocument(estrName+'_arm')
+# set XC dimension style in current document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
 Hcol= 3 # height of the column
 Rad=0.5 # radius of the cylinder

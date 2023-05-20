@@ -540,6 +540,15 @@ class rebarFamily(rebarFamilyBase):
             self.createLstRebar()
         for rw in self.lstWire:
             self.drawRebar(rw,vTranslation)
+        if len(self.lstPairDimPnts)>0:
+            self.drawDimRebar(vTranslation)
+
+    def drawDimRebar(self,vTranslation=Vector(0,0,0)):
+        spacDimLine=2*self.reinfCfg.texSize
+        for l in self.lstPairDimPnts:
+            lst_disp=[v+vTranslation for v in l]
+            dim.dim_lst_pnts(lstPnts=lst_disp,spacDimLine=spacDimLine)
+            
     
     def drawRebar(self,rebWire,vTranslation=Vector(0,0,0)):
         '''Represent the bar family in the RC section as a bar in its 
@@ -593,56 +602,63 @@ class rebarFamily(rebarFamilyBase):
         lstPtRFam=self.getLstPtsRebar(self.lstPtsConcrSect)
         self.lstWire=self.getLstRebars(lstPtRFam)
         if len(self.lstPtsConcrSect2) > 0:
-            lstPtsRebar2=self.getLstPtsRebar(self.lstPtsConcrSect2)
+            lstPtsRebar2,=self.getLstPtsRebar(self.lstPtsConcrSect2)
             lstLinRebar2=[Part.makeLine(lstPtsRebar2[i],lstPtsRebar2[i+1])for i in range(len(lstPtsRebar2)-1)]
             self.wireSect2=[(Part.Wire(lstLinRebar2))]
         
 
     def getLstPtsRebar(self,lstPtsConcr):
-        '''Return the wire that represents the true shape of the bar defined
-        by the points of the concrete section listed in lstPtsConcr.
+        '''Return lstPtsRebar, which  is list of point of the wire that represents 
+        the true shape of the bar defined by the points of the concrete section 
+        listed in lstPtsConcr.
+        Also creates the attribute lstPairDimPnts, which is a list of pairs of points to 
+        dimension hooks, laps, straight elongations and lapping of bars.
 
         :param lstPtsConcr: ordered list of points in the concrete section 
         to which the rebar is 'attached'. 
         '''
         lstPtsRebar=self.getLstPtsBasicRebar(lstPtsConcr)
-        
+        self.lstPairDimPnts=list() 
         # Start extremity: gaps, straight elongation, hooks
         vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
-        if self.fixLengthStart is not None:
+        if self.fixLengthStart:
             lstPtsRebar[0]=lstPtsRebar[1].sub(vaux.multiply(self.fixLengthStart))
         else:
             lstPtsRebar[0]=lstPtsRebar[0].sub(vaux.multiply(self.gapStart))
-        if self.extrShapeStart is not None:
+        if self.extrShapeStart:
             extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeStart)
             vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
             if extrShAng == 0:  #straight elongation
+                pntInit=lstPtsRebar[0]
                 lstPtsRebar[0]=lstPtsRebar[0].sub(vaux.multiply(extrShLn))
+                self.lstPairDimPnts+=[[lstPtsRebar[0],pntInit]]
             else: #hook
                 lstPtsRebar[0]=lstPtsRebar[0].add(vaux.multiply(self.diameter/2.))
                 vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
                 vauxHook.normalize()
                 firstPoint=lstPtsRebar[0].add(vauxHook.multiply(extrShLn))
                 lstPtsRebar.insert(0,firstPoint)
-#                self.lstCover.insert(0,0)
-                
+                self.lstPairDimPnts+=[[lstPtsRebar[0],lstPtsRebar[1]]]
         # End extremity: gaps, straight elongation, hooks
         vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
-        if self.fixLengthEnd is not None:
+        if self.fixLengthEnd:
             lstPtsRebar[-1]=lstPtsRebar[-2].add(vaux.multiply(self.fixLengthEnd))
         else:
             lstPtsRebar[-1]=lstPtsRebar[-1].add(vaux.multiply(self.gapEnd))
-        if self.extrShapeEnd is not None:
+        if self.extrShapeEnd:
             extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeEnd)
             vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
             if extrShAng == 0:  #straight elongation
+                pntInit=lstPtsRebar[-1]
                 lstPtsRebar[-1]=lstPtsRebar[-1].add(vaux.multiply(extrShLn))
+                self.lstPairDimPnts+=[[pntInit,lstPtsRebar[-1]]]
             else: #hook
                 lstPtsRebar[-1]=lstPtsRebar[-1].sub(vaux.multiply(self.diameter/2.))
                 vauxHook=DraftVecUtils.rotate(vaux,math.radians(extrShAng),Vector(0,0,1))
                 vauxHook.normalize()
                 endPoint=lstPtsRebar[-1].add(vauxHook.multiply(extrShLn))
                 lstPtsRebar.append(endPoint)
+                self.lstPairDimPnts+=[[lstPtsRebar[-2],lstPtsRebar[-1]]]
         return lstPtsRebar
         
     def getNumberOfBars(self):
@@ -848,7 +864,7 @@ class stirrupFamily(rebarFamilyBase):
             if self.lstPtsConcrSect[0] == self.lstPtsConcrSect[-1]:
                 pint=geom_utils.int2lines(lstPtsRebar[0],lstPtsRebar[1],lstPtsRebar[-2],lstPtsRebar[-1])
                 lstPtsRebar[0]=pint; lstPtsRebar[-1]=pint
-            if self.fixAnchorStart is not None:
+            if self.fixAnchorStart:
                 extrShAng,extrShLn=self.getExtrShapeParams(self.fixAnchorStart)
                 vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
                 lstPtsRebar[0]=lstPtsRebar[0].add(vaux.multiply(self.diameter/2.))
@@ -856,7 +872,7 @@ class stirrupFamily(rebarFamilyBase):
                 vauxHook.normalize()
                 firstPoint=lstPtsRebar[0].add(vauxHook.multiply(extrShLn))
                 lstPtsRebar.insert(0,firstPoint)
-            if self.fixAnchorEnd is not None:
+            if self.fixAnchorEnd:
                 extrShAng,extrShLn=self.getExtrShapeParams(self.fixAnchorEnd)
                 vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
                 lstPtsRebar[-1]=lstPtsRebar[-1].sub(vaux.multiply(self.diameter/2.))
@@ -975,9 +991,9 @@ class stirrupFamily(rebarFamilyBase):
     def getTextFiSpacing(self):
         '''Return the text for column '%%C/SEP.' of the bar schedule'''
         txt='c.%%C' + str(int(1000*self.diameter)) + 'c/'
-        if self.spacStrpLong is not None:
+        if self.spacStrpLong:
             txt+=str(self.spacStrpLong)+'/'
-        if self.spacStrpTransv is not None:
+        if self.spacStrpTransv:
             txt+=str(self.spacStrpTransv)
         else:
             txt=txt[:-1] 
@@ -1163,7 +1179,6 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
             else: r=lstEdgeStirrupFam[0]
             print('r=',r)
             spacDimLine=3*r.reinfCfg.texSize
-            print('spacDimLine',spacDimLine)
             for l in lstOfLstPtsConcrSect:
                 lst_disp=[v+vTranslation for v in l]
                 dim.dim_lst_pnts(lstPnts=lst_disp,spacDimLine=spacDimLine)
