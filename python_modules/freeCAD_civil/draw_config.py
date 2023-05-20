@@ -1,3 +1,4 @@
+import json
 import FreeCAD as App
 import Draft
 # These variables will be substitutted  by layers in   all  modules
@@ -297,7 +298,35 @@ class layerCfg(object):
 XC_layerCfg=layerCfg()
        
     
+XCdimProp={
+    "FontName": "Arial",
+    "FontSize": 2.5,
+    "LineSpacing": 2.0,
+    "ShowUnit": False,
+    "UnitOverride": "",
+    "Decimals": 2,
+    "ShowLines": True,
+    "LineWidth": 1,
+    "LineColor": 0,
+    "ArrowType": 3,
+    "ArrowSize": 0.75 ,
+    "DimensionOvershoot": 2,
+    "ExtensionLines": 1.0,
+    "ExtensionOvershoot": 2,
+    }
 
+def set_dim_style(scale,dimStyProp=XCdimProp):
+    '''Set the dimension style to be used in the current document.
+
+    :ivar scale: scale of the drawings (ex: 1/100). The size of texts, arrows, ...
+                     is adjusted to this scale
+    :ivar dimStyProp: properties of the dimension style (defaults to sx_dim_prop)
+    '''
+    dimStyProp["ScaleMultiplier"]= 1e-3/scale
+    meta = App.ActiveDocument.Meta
+    meta["Draft_Style_dimStyle"]=json.dumps(dimStyProp)
+    App.ActiveDocument.Meta = meta
+    
 
 
 

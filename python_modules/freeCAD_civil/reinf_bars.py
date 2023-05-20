@@ -23,6 +23,7 @@ from misc_utils import data_struct_utils as dsu
 from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import tables
 from misc_utils import log_messages as lmsg
+from layout_utils import dimensioning as dim
 
 '''Classes to generate in FreeCAD drawings to represent  a reinforced-concrete 
 structure and the bar schedule associated.
@@ -547,7 +548,7 @@ class rebarFamily(rebarFamilyBase):
         :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
         the drawing (defaults to Vector(0,0,0))
         '''
-        # copy of the rebar wire to be depicted and applying of the translation
+        # copy of the rebar wire to be depicted and applied the translation
         #flechas en extremos de barra
         rebarDraw=rebWire.copy()
         rebarDraw.translate(vTranslation)
@@ -1127,7 +1128,7 @@ def drawCircConcreteSection(radiusConcrSect,vTranslation=Vector(0,0,0),color=cfg
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
     return p
    
-def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,lstShapeStirrupFam=None,lstEdgeStirrupFam=None,vTranslation=Vector(0,0,0)):
+def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,lstShapeStirrupFam=None,lstEdgeStirrupFam=None,vTranslation=Vector(0,0,0),dimConcrSect=False):
     '''Draw a reinforced concrete section in the FreeCAD active document
 
     :param lstOfLstPtsConcrSect: list of ordered lists of points to draw the 
@@ -1147,11 +1148,25 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
     :param vTranslation: Vector to apply a traslation to the RC section drawing.
            It facilitates the adding of several RC-sections to the same sheet of
            FreeCAD. (defaults to Vector(0,0,0))
+    :param dimConcrSect: True for dimensioning the concrete section
+           (defaults to False)
     '''
     if lstOfLstPtsConcrSect:
         #draw the concrete section
         for lp in lstOfLstPtsConcrSect:
             drawConcreteSection(lp,vTranslation)
+        if dimConcrSect:
+            #dimensioning of concrete section
+            if lstShapeRebarFam: r=lstShapeRebarFam[0]
+            elif lstSectRebarFam: r=lstSectRebarFam[0]
+            elif lstShapeStirrupFam: r=lstShapeStirrupFam[0]
+            else: r=lstEdgeStirrupFam[0]
+            print('r=',r)
+            spacDimLine=3*r.reinfCfg.texSize
+            print('spacDimLine',spacDimLine)
+            for l in lstOfLstPtsConcrSect:
+                lst_disp=[v+vTranslation for v in l]
+                dim.dim_lst_pnts(lstPnts=lst_disp,spacDimLine=spacDimLine)
     if radiusConcrSect:
         drawCircConcreteSection(radiusConcrSect,vTranslation)
     if lstShapeRebarFam:
@@ -1173,6 +1188,6 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
                 stFam.drawPolyRebars(vTranslation)
     if lstEdgeStirrupFam:
         for stFam in lstEdgeStirrupFam:
-            stFam.drawLnRebars(vTranslation)       
+            stFam.drawLnRebars(vTranslation)
 
 

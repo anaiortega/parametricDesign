@@ -1,6 +1,5 @@
-emac# -*- coding: iso-8859-1 -*-
+# -*- coding: iso-8859-1 -*-
 from __future__ import division
-
 import math
 from FreeCAD import Vector
 from freeCAD_civil import  draw_config as cfg
@@ -13,8 +12,15 @@ steel=EC2_materials.S500C
 estrName='Cylindrical column'
 titSchedule=estrName.upper()
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 docArm=FreeCAD.newDocument(estrName+'_arm')
+scale=1/50
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
+# set the dimension style for this document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
+# Print scale
+import Draft
+
+
 
 Hcol= 3 # height of the column
 Rad=0.5 # radius of the cylinder
@@ -65,6 +71,7 @@ rb.drawRCSection(
     lstShapeStirrupFam=None,
     lstEdgeStirrupFam=None,
     vTranslation=Vector(0,2*Rad+0.7),
+    dimConcrSect=True,
     )
 docArm.recompute()
 
@@ -72,5 +79,6 @@ docSch=FreeCAD.newDocument(estrName+"_schedule",estrName+"_schedule")
 rb.barSchedule(lstBarFamilies=[vert_rf1],
                title='cylindrical column',
                doc=docSch
+               
 )
 

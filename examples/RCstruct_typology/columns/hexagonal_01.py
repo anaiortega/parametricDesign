@@ -13,8 +13,11 @@ steel=EC2_materials.S500C
 estrName='Hexagonal column'
 titSchedule=estrName.upper()
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 docArm=FreeCAD.newDocument(estrName+'_arm')
+scale=1/50
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
+# set XC dimension style in current document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
 Hcol= 3 # height of the column
 # Hexagon dimensions (column cross-section)
@@ -67,7 +70,7 @@ vert_rf2=rb.rebarFamily(
     vectorLRef=Vector(-0.50,-0.15),
     fromToExtPts=[pt1,pt6,pt5,pt4,pt3],
     lateralCover=0.1,
-    rightSideSectBars='l',
+    rightSideSectBars=False,
     coverSectBars=reinfCfg.cover+fi_stirr,
     gapStart=0.5,
     extrShapeStart='anc90_posGood_compr',
@@ -119,7 +122,7 @@ rb.drawRCSection(
                  lstOfLstPtsConcrSect=[[pt1,pt2,pt3,pt4,pt5,pt6,pt1]],
                  lstShapeRebarFam=None,
                  lstSectRebarFam=[vert_rf1,vert_rf2],
-                 lstShapeStirrupFam=[stirr1,stirr2],
+                 lstShapeStirrupFam=None,#[stirr1,stirr2],
                  lstEdgeStirrupFam=None,
                  vTranslation=Vector(0,0,0),
     )
