@@ -278,22 +278,18 @@ class rebarFamilyBase(object):
         hText=self.reinfCfg.texSize
         if justif=="Left":
             txtColor=cfg.colorTextLeft
-            if self.spacing:
-                tx=self.identifier + '  %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing)
-            elif self.nmbBars:
+            if self.nmbBars:
                 tx=self.identifier + '  ' + str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter))
             else:
-                lmsg.error('for rebar family:'+ self.identifier+ '-> either spacing or nmbBars must be defined.')
+                tx=self.identifier + '  %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing)
             ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
             pos='l'
         else:
             txtColor=cfg.colorTextRight
-            if self.spacing:
-                tx='%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing) +'   ' + self.identifier
-            elif self.nmbBars:
+            if self.nmbBars:
                 tx=str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter)) + '   ' + self.identifier
             else:
-                lmsg.error('for rebar family:' + self.identifier + '-> either spacing or nmbBars must be defined.')
+                tx='%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing) +'   ' + self.identifier
             ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
             pos='r'
         dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
@@ -315,57 +311,56 @@ class rebarFamily(rebarFamilyBase):
           parameters like concrete and steel type, text format, ... 
     :ivar identifier: identifier of the rebar family
     :ivar diameter: diameter of the bar [m]
-    :ivar spacing: spacing between bars [m]. If number of bars is defined 
-          through parameter nmbBars, then spacing must be = None (default value 
-          of spacing=None)
-    :ivar nmbBars: number of rebars in the family. This parameter is only taken
-          into account when spacing=None (default value of spacing=None)
+    :ivar spacing: spacing between bars [m] (defaults to None). 
+            (is 'nmBars' is defined, attribute 'spacing' is ignored)
+    :ivar nmbBars: number of rebars in the family. This parameter takes
+            precedende over 'spacing'
     :ivar lstPtsConcrSect: list of points in the concrete section to which 
-          the bar is 'attached'
+            the bar is 'attached'
     :ivar lstCover: list of covers that correspond to each of the segments 
-          defined with lstPtsConcrSect [m]. Defaults to the minimum cover 
-          defined with 'reinfCfg'
+            defined with lstPtsConcrSect [m]. Defaults to the minimum cover 
+            defined with 'reinfCfg'
     :ivar rightSideCover: side to give cover  (False for left side, True for right side)
-          (defaults to True)
+            (defaults to True)
     :ivar vectorLRef: vector to draw the leader line for labeling the bar
     :ivar fromToExtPts: list of starting and end concrete points that delimit the 
-          stretch of  sectioned rebars. Defaults to None, in which case this length 
-          must be defined  by means of the attributes  'sectBarsConcrRadius' 
-          or 'extensionLength'.
+            stretch of  sectioned rebars. Defaults to None, in which case this length 
+            must be defined  by means of the attributes  'sectBarsConcrRadius' 
+            or 'extensionLength'.
     :ivar sectBarsConcrRadius: radius of the concrete circular section to 
             which ara attached the sectioned rebars. Defaults to None, 
             in which case the stretch of sectioned rebars must be defined 
             with attributes 'fromToExtPts' or 'extensionLength'.
     :ivar extensionLength: length of the stretch in which the rebar family extends.
-          Defaults to None, in which case  this length must be defined 
-          by means of the attributes 'fromToExtPts' or 'sectBarsConcrRadius'
+            Defaults to None, in which case  this length must be defined 
+            by means of the attributes 'fromToExtPts' or 'sectBarsConcrRadius'
     :ivar lateralCover: minimal lateral cover to place the rebar family.
-          Defaults to the minimum cover given with 'reinfCfg'.
+            Defaults to the minimum cover given with 'reinfCfg'.
     :ivar rightSideSectBars: side of cover to draw the family as sectioned bars 
-           (circles) (False ' left, True right) (defaults to True)
+            (circles) (False ' left, True right) (defaults to True)
     :ivar coverSectBars: cover to draw the family as sectioned bars 
-          (circles) . Only needed if the bars are to be drawn.
-          Defaults to the minimum cover given with 'reinfCfg'. 
+            (circles) . Only needed if the bars are to be drawn.
+            Defaults to the minimum cover given with 'reinfCfg'. 
    :ivar wire: FreeCAD object of type wire that represents the rebar shape
                 ( or the rebar shape in section 1 when it is variable).
     :ivar wireSect: FreeCAD object of type wire that represents the rebar at
-                    section 2 when the shape of rebars in the family varies 
-                    uniformily from section 1 to section 2.
+            section 2 when the shape of rebars in the family varies 
+            uniformily from section 1 to section 2.
     :ivar lstPtsConcrSect2: parameter only used when defining a rebar family
-          with variable shape. In that case, lstPtsConcrSect2 is the list of 
-          points in the concrete section 2 to which the bar is 'attached'
+            with variable shape. In that case, lstPtsConcrSect2 is the list of 
+            points in the concrete section 2 to which the bar is 'attached'
     :ivar gapStart: increment (decrement if gapStart <0) of the length of 
-          the reinforcement at its starting extremity (defaults to the minimum 
-          negative cover given with 'reinfCfg').
+            the reinforcement at its starting extremity (defaults to the minimum 
+            negative cover given with 'reinfCfg').
     :ivar gapEnd: increment (decrement if gapEnd<0) of the length of 
-          the reinforcement at its ending extremity  (defaults to the minimum 
-          negative cover given with 'reinfCfg').
+            the reinforcement at its ending extremity  (defaults to the minimum 
+            negative cover given with 'reinfCfg').
     :ivar extrShapeStart: defines the shape of the bar at its starting 
-          extremity. It can be an straight or hook shape with anchor (anc) length, 
-          lap length or a given fixed length.
-          The anchor or lap length are automatically 
-          calculated from the code (for now only EC2), material, and rebar configuration.
-          It's defined as a string parameter that can be read as:
+            extremity. It can be an straight or hook shape with anchor (anc) length, 
+            lap length or a given fixed length.
+            The anchor or lap length are automatically 
+            calculated from the code (for now only EC2), material, and rebar configuration.
+            It's defined as a string parameter that can be read as:
           For anchor end:
             'anc[angle]_position_stressState', where:
             anc[angle]= the anchor length is calculated.
@@ -400,17 +395,18 @@ class rebarFamily(rebarFamilyBase):
             len[number]: number is the length of the segment to add (in mm)
             Examples: 'fix45_len150'
     :ivar extrShapeEnd:defines a straigth elongation or a hook at the ending 
-          extremity of the bar. Definition analogous to extrShapeStart.
+            extremity of the bar. Definition analogous to extrShapeStart.
     :ivar fixLengthStart: fixed length of the first segment of the rebar 
-           (defaults to None = no fixed length)
+             (defaults to None = no fixed length)
     :ivar fixLengthEnd: fixed length of the last segment of the rebar 
-           (defaults to None = no fixed length)
+             (defaults to None = no fixed length)
     :ivar maxLrebar: maximum length of rebars (defaults to 12m)
     :ivar position: 'good' or 'poor' (equivalent to posI and posII in EHE). Is used to
-                    calculate lap lengths when splitting bars- (defaults to 'poor')
-    :ivar compression: True if rebars in compression, False if rebars in tension.  Is used to
-                    calculate lap lengths when splitting bars- (defaults to False)  
-    :ivar drawSketch: True to draw mini-sketch of the rebars besides the text (defaults to True)
+             calculate lap lengths when splitting bars- (defaults to 'poor')
+    :ivar compression: True if rebars in compression, False if rebars in tension.  
+            Is used to calculate lap lengths when splitting bars- (defaults to False)  
+    :ivar drawSketch: True to draw mini-sketch of the rebars besides the text 
+            (defaults to True)
     '''
     def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
         super(rebarFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
@@ -437,7 +433,6 @@ class rebarFamily(rebarFamilyBase):
         self.position=position.lower()
         self.compression=compression
         self.drawSketch=drawSketch
-
     
     def drawPolySectBars(self,vTranslation=Vector(0,0,0)):
         '''Draw the rebar family as sectioned bars represented by circles in 
@@ -466,7 +461,14 @@ class rebarFamily(rebarFamilyBase):
         vAux=Vector(initCentersWirePoints[1]-initCentersWirePoints[0]).normalize()
         if vAux != vStart:
             initCentersWirePoints.reverse()
-        if self.spacing: 
+        if self.nmbBars: # spacing is calculated through number of rebars
+            firstPoint=initCentersWirePoints[0]+vStart*(self.lateralCover+self.diameter/2.0)
+            endPoint=initCentersWirePoints[-1]+vEnd*(self.lateralCover+self.diameter/2.0)
+            centersWirePoints=[firstPoint]+initCentersWirePoints[1:-1]+[endPoint]
+            centersWire=Part.makePolygon(centersWirePoints) # polyline jointing the cernters of rebars
+            centersSectBars=centersWire.discretize(Number=self.nmbBars) # list of points representing the centers of rebars
+            self.spacing=centersWire.Length/(self.nmbBars-1) 
+        else:
             nesp=int((Laux-2.0*self.lateralCover-self.diameter)/self.spacing)
             distrL=(Laux-self.spacing*nesp)/2.0
             firstPoint=initCentersWirePoints[0]+vStart*distrL
@@ -474,14 +476,6 @@ class rebarFamily(rebarFamilyBase):
             centersWirePoints=[firstPoint]+initCentersWirePoints[1:-1]+[endPoint]
             centersWire=Part.makePolygon(centersWirePoints)
             centersSectBars=centersWire.discretize(Distance=self.spacing)
-        elif self.nmbBars: # spacing is calculated through number of rebars
-            firstPoint=initCentersWirePoints[0]+vStart*(self.lateralCover+self.diameter/2.0)
-            endPoint=initCentersWirePoints[-1]+vEnd*(self.lateralCover+self.diameter/2.0)
-            centersWirePoints=[firstPoint]+initCentersWirePoints[1:-1]+[endPoint]
-            centersWire=Part.makePolygon(centersWirePoints) # polyline jointing the cernters of rebars
-            centersSectBars=centersWire.discretize(Number=self.nmbBars) # list of points representing the centers of rebars
-        else:
-            lmsg.error('for rebar family:' + self.identifier + '-> either spacing or nmbBars must be defined.')
         vAux=(centersWirePoints[1]-centersWirePoints[0])
         if vAux != vStart:
             centersWire.reverse()
@@ -517,12 +511,10 @@ class rebarFamily(rebarFamilyBase):
         '''
         centersWire=Part.makeCircle(self.sectBarsConcrRadius-self.coverSectBars-self.diameter/2.0)
         Laux=centersWire.Length
-        if self.spacing:
-            self.nbarsAux=int(Laux/self.spacing)
-        elif self.nmbBars:
+        if self.nmbBars:
             self.nbarsAux=self.nmbBars
         else:
-            lmsg.error('for rebar family:'+ self.identifier+ '-> either spacing or nmbBars must be defined.')
+            self.nbarsAux=int(Laux/self.spacing)
         centersSectBars=centersWire.discretize(Number=self.nbarsAux)
         #Draw sectioned rebars
         for cent in centersSectBars:
@@ -670,8 +662,9 @@ class rebarFamily(rebarFamilyBase):
     def getLstRebars(self,lstPtsRebar):
         '''Checks the length of the rebar defined by the list of points lstPtsRebar. If 
         it is less than maxLrebar returns a list with the wire defined by those points,
-        otherwise, the rebar is splitted in pieces of length less or equal than maxLrebar,
-        and a list of wires is returned.
+        otherwise, the rebar is splitted in pieces of length less or equal than 
+        maxLrebar, pair of lap points are added to the drawLstRebar, and a list of 
+        wires is returned. 
 
         :param lstPtsRebar: list of points that define the rebar in its entire length.
         '''
@@ -684,6 +677,16 @@ class rebarFamily(rebarFamilyBase):
         else:
             # calculate slap length
             eta1=1.0 if 'good' in self.position else 0.7
+            if not(self.spacing):
+                if self.fromToExtPts:
+                    p=Part.makePolygon(self.fromToExtPts)
+                    self.spacing=p.Length/(self.nmbBars-1)
+                elif self.extensionLength:
+                    self.spacing=self.extensionLength/(self.nmbBars-1)
+                elif self.sectBarsConcrRadius:
+                    self.spacing=2*math.pi*self.sectBarsConcrRadius/self.nmbBars
+                else:
+                    lmsg.error('for rebar family:'+ self.identifier+ "can't  calculate the spacing, either 'fromToExtPts', 'extensionLength' or 'sectBarsConcrRadius' must be defined")
             contrReb=Lcalc.RebarController(concreteCover=self.reinfCfg.cover, spacing=self.spacing, eta1=eta1, compression= self.compression) # create rebar controllers to calculate anchor or gap lengths
             lapLenght=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= 1.0)
             
@@ -701,10 +704,9 @@ class rebarFamily(rebarFamilyBase):
                 lstRebars.append(Part.Wire(lstLinRebar1))
                 # next rebar (rest)
                 lstPtsRebar=lstPtsRebar[indLmax:]
-#                length2add=lstDist[indLmax-1]-LtoAdd1+lapLenght
-#                firstPnt=lstPtsRebar[0].add(-length2add*vaux)
                 firstPnt=lastPnt1.add(-lapLenght*vaux)
                 lstPtsRebar.insert(0,firstPnt)
+                self.lstPairDimPnts+=[[firstPnt,lastPnt1]]
                 lstDist=[lstPtsRebar[i].distanceToPoint(lstPtsRebar[i+1]) for i in range(len(lstPtsRebar)-1)]
                 lstCumDist=[0]+[sum(lstDist[:y]) for y in range(1, len(lstDist) + 1)] # cummulated lengths
             lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
@@ -714,14 +716,14 @@ class rebarFamily(rebarFamilyBase):
     def getTextFiSpacing(self):
         '''Return the text for column '%%C/SEP.' of the bar schedule'''
         formatSpacing='%.'+str(self.reinfCfg.decSpacing)+'f'
-        if self.spacing:
+        if self.nmbBars:
+            txt='%%C' + str(int(1000*self.diameter))
+        else:
             if dsu.get_number_decimal_positions(self.spacing)>self.reinfCfg.decSpacing:
                 txSpacing=str(self.spacing) # all decimals are written
             else:
                 txSpacing=formatSpacing %self.spacing
             txt='%%C' + str(int(1000*self.diameter)) + 'c/' + txSpacing
-        else:
-            txt='%%C' + str(int(1000*self.diameter))
         return txt
  
 
@@ -885,10 +887,7 @@ class stirrupFamily(rebarFamilyBase):
                 self.lstWire=[self.rebarWire]
             else:
                 lmsg.error('for rebar family:'+ self.identifier+ '-> either lstPtsConcrSect or concrSectRadius must be defined.')
-            
-
-
-
+ 
     def drawPolyRebars(self,vTranslation=Vector(0,0,0)):
         self.getVdirTrans()
         if self.rebarWire is None:
@@ -1177,7 +1176,6 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
             elif lstSectRebarFam: r=lstSectRebarFam[0]
             elif lstShapeStirrupFam: r=lstShapeStirrupFam[0]
             else: r=lstEdgeStirrupFam[0]
-            print('r=',r)
             spacDimLine=3*r.reinfCfg.texSize
             for l in lstOfLstPtsConcrSect:
                 lst_disp=[v+vTranslation for v in l]

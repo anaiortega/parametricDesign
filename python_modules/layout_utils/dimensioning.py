@@ -19,7 +19,6 @@ def dim_lst_pnts(lstPnts,spacDimLine,styleName="dimStyle"):
         vNorm=zVector.cross(p2-p1)
         vNorm.normalize()
         p3=p1+spacDimLine*vNorm
-        print('p1',p1,'p2',p2,'p3',p3)
         d= Draft.make_dimension(p1, p2, p3)
         Draft.autogroup(d)
         Gui.ActiveDocument.getObject(d.Name).AnnotationStyle=styleName

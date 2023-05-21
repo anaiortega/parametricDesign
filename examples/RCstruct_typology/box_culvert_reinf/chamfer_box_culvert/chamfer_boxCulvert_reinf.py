@@ -47,11 +47,15 @@ BS_th=0.30 # thickness of the bottom slab
 boxL=25 #length of the box culvert
 muret_hg=0.30
 muret_th=0.30
+scale=1/25
+docName=estrName+'_armados'
+FreeCAD.newDocument(docName)
 # Data  reinforcements
 cover=0.03
 reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
-docName=estrName+'_armados'
-FreeCAD.newDocument(docName)
+# set the dimension style for this document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
+
 
 # chamfers' longitudinal rebar definition (diameter, spacement)
 ch_rb={'fi':12e-3,'s':0.30}
