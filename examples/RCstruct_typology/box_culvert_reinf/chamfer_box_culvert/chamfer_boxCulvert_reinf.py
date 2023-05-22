@@ -47,12 +47,13 @@ BS_th=0.30 # thickness of the bottom slab
 boxL=25 #length of the box culvert
 muret_hg=0.30
 muret_th=0.30
+
 scale=1/25
 docName=estrName+'_armados'
 FreeCAD.newDocument(docName)
 # Data  reinforcements
 cover=0.03
-reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 # set the dimension style for this document
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
@@ -464,7 +465,17 @@ chamfer4_rf=rb.rebarFamily(
 chamfer4_rf.drawLstRebar()
 lastId+=1
 
+#geometry
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=lstPtsConcrSect,
+    vTranslation=Vector(-2*boxC_int_wd,0,0),
+    dimConcrSect=True,
+    spacDimLine=2*reinfConf.texSize,
+    )
+        
+    
 lstRebarFam+=[chamfer1_rf,chamfer2_rf,chamfer3_rf,chamfer4_rf]
+    
 doc=FreeCAD.newDocument(estrName+"_despiece",estrName+"_despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
                title=titSchedule,

@@ -883,12 +883,12 @@ class stirrupFamily(rebarFamilyBase):
                 vauxHook.normalize()
                 endPoint=lstPtsRebar[-1].add(vauxHook.multiply(extrShLn))
                 lstPtsRebar.append(endPoint)
-            else:
-                lmsg.error('for rebar family:'+ self.identifier+ '-> either lstPtsConcrSect or concrSectRadius must be defined.')
             lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
             self.rebarWire=Part.Wire(lstLinRebar)
             self.lstWire=[self.rebarWire]
- 
+        else:
+            lmsg.error('for rebar family:'+ self.identifier+ '-> either lstPtsConcrSect or concrSectRadius must be defined.')
+
     def drawPolyRebars(self,vTranslation=Vector(0,0,0)):
         self.getVdirTrans()
         if self.rebarWire is None:
@@ -1151,7 +1151,7 @@ def drawCircConcreteSection(radiusConcrSect,vTranslation=Vector(0,0,0),color=cfg
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
     return p
    
-def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,lstShapeStirrupFam=None,lstEdgeStirrupFam=None,vTranslation=Vector(0,0,0),dimConcrSect=False):
+def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFam=None,lstSectRebarFam=None,lstShapeStirrupFam=None,lstEdgeStirrupFam=None,vTranslation=Vector(0,0,0),dimConcrSect=False,spacDimLine=None):
     '''Draw a reinforced concrete section in the FreeCAD active document
 
     :param lstOfLstPtsConcrSect: list of ordered lists of points to draw the 
@@ -1173,18 +1173,23 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
            FreeCAD. (defaults to Vector(0,0,0))
     :param dimConcrSect: True for dimensioning the concrete section
            (defaults to False)
+    :param spacDimLine: free space between the concrete edges ane  the 
+                dimension lines (defaults to None, in which it's calculated in function 
+                of the text size)
     '''
     if lstOfLstPtsConcrSect:
+        r=None  # initialization
         if dimConcrSect:
-            #set free space between the concrete edges ane  the dimension lines
-            if lstShapeRebarFam: r=lstShapeRebarFam[0]
-            elif lstSectRebarFam: r=lstSectRebarFam[0]
-            elif lstShapeStirrupFam: r=lstShapeStirrupFam[0]
-            else: r=lstEdgeStirrupFam[0]
-            spacDimLine=2*r.reinfCfg.texSize
-        else:
-            spacDimLine=0.5
-            lmsg.warning("default spacement is used for reference lines -> use 'drawConcreteSection' instead of  'drawRCSection' for controlling this spacement")
+            if not(spacDimLine):
+                #set free space between the concrete edges ane  the dimension lines
+                if lstShapeRebarFam: r=lstShapeRebarFam[0]
+                elif lstSectRebarFam: r=lstSectRebarFam[0]
+                elif lstShapeStirrupFam: r=lstShapeStirrupFam[0]
+                elif lstEdgeStirrupFam: r=lstEdgeStirrupFam[0]
+                if r:
+                    spacDimLine=2*r.reinfCfg.texSize
+                else:
+                    spacDimLine=0.5
         #draw the concrete section
         for lp in lstOfLstPtsConcrSect:
             drawConcreteSection(lstPtsConcrSect=lp,vTranslation=vTranslation,dimConcrSect=dimConcrSect,spacDimLine=spacDimLine)

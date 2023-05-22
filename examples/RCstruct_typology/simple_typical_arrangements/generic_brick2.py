@@ -27,9 +27,13 @@ topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,'extrSha
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 docName='genericBrick'
 FreeCAD.newDocument(docName)
+scale=1/50
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
+# set XC dimension style in current document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
+
 
 lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(width=width,length=length,thickness=thickness,
            anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,reinfCfg=reinfCfg,

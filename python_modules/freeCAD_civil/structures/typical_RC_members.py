@@ -425,7 +425,7 @@ The data of the family is given as a dictionary of type:
                 vectorLRef=stDic['vectorLRef'],
                 rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
-            hold_tr_sf.drawRebars()
+            hold_tr_sf.drawPolyRebars()
             hold_tr_sf.drawLnRebars()
             lstStirrFam+=[hold_tr_sf]
     # Stirrups holding the longitudinal top and bottom rebar families
@@ -462,7 +462,7 @@ The data of the family is given as a dictionary of type:
                 vectorLRef=stDic['vectorLRef'],
                 rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
-            hold_ln_sf.drawRebars()
+            hold_ln_sf.drawPolyRebars()
             hold_ln_sf.drawLnRebars()
             lstStirrFam+=[hold_ln_sf]
     

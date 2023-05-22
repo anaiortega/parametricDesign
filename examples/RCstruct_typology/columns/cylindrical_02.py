@@ -22,7 +22,7 @@ import Draft
 
 
 
-Hcol= 30 # height of the column
+Hcol= 13 # height of the column
 Rad=0.5 # radius of the cylinder
 
 # Section in height

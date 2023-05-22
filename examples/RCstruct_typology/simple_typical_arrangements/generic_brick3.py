@@ -12,9 +12,11 @@ steel=EC2_materials.S500C
 
 estrName='Generic brick'
 titSchedule=estrName.upper()
-
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=1/3)
 FreeCAD.newDocument(estrName+'genericBrick')
+scale=1/50
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=1/3)
+# set XC dimension style in current document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
 width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars

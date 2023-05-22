@@ -13,10 +13,14 @@ steel=EC2_materials.S500C
 estrName='Hexagonal column'
 titSchedule=estrName.upper()
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 docArm=FreeCAD.newDocument(estrName+'_arm')
+scale=1/50
 
-Hcol= 3 # height of the column
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
+# set XC dimension style in current document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
+
+Hcol= 15 # height of the column
 # Hexagon dimensions (column cross-section)
 Shex=0.5 # side of the hexagon
 Hhex=2*Shex*math.cos(math.radians(30)) # height of the hexagon

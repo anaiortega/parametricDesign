@@ -34,9 +34,13 @@ rightHorRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
 anchPtVertSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete vertical cross-section
 anchPtHorSect=anchPtVertSect+Vector(thickness+3,0) #anchor point to place the bottom left corner of the concrete horizontal cross-section
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 docName='simpleWall'
 FreeCAD.newDocument(docName)
+scale=1/50
+
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
+# set XC dimension style in current document
+cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
 lstRebarFam=trcm.wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,reinfCfg,drawConcrVertSect=False,drawConcrHorSect=False)           
 
