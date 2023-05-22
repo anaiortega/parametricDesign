@@ -201,12 +201,12 @@ foot_LB_01=reinf_bars.rebarFamily(
     diameter=foot_LB_01_dat['fi'],
     spacing=foot_LB_01_dat['s'],
     lstPtsConcrSect=[foot_p2,foot_p1,foot_p4,foot_p3],
-    rightSideCover='l',
+    rightSideCover=False,
     gapStart=-0.20,
     gapEnd=-0.20,
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[foot_p5,foot_p8],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
 )
 #2 longitudinal bottom
 foot_LB_02=reinf_bars.rebarFamily(
@@ -215,13 +215,13 @@ foot_LB_02=reinf_bars.rebarFamily(
     diameter=foot_LB_02_dat['fi'],
     spacing=foot_LB_02_dat['s'],
     lstPtsConcrSect=[foot_p4.add(Vector(-footingToe-stemW_th,0)),foot_p4,foot_p3],
-    rightSideCover='l',
+    rightSideCover=False,
     gapStart=+0.50,
     gapEnd=-0.20,
     vectorLRef=Vector(-0.5,-0.5),
     fromToExtPts=[foot_p5,foot_p8],
     lateralCover=cover+foot_LB_02_dat['s']/2.0,
-    rightSideSectBars='l',
+    rightSideSectBars=False,
 )
 #3 transversal bottom
 foot_TB_01=reinf_bars.rebarFamily(
@@ -231,13 +231,13 @@ foot_TB_01=reinf_bars.rebarFamily(
     spacing=foot_TB_01_dat['s'],
     lstPtsConcrSect=[foot_p6,foot_p5,foot_p8,foot_p7],
     lstCover=[cover,cover+foot_LB_01_dat['fi'],cover],
-    rightSideCover='l',
+    rightSideCover=False,
     gapStart=-0.20,
     gapEnd=-0.20,
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[foot_p1,foot_p4],
     coverSectBars=cover+foot_LB_01_dat['fi'],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
 )
 #4 longitudinal top
 foot_LT_01=reinf_bars.rebarFamily(
@@ -271,13 +271,13 @@ foot_TL_01=reinf_bars.rebarFamily(
     spacing=foot_TL_01_dat['s'],
     lstPtsConcrSect=[foot_p6,foot_p5,foot_p8,foot_p7],
     lstCover=[cover,cover+foot_LB_01_dat['fi'],cover],
-    rightSideCover='l',
+    rightSideCover=False,
     fixLengthStart=0.6,
     fixLengthEnd=0.6,
     vectorLRef=Vector(0.5,-0.5),
     fromToExtPts=[foot_p4,foot_p3],
     coverSectBars=cover+foot_LB_01_dat['fi'],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
 )
 #7 transversal lateral
 foot_TL_02=reinf_bars.rebarFamily(
@@ -287,7 +287,7 @@ foot_TL_02=reinf_bars.rebarFamily(
     spacing=foot_TL_02_dat['s'],
     lstPtsConcrSect=[foot_p6,foot_p5,foot_p8,foot_p7],
     lstCover=[cover,cover+foot_LB_01_dat['fi'],cover],
-    rightSideCover='l',
+    rightSideCover=False,
     fixLengthStart=0.6,
     fixLengthEnd=0.6,
     vectorLRef=Vector(0.5,-0.5),
@@ -306,12 +306,12 @@ stemW_VF_01=reinf_bars.rebarFamily(
     spacing=stemW_VF_01_dat['s'],
     lstPtsConcrSect=[ptaux.add(Vector(-anc1,0)),ptaux,wall_p1],
     lstCover=[cover,-cover],
-    rightSideCover='l',
+    rightSideCover=False,
     gapStart=0,
     gapEnd=solap1,
     fromToExtPts=[foot_p5,foot_p8],
     coverSectBars=cover+foot_LB_01_dat['fi']+foot_TB_01_dat['fi'],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
 )
 #10 vertical front
 stemW_VF_02=reinf_bars.rebarFamily(
@@ -323,7 +323,7 @@ stemW_VF_02=reinf_bars.rebarFamily(
     gapStart=0,
     gapEnd=anc2,
     fromToExtPts=[sEE_p1,sEE_p4],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
     vectorLRefSec=Vector(-0.3,-0.3),
 )
 #11 horizontal front
@@ -334,7 +334,7 @@ stemW_HF_01=reinf_bars.rebarFamily(
     spacing=stemW_HF_01_dat['s'],
     lstPtsConcrSect=[sEE_p2,sEE_p1,sEE_p4,sEE_p3],
     lstCover=[cover+stemW_VF_02_dat['fi'],cover+stemW_VF_02_dat['fi'],cover+stemW_VF_02_dat['fi']],
-    rightSideCover='l',
+    rightSideCover=False,
     fixLengthStart=0.2,
     fixLengthEnd=0.2,
     fromToExtPts=[wall_p1,wall_p2],
@@ -354,7 +354,7 @@ stemW_VB_01=reinf_bars.rebarFamily(
     vectorLRef=Vector(-0.3,0.4),
     fromToExtPts=[foot_p5,foot_p8],
     coverSectBars=cover+foot_LB_01_dat['fi']+foot_TB_01_dat['fi'],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
     vectorLRefSec=Vector(-0.3,-0.5),
 )
 #13 vertical back
@@ -365,7 +365,7 @@ stemW_VB_02=reinf_bars.rebarFamily(
     diameter=stemW_VB_02_dat['fi'],
     spacing=stemW_VB_02_dat['s'],
     lstPtsConcrSect=[wall_p10,ptaux,wall_p2],
-    rightSideCover='l',
+    rightSideCover=False,
     gapEnd=-cover,
     fromToExtPts=[sEE_p2,sEE_p3],
     vectorLRefSec=Vector(-0.3,0.3),
@@ -382,7 +382,7 @@ stemW_HB_01a=reinf_bars.rebarFamily(
     fixLengthEnd=0.2,
     fromToExtPts=[wall_p10,wall_p9],
     lateralCover=cover+stemW_VB_02_dat['fi'],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
     vectorLRefSec=Vector(0.3,1.0),
 )
 #14b horizontal back
@@ -398,7 +398,7 @@ stemW_HB_01b=reinf_bars.rebarFamily(
     fixLengthEnd=0.2,
     fromToExtPts=[wall_p9,wall_p8],
     lateralCover=cover+stemW_VB_02_dat['fi'],
-    rightSideSectBars='l',
+    rightSideSectBars=False,
     vectorLRefSec=Vector(0.5,-0.3),
 )
 #20 transversal top
@@ -414,7 +414,7 @@ stemW_TT_01=reinf_bars.rebarFamily(
     fromToExtPts=[wall_p2,wall_p3],
     coverSectBars=cover+stemW_VB_02_dat['fi'],
     lateralCover=cover+0.05,
-    rightSideSectBars='l',
+    rightSideSectBars=False,
     vectorLRefSec=Vector(0.5,0.5),
     nmbBars=stemW_TT_01_dat['nmb'],
 )

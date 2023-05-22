@@ -854,7 +854,8 @@ class stirrupFamily(rebarFamilyBase):
         return lstCoverAxis
         
     def createLstRebar(self):
-        '''Note; This part should be transfered to the base class
+        '''''Create the wire that represents the true shape of a stirrup in the 
+        family. 
         '''
         if self.concrSectRadius: #circular section
             radAxisStirr=self.concrSectRadius-self.lstCover[0]-self.diameter/2
@@ -882,11 +883,11 @@ class stirrupFamily(rebarFamilyBase):
                 vauxHook.normalize()
                 endPoint=lstPtsRebar[-1].add(vauxHook.multiply(extrShLn))
                 lstPtsRebar.append(endPoint)
-                lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
-                self.rebarWire=Part.Wire(lstLinRebar)
-                self.lstWire=[self.rebarWire]
             else:
                 lmsg.error('for rebar family:'+ self.identifier+ '-> either lstPtsConcrSect or concrSectRadius must be defined.')
+            lstLinRebar=[Part.makeLine(lstPtsRebar[i],lstPtsRebar[i+1])for i in range(len(lstPtsRebar)-1)]
+            self.rebarWire=Part.Wire(lstLinRebar)
+            self.lstWire=[self.rebarWire]
  
     def drawPolyRebars(self,vTranslation=Vector(0,0,0)):
         self.getVdirTrans()
@@ -1120,7 +1121,7 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
         f.write(s)
     f.close()
         
-def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete):
+def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete,dimConcrSect=False,spacDimLine=0.5):
     ''' Draw a section of concrete defined by a list of points in the FreeCAD 
     active document (polygonal shape)
 
@@ -1129,11 +1130,18 @@ def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.col
     :param vTranslation: Vector to apply a traslation to the RC section drawing.
            It facilitates the adding of several RC-sections to the same sheet of
            FreeCAD.
+    :param dimConcrSect: True for dimensioning the concrete section
+           (defaults to False)
+    :param spacDimLine: free space between the concrete edges ane  the 
+                dimension lines (defaults to 0.5 drawing units)
     '''
-    l=Part.makePolygon(lstPtsConcrSect)
-    l.translate(vTranslation)
-    p=Part.show(l)
+    lst_disp=[v+vTranslation for v in lstPtsConcrSect]
+    w=Part.makePolygon(lst_disp)
+    p=Part.show(w)
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
+    #dimension concrete section
+    if dimConcrSect:
+        dim.dim_lst_pnts(lstPnts=lst_disp,spacDimLine=spacDimLine)
     return p
     
 def drawCircConcreteSection(radiusConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete):
@@ -1167,19 +1175,19 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
            (defaults to False)
     '''
     if lstOfLstPtsConcrSect:
-        #draw the concrete section
-        for lp in lstOfLstPtsConcrSect:
-            drawConcreteSection(lp,vTranslation)
         if dimConcrSect:
-            #dimensioning of concrete section
+            #set free space between the concrete edges ane  the dimension lines
             if lstShapeRebarFam: r=lstShapeRebarFam[0]
             elif lstSectRebarFam: r=lstSectRebarFam[0]
             elif lstShapeStirrupFam: r=lstShapeStirrupFam[0]
             else: r=lstEdgeStirrupFam[0]
-            spacDimLine=3*r.reinfCfg.texSize
-            for l in lstOfLstPtsConcrSect:
-                lst_disp=[v+vTranslation for v in l]
-                dim.dim_lst_pnts(lstPnts=lst_disp,spacDimLine=spacDimLine)
+            spacDimLine=2*r.reinfCfg.texSize
+        else:
+            spacDimLine=0.5
+            lmsg.warning("default spacement is used for reference lines -> use 'drawConcreteSection' instead of  'drawRCSection' for controlling this spacement")
+        #draw the concrete section
+        for lp in lstOfLstPtsConcrSect:
+            drawConcreteSection(lstPtsConcrSect=lp,vTranslation=vTranslation,dimConcrSect=dimConcrSect,spacDimLine=spacDimLine)
     if radiusConcrSect:
         drawCircConcreteSection(radiusConcrSect,vTranslation)
     if lstShapeRebarFam:

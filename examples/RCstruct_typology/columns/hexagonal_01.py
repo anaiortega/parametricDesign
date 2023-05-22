@@ -19,7 +19,7 @@ reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scal
 # set XC dimension style in current document
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
-Hcol= 3 # height of the column
+Hcol= 3.1 # height of the column
 # Hexagon dimensions (column cross-section)
 Shex=0.5 # side of the hexagon
 Hhex=2*Shex*math.cos(math.radians(30)) # height of the hexagon
@@ -91,8 +91,8 @@ stirr1=rb.stirrupFamily(
     rightSideCover=True,
     dispStrpTransv=None,
     dispStrpLong=0.1,
-    vectorLRef=Vector(0.5,0.5),
-    rightSideLabelLn='l')
+    vectorLRef=Vector(0.5,0.4),
+    rightSideLabelLn=False)
 
 stirr2=rb.stirrupFamily(
     reinfCfg=reinfCfg,
@@ -117,25 +117,42 @@ stirr2=rb.stirrupFamily(
     fixAnchorEnd='fix135_len60',
 )
 
-# Cross section
+# RF cross section 
 rb.drawRCSection(
-                 lstOfLstPtsConcrSect=[[pt1,pt2,pt3,pt4,pt5,pt6,pt1]],
-                 lstShapeRebarFam=None,
-                 lstSectRebarFam=[vert_rf1,vert_rf2],
-                 lstShapeStirrupFam=None,#[stirr1,stirr2],
-                 lstEdgeStirrupFam=None,
-                 vTranslation=Vector(0,0,0),
+    lstOfLstPtsConcrSect=[[pt1,pt2,pt3,pt4,pt5,pt6,pt1]],
+    lstShapeRebarFam=None,
+    lstSectRebarFam=[vert_rf1,vert_rf2],
+    lstShapeStirrupFam=[stirr1,stirr2],
+    lstEdgeStirrupFam=None,
+    vTranslation=Vector(0,0,0),
     )
 
-# Section in height
+# RF section in height
 rb.drawRCSection(
-                 lstOfLstPtsConcrSect=[[pl1,pl2,pl3,pl4,pl1]],
-                 lstShapeRebarFam=[vert_rf1,vert_rf2],
-                 lstSectRebarFam=None,
-                 lstShapeStirrupFam=None,
-                 lstEdgeStirrupFam=[stirr1,stirr2],
-                 vTranslation=Vector(0,Hhex+0.7),
+    lstOfLstPtsConcrSect=[[pl1,pl2,pl3,pl4,pl1]],
+    lstShapeRebarFam=[vert_rf1,vert_rf2],
+    lstSectRebarFam=None,
+    lstShapeStirrupFam=None,
+    lstEdgeStirrupFam=[stirr1,stirr2],
+    vTranslation=Vector(0,Hhex+0.7),
+    dimConcrSect=False,
+    
     )
+# Geom cross section
+rb.drawConcreteSection(
+    lstPtsConcrSect=[pt1,pt2,pt3,pt4,pt5,pt6,pt1],
+    vTranslation=Vector(-10*Shex,0,0),
+    dimConcrSect=True,
+    spacDimLine=2*reinfCfg.texSize
+    )
+
+# Geom section in height
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=[[pl1,pl2,pl3,pl4,pl1]],
+    vTranslation=Vector(-10*Shex,Hhex+0.7),
+    dimConcrSect=False,
+    )
+
 docArm.recompute()
 
 docSch=FreeCAD.newDocument(estrName+"_schedule",estrName+"_schedule")

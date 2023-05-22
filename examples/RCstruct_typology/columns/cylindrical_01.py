@@ -15,7 +15,7 @@ titSchedule=estrName.upper()
 docArm=FreeCAD.newDocument(estrName+'_arm')
 scale=1/50
 
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5*1e-3/scale,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 # set XC dimension style in current document
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 

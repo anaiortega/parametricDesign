@@ -50,7 +50,7 @@ vert_rf1=rb.rebarFamily(
     vectorLRef=Vector(0.30,-0.15),
     fromToExtPts=[pt1,pt2,pt3,pt4,pt5,pt6,pt1],
     lateralCover=0.05,
-    rightSideSectBars='l',
+    rightSideSectBars=False,
     coverSectBars=reinfCfg.cover+fi_stirr,
     gapStart=0.5,
     extrShapeStart='anc90_posGood_compr',
@@ -73,7 +73,7 @@ stirr1=rb.stirrupFamily(
     dispStrpTransv=None,
     dispStrpLong=0.1,
     vectorLRef=Vector(0.5,0.5),
-    rightSideLabelLn='l')
+    rightSideLabelLn=False)
 
 stirr2=rb.stirrupFamily(
     reinfCfg=reinfCfg,
