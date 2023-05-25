@@ -1,3 +1,7 @@
+# This mocule is imported by model3D_views_and_settingout  to generate the
+# setting-out of the bos culvert. Customize this module in function of the
+# structure characteristics.
+
 import FreeCAD
 from freeCAD_civil import tables
 from aux_sharing import sharing_parts as shp

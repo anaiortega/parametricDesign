@@ -12,7 +12,7 @@ docDespiece=App.newDocument(docName,docName) #crear sólo con la primera aleta
 path='/home/ana/projects/variante-rincon-de-soto/work/montaje_planos_losas/PF_ria_Tuero_FFCC/aletas/'
 exec(open(path+'datos_aleta4.py').read())
 titSchedule=estrName.upper()
-hTexts=0.0625
+scale=1/25
 alpha_degrees=math.degrees(math.atan(slopeBack)) 
 coverFoot=0.03
 coverWall=0.035
@@ -31,9 +31,9 @@ scheduleCfg=cfg.scheduleConf(wColumns=[10,30,20,10,20,12],hRows=10,hText=2.5,hTe
 
 #  DATA
 
-footGenConf=cfg.reinfConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+footGenConf=cfg.reinfConf(cover=coverFoot,xcConcr=concrFoot,xcSteel=steelFoot,texSize=2.5e-3/scale,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 
-wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
+wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrWall,xcSteel=steelWall,texSize=2.5e-3/scale,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=2/3)
 
 # #  Armados zapata
 # armadura transversal inferior

@@ -68,12 +68,14 @@ mg_7=mg_5-Vector(0,gd.thPrelosa)
 
 docName=gd.obraNm.replace(' ','')+'_stransv'
 docStransv=FreeCAD.newDocument(docName,docName)
+# set the dimension style for this document
+cfg.set_dim_style(scale=gd.scale,dimStyProp=cfg.XCdimProp)
 
 vTrans=Vector(0,0)
 lstPtsConcrSect1= [pt_TC8b,pt_TC8,pt_TC2,pt_TC3,pt_TC4,pt_TC3,pt_TC4,pt_TC1,pt_TC5,pt_TC5b]
-rb.drawConcreteSection(lstPtsConcrSect1,vTrans)
+rb.drawConcreteSection(lstPtsConcrSect1,vTrans,dimConcrSect=True,spacDimLine=5e-3/gd.scale)
 lstPtsConcrSect2=[pt_TC6b,pt_TC6,pt_TC7,pt_TC1_prelosa,pt_TC4_prelosa,pt_TC3_prelosa,pt_TC2_prelosa,pt_TC10,pt_TC9,pt_TC9b]
-rb.drawConcreteSection(lstPtsConcrSect2,vTrans)
+rb.drawConcreteSection(lstPtsConcrSect2,vTrans,dimConcrSect=True,spacDimLine=5e-3/gd.scale)
 lstPtsConcrSect3=[pt_TC5b,pt_TC6b]
 rb.drawConcreteSection(lstPtsConcrSect3,vTrans,color=cfg.colorHidden)
 lstPtsConcrSect3=[pt_TC9b,pt_TC8b]
@@ -110,7 +112,14 @@ rb.drawConcreteSection(lstHL,vTrans,color=cfg.colorHidden)
 # murete de guarda
 vTrans=Vector(0,2)
 lstMG=[mg_5,pt_TC1,mg_1,mg_2,mg_3,mg_4]
-rb.drawConcreteSection(lstMG,vTrans)
+rb.drawConcreteSection(lstMG,vTrans,dimConcrSect=True,spacDimLine=5e-3/gd.scale)
 lstMG=[pt_TC1,mg_6,mg_7]
-rb.drawConcreteSection(lstMG,vTrans)
+rb.drawConcreteSection(lstMG,vTrans)# generate the drawings of geometry (transverse section)
+
+import sys
+sys.path.append('/usr/local/src/prg/parametricDesign/examples/RCstruct_typology/three_sided_box_culvert_pilefound/')
+
+from base_models import defGeom_deck_plus_walls
+
+
 

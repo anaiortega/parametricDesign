@@ -1,19 +1,21 @@
+# 3D drawing and setting-out of the 3-sided box culvert
+
 import FreeCAD
 import math
 from freeCAD_utils import drawing_tools as dt
 from FreeCAD import Vector
-import sys
 
-currentPath='/usr/local/src/prg/parametricDesign/examples/RCstructTypology/three_sided_box_culvert_pilefound'
-sys.path.append(currentPath)
+import sys
+sys.path.append('/usr/local/src/prg/parametricDesign/examples/RCstruct_typology/three_sided_box_culvert_pilefound')
+
 from data import geomData as gd
 from aux_sharing import sharing_docs as shd
+
 
 shd.docGeom=FreeCAD.newDocument(gd.obraNm+'_GEOM',gd.obraNm+'_GEOM')
 
 
 ww_type1a={'wallTopWidth':0.25,'backFaceSlope':0,'frontFaceSlope':0,'footHeight':0.35,'footWidth':1.9,'footToeWidth':0}
-
 
 # Aleta 1 (EL)
 from data import data_wingwall1 as dww1

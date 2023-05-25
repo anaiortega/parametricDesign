@@ -1,6 +1,7 @@
 import math
 obraNm='PF_ria_Tuero_FFCC'
 
+scale=1/25 # Scale to draw concrete cross-section
 # Coordenadas absolutas extremos eje cara superior tablero
 Z_topDeck=282.39
 P1_coo=(596446.6281,4675671.7711,Z_topDeck)

@@ -1,7 +1,6 @@
 # generate the drawings of the reforcement sections and rebar sckedule
-
 import sys
-sys.path.append('/usr/local/src/prg/parametricDesign/examples/RCstructTypology/three_sided_box_culvert_pilefound')
+sys.path.append('/usr/local/src/prg/parametricDesign/examples/RCstruct_typology/three_sided_box_culvert_pilefound')
 # Draw reinforcement sections
 from base_models import reinf_deck_plus_walls as rdpw
 

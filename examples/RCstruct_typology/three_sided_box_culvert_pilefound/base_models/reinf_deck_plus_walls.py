@@ -5,7 +5,6 @@ from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from Draft import *
-from materials.ec2 import EC2_materials
 from freeCAD_civil import draw_config as cfg
 
 from data import geomData as gd
@@ -14,22 +13,20 @@ from data import reinfData as rd
 #skewDirVector=Vector(math.cos(math.radians(skew)),math.sin(math.radians(skew)))
 skewDirVector=Vector(-math.sin(math.radians(gd.skew)),math.cos(math.radians(gd.skew)))
 titSchedule=gd.obraNm.upper()
-coverDeck=0.035
-coverWall=0.035
-
-
-concrDeck=EC2_materials.C30 # concrete type in footing
-steelDeck=EC2_materials.S500C # steel for footing
 
 #rebar schedule dimensions
 scheduleCfg=cfg.scheduleConf(wColumns=[10,30,30,10,20,12],hRows=10,hText=2.5,hTextSketch=2.0)
-deckGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
-deckLatGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.0)
-wallGenConf=cfg.reinfConf(cover=coverWall,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
-stirrGenConf=cfg.reinfConf(cover=coverDeck,xcConcr=concrDeck,xcSteel=steelDeck,texSize=rd.hTexts,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.65,factDispReflinSectReb=1.9)
+deckGenConf=cfg.reinfConf(cover=rd.coverDeck,xcConcr=rd.concrDeck,xcSteel=rd.steelDeck,texSize=2.5*1e-3/rd.scale,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
+deckLatGenConf=cfg.reinfConf(cover=rd.coverDeck,xcConcr=rd.concrDeck,xcSteel=rd.steelDeck,texSize=2.5*1e-3/rd.scale,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.0)
+wallGenConf=cfg.reinfConf(cover=rd.coverWall,xcConcr=rd.concrDeck,xcSteel=rd.steelDeck,texSize=2.5*1e-3/rd.scale,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.55,factDispReflinSectReb=1.6)
+stirrGenConf=cfg.reinfConf(cover=rd.coverDeck,xcConcr=rd.concrDeck,xcSteel=rd.steelDeck,texSize=2.5*1e-3/rd.scale,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,factPosLabelSectReb=0.65,factDispReflinSectReb=1.9)
 
 docName=gd.obraNm.replace(' ','')+'_armados'
 docArmados=App.newDocument(docName,docName)
+# set the dimension style for this document
+cfg.set_dim_style(scale=rd.scale,dimStyProp=cfg.XCdimProp)
+
+
 hBeamPile=2*stirrGenConf.cover+rd.pile_stirrup['hStirr']+rd.pile_stirrup['fi']
 
 # points longitudinal-central section (LC)
@@ -556,16 +553,15 @@ lstRebarFam+=[RF_Rwall_hor_int]
 rebarCount+=1
 
 
-
-
 # Armadura de cortante en muretes de guarda
 
 RF_hwall1_stirrup=rb.stirrupFamily(
     reinfCfg=stirrGenConf,
     identifier=str(rebarCount+1),
     diameter=rd.hwall_stirrup['fi'],
-    lstPtsConcrSect=[pt_LC1,pt_LC1+Vector(gd.skewThHeadWall,0),pt_LC7,pt_LC8],
+    lstPtsConcrSect=[pt_LC1,pt_LC1+Vector(gd.skewThHeadWall,0),pt_LC7,pt_LC8,pt_LC1],
     lstCover=[rd.deck_tr_bot['fi']-rd.hwall_stirrup['fi']]+3*[stirrGenConf.cover],
+    rightSideCover=False,
     lstPtsConcrLong=[pt_TB3,pt_TB2],
     spacStrpTransv=rd.hwall_stirrup['sTr'],
     spacStrpLong=rd.hwall_stirrup['sLn'],
@@ -585,7 +581,8 @@ RF_hwall2_stirrup=rb.stirrupFamily(
     reinfCfg=stirrGenConf,
     identifier=str(rebarCount+1),
     diameter=rd.hwall_stirrup['fi'],
-    lstPtsConcrSect=[pt_LC2,pt_LC2-Vector(gd.skewThHeadWall,0),pt_LC4,pt_LC3],
+    lstPtsConcrSect=[pt_LC2,pt_LC2-Vector(gd.skewThHeadWall,0),pt_LC4,pt_LC3,pt_LC2],
+    rightSideCover=True,
     lstCover=[rd.deck_tr_bot['fi']-rd.hwall_stirrup['fi']]+3*[stirrGenConf.cover],
     lstPtsConcrLong=[pt_TB1,pt_TB4],
     spacStrpTransv=rd.hwall_stirrup['sTr'],
@@ -696,7 +693,8 @@ RF_pileIzq_stirrup=rb.stirrupFamily(
     reinfCfg=stirrGenConf,
     identifier=str(rebarCount+1),
     diameter=rdef['fi'],
-    lstPtsConcrSect=[pt_TC5,pt_TC6,pt_TC6+Vector(0,hBeamPile),pt_TC5+Vector(0,hBeamPile)],
+    lstPtsConcrSect=[pt_TC5,pt_TC6,pt_TC6+Vector(0,hBeamPile),pt_TC5+Vector(0,hBeamPile),pt_TC5],
+    rightSideCover=False,
     lstCover=4*[stirrGenConf.cover],
     lstPtsConcrLong=[pt_WLH1,pt_WLH2],
     spacStrpTransv=rdef['sTr'],
@@ -718,7 +716,8 @@ RF_pileDer_stirrup=rb.stirrupFamily(
     reinfCfg=stirrGenConf,
     identifier=str(rebarCount+1),
     diameter=rdef['fi'],
-    lstPtsConcrSect=[pt_TC9,pt_TC8,pt_TC8+Vector(0,hBeamPile),pt_TC9+Vector(0,hBeamPile)],
+    lstPtsConcrSect=[pt_TC9,pt_TC8,pt_TC8+Vector(0,hBeamPile),pt_TC9+Vector(0,hBeamPile),pt_TC9],
+    rightSideCover=False,
     lstCover=4*[stirrGenConf.cover],
     lstPtsConcrLong=[pt_LC1+Vector(0,gd.thDeck-gd.thPrelosa),pt_LC1],
     spacStrpTransv=rdef['sTr'],
@@ -743,7 +742,8 @@ if rd.stirr_paral_pile['fi'] >0:
         reinfCfg=stirrGenConf,
         identifier=str(rebarCount+1),
         diameter=rdef['fi'],
-        lstPtsConcrSect=[pt_LC1,pt_LC1+Vector(rdef['bStirr'],0),pt_LC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_LC1+Vector(0,gd.thDeck-gd.thPrelosa)],
+        lstPtsConcrSect=[pt_LC1,pt_LC1+Vector(rdef['bStirr'],0),pt_LC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_LC1+Vector(0,gd.thDeck-gd.thPrelosa),pt_LC1],
+        rightSideCover=False,
         lstCover=[rd.deck_tr_bot['fi']-rdef['fi'],0,stirrGenConf.cover,0],
         lstPtsConcrLong=[pt_TC4,pt_TC1],
         spacStrpTransv=rdef['sTr'],
@@ -766,8 +766,9 @@ if rd.stirr_paral_pile['fi'] >0:
         reinfCfg=stirrGenConf,
         identifier=str(rebarCount+1),
         diameter=rdef['fi'],
-        lstPtsConcrSect=[pt_LC1,pt_LC1+Vector(rdef['bStirr'],0),pt_LC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_LC1+Vector(0,gd.thDeck-gd.thPrelosa)],
+        lstPtsConcrSect=[pt_LC1,pt_LC1+Vector(rdef['bStirr'],0),pt_LC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_LC1+Vector(0,gd.thDeck-gd.thPrelosa),pt_LC1],
         lstCover=[rd.deck_tr_bot['fi']-rdef['fi'],0,stirrGenConf.cover,0],
+        rightSideCover=False,
         lstPtsConcrLong=[pt_TC3,pt_TC2],
         spacStrpTransv=rdef['sTr'],
         spacStrpLong=rdef['sLn'],
@@ -791,7 +792,8 @@ if rd.stirr_paral_headwall['fi'] >0:
         reinfCfg=stirrGenConf,
         identifier=str(rebarCount+1),
         diameter=rdef['fi'],
-        lstPtsConcrSect=[pt_TC1,pt_TC1+Vector(rdef['bStirr'],0),pt_TC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_TC1+Vector(0,gd.thDeck-gd.thPrelosa)],
+        lstPtsConcrSect=[pt_TC1,pt_TC1+Vector(rdef['bStirr'],0),pt_TC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_TC1+Vector(0,gd.thDeck-gd.thPrelosa),pt_TC1],
+        rightSideCover=False,
         lstCover=[2*rd.deck_tr_bot['fi']-rdef['fi'],0,stirrGenConf.cover,0],
         lstPtsConcrLong=[pt_LC6,pt_LC6-Vector(0,gd.thDeck-gd.thPrelosa)],
         spacStrpTransv=rdef['sTr'],
@@ -814,7 +816,8 @@ if rd.stirr_paral_headwall['fi'] >0:
         reinfCfg=stirrGenConf,
         identifier=str(rebarCount+1),
         diameter=rdef['fi'],
-        lstPtsConcrSect=[pt_TC1,pt_TC1+Vector(rdef['bStirr'],0),pt_TC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_TC1+Vector(0,gd.thDeck-gd.thPrelosa)],
+        lstPtsConcrSect=[pt_TC1,pt_TC1+Vector(rdef['bStirr'],0),pt_TC1+Vector(rdef['bStirr'],gd.thDeck-gd.thPrelosa),pt_TC1+Vector(0,gd.thDeck-gd.thPrelosa),pt_TC1],
+        rightSideCover=False,
         lstCover=[2*rd.deck_tr_bot['fi']-rdef['fi'],0,stirrGenConf.cover,0],
         lstPtsConcrLong=[pt_LC5,pt_LC5-Vector(0,gd.thDeck-gd.thPrelosa)],
         spacStrpTransv=rdef['sTr'],
@@ -851,7 +854,14 @@ lstShapeStirrupFam=[RF_hwall1_stirrup,RF_hwall2_stirrup]
 lstEdgeStirrupFam=[]
 if rd.stirr_paral_headwall['fi']>0:
     lstEdgeStirrupFam=[RF_bndParHeadwStart_stirrup,RF_bndParHeadwEnd_stirrup]
-rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,lstShapeStirrupFam=lstShapeStirrupFam,lstEdgeStirrupFam=lstEdgeStirrupFam,vTranslation=vTrans_AA)
+
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=lstPtsConcrSect,
+    lstShapeRebarFam=lstShapeRebarFam,
+    lstSectRebarFam=lstSectRebarFam,
+    lstShapeStirrupFam=lstShapeStirrupFam,
+    lstEdgeStirrupFam=lstEdgeStirrupFam,
+    vTranslation=vTrans_AA)
 lstPntsPrelosa=[pt_LC1_prelosa,pt_LC2_prelosa,pt_LC2,pt_LC1,pt_LC1_prelosa]
 rb.drawConcreteSection(lstPntsPrelosa,vTrans_AA)
 nextAnchor-=hSectLn
@@ -873,7 +883,13 @@ if  rd.stirr_paral_pile['fi']>0 or rd.width_b1>0:
     lstShapeStirrupFam=[RF_hwall1_stirrup,RF_hwall2_stirrup]
     if rd.stirr_paral_pile['fi']>0:
         lstShapeStirrupFam+=[RF_bndParPileIzq_stirrup]
-    rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,lstShapeStirrupFam=lstShapeStirrupFam,lstEdgeStirrupFam=lstEdgeStirrupFam,vTranslation=vTrans_BB)
+    rb.drawRCSection(
+        lstOfLstPtsConcrSect= lstPtsConcrSect,
+        lstShapeRebarFam=lstShapeRebarFam,
+        lstSectRebarFam=lstSectRebarFam,
+        lstShapeStirrupFam=lstShapeStirrupFam,
+        lstEdgeStirrupFam=lstEdgeStirrupFam,
+        vTranslation=vTrans_BB)
     lstPntsPrelosa=[pt_LC1_prelosa,pt_LC2_prelosa,pt_LC2,pt_LC1,pt_LC1_prelosa]
     rb.drawConcreteSection(lstPntsPrelosa,vTrans_BB)
     nextAnchor-=hSectLn
@@ -885,7 +901,12 @@ lstPtsConcrSect=[[pt_WLH1,pt_WLH2,pt_WLH3,pt_WLH4,pt_WLH1]]
 lstShapeRebarFam=[RF_Lwall_hor_ext,RF_Lwall_hor_int]
 lstSectRebarFam=[RF_Lwall_vert_ext,RF_Lwall_vert_int]
 lstEdgeStirrupFam=[RF_pileIzq_stirrup]
-rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,lstEdgeStirrupFam=lstEdgeStirrupFam,vTranslation=vTransWLH)
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=lstPtsConcrSect,
+    lstShapeRebarFam=lstShapeRebarFam,
+    lstSectRebarFam=lstSectRebarFam,
+    lstEdgeStirrupFam=lstEdgeStirrupFam,
+    vTranslation=vTransWLH)
 nextAnchor-=hSectLn
 
 # Sección transversal esviada central (LC). SECCIÓN D-D
@@ -902,7 +923,13 @@ lstShapeStirrupFam=[RF_pileIzq_stirrup,RF_pileDer_stirrup]
 lstEdgeStirrupFam=[]
 if rd.stirr_paral_pile['fi']>0:
     lstEdgeStirrupFam+=[RF_bndParPileIzq_stirrup,RF_bndParPileDer_stirrup]
-rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,lstShapeStirrupFam=lstShapeStirrupFam,lstEdgeStirrupFam=lstEdgeStirrupFam,vTranslation=vTrans_DD)
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=lstPtsConcrSect,
+    lstShapeRebarFam=lstShapeRebarFam,
+    lstSectRebarFam=lstSectRebarFam,
+    lstShapeStirrupFam=lstShapeStirrupFam,
+    lstEdgeStirrupFam=lstEdgeStirrupFam,
+    vTranslation=vTrans_DD)
 lstPntsPrelosa=[pt_TC1_prelosa,pt_TC2_prelosa,pt_TC3_prelosa,pt_TC4_prelosa,pt_TC1_prelosa]
 rb.drawConcreteSection(lstPntsPrelosa,vTrans_DD)
 # junta de construcción
@@ -934,7 +961,13 @@ if rd.stirr_paral_headwall['fi']>0 or rd.width_b1>0 :
     if rd.stirr_paral_headwall['fi']>0:
         lstShapeStirrupFam+=[RF_bndParHeadwStart_stirrup]
     lstEdgeStirrupFam=None#[]
-    rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,lstShapeStirrupFam=lstShapeStirrupFam,lstEdgeStirrupFam=lstEdgeStirrupFam,vTranslation=vTrans_EE)
+    rb.drawRCSection(
+        lstOfLstPtsConcrSect=lstPtsConcrSect,
+        lstShapeRebarFam=lstShapeRebarFam,
+        lstSectRebarFam=lstSectRebarFam,
+        lstShapeStirrupFam=lstShapeStirrupFam,
+        lstEdgeStirrupFam=lstEdgeStirrupFam,
+        vTranslation=vTrans_EE)
     rb.drawConcreteSection(lstPntsPrelosa,vTrans_EE)
     # junta de construcción
     lstPtsJunta=[pt_TC1-vThPrelosa,pt_TC4_prelosa-vThPrelosa]
@@ -963,7 +996,13 @@ lstSectRebarFam+=[RF_Lbeam_pile_bot,RF_Lbeam_pile_top]
 lstSectRebarFam+=[RF_Rbeam_pile_bot,RF_Rbeam_pile_top]
 lstShapeStirrupFam=[RF_pileIzq_stirrup,RF_pileDer_stirrup]
 lstEdgeStirrupFam=[RF_hwall1_stirrup]
-rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam=lstShapeRebarFam,lstSectRebarFam=lstSectRebarFam,lstShapeStirrupFam=lstShapeStirrupFam,lstEdgeStirrupFam=lstEdgeStirrupFam,vTranslation=vTrans_FF)
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=lstPtsConcrSect,
+    lstShapeRebarFam=lstShapeRebarFam,
+    lstSectRebarFam=lstSectRebarFam,
+    lstShapeStirrupFam=lstShapeStirrupFam,
+    lstEdgeStirrupFam=lstEdgeStirrupFam,
+    vTranslation=vTrans_FF)
 rb.drawConcreteSection(lstPntsPrelosa,vTrans_FF)
 # junta de construcción
 lstPtsJunta=[pt_TC1-vThPrelosa,pt_TC4_prelosa-vThPrelosa]
@@ -979,7 +1018,11 @@ vTransTH=Vector(0,nextAnchor)
 lstPtsConcrSect=[[pt_TH1,pt_TH2,pt_TH3,pt_TH4,pt_TH1]]
 lstShapeRebarFam=[RF_hwall1_lat_ext,RF_hwall1_lat_ext]
 lstSectRebarFam=None
-rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=vTransTH)
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=lstPtsConcrSect,
+    lstShapeRebarFam=lstShapeRebarFam,
+    lstSectRebarFam=lstSectRebarFam,
+   vTranslation=vTransTH)
 nextAnchor-=hSectLn
 
 
@@ -988,6 +1031,10 @@ vTransLBP=vTransWLH+Vector(0,nextAnchor)
 lstPtsConcrSect=[[pt_BP4,pt_BP1,pt_BP2,pt_BP3]]
 lstShapeRebarFam=[RF_Lbeam_pile_bot,RF_Lbeam_pile_top]
 lstSectRebarFam=[]
-rb.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=vTransLBP)
+rb.drawRCSection(
+    lstOfLstPtsConcrSect=lstPtsConcrSect,
+    lstShapeRebarFam=lstShapeRebarFam,
+    lstSectRebarFam=lstSectRebarFam,
+    vTranslation=vTransLBP)
 nextAnchor-=hSectLn
 '''

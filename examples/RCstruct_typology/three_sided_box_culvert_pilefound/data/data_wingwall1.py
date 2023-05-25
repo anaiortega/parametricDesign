@@ -2,7 +2,8 @@ import math
 estrName='Aleta 1'
 nmbAleta=1
 titSchedule=estrName.upper()
-hTexts=0.0625
+
+scale=1/25 # escala del dibujo
 
 #Footing
 wFoot=1.90 #ancho zapata

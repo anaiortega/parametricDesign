@@ -433,6 +433,7 @@ class rebarFamily(rebarFamilyBase):
         self.position=position.lower()
         self.compression=compression
         self.drawSketch=drawSketch
+        self.nbarsAux=None # auxiliar attribute (number of bars)
     
     def drawPolySectBars(self,vTranslation=Vector(0,0,0)):
         '''Draw the rebar family as sectioned bars represented by circles in 
@@ -654,8 +655,14 @@ class rebarFamily(rebarFamilyBase):
         return lstPtsRebar
         
     def getNumberOfBars(self):
-        if self.extensionLength:
-            self.nbarsAux=int(self.extensionLength/self.spacing)+1
+        if not(self.nbarsAux):
+            if self.nmbBars:
+                self.nbarsAux=self.nmbBars
+            elif self.extensionLength:
+                self.nbarsAux=int(self.extensionLength/self.spacing)+1
+            elif self.fromToExtPts:
+                p=Part.makePolygon(self.fromToExtPts)
+                self.nbarsAux=p.Length/self.spacing
         return self.nbarsAux
 
                  

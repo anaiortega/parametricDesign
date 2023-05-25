@@ -1,4 +1,11 @@
 from data import geomData as gd
+from materials.ec2 import EC2_materials
+
+coverDeck=0.035
+coverWall=0.035
+
+concrDeck=EC2_materials.C30 # concrete type in footing
+steelDeck=EC2_materials.S500C # steel for footing
 
 # datos armaduras
 # anchos de banda
@@ -7,7 +14,7 @@ width_b2=2    # banda longitudinal paralela a bandas de pilotes
 
 L_rebar1=gd.thWall/2+1/5*(gd.spanDeck+gd.thWall) # longitud l de la armadura 1 
 
-hTexts=0.05 # escala 1:20
+scale=1/20 # escala the los dibujos de armados
 
 # Armados tablero
 # # armadura transversal inferior 
