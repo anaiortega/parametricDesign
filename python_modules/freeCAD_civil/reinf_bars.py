@@ -803,8 +803,11 @@ class stirrupFamily(rebarFamilyBase):
     :ivar vDirLong: vector to define the longitudinal direction
     :ivar nmbStrpTransv: number of stirrups displayed as true shape
     :ivar nmbStrpLong: number of stirrups displayed as lines
-    :ivar lstCover: list of covers for each side of the stirrup. If 
-          None, reinfCfg.cover is taken for all sides.
+    :ivar lstCover: list of covers for each side of the stirrup.  
+          Defaults to None, in which case reinfCfg.cover is taken for all sides.
+    :ivar lstCoverLong: list of covers for stirrups in the longitudinal 
+          section (as in beams, where they are displayed as lines)
+          Defaults to None, in which case reinfCfg.cover is taken for all sides.
     :ivar rightSideCover:side to give cover  (False left side, True for right side)
           (defaults to True)
     :ivar dispStrpTransv: displacement of stirrups in the
@@ -822,7 +825,7 @@ class stirrupFamily(rebarFamilyBase):
             Examples: 'fix45_len150'
     
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,fixAnchorStart=None,fixAnchorEnd=None):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,fixAnchorStart=None,fixAnchorEnd=None):
         super(stirrupFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
         self.lstPtsConcrLong=lstPtsConcrLong
         self.concrSectRadius=concrSectRadius
@@ -832,6 +835,7 @@ class stirrupFamily(rebarFamilyBase):
         self.vDirLong=vDirLong
         self.nmbStrpTransv=nmbStrpTransv
         self.nmbStrpLong=nmbStrpLong
+        self.lstCoverLong=lstCoverLong
         self.dispStrpTransv=dispStrpTransv
         self.dispStrpLong=dispStrpLong
         self.vectorLRef=vectorLRef
@@ -897,6 +901,8 @@ class stirrupFamily(rebarFamilyBase):
             lmsg.error('for rebar family:'+ self.identifier+ '-> either lstPtsConcrSect or concrSectRadius must be defined.')
 
     def drawPolyRebars(self,vTranslation=Vector(0,0,0)):
+        ''' Draw the  real shape of a polygonal stirrup
+        '''
         self.getVdirTrans()
         if self.rebarWire is None:
             self.createLstRebar()
@@ -924,6 +930,7 @@ class stirrupFamily(rebarFamilyBase):
         ptoSketch,pos=self.rebarText(justif,pText)
 
     def drawCircRebar(self,vTranslation=Vector(0,0,0)):
+        '''Draw the real shape of a circular stirrup'''
         if self.rebarWire is None:
             self.createLstRebar()
         radAxisStirr=self.concrSectRadius-self.lstCover[0]-self.diameter/2
@@ -937,7 +944,12 @@ class stirrupFamily(rebarFamilyBase):
         ptoSketch,pos=self.rebarText(justif,pText)
         
     def drawLnRebars(self,vTranslation=Vector(0,0,0)):
+        '''Draw stirrups in longiudinal section 
+        '''
         lstCoverAxis=self.getLstCoverAxis()
+        if not self.lstCoverLong:
+            self.lstCoverLong=[self.reinfCfg.cover,self.reinfCfg.cover]
+        lstCoverAxis=[c+self.diameter/2 for c in self.lstCoverLong]            
         vLn=self.getVdirLong()
         vReb=(self.lstPtsConcrLong[1]-self.lstPtsConcrLong[0]).normalize()
         lstPtsRebar=[self.lstPtsConcrLong[0]+lstCoverAxis[-1]*vReb,
