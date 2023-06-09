@@ -250,14 +250,14 @@ def set_FR_options(RF,RFdef):
     if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
     if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
            
-def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True):
+def generic_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,slopeBottom=None,slopeTop=None,drawConcrTrSect=True,drawConcrLnSect=True):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
 
     :param width: dimension of the brick in the direction of the transverse rebars
     :param length: dimension of the brick in the direction of the longitudinal rebars
-    :param thickness: thickness of the brick
+    :param thickness: thickness of the brick at the start (at point anchPtTrnsSect)
     :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
     :param reinfCfg: instance of the cfg.reinfConf class
@@ -288,6 +288,8 @@ The data of the family is given as a dictionary of type:
                   'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
                   'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
     :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :param slopeBottom: transverse slope of the brick bottom-face (deltaY/deltaX)
+    :param slopeTop: transverse slope of the brick top-face (deltaY/deltaX)
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     '''
@@ -295,14 +297,24 @@ The data of the family is given as a dictionary of type:
     vdirLn=Vector(math.cos(math.radians(angLn)),math.sin(math.radians(angLn)))
     vdirTrPerp=Vector(-1*vdirTr.y,vdirTr.x)
     vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
+    vdirTrBott=vdirTr; vdirTrTop=vdirTr
     # Concrete points of the transverse section
     tr_bl=anchPtTrnsSect
     tr_tl=tr_bl+thickness*Vector(-vdirTr.y,vdirTr.x)
     tr_tr=tr_tl+width*vdirTr
+    if slopeTop:
+        tr_tr=tr_tr+width*slopeTop*vdirTrPerp
     tr_br= tr_bl+width*vdirTr
+    if slopeBottom:
+        tr_br=tr_br+width*slopeBottom*vdirTrPerp
+    vdirTrBott=(tr_br-tr_bl).normalize()
+    vdirTrTop=(tr_tr-tr_tl).normalize()
     # Concrete points of the longitudinal section
+    meanThickness=thickness
+    if slopeTop: meanThickness+=width*slopeTop/2
+    if slopeBottom: meanThickness+=-width*slopeBottom/2
     ln_bl=anchPtLnSect
-    ln_tl=ln_bl+thickness*Vector(-vdirLn.y,vdirLn.x)
+    ln_tl=ln_bl+meanThickness*Vector(-vdirLn.y,vdirLn.x)
     ln_tr=ln_tl+length*vdirLn
     ln_br= ln_bl+length*vdirLn
     # Families of rebars
@@ -358,7 +370,7 @@ The data of the family is given as a dictionary of type:
             lstPtsConcrSect=[ln_bl,ln_br],
             rightSideCover=False,
             lstCover=[reinfCfg.cover+botTrnsRb['fi']],
-            fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTr,tr_br-botLnRb['distRFend']*vdirTr],
+            fromToExtPts=[tr_bl+botLnRb['distRFstart']*vdirTrBott,tr_br-botLnRb['distRFend']*vdirTrBott],
             coverSectBars=reinfCfg.cover+botTrnsRb['fi'],
             rightSideSectBars=False,
             gapStart=0,
@@ -380,7 +392,7 @@ The data of the family is given as a dictionary of type:
             lstPtsConcrSect=[ln_tl,ln_tr],
             rightSideCover=True,
             lstCover=[reinfCfg.cover+topTrnsRb['fi']],
-            fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTr,tr_tr-topLnRb['distRFend']*vdirTr],
+            fromToExtPts=[tr_tl+topLnRb['distRFstart']*vdirTrTop,tr_tr-topLnRb['distRFend']*vdirTrTop],
             coverSectBars=reinfCfg.cover+topTrnsRb['fi'],
             rightSideSectBars=True,
             gapStart=0,

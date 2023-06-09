@@ -408,7 +408,7 @@ class rebarFamily(rebarFamilyBase):
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text 
             (defaults to True)
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=[],gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
         super(rebarFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
         self.spacing=spacing 
         self.vectorLRef= vectorLRef
@@ -594,8 +594,8 @@ class rebarFamily(rebarFamilyBase):
         '''
         lstPtRFam=self.getLstPtsRebar(self.lstPtsConcrSect)
         self.lstWire=self.getLstRebars(lstPtRFam)
-        if len(self.lstPtsConcrSect2) > 0:
-            lstPtsRebar2,=self.getLstPtsRebar(self.lstPtsConcrSect2)
+        if self.lstPtsConcrSect2:
+            lstPtsRebar2=self.getLstPtsRebar(self.lstPtsConcrSect2)
             lstLinRebar2=[Part.makeLine(lstPtsRebar2[i],lstPtsRebar2[i+1])for i in range(len(lstPtsRebar2)-1)]
             self.wireSect2=[(Part.Wire(lstLinRebar2))]
         
