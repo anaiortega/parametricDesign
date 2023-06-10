@@ -71,12 +71,12 @@ dispRS=(boxL-nRS*sRS)/2
 botSlab_stTr1={'id':'20','fi':8e-3,'sRealSh':sRS,'sPerp':0.15,'nStirrRealSh':nRS,'nStirrPerp':5,
                'widthStirr':0.2,'dispRealSh':dispRS,'dispPerp':LW_th,
                'vectorLRef':Vector(-0.3,-0.3),'rightSideLabelLn':True,
-               'rightSideCover':True,
+               'rightSideCover':False,
                }
 botSlab_stTr2={'id':'21','fi':8e-3,'sRealSh':sRS,'sPerp':0.15,'nStirrRealSh':nRS,'nStirrPerp':5,
                'widthStirr':0.2,'dispRealSh':dispRS,'dispPerp':-LW_th,
                'vectorLRef':Vector(-0.3,-0.3),'rightSideLabelLn':False,
-                'rightSideCover':False,
+                'rightSideCover':True,
                }
 
 # Cercos dintel
@@ -295,7 +295,7 @@ lstRebarFam=list()
 ## bottom slab
 #lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=BS_th,botTrnsRb=BS_bot_tr,topTrnsRb=BS_top_tr,botLnRb=BS_bot_ln,topLnRb=BS_top_ln,anchPtTrnsSect=ext_p1,anchPtLnSect=ext_p1+Vector(ext_wd+1,0),reinfCfg=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)
 
-mainLst,stirrLst=trcm.generic_brick_reinf(width=ext_wd,
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_wd,
                                           length=boxL,
                                           thickness=BS_th,
                                           anchPtTrnsSect=ext_p1,
@@ -317,7 +317,7 @@ lstRebarFam+=mainLst+stirrLst
 lstRebarFam+=trcm.closed_slab(width=ext_wd,length=boxL,thickness=TS_th,botTrnsRb=TS_bot_tr,topTrnsRb=TS_top_tr,botLnRb=TS_bot_ln,topLnRb=TS_top_ln,anchPtTrnsSect=ext_p1+Vector(0,ext_hg-TS_th),anchPtLnSect=ext_p1+Vector(ext_wd+1,ext_hg-TS_th),reinfCfg=reinfConf,drawConcrTrSect=False,drawConcrLnSect=True,factGap=2)          
 
 ## left wall
-mainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_hg,
                                       length=boxL,
                                       thickness=LW_th,
                                       anchPtTrnsSect=ext_p1+Vector(LW_th,0),
@@ -334,7 +334,7 @@ mainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
 
 lstRebarFam+=mainLst+stirrLst
 ## right wall
-lmainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
+lmainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_hg,
                                       length=boxL,
                                       thickness=RW_th,
                                       anchPtTrnsSect=ext_p4,
@@ -352,7 +352,7 @@ lmainLst,stirrLst=trcm.generic_brick_reinf(width=ext_hg,
 lstRebarFam+=mainLst+stirrLst
 
 ## Dowels left wall
-mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=BS_th,
                                       length=boxL,
                                       thickness=LW_th,
                                       anchPtTrnsSect=ext_p1+Vector(LW_th,0),
@@ -370,7 +370,7 @@ mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
 lstRebarFam+=mainLst+stirrLst
 
 ## Dowels right wall
-mainLst,stirrLst=trcm.generic_brick_reinf(width=BS_th,
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=BS_th,
                                       length=boxL,
                                       thickness=RW_th,
                                       anchPtTrnsSect=ext_p4,

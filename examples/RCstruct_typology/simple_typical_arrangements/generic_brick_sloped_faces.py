@@ -35,23 +35,7 @@ anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the 
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
 
 
-lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(
-    width=width,
-    length=length,
-    thickness=thickness,
-    anchPtTrnsSect=anchPtTrnsSect,
-    anchPtLnSect=anchPtLnSect,
-    reinfCfg=reinfCfg,
-    angTrns=-90,
-    angLn=0,
-    botTrnsRb=botTrnsRb,
-    topTrnsRb=topTrnsRb,
-    botLnRb=botLnRb,
-    topLnRb=topLnRb,
-    slopeBottom=-0.2/1,
-    slopeTop=0.15,
-    drawConcrTrSect=True,
-    drawConcrLnSect=True) 
+lstRebarFam,lstStirrupFam=trcm.sloped_faces_brick_reinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,reinfCfg=reinfCfg,angTrns=-90,angLn=0,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,slopeBottFace=-0.2/1,slopeTopFace=0.15,drawConcrTrSect=True,drawConcrLnSect=True)
 
 doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,

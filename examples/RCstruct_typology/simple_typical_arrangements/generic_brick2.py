@@ -35,11 +35,20 @@ reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scal
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
 
-lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(width=width,length=length,thickness=thickness,
-           anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,reinfCfg=reinfCfg,
-           angTrns=5,angLn=10,
-           botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,
-           drawConcrTrSect=True,drawConcrLnSect=True) 
+lstRebarFam,lstStirrupFam=trcm.constant_thickness_brick_reinf(
+    width=width,
+    length=length,
+    thickness=thickness,
+    anchPtTrnsSect=anchPtTrnsSect,
+    anchPtLnSect=anchPtLnSect,
+    reinfCfg=reinfCfg,
+    angTrns=5,angLn=10,
+    botTrnsRb=botTrnsRb
+    ,topTrnsRb=topTrnsRb,
+    botLnRb=botLnRb,
+    topLnRb=topLnRb,
+    drawConcrTrSect=True,
+    drawConcrLnSect=True) 
 
 doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,

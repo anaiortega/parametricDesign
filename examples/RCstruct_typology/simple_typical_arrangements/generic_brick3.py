@@ -39,7 +39,7 @@ anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the 
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
 
 
-lstRebarFam,lstStirrupFam=trcm.generic_brick_reinf(
+lstRebarFam,lstStirrupFam=trcm.constant_thickness_brick_reinf(
     width=width,
     length=length,
     thickness=thickness,
