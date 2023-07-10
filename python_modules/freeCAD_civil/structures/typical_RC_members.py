@@ -341,7 +341,7 @@ The data of the family is given as a dictionary of type:
         Lsect2=self.botLnRb['s']/abs(self.slopeEdge)
         ln_bot_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
-            identifier=self.botLnRb['id'],
+            identifier=self.botLnRb['id']+'v',
             diameter=self.botLnRb['fi'],
             spacing=self.botLnRb['s'],
             lstPtsConcrSect=[ln_bl,ln_br],
@@ -371,7 +371,7 @@ The data of the family is given as a dictionary of type:
         Lsect2=self.botLnRb['s']/abs(self.slopeEdge)
         ln_top_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
-            identifier=self.topLnRb['id'],
+            identifier=self.topLnRb['id']+'v',
             diameter=self.topLnRb['fi'],
             spacing=self.topLnRb['s'],
             lstPtsConcrSect=[ln_tl,ln_tr],
@@ -524,7 +524,7 @@ The data of the family is given as a dictionary of type:
         return s
       
 
-def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True):
+def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -564,16 +564,26 @@ The data of the family is given as a dictionary of type:
     :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
+    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf)
+    idcont=startId
     if botTrnsRb:
+        if 'id' not in botTrnsRb or not botTrnsRb['id']:
+            botTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
+        if 'id' not in topTrnsRb or not topTrnsRb['id']:
+            topTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
+        if 'id' not in botLnRb or not botLnRb['id']:
+            botLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomLongRF()]
     if topLnRb:
+        if 'id' not in topLnRb or not topLnRb['id']:
+            topLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopLongRF()]
     if lstStirrHoldTrReinf:
         lstStirrFam+=[brick.drawStirrHoldingTransvSF()]
@@ -586,7 +596,7 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam
 
-def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,trSlopeBottFace=None,trSlopeTopFace=None,drawConcrTrSect=True,drawConcrLnSect=True):
+def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -628,16 +638,26 @@ The data of the family is given as a dictionary of type:
     :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
+    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
+    idcont=startId
     if botTrnsRb:
+        if 'id' not in botTrnsRb or not botTrnsRb['id']:
+            botTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
+        if 'id' not in topTrnsRb or not topTrnsRb['id']:
+            topTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
+        if 'id' not in botLnRb or not botLnRb['id']:
+            botLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomLongRF()]
     if topLnRb:
+        if 'id' not in topLnRb or not topLnRb['id']:
+            topLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopLongRF()]
     if drawConcrTrSect:
         brick.drawClosedTransvConcrSectYmax()
@@ -646,8 +666,8 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam
 
-def sloped_edge_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConcrTrSect=True,drawConcrLnSect=True):
-    '''Typical reinforcement arrangement of a brick of constant thickness 
+def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
+    '''Typical reinforcement arrangement of a brick of constant thickness with an sloped edge 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
 
@@ -687,17 +707,29 @@ The data of the family is given as a dictionary of type:
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :iparam slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
+    idcont=startId
     if botTrnsRb:
+        if 'id' not in botTrnsRb or not botTrnsRb['id']:
+            botTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
+        if 'id' not in topTrnsRb or not topTrnsRb['id']:
+            topTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
+        if 'id' not in botLnRb or not botLnRb['id']:
+            botLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomLongRF()]
+        lstRebFam+=[brick.drawBottomVarLongRF()]
     if topLnRb:
+        if 'id' not in topLnRb or not topLnRb['id']:
+            topLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopLongRF()]
+        lstRebFam+=[brick.drawTopVarLongRF()]
     if drawConcrTrSect:
         brick.drawClosedTransvConcrSectYmax()
     if drawConcrLnSect:
@@ -708,6 +740,65 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam
 
+def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
+    '''Typical reinforcement arrangement of a brick with an sloped edge and sloped faces
+    Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
+                  RF-rebar family
+
+   :param width: dimension of the brick in the direction of the transverse rebars
+    :param length: dimension of the brick in the direction of the longitudinal rebars
+    :param thickness: thickness of the brick at the start (at point anchPtTrnsSect)
+    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
+    :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
+    :param reinfCfg: instance of the cfg.reinfConf class
+    :param slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
+    :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
+    :param angTrns: angle (degrees) between the horizontal and the brick width dim    :param angLn: angle (degrees) between the horizontal and the brick length dimension
+    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
+           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
+           where 'id' is the identificacion of the rebar family, 
+                  'fi' is the diameter of the rebar, 
+                   's' is the spacement, 
+                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
+                   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
+                                   (ignored in transverse rebars when sloped edge is defined)
+                   'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
+                              slap length when splitting rebars
+    :param topTrnsRb: same for the top transverse rebar family
+    :param botLnRb: same for the bottom longitudinal rebar family
+    :param topLnRb: same for the top longitudinal rebar family
+     '''
+    lstRebFam=list(); lstStirrFam=list() # Families of rebars
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
+    idcont=startId
+    if botTrnsRb:
+        if 'id' not in botTrnsRb or not botTrnsRb['id']:
+            botTrnsRb['id']=str(idcont); idcont+=1
+        lstRebFam+=[brick.drawBottomTransvRF()]
+    if topTrnsRb:
+        if 'id' not in topTrnsRb or not topTrnsRb['id']:
+            topTrnsRb['id']=str(idcont); idcont+=1
+        lstRebFam+=[brick.drawTopTransvRF()]
+    if botLnRb:
+        if 'id' not in botLnRb or not botLnRb['id']:
+            botLnRb['id']=str(idcont); idcont+=1
+        lstRebFam+=[brick.drawBottomLongRF()]
+        lstRebFam+=[brick.drawBottomVarLongRF()]
+    if topLnRb:
+        if 'id' not in topLnRb or not topLnRb['id']:
+            topLnRb['id']=str(idcont); idcont+=1
+        lstRebFam+=[brick.drawTopLongRF()]
+        lstRebFam+=[brick.drawTopVarLongRF()]
+    if drawConcrTrSect:
+        brick.drawClosedTransvConcrSectYmax()
+    if drawConcrLnSect:
+        if slopeEdge>0:
+            brick.drawClosedLongConcrSectXmax()
+        else:
+            brick.drawClosedLongConcrSectXmin()
+    FreeCAD.ActiveDocument.recompute()
+    return lstRebFam,lstStirrFam
 
 def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=1,coverLat=None):
     '''Typical reinforcement arrangement of a closed slab
