@@ -6,6 +6,7 @@ from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 import FreeCADGui
+from misc_utils import log_messages as lmsg
 
 colorConcrete=(0.00,1.00,1.00) #cyan
 
@@ -25,15 +26,18 @@ class genericBrickReinf(object):
     :param angTrns: angle (degrees) between the horizontal and the brick width dimension
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
     :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
-           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
+           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'},
+           optionally can be defined: {'gapStart','gapEnd','extrShapeStart','extrShapeEnd', 'fixLengthStart','fixLengthEnd','vectorLRef'}
            where 'id' is the identificacion of the rebar family, 
                   'fi' is the diameter of the rebar, 
                    's' is the spacement, 
-                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
+                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section)
+                                     if not defined, default is 0   
                    'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
+                                   if not defined, default is 0   
                                    (ignored in transverse rebars when sloped edge is defined)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              slap length when splitting rebars
+                              slap length when splitting rebars)
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
@@ -227,6 +231,8 @@ The data of the family is given as a dictionary of type:
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         ln_bl,ln_br=self.getXmaxLongBottPnts()
         vdirLn=self.getVdirLong()
+        init_RFdef_vars(botTrnsRb)
+        check_position(botTrnsRb)
         tr_bot_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.botTrnsRb['id'],
@@ -251,6 +257,8 @@ The data of the family is given as a dictionary of type:
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         vdirLn=self.getVdirLong()
+        init_RFdef_vars(topTrnsRb)
+        check_position(topTrnsRb)
         tr_top_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.topTrnsRb['id'],
@@ -276,6 +284,8 @@ The data of the family is given as a dictionary of type:
         ln_bl,ln_br=self.getXmaxLongBottPnts()
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         vdirTrBott=(tr_br-tr_bl).normalize()
+        init_RFdef_vars(botLnRb)
+        check_position(botLnRb)
         if self.slopeEdge:
             fromExtPt=self.getTransitionBottPnt()
         else:
@@ -306,6 +316,8 @@ The data of the family is given as a dictionary of type:
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         vdirTrTop=(tr_tr-tr_tl).normalize()
+        init_RFdef_vars(topLnRb)
+        check_position(topLnRb)  
         if self.slopeEdge:
             fromExtPt=self.getTransitionTopPnt()
         else:
@@ -539,7 +551,7 @@ def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtL
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
     :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family, 
+           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
                   'fi' is the diameter of the rebar, 
                    's' is the spacement, 
                    'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
@@ -552,7 +564,7 @@ def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtL
     :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family, 
+            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
                   'fi' is the diameter of the stirrup, 
                   'sRealSh' is the spacement between stirrups represented as real shape,
                   'sPerp'  is the spacement between stirrups in the orthogonal direction,
@@ -568,22 +580,14 @@ The data of the family is given as a dictionary of type:
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf)
-    idcont=startId
+    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
     if botTrnsRb:
-        if 'id' not in botTrnsRb or not botTrnsRb['id']:
-            botTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
-        if 'id' not in topTrnsRb or not topTrnsRb['id']:
-            topTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
-        if 'id' not in botLnRb or not botLnRb['id']:
-            botLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomLongRF()]
     if topLnRb:
-        if 'id' not in topLnRb or not topLnRb['id']:
-            topLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopLongRF()]
     if lstStirrHoldTrReinf:
         lstStirrFam+=[brick.drawStirrHoldingTransvSF()]
@@ -611,7 +615,7 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
     :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family, 
+           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
                   'fi' is the diameter of the rebar, 
                    's' is the spacement, 
                    'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
@@ -624,7 +628,7 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family, 
+            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
                   'fi' is the diameter of the stirrup, 
                   'sRealSh' is the spacement between stirrups represented as real shape,
                   'sPerp'  is the spacement between stirrups in the orthogonal direction,
@@ -642,22 +646,14 @@ The data of the family is given as a dictionary of type:
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
-    idcont=startId
+    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
     if botTrnsRb:
-        if 'id' not in botTrnsRb or not botTrnsRb['id']:
-            botTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
-        if 'id' not in topTrnsRb or not topTrnsRb['id']:
-            topTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
-        if 'id' not in botLnRb or not botLnRb['id']:
-            botLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomLongRF()]
     if topLnRb:
-        if 'id' not in topLnRb or not topLnRb['id']:
-            topLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopLongRF()]
     if drawConcrTrSect:
         brick.drawClosedTransvConcrSectYmax()
@@ -681,7 +677,7 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
     :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family, 
+           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
                   'fi' is the diameter of the rebar, 
                    's' is the spacement, 
                    'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
@@ -694,7 +690,7 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family, 
+            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
                   'fi' is the diameter of the stirrup, 
                   'sRealSh' is the spacement between stirrups represented as real shape,
                   'sPerp'  is the spacement between stirrups in the orthogonal direction,
@@ -711,23 +707,15 @@ The data of the family is given as a dictionary of type:
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
-    idcont=startId
+    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
     if botTrnsRb:
-        if 'id' not in botTrnsRb or not botTrnsRb['id']:
-            botTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
-        if 'id' not in topTrnsRb or not topTrnsRb['id']:
-            topTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
-        if 'id' not in botLnRb or not botLnRb['id']:
-            botLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomLongRF()]
         lstRebFam+=[brick.drawBottomVarLongRF()]
     if topLnRb:
-        if 'id' not in topLnRb or not topLnRb['id']:
-            topLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopLongRF()]
         lstRebFam+=[brick.drawTopVarLongRF()]
     if drawConcrTrSect:
@@ -757,7 +745,7 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param angTrns: angle (degrees) between the horizontal and the brick width dim    :param angLn: angle (degrees) between the horizontal and the brick length dimension
     :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family, 
+           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
                   'fi' is the diameter of the rebar, 
                    's' is the spacement, 
                    'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
@@ -771,23 +759,15 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
      '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
-    idcont=startId
+    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
     if botTrnsRb:
-        if 'id' not in botTrnsRb or not botTrnsRb['id']:
-            botTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
-        if 'id' not in topTrnsRb or not topTrnsRb['id']:
-            topTrnsRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
-        if 'id' not in botLnRb or not botLnRb['id']:
-            botLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawBottomLongRF()]
         lstRebFam+=[brick.drawBottomVarLongRF()]
     if topLnRb:
-        if 'id' not in topLnRb or not topLnRb['id']:
-            topLnRb['id']=str(idcont); idcont+=1
         lstRebFam+=[brick.drawTopLongRF()]
         lstRebFam+=[brick.drawTopVarLongRF()]
     if drawConcrTrSect:
@@ -800,14 +780,14 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam
 
-def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=1,coverLat=None):
+def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=1,coverLat=None,startId=1):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
 
     :param width: dimension of the slab in the direction of the transverse rebars
     :param length: dimension of the slab in the direction of the longitudinal rebars
     :param thickness: thickness of the slab
-    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family, 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the slab (as it is drawn in the section),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the slab (as it is drawn in the section)
+    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family(if not defined, startId is used), 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the slab (as it is drawn in the section) (0 if not defined),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the slab (as it is drawn in the section) (0 if not defined)
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
@@ -822,7 +802,7 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     cover=reinfCfg.cover
     if not coverLat:
         coverLat=reinfCfg.cover
-    # Concrete points of the transverse section
+   # Concrete points of the transverse section
     tr_bl=anchPtTrnsSect
     tr_tl=tr_bl+Vector(0,thickness)
     tr_tr=tr_tl+Vector(width,0)
@@ -833,7 +813,9 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     ln_tr=ln_tl+Vector(length,0)
     ln_br= ln_bl+Vector(length,0)
     # Families of rebars
+    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
     # transverse bottom rebar family
+    init_RFdef_vars(botTrnsRb)
     tr_bot_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=botTrnsRb['id'],
@@ -847,13 +829,14 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         rightSideSectBars=False,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
+        position='good',
         )
     set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
     tr_bot_rf.createLstRebar()
     tr_bot_rf.drawPolySectBars()
     tr_bot_rf.drawLstRebar()
-    
-    # transverse bottom rebar family
+    # transverse top rebar family
+    init_RFdef_vars(topTrnsRb)
     tr_top_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=topTrnsRb['id'],
@@ -867,11 +850,14 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         rightSideSectBars=True,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
+        position='poor',
          )
     set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)
     tr_top_rf.createLstRebar()
     tr_top_rf.drawPolySectBars()
     tr_top_rf.drawLstRebar()
+    # longitudinal bottom rebar family
+    init_RFdef_vars(botLnRb)
     ln_bot_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=botLnRb['id'],
@@ -886,11 +872,15 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         rightSideSectBars=False,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
+        position='good',
         )
     set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
     ln_bot_rf.createLstRebar()
     ln_bot_rf.drawPolySectBars()
     ln_bot_rf.drawLstRebar()
+    # Concrete transverse cross-section
+    # longitudinal top rebar family
+    init_RFdef_vars(topLnRb)
     ln_top_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=topLnRb['id'],
@@ -905,12 +895,12 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
         rightSideSectBars=True,
         gapStart=-factGap*reinfCfg.cover,
         gapEnd=-factGap*reinfCfg.cover,
+        position='poor',
          )
     set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
     ln_top_rf.createLstRebar()
     ln_top_rf.drawPolySectBars()
     ln_top_rf.drawLstRebar()
-    # Concrete transverse cross-section
     if drawConcrTrSect:
         s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
         p=Part.show(s)
@@ -923,14 +913,14 @@ def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchP
     return [tr_bot_rf,tr_top_rf,ln_bot_rf,ln_top_rf]
     
 
-def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,reinfCfg,drawConcrVertSect=True,drawConcrHorSect=True):
+def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,reinfCfg,drawConcrVertSect=True,drawConcrHorSect=True,startId=1):
     '''Typical reinforcement arrangement of a closed slab
     Nomenclature: l-left, r-right, vert-vertical, hor-horizontal
 
     :param height: dimension of the wall in the direction of the vertical rebars
     :param length: dimension of the wall in the direction of the horizontal rebars
     :param thickness: thickness of the wall
-    :param leftVertRb: data for left vertical rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family, 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the wall (as it is drawn in the section),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the wall (as it is drawn in the section)
+    :param leftVertRb: data for left vertical rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family (if not defined, startId is used), 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the wall (as it is drawn in the section),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the wall (as it is drawn in the section)
     :param rightVertRb: same for the right vertical rebar family
     :param leftHorRb: same for the left horizontal rebar family
     :param rightHorRb: same for the right horizontal rebar family
@@ -952,7 +942,9 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     hor_tr=hor_tl+Vector(thickness,0)
     hor_br= hor_bl+Vector(thickness,0)
     # Families of rebars
+    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
     # vertical left rebar family
+    init_RFdef_vars(leftVertRb)
     vert_left_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=leftVertRb['id'],
@@ -968,7 +960,8 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     vert_left_rf.createLstRebar()
     vert_left_rf.drawPolySectBars()
     vert_left_rf.drawLstRebar()
-    # vertical left rebar family
+    # vertical right rebar family
+    init_RFdef_vars(rightVertRb)
     vert_right_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=rightVertRb['id'],
@@ -979,11 +972,14 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         vectorLRef=Vector(-0.3,0.4),
         fromToExtPts=[hor_br+Vector(0,rightVertRb['distRFstart']),hor_tr-Vector(0,rightVertRb['distRFend'])],
         rightSideSectBars=False,
+        position='good',
         )
     set_FR_options(RF=vert_right_rf,RFdef=rightVertRb)
     vert_right_rf.createLstRebar()
     vert_right_rf.drawPolySectBars()
     vert_right_rf.drawLstRebar()
+    # horizontal left rebar family
+    init_RFdef_vars(leftHorRb)
     hor_left_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=leftHorRb['id'],
@@ -996,11 +992,14 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         fromToExtPts=[vert_bl+Vector(0,leftHorRb['distRFstart']),vert_tl-Vector(0,leftHorRb['distRFend'])],
         coverSectBars=reinfCfg.cover+leftVertRb['fi'],
         rightSideSectBars=True,
+        position='good',
         )
     set_FR_options(RF=hor_left_rf,RFdef=leftHorRb)
     hor_left_rf.createLstRebar()
     hor_left_rf.drawPolySectBars()
     hor_left_rf.drawLstRebar()
+    # horizontal right rebar family
+    init_RFdef_vars(rightHorRb)
     hor_right_rf=rb.rebarFamily(
         reinfCfg=reinfCfg,
         identifier=rightHorRb['id'],
@@ -1013,6 +1012,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
         fromToExtPts=[vert_br+Vector(0,rightHorRb['distRFstart']),vert_tr-Vector(0,rightHorRb['distRFend'])],
         coverSectBars=reinfCfg.cover+rightVertRb['fi'],
         rightSideSectBars=False,
+        position='good',
         )
     set_FR_options(RF=hor_right_rf,RFdef=rightHorRb)
     hor_right_rf.createLstRebar()
@@ -1031,7 +1031,7 @@ def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anc
     return [vert_left_rf,vert_right_rf,hor_left_rf,hor_right_rf]
     
 def set_FR_options(RF,RFdef):
-    '''Set the attributes of a rebar family
+    '''Set optional attributes of RF rebar family that has been defined in dictionary RFdef
     '''
     if 'gapStart' in RFdef.keys(): RF.gapStart=RFdef['gapStart']
     if 'gapEnd' in RFdef.keys(): RF.gapEnd=RFdef['gapEnd']
@@ -1040,4 +1040,23 @@ def set_FR_options(RF,RFdef):
     if 'fixLengthStart' in RFdef.keys(): RF.fixLengthStart=RFdef['fixLengthStart']
     if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
     if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
-           
+
+def init_RFdef_vars(RFdef):
+    ''' Set default values of 'distRFstart' and 'distRFend' if not defined in dictionary RFdef'''
+    if 'distRFstart' not in RFdef.keys(): RFdef['distRFstart']=0.0
+    if 'distRFend' not in RFdef.keys(): RFdef['distRFend']=0.0
+
+def check_position(RFdef):
+    if 'position' not in RFdef.keys(): lmsg.error("can't guess position of rebar family id:"+ RFdef['id']+ " 'position' key, good or poor, must be defined")
+        
+def check_id(lstRFdef, startId):
+    ''' Checks if 'id' has been defined for each of the dictionaries in list lstRFdef and, otherwise,
+       sets the value of 'id' based on startId'''
+    for RFdef in lstRFdef:
+        if RFdef:
+             if 'id' not in RFdef.keys():
+                 RFdef['id']=str(startId)
+                 startId+=1
+             
+    
+

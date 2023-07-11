@@ -24,13 +24,13 @@ width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
 thickness=0.4  #thickness of the slab
 # bottom transverse rebars data
-botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0} 
+botTrnsRb={'fi':20e-3,'s':0.15,'distRFstart':0.2} #distRFend=0(default), id is based on startId value
 # top transverse rebars data
-botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5}
+botLnRb={'fi':16e-3,'s':0.20} # distRFstart=0 distRFend=0(default), 'id' is based on startId value
 # bottom longitudinal rebars data
-topTrnsRb={'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1} 
+topTrnsRb={'id':'13','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1} 
 # top longitudinal rebars data
-topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
+topLnRb={'id':'14','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3}
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
@@ -41,7 +41,7 @@ reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scal
 # set XC dimension style in current document
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
-lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=2)
+lstRebarFam=trcm.closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=2,startId=11)
 
 doc=App.newDocument("despiece","despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam,
