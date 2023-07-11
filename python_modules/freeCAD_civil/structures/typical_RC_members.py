@@ -27,7 +27,8 @@ class genericBrickReinf(object):
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
     :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'},
-           optionally can be defined: {'gapStart','gapEnd','extrShapeStart','extrShapeEnd', 'fixLengthStart','fixLengthEnd','vectorLRef'}
+           optionally can be defined: {'gapStart','gapEnd','extrShapeStart','extrShapeEnd', 'fixLengthStart','fixLengthEnd','vectorLRef',
+                                                  'closedStart','closedEnd'}
            where 'id' is the identificacion of the rebar family, 
                   'fi' is the diameter of the rebar, 
                    's' is the spacement, 
@@ -231,14 +232,18 @@ The data of the family is given as a dictionary of type:
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         ln_bl,ln_br=self.getXmaxLongBottPnts()
         vdirLn=self.getVdirLong()
-        init_RFdef_vars(botTrnsRb)
-        check_position(botTrnsRb)
+        init_RFdef_vars(self.botTrnsRb)
+        check_position(self.botTrnsRb)
+        lstPtsConcrSect=[tr_bl,tr_br]
+        if self.botTrnsRb['closedStart'] or self.botTrnsRb['closedEnd']: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+        if self.botTrnsRb['closedStart']: lstPtsConcrSect.insert(0,tr_tl)
+        if self.botTrnsRb['closedEnd']: lstPtsConcrSect.append(tr_tr)
         tr_bot_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.botTrnsRb['id'],
             diameter=self.botTrnsRb['fi'],
             spacing=self.botTrnsRb['s'],
-            lstPtsConcrSect=[tr_bl,tr_br],
+            lstPtsConcrSect=lstPtsConcrSect,
             rightSideCover=False,
             fromToExtPts=[ln_bl+self.botTrnsRb['distRFstart']*vdirLn,ln_br-self.botTrnsRb['distRFend']*vdirLn],
             rightSideSectBars=False,
@@ -257,14 +262,18 @@ The data of the family is given as a dictionary of type:
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         vdirLn=self.getVdirLong()
-        init_RFdef_vars(topTrnsRb)
-        check_position(topTrnsRb)
+        init_RFdef_vars(self.topTrnsRb)
+        check_position(self.topTrnsRb)
+        lstPtsConcrSect=[tr_tl,tr_tr]
+        if self.topTrnsRb['closedStart'] or self.topTrnsRb['closedEnd']: tr_bl,tr_br=self.getYmaxTransvBottPnts()
+        if self.topTrnsRb['closedStart']: lstPtsConcrSect.insert(0,tr_bl)
+        if self.topTrnsRb['closedEnd']: lstPtsConcrSect.append(tr_br)
         tr_top_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.topTrnsRb['id'],
             diameter=self.topTrnsRb['fi'],
             spacing=self.topTrnsRb['s'],
-            lstPtsConcrSect=[tr_tl,tr_tr],
+            lstPtsConcrSect=lstPtsConcrSect,
             rightSideCover=True,
             fromToExtPts=[ln_tl+self.topTrnsRb['distRFstart']*vdirLn,ln_tr-self.topTrnsRb['distRFend']*vdirLn],
             rightSideSectBars=True,
@@ -284,20 +293,29 @@ The data of the family is given as a dictionary of type:
         ln_bl,ln_br=self.getXmaxLongBottPnts()
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         vdirTrBott=(tr_br-tr_bl).normalize()
-        init_RFdef_vars(botLnRb)
-        check_position(botLnRb)
+        init_RFdef_vars(self.botLnRb)
+        check_position(self.botLnRb)
         if self.slopeEdge:
             fromExtPt=self.getTransitionBottPnt()
         else:
             fromExtPt=tr_bl+self.botLnRb['distRFstart']*vdirTrBott
+        lstPtsConcrSect=[ln_bl,ln_br]
+        lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']]
+        if self.botLnRb['closedStart'] or self.botLnRb['closedEnd']: ln_tl,ln_tr=self.getXmaxLongTopPnts()
+        if self.botLnRb['closedStart']:
+            lstPtsConcrSect.insert(0,ln_tl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        if self.botLnRb['closedEnd']:
+            lstPtsConcrSect.append(ln_tr)
+            lstCover.append(self.reinfCfg.cover)
         ln_bot_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.botLnRb['id'],
             diameter=self.botLnRb['fi'],
             spacing=self.botLnRb['s'],
-            lstPtsConcrSect=[ln_bl,ln_br],
+            lstPtsConcrSect=lstPtsConcrSect,
             rightSideCover=False,
-            lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']],
+            lstCover=lstCover,
             fromToExtPts=[fromExtPt,tr_br-self.botLnRb['distRFend']*vdirTrBott],
             coverSectBars=self.reinfCfg.cover+self.botTrnsRb['fi'],
             rightSideSectBars=False,
@@ -316,20 +334,29 @@ The data of the family is given as a dictionary of type:
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         vdirTrTop=(tr_tr-tr_tl).normalize()
-        init_RFdef_vars(topLnRb)
-        check_position(topLnRb)  
+        init_RFdef_vars(self.topLnRb)
+        check_position(self.topLnRb)  
         if self.slopeEdge:
             fromExtPt=self.getTransitionTopPnt()
         else:
-            fromExtPt= tr_tl+self.topLnRb['distRFstart']*vdirTrTop       
+            fromExtPt= tr_tl+self.topLnRb['distRFstart']*vdirTrTop
+        lstPtsConcrSect=[ln_tl,ln_tr]
+        lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']]
+        if self.topLnRb['closedStart'] or self.topTrnsRb['closedEnd']: ln_bl,ln_br=self.getXmaxLongBottPnts()
+        if self.topLnRb['closedStart']:
+            lstPtsConcrSect.insert(0,ln_bl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        if self.topLnRb['closedEnd']:
+            lstPtsConcrSect.append(ln_br)
+            lstCover.append(self.reinfCfg.cover)
         ln_top_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.topLnRb['id'],
             diameter=self.topLnRb['fi'],
             spacing=self.topLnRb['s'],
-            lstPtsConcrSect=[ln_tl,ln_tr],
+            lstPtsConcrSect=lstPtsConcrSect,
             rightSideCover=True,
-            lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']],
+            lstCover=lstCover,
             fromToExtPts=[fromExtPt,tr_tr-self.topLnRb['distRFend']*vdirTrTop],
             coverSectBars=self.reinfCfg.cover+self.topTrnsRb['fi'],
             rightSideSectBars=True,
@@ -351,15 +378,27 @@ The data of the family is given as a dictionary of type:
         vdirTrBott=(tr_br-tr_bl).normalize()
         vdirLnBott=(ln_br-ln_bl).normalize()
         Lsect2=self.botLnRb['s']/abs(self.slopeEdge)
+        lstPtsConcrSect=[ln_bl,ln_br]
+        lstPtsConcrSect2=[ln_bl,ln_bl+Lsect2*vdirLnBott]
+        lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']]
+        if self.botLnRb['closedStart'] or self.botLnRb['closedEnd']: ln_tl,ln_tr=self.getXmaxLongTopPnts()
+        if self.botLnRb['closedStart']:
+            lstPtsConcrSect.insert(0,ln_tl)
+            lstPtsConcrSect2.insert(0,ln_tl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        if self.botLnRb['closedEnd']:
+            lstPtsConcrSect.append(ln_tr)
+            lstPtsConcrSect2.append(ln_tl+Lsect2*vdirLnBott)
+            lstCover.append(self.reinfCfg.cover)               
         ln_bot_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.botLnRb['id']+'v',
             diameter=self.botLnRb['fi'],
             spacing=self.botLnRb['s'],
-            lstPtsConcrSect=[ln_bl,ln_br],
-            lstPtsConcrSect2=[ln_bl,ln_bl+Lsect2*vdirLnBott],
+            lstPtsConcrSect=lstPtsConcrSect,
+            lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=False,
-            lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']],
+            lstCover=lstCover,
             fromToExtPts=[tr_bl,self.getTransitionBottPnt()],
             coverSectBars=self.reinfCfg.cover+self.botTrnsRb['fi'],
             rightSideSectBars=False,
@@ -381,15 +420,27 @@ The data of the family is given as a dictionary of type:
         vdirTrTop=(tr_tr-tr_tl).normalize()
         vdirLnTop=(ln_tr-ln_tl).normalize()
         Lsect2=self.botLnRb['s']/abs(self.slopeEdge)
+        lstPtsConcrSect=[ln_tl,ln_tr]
+        lstPtsConcrSect2=[ln_tl,ln_tl+Lsect2*vdirLnTop]
+        lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']]
+        if self.topLnRb['closedStart'] or self.topLnRb['closedEnd']: ln_bl,ln_br=self.getXmaxLongBottPnts()
+        if self.topLnRb['closedStart']:
+            lstPtsConcrSect.insert(0,ln_bl)
+            lstPtsConcrSect2.insert(0,ln_bl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        if self.topLnRb['closedEnd']:
+            lstPtsConcrSect.append(ln_br)
+            lstPtsConcrSect2.append(ln_bl+Lsect2*vdirLnTop)
+            lstCover.append(self.reinfCfg.cover)
         ln_top_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.topLnRb['id']+'v',
             diameter=self.topLnRb['fi'],
             spacing=self.topLnRb['s'],
-            lstPtsConcrSect=[ln_tl,ln_tr],
-            lstPtsConcrSect2=[ln_tl,ln_tl+Lsect2*vdirLnTop],
+            lstPtsConcrSect=lstPtsConcrSect,
+            lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=True,
-            lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']],
+            lstCover=lstCover,
             fromToExtPts=[tr_tl,self.getTransitionTopPnt()],
             coverSectBars=self.reinfCfg.cover+self.topTrnsRb['fi'],
             rightSideSectBars=True,
@@ -579,8 +630,8 @@ The data of the family is given as a dictionary of type:
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf)
     check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -645,8 +696,8 @@ The data of the family is given as a dictionary of type:
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
     check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -706,8 +757,8 @@ The data of the family is given as a dictionary of type:
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
     check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -758,8 +809,8 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param topLnRb: same for the top longitudinal rebar family
      '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
     check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -1045,6 +1096,8 @@ def init_RFdef_vars(RFdef):
     ''' Set default values of 'distRFstart' and 'distRFend' if not defined in dictionary RFdef'''
     if 'distRFstart' not in RFdef.keys(): RFdef['distRFstart']=0.0
     if 'distRFend' not in RFdef.keys(): RFdef['distRFend']=0.0
+    if 'closedStart' not in RFdef.keys(): RFdef['closedStart']=False
+    if 'closedEnd' not in RFdef.keys(): RFdef['closedEnd']=False
 
 def check_position(RFdef):
     if 'position' not in RFdef.keys(): lmsg.error("can't guess position of rebar family id:"+ RFdef['id']+ " 'position' key, good or poor, must be defined")
