@@ -16,9 +16,9 @@ width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
 thickness=0.4  #thickness of the slab
 # bottom transverse rebars data
-botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'distRFstart':0,'distRFend':0,'gapStart':0.5,'extrShapeStart':'anc90_posGood_tens','extrShapeEnd':'anc90_posGood_tens','position':'good','vectorLRef':Vector(-0.3,-0.35),'closedStart':True,'closedEnd':True} 
+botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'gapStart':0.5,'extrShapeStart':'anc90_posGood_tens','extrShapeEnd':'anc90_posGood_tens','position':'good','vectorLRef':Vector(-0.3,-0.35),'closedStart':True,'closedEnd':True} 
 # top transverse rebars data
-topTrnsRb={'id':'3','fi':16e-3,'s':0.15,'distRFstart':0,'distRFend':0,'extrShapeStart':'lap270_posPoor_tens','extrShapeEnd':'lap0_posPoor_tens_perc100','position':'poor','closedStart':True,'closedEnd':True}#,'fixLengthEnd':2} 
+topTrnsRb={'id':'3','fi':16e-3,'s':0.15,'extrShapeStart':'lap270_posPoor_tens','extrShapeEnd':'lap0_posPoor_tens_perc100','position':'poor','closedStart':True,'closedEnd':True}#,'fixLengthEnd':2} 
 # bottom longitudinal rebars data
 botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5,'fixLengthStart':0.5,'gapEnd':2,'extrShapeEnd':'lap45_posGood_compr','position':'good','vectorLRef':Vector(0.4,-0.20),'closedStart':True,'closedEnd':True}
 # top longitudinal rebars data

@@ -342,7 +342,7 @@ The data of the family is given as a dictionary of type:
             fromExtPt= tr_tl+self.topLnRb['distRFstart']*vdirTrTop
         lstPtsConcrSect=[ln_tl,ln_tr]
         lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']]
-        if self.topLnRb['closedStart'] or self.topTrnsRb['closedEnd']: ln_bl,ln_br=self.getXmaxLongBottPnts()
+        if self.topLnRb['closedStart'] or self.topLnRb['closedEnd']: ln_bl,ln_br=self.getXmaxLongBottPnts()
         if self.topLnRb['closedStart']:
             lstPtsConcrSect.insert(0,ln_bl)
             lstCover.insert(0,self.reinfCfg.cover)
@@ -1107,7 +1107,7 @@ def check_id(lstRFdef, startId):
        sets the value of 'id' based on startId'''
     for RFdef in lstRFdef:
         if RFdef:
-             if 'id' not in RFdef.keys():
+             if 'id' not in RFdef.keys() or not RFdef['id']:
                  RFdef['id']=str(startId)
                  startId+=1
              
