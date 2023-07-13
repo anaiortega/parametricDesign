@@ -247,8 +247,6 @@ The data of the family is given as a dictionary of type:
             rightSideCover=False,
             fromToExtPts=[ln_bl+self.botTrnsRb['distRFstart']*vdirLn,ln_br-self.botTrnsRb['distRFend']*vdirLn],
             rightSideSectBars=False,
-            gapStart=0,
-            gapEnd=0,
             position=self.botTrnsRb['position'],
             )
         set_FR_options(RF=tr_bot_rf,RFdef=self.botTrnsRb)
@@ -300,7 +298,12 @@ The data of the family is given as a dictionary of type:
         else:
             fromExtPt=tr_bl+self.botLnRb['distRFstart']*vdirTrBott
         lstPtsConcrSect=[ln_bl,ln_br]
-        lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']]
+        if self.botTrnsRb:
+            lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']]
+            coverSectBars=self.reinfCfg.cover+self.botTrnsRb['fi']
+        else:
+            lstCover=[self.reinfCfg.cover]
+            coverSectBars=self.reinfCfg.cover
         if self.botLnRb['closedStart'] or self.botLnRb['closedEnd']: ln_tl,ln_tr=self.getXmaxLongTopPnts()
         if self.botLnRb['closedStart']:
             lstPtsConcrSect.insert(0,ln_tl)
@@ -317,7 +320,7 @@ The data of the family is given as a dictionary of type:
             rightSideCover=False,
             lstCover=lstCover,
             fromToExtPts=[fromExtPt,tr_br-self.botLnRb['distRFend']*vdirTrBott],
-            coverSectBars=self.reinfCfg.cover+self.botTrnsRb['fi'],
+            coverSectBars=coverSectBars,
             rightSideSectBars=False,
             gapStart=0,
             gapEnd=0,
@@ -341,7 +344,12 @@ The data of the family is given as a dictionary of type:
         else:
             fromExtPt= tr_tl+self.topLnRb['distRFstart']*vdirTrTop
         lstPtsConcrSect=[ln_tl,ln_tr]
-        lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']]
+        if self.topTrnsRb:
+            lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']]
+            coverSectBars=self.reinfCfg.cover+self.topTrnsRb['fi']
+        else:
+            lstCover=[self.reinfCfg.cover]
+            coverSectBars=self.reinfCfg.cover
         if self.topLnRb['closedStart'] or self.topLnRb['closedEnd']: ln_bl,ln_br=self.getXmaxLongBottPnts()
         if self.topLnRb['closedStart']:
             lstPtsConcrSect.insert(0,ln_bl)
@@ -358,7 +366,7 @@ The data of the family is given as a dictionary of type:
             rightSideCover=True,
             lstCover=lstCover,
             fromToExtPts=[fromExtPt,tr_tr-self.topLnRb['distRFend']*vdirTrTop],
-            coverSectBars=self.reinfCfg.cover+self.topTrnsRb['fi'],
+            coverSectBars=coverSectBars,
             rightSideSectBars=True,
             gapStart=0,
             gapEnd=0,
@@ -380,7 +388,12 @@ The data of the family is given as a dictionary of type:
         Lsect2=self.botLnRb['s']/abs(self.slopeEdge)
         lstPtsConcrSect=[ln_bl,ln_br]
         lstPtsConcrSect2=[ln_bl,ln_bl+Lsect2*vdirLnBott]
-        lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']]
+        if self.botLnRb:
+            lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']]
+            coverSectBars=self.reinfCfg.cover+self.botTrnsRb['fi']
+        else:
+            lstCover=[self.reinfCfg.cover]
+            coverSectBars=self.reinfCfg.cover
         if self.botLnRb['closedStart'] or self.botLnRb['closedEnd']: ln_tl,ln_tr=self.getXmaxLongTopPnts()
         if self.botLnRb['closedStart']:
             lstPtsConcrSect.insert(0,ln_tl)
@@ -400,7 +413,7 @@ The data of the family is given as a dictionary of type:
             rightSideCover=False,
             lstCover=lstCover,
             fromToExtPts=[tr_bl,self.getTransitionBottPnt()],
-            coverSectBars=self.reinfCfg.cover+self.botTrnsRb['fi'],
+            coverSectBars=coverSectBars,
             rightSideSectBars=False,
             gapStart=0,
             gapEnd=0,
@@ -422,7 +435,12 @@ The data of the family is given as a dictionary of type:
         Lsect2=self.botLnRb['s']/abs(self.slopeEdge)
         lstPtsConcrSect=[ln_tl,ln_tr]
         lstPtsConcrSect2=[ln_tl,ln_tl+Lsect2*vdirLnTop]
-        lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']]
+        if self.topTrnsRb:
+            lstCover=[self.reinfCfg.cover+self.topTrnsRb['fi']]
+            coverSectBars=self.reinfCfg.cover+self.topTrnsRb['fi']
+        else:
+            lstCover=[self.reinfCfg.cover]
+            coverSectBars=self.reinfCfg.cover
         if self.topLnRb['closedStart'] or self.topLnRb['closedEnd']: ln_bl,ln_br=self.getXmaxLongBottPnts()
         if self.topLnRb['closedStart']:
             lstPtsConcrSect.insert(0,ln_bl)
@@ -442,7 +460,7 @@ The data of the family is given as a dictionary of type:
             rightSideCover=True,
             lstCover=lstCover,
             fromToExtPts=[tr_tl,self.getTransitionTopPnt()],
-            coverSectBars=self.reinfCfg.cover+self.topTrnsRb['fi'],
+            coverSectBars=coverSectBars,
             rightSideSectBars=True,
             gapStart=0,
             gapEnd=0,

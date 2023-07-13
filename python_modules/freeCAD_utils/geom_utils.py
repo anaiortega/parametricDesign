@@ -28,15 +28,15 @@ def hexaedro8ptos(pto1,pto2,pto3,pto4,pto5,pto6,pto7,pto8):
     hexaedro=cara2.fuse(cara3.fuse(cara4.fuse(cara5.fuse(cara6.fuse(cara1)))))
     return hexaedro
 
-def int2lines(P1,P2,P3,P4):
+def int2lines(P1,P2,P3,P4,tol=1e-5):
     ''' Return the intersection point of two lines
 
     :param P1 y P2: points that define line 1.
     :param P3 y P4: points that define line 2.
     '''
-    if P1.x == P2.x:
-        if P3.x == P4.x:
-            print('Rectas paralelas')
+    if abs(P1.x - P2.x) < tol:
+        if abs(P3.x - P4.x) < tol:
+            print('Parallel lines')
             Pinters=()
         else:
             xinters=P1.x
@@ -44,7 +44,7 @@ def int2lines(P1,P2,P3,P4):
             b2=P3.y-m2*P3.x            # ordenada pto. de corte 2a. recta con eje Y
             yinters=m2*xinters+b2
             Pinters=Vector(xinters,yinters)
-    elif P3.x == P4.x:
+    elif abs(P3.x - P4.x) <tol :
         xinters=P3.x
         m1=1.0*(P2.y-P1.y)/(P2.x-P1.x) #pte. de la 2a. recta
         b1=P1.y-m1*P1.x            # ordenada pto. de corte 2a. recta con eje Y
@@ -56,7 +56,7 @@ def int2lines(P1,P2,P3,P4):
         m2=1.0*(P4.y-P3.y)/(P4.x-P3.x) #pte. de la 2a. recta
         b2=P3.y-m2*P3.x            # ordenada pto. de corte 2a. recta con eje Y
         if m1 == m2:
-            print('Rectas paralelas')
+            print('Parallel lines')
             Pinters=()
         else:
             xinters=1.0*(b2-b1)/(m1-m2)

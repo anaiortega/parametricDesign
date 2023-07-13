@@ -90,12 +90,10 @@ class rebarFamilyBase(object):
             vauxn.multiply(self.lstCover[i]+self.diameter/2.0)
             listaaux.append(lstPtosAux[i].add(vauxn))
             listaaux.append(lstPtosAux[i+1].add(vauxn))
-
         lstPtsRebar=[listaaux[0]]
         for i in range (1,npuntos-1):
             pint=geom_utils.int2lines(listaaux[2*(i-1)],listaaux[2*(i-1)+1],listaaux[2*i],listaaux[2*i+1])
             lstPtsRebar.append(pint)
-
         lstPtsRebar.append(listaaux[2*(npuntos-1)-1])
         return lstPtsRebar
         
@@ -633,6 +631,7 @@ class rebarFamily(rebarFamilyBase):
                 lstPtsRebar.insert(0,firstPoint)
                 self.lstPairDimPnts+=[[lstPtsRebar[0],lstPtsRebar[1]]]
         # End extremity: gaps, straight elongation, hooks
+        
         vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
         if self.fixLengthEnd:
             lstPtsRebar[-1]=lstPtsRebar[-2].add(vaux.multiply(self.fixLengthEnd))

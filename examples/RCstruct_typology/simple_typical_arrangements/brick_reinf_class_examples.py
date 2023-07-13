@@ -88,8 +88,8 @@ brick.drawTopLongRF()
 brick.anchPtTrnsSect+=Vector(0,3)
 brick.anchPtLnSect+=Vector(0,3)
 brick.thickness=1.3
-brick.angTrns=-10
-brick.angLn=15
+brick.angTrns=90
+brick.angLn=90
 brick.trSlopeBottFace=0.2/2
 brick.trSlopeTopFace=-0.1/2
 brick.drawClosedTransvConcrSectYmax()
@@ -100,8 +100,8 @@ brick.drawBottomLongRF()
 brick.drawTopLongRF()
 
 # horizontal section, constant thickness, sloped edge
-brick.anchPtTrnsSect+=Vector(0,4)
-brick.anchPtLnSect+=Vector(3,4)
+brick.anchPtTrnsSect+=Vector(0,10)
+brick.anchPtLnSect+=Vector(3,10)
 brick.thickness=0.4
 brick.angTrns=0
 brick.angLn=0
@@ -118,12 +118,12 @@ brick.drawTopLongRF()
 brick.drawBottomVarLongRF()
 brick.drawTopVarLongRF()
 
-# horizontal section, sloped faces, sloped edge
-brick.anchPtTrnsSect+=Vector(0,4)
-brick.anchPtLnSect+=Vector(0,4)
+# inclined section, sloped faces, sloped edge
+brick.anchPtTrnsSect+=Vector(0,10)
+brick.anchPtLnSect+=Vector(0,10)
 brick.thickness=0.25
-brick.angTrns=0
-brick.angLn=0
+brick.angTrns=-90
+brick.angLn=-90
 brick.trSlopeBottFace=-0.1/1
 brick.trSlopeTopFace=0.15/1
 brick.slopeEdge=1/2

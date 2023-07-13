@@ -121,6 +121,10 @@ lstStirrupFam+=lstStirrupFam3
 # sloped edge and faces brick
 botTrnsRb['id']=None; topTrnsRb['id']=None
 botLnRb['id']=None;topLnRb['id']=None
+botTrnsRb['closedStart']=True; botTrnsRb['closedEnd']=True
+topTrnsRb['closedStart']=True; topTrnsRb['closedEnd']=True
+botLnRb['closedStart']=True; botLnRb['closedEnd']=True
+topLnRb['closedStart']=True; topLnRb['closedEnd']=True
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
 lstRebarFam4,lstStirrupFam4=trcm.sloped_edge_sloped_faces_brick_reinf(
@@ -133,8 +137,8 @@ lstRebarFam4,lstStirrupFam4=trcm.sloped_edge_sloped_faces_brick_reinf(
     slopeEdge=0.2,
     trSlopeBottFace=-0.3/1,
     trSlopeTopFace=0.2/1,
-    angTrns=20,
-    angLn=40,
+    angTrns=90,
+    angLn=90,
     botTrnsRb=botTrnsRb,
     topTrnsRb=topTrnsRb,
     botLnRb=botLnRb,
