@@ -8,7 +8,7 @@ from freeCAD_civil import geometry_3D
 from FreeCAD import Base
 from Draft import *
 
-def barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec=0):
+def barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec=0,tol=1e-5):
     # dibuja el perfil metálico perfil.tamPerfil entre los puntos 3D ptoIni y ptoFin
     # incrIni: incremento de longitud de la barra por el extremo inicial
     # incrFin: incremento de longitud de la barra por el extremo final
@@ -38,7 +38,7 @@ def barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec=0):
     else:
         p2=ptoFin
     eje=p2.sub(p1)
-    if (p1.x == p2.x) and (p1.y == p2.y) :
+    if (abs(p1.x - p2.x) < tol ) and (abs(p1.y - p2.y) < tol) :
         secc.rotate(Base.Vector(0,0,0),Base.Vector(1,0,0),90)
     else:
         eje.projectToPlane(Base.Vector(0,0,0),Base.Vector(0,0,1))

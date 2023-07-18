@@ -26,7 +26,7 @@ def prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura):
     prisma=base.extrude(vDirZL.multiply(altura))
     return prisma
 
-def conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura):
+def conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura,tol=1e-5):
     # Devuelve un conjunto de cilindros en un sistema de coordenadas general, definido por:
     # vOrigenL: vector que define el pto. origen del sistema de coordenadas local
     # vDirXL: vector en la dirección X del SC local
@@ -43,7 +43,7 @@ def conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,al
         vuY=Base.Vector(vDirYL.x,vDirYL.y,vDirYL.z)
         centro=vOrigenL.add(vuX.multiply(listaCoordCentrosL[i][0])).add(vuY.multiply(listaCoordCentrosL[i][1]))
         cil=Part.makeCylinder(diametro/2.0,altura,centro,vDirZL)
-        if i == 0:
+        if abs(i) < tol:
             conjCilind=cil
         else:
             conjCilind=conjCilind.fuse(cil)

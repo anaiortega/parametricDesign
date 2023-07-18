@@ -4,14 +4,14 @@ import Part, FreeCAD, math
 import Draft
 from FreeCAD import Base
 
-def int2rectas(P1,P2,P3,P4):
+def int2rectas(P1,P2,P3,P4,tol=1e-5):
     ''' Devuelve el punto de intersección de 2 rectas 2D
 
     :param P1 y P2: ptos. que definen la 1a. recta
     :param P3 y P4: ptos. que definen la 2a. recta
     '''
-    if P1.x == P2.x:
-        if P3.x == P4.x:
+    if abs(P1.x - P2.x) <tol:
+        if abs(P3.x - P4.x) <tol :
             print('Rectas paralelas')
             Pinters=()
         else:
@@ -20,7 +20,7 @@ def int2rectas(P1,P2,P3,P4):
             b2=P3.y-m2*P3.x            # ordenada pto. de corte 2a. recta con eje Y
             yinters=m2*xinters+b2
             Pinters=Base.Vector(xinters,yinters)
-    elif P3.x == P4.x:
+    elif abs(P3.x - P4.x) < tol:
         xinters=P3.x
         m1=1.0*(P2.y-P1.y)/(P2.x-P1.x) #pte. de la 2a. recta
         b1=P1.y-m1*P1.x            # ordenada pto. de corte 2a. recta con eje Y
@@ -31,7 +31,7 @@ def int2rectas(P1,P2,P3,P4):
         b1=P1.y-m1*P1.x            # ordenada pto. de corte 1a. recta con eje Y
         m2=1.0*(P4.y-P3.y)/(P4.x-P3.x) #pte. de la 2a. recta
         b2=P3.y-m2*P3.x            # ordenada pto. de corte 2a. recta con eje Y
-        if m1 == m2:
+        if abs(m1 - m2) < tol:
             print('Rectas paralelas')
             Pinters=()
         else:
@@ -83,13 +83,13 @@ def fillet2D(Pini,P2recta1,P1recta2,Pfin,radioConSigno):
     return linea
 
     
-def angVector2DEjeX(vector2D):
+def angVector2DEjeX(vector2D,tol=1e-5):
     '''
     Devuelve el ángulo en grados (entre 0 y 360) que forma el vector con el eje X. Los ángulos crecen en sentido contrario a las agujas del reloj
     '''
     abcisa=vector2D.x
     ordenada=vector2D.y
-    if abcisa==0:
+    if abs(abcisa) <tol :
         if ordenada <0:
             angulo=270
         else:

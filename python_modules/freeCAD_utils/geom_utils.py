@@ -55,7 +55,7 @@ def int2lines(P1,P2,P3,P4,tol=1e-5):
         b1=P1.y-m1*P1.x            # ordenada pto. de corte 1a. recta con eje Y
         m2=1.0*(P4.y-P3.y)/(P4.x-P3.x) #pte. de la 2a. recta
         b2=P3.y-m2*P3.x            # ordenada pto. de corte 2a. recta con eje Y
-        if m1 == m2:
+        if abs(m1 - m2) < tol:
             print('Parallel lines')
             Pinters=()
         else:
