@@ -188,7 +188,7 @@ class rebarFamilyBase(object):
             ppCentCirc=pCentCirc.add(Vector(signo*hText*(len(self.identifier)-1),-hText))
             ppText=pCentCirc.add(Vector(signo*hText*len(self.identifier),0))
             
-            if (pp1-pEndRefL).Length ==0  or (pp1-ppEndRefL).Length ==0 or (pEndRefL-ppEndRefL).Length == 0:
+            if (pp1-pEndRefL).Length <1e-3  or (pp1-ppEndRefL).Length <1e-3 or (pEndRefL-ppEndRefL).Length < 1e-3:
                 c1=Part.Arc(pCentCirc+Vector(0,hText),pCentCirc+Vector(-hText,0),pCentCirc-Vector(0,hText))
             else:
                 c1=Part.Arc(pp1,pEndRefL,ppEndRefL)
@@ -569,9 +569,9 @@ class rebarFamily(rebarFamilyBase):
             sketch=rebWire.copy()
             bound=sketch.BoundBox
             cog=sketch.CenterOfMass
-            if bound.XLength==0:
+            if bound.XLength<1e-4:
                 fScale=hSketch/bound.YLength
-            elif bound.YLength==0:
+            elif bound.YLength<1e-4:
                 fScale=wSketch/bound.XLength
             else:
                 fScale=min(wSketch/bound.XLength,hSketch/bound.YLength)
@@ -619,7 +619,7 @@ class rebarFamily(rebarFamilyBase):
         if self.extrShapeStart:
             extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeStart)
             vaux=lstPtsRebar[1].sub(lstPtsRebar[0]).normalize()
-            if extrShAng == 0:  #straight elongation
+            if extrShAng <1e-4:  #straight elongation
                 pntInit=lstPtsRebar[0]
                 lstPtsRebar[0]=lstPtsRebar[0].sub(vaux.multiply(extrShLn))
                 self.lstPairDimPnts+=[[lstPtsRebar[0],pntInit]]
@@ -640,7 +640,7 @@ class rebarFamily(rebarFamilyBase):
         if self.extrShapeEnd:
             extrShAng,extrShLn=self.getExtrShapeParams(self.extrShapeEnd)
             vaux=lstPtsRebar[-1].sub(lstPtsRebar[-2]).normalize()
-            if extrShAng == 0:  #straight elongation
+            if extrShAng <1e-4:  #straight elongation
                 pntInit=lstPtsRebar[-1]
                 lstPtsRebar[-1]=lstPtsRebar[-1].add(vaux.multiply(extrShLn))
                 self.lstPairDimPnts+=[[pntInit,lstPtsRebar[-1]]]
@@ -702,7 +702,7 @@ class rebarFamily(rebarFamilyBase):
                 lstPtsReb1=lstPtsRebar[:indLmax]
                 vaux=lstPtsRebar[indLmax].sub(lstPtsRebar[indLmax-1])
                 vaux.normalize()
-                LtoAdd1=self.maxLrebar if indLmax==0 else self.maxLrebar-lstCumDist[indLmax-1]
+                LtoAdd1=self.maxLrebar if indLmax <1e-4 else self.maxLrebar-lstCumDist[indLmax-1]
  #               LtoAdd1=self.maxLrebar-lstCumDist[indLmax-1]
                 lastPnt1=lstPtsReb1[-1].add(LtoAdd1*vaux)
                 lstPtsReb1.append(lastPnt1)
@@ -752,7 +752,7 @@ def drawSketchRebarShape(rW,ptCOG,wColumn,hRow,hText,decLengths=2,rW2=None):
     if bound.YLength > bound.XLength:
         sketch.rotate(cog,Vector(0,0,1),-90)
         bound=sketch.BoundBox
-    if bound.YLength==0:
+    if bound.YLength <1e-4:
         fScale=(0.80*wColumn)/(bound.XLength)
     else:
         fScale=min((0.75*wColumn)/(bound.XLength),0.75*hRow/(bound.YLength))
@@ -874,7 +874,7 @@ class stirrupFamily(rebarFamilyBase):
         elif self.lstPtsConcrSect:
             lstCoverAxis=self.getLstCoverAxis()
             lstPtsRebar=self.getLstPtsBasicRebar(self.lstPtsConcrSect)
-            if self.lstPtsConcrSect[0] == self.lstPtsConcrSect[-1]:
+            if (self.lstPtsConcrSect[0] - self.lstPtsConcrSect[-1]).Length <1e-4:
                 pint=geom_utils.int2lines(lstPtsRebar[0],lstPtsRebar[1],lstPtsRebar[-2],lstPtsRebar[-1])
                 lstPtsRebar[0]=pint; lstPtsRebar[-1]=pint
             if self.fixAnchorStart:
