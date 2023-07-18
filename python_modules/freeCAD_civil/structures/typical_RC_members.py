@@ -17,15 +17,15 @@ class genericBrickReinf(object):
                   X-coordinata: transverse direction
                   Y-coordinate: longitudinal direction.
 
-    :param width: dimension of the brick in the direction of the transverse rebars
-    :param length: dimension of the brick in the direction of the longitudinal rebars
-    :param thickness: thickness of the brick at the start (at point anchPtTrnsSect)
-    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
-    :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
-    :param reinfCfg: instance of the cfg.reinfConf class
-    :param angTrns: angle (degrees) between the horizontal and the brick width dimension
-    :param angLn: angle (degrees) between the horizontal and the brick length dimension
-    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
+    :ivar width: dimension of the brick in the direction of the transverse rebars
+    :ivar length: dimension of the brick in the direction of the longitudinal rebars
+    :ivar thickness: thickness of the brick at the start (at point anchPtTrnsSect)
+    :ivar anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
+    :ivar anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
+    :ivar reinfCfg: instance of the cfg.reinfConf class
+    :ivar angTrns: angle (degrees) between the horizontal and the brick width dimension
+    :ivar angLn: angle (degrees) between the horizontal and the brick length dimension
+    :ivar botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'},
            optionally can be defined: {'gapStart','gapEnd','extrShapeStart','extrShapeEnd', 'fixLengthStart','fixLengthEnd','vectorLRef',
                                                   'closedStart','closedEnd'}
@@ -39,10 +39,14 @@ class genericBrickReinf(object):
                                    (ignored in transverse rebars when sloped edge is defined)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
                               slap length when splitting rebars)
-    :param topTrnsRb: same for the top transverse rebar family
-    :param botLnRb: same for the bottom longitudinal rebar family
-    :param topLnRb: same for the top longitudinal rebar family
-    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :ivar topTrnsRb: same for the top transverse rebar family
+    :ivar botLnRb: same for the bottom longitudinal rebar family
+    :ivar topLnRb: same for the top longitudinal rebar family
+    :ivar sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
+    :ivar sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
+    :ivar sideYminRb: data for side reinforcement in face Ymin (defaults to None)
+    :ivar sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
+    :ivar lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
             where 'id' is the identificacion of the stirrup family, 
@@ -54,13 +58,18 @@ The data of the family is given as a dictionary of type:
                   'nStirrPerp' is the number of stirrups in orthogonal direction
                   'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
                   'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
-    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
-    :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
-    :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
+    :ivar lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :ivar trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
+    :ivar trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :ivar slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :ivar drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
+    :ivar drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
+    :ivar anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :ivar drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+    :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
 
-    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True):
+    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
         self.width=width
         self.length=length
         self.thickness=thickness
@@ -73,12 +82,49 @@ The data of the family is given as a dictionary of type:
         self.topTrnsRb=topTrnsRb
         self.botLnRb=botLnRb
         self.topLnRb=topLnRb
+        self.sideXminRb=sideXminRb
+        self.sideXmaxRb=sideXmaxRb
+        self.sideYminRb=sideYminRb
+        self.sideYmaxRb=sideYmaxRb
         self.lstStirrHoldTrReinf=lstStirrHoldTrReinf
         self.lstStirrHoldLnReinf=lstStirrHoldLnReinf
         self.trSlopeBottFace=trSlopeBottFace
         self.trSlopeTopFace=trSlopeTopFace
         self.slopeEdge=slopeEdge
+        self.drawConcrTrSect=drawConcrTrSect
+        self.drawConcrLnSect=drawConcrLnSect
+        self.anchPtPlan=anchPtPlan
+        self.drawPlan=drawPlan
+        self.startId=startId
+        
+    def checkPosition(self,RFdef):
+        if 'position' not in RFdef.keys(): lmsg.error("can't guess position of rebar family id:"+ RFdef['id']+ " 'position' key, 'good' or 'poor', must be defined")
 
+    def checkId(self,RFdef):
+        ''' Checks if 'id' has been defined for dictionary RFdec and, otherwise,
+           sets the value of 'id' based on startId'''
+        if 'id' not in RFdef.keys() or not RFdef['id']:
+            RFdef['id']=str(self.startId)
+            self.startId+=1
+        
+    def initRFdefVvars(self,RFdef):
+        ''' Set default values of 'distRFstart' and 'distRFend' if not defined in dictionary RFdef'''
+        if 'distRFstart' not in RFdef.keys(): RFdef['distRFstart']=0.0
+        if 'distRFend' not in RFdef.keys(): RFdef['distRFend']=0.0
+        if 'closedStart' not in RFdef.keys(): RFdef['closedStart']=False
+        if 'closedEnd' not in RFdef.keys(): RFdef['closedEnd']=False
+        
+    def setFRoptions(self,RF,RFdef):
+        '''Set optional attributes of RF rebar family that has been defined in dictionary RFdef
+        '''
+        if 'gapStart' in RFdef.keys(): RF.gapStart=RFdef['gapStart']
+        if 'gapEnd' in RFdef.keys(): RF.gapEnd=RFdef['gapEnd']
+        if 'extrShapeStart' in RFdef.keys(): RF.extrShapeStart=RFdef['extrShapeStart']
+        if 'extrShapeEnd' in RFdef.keys(): RF.extrShapeEnd=RFdef['extrShapeEnd']
+        if 'fixLengthStart' in RFdef.keys(): RF.fixLengthStart=RFdef['fixLengthStart']
+        if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
+        if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
+        
     def getVdirTransv(self):
         vdirTr=Vector(math.cos(math.radians(self.angTrns)),math.sin(math.radians(self.angTrns)))
         return vdirTr
@@ -227,13 +273,28 @@ The data of the family is given as a dictionary of type:
         startP,trns_top=self.getTransvTopPnts(self.getIncrWidth())
         return trns_top
 
+    def getPntsPlan(self):
+        if not self.anchPtPlan:
+            lmsg.error('the point to anchor the plan view (anchPlan) is not defined')
+        else:
+            pl_xmin_ymin=self.anchPtPlan
+            pl_xmax_ymin=pl_xmin_ymin+Vector(self.width,0)
+            pl_xmax_ymax=pl_xmax_ymin+Vector(0,self.length)
+            if not self.slopeEdge:
+                pl_xmin_ymax=pl_xmin_ymin+Vector(0,self.length)
+            else:
+                pl_xmin_ymax=pl_xmin_ymin+Vector(-self.slopeEdge*self.length,self.length)
+            return pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax
+        
+            
     def drawBottomTransvRF(self):
         ''' Draw and return the bottom transverse rebar family '''
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         ln_bl,ln_br=self.getXmaxLongBottPnts()
         vdirLn=self.getVdirLong()
-        init_RFdef_vars(self.botTrnsRb)
-        check_position(self.botTrnsRb)
+        self.initRFdefVvars(self.botTrnsRb)
+        self.checkPosition(self.botTrnsRb)
+        self.checkId(self.botTrnsRb)
         lstPtsConcrSect=[tr_bl,tr_br]
         if self.botTrnsRb['closedStart'] or self.botTrnsRb['closedEnd']: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         if self.botTrnsRb['closedStart']: lstPtsConcrSect.insert(0,tr_tl)
@@ -249,7 +310,7 @@ The data of the family is given as a dictionary of type:
             rightSideSectBars=False,
             position=self.botTrnsRb['position'],
             )
-        set_FR_options(RF=tr_bot_rf,RFdef=self.botTrnsRb)
+        self.setFRoptions(RF=tr_bot_rf,RFdef=self.botTrnsRb)
         tr_bot_rf.createLstRebar()
         tr_bot_rf.drawPolySectBars()
         tr_bot_rf.drawLstRebar()
@@ -260,8 +321,9 @@ The data of the family is given as a dictionary of type:
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         vdirLn=self.getVdirLong()
-        init_RFdef_vars(self.topTrnsRb)
-        check_position(self.topTrnsRb)
+        self.initRFdefVvars(self.topTrnsRb)
+        self.checkPosition(self.topTrnsRb)
+        self.checkId(self.topTrnsRb)
         lstPtsConcrSect=[tr_tl,tr_tr]
         if self.topTrnsRb['closedStart'] or self.topTrnsRb['closedEnd']: tr_bl,tr_br=self.getYmaxTransvBottPnts()
         if self.topTrnsRb['closedStart']: lstPtsConcrSect.insert(0,tr_bl)
@@ -279,7 +341,7 @@ The data of the family is given as a dictionary of type:
             gapEnd=0,
             position=self.topTrnsRb['position'],
             )
-        set_FR_options(RF=tr_top_rf,RFdef=self.topTrnsRb)    
+        self.setFRoptions(RF=tr_top_rf,RFdef=self.topTrnsRb)    
         tr_top_rf.createLstRebar()
         tr_top_rf.drawPolySectBars()
         tr_top_rf.drawLstRebar()
@@ -291,8 +353,9 @@ The data of the family is given as a dictionary of type:
         ln_bl,ln_br=self.getXmaxLongBottPnts()
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         vdirTrBott=(tr_br-tr_bl).normalize()
-        init_RFdef_vars(self.botLnRb)
-        check_position(self.botLnRb)
+        self.initRFdefVvars(self.botLnRb)
+        self.checkPosition(self.botLnRb)
+        self.checkId(self.botLnRb)
         if self.slopeEdge:
             fromExtPt=self.getTransitionBottPnt()
         else:
@@ -326,7 +389,7 @@ The data of the family is given as a dictionary of type:
             gapEnd=0,
             position=self.botLnRb['position'],
            )
-        set_FR_options(RF=ln_bot_rf,RFdef=self.botLnRb)
+        self.setFRoptions(RF=ln_bot_rf,RFdef=self.botLnRb)
         ln_bot_rf.createLstRebar()
         ln_bot_rf.drawPolySectBars()
         ln_bot_rf.drawLstRebar()
@@ -337,8 +400,9 @@ The data of the family is given as a dictionary of type:
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         vdirTrTop=(tr_tr-tr_tl).normalize()
-        init_RFdef_vars(self.topLnRb)
-        check_position(self.topLnRb)  
+        self.initRFdefVvars(self.topLnRb)
+        self.checkPosition(self.topLnRb)  
+        self.checkId(self.topLnRb)  
         if self.slopeEdge:
             fromExtPt=self.getTransitionTopPnt()
         else:
@@ -372,7 +436,7 @@ The data of the family is given as a dictionary of type:
             gapEnd=0,
             position=self.topLnRb['position'],
             )
-        set_FR_options(RF=ln_top_rf,RFdef=self.topLnRb)
+        self.setFRoptions(RF=ln_top_rf,RFdef=self.topLnRb)
         ln_top_rf.createLstRebar()
         ln_top_rf.drawPolySectBars()
         ln_top_rf.drawLstRebar()
@@ -419,7 +483,7 @@ The data of the family is given as a dictionary of type:
             gapEnd=0,
             position=self.botLnRb['position'],
            )
-        set_FR_options(RF=ln_bot_rf,RFdef=self.botLnRb)
+        self.setFRoptions(RF=ln_bot_rf,RFdef=self.botLnRb)
         ln_bot_rf.createLstRebar()
         ln_bot_rf.drawPolySectBars()
         ln_bot_rf.drawLstRebar()
@@ -466,12 +530,136 @@ The data of the family is given as a dictionary of type:
             gapEnd=0,
             position=self.topLnRb['position'],
             )
-        set_FR_options(RF=ln_top_rf,RFdef=self.topLnRb)
+        self.setFRoptions(RF=ln_top_rf,RFdef=self.topLnRb)
         ln_top_rf.createLstRebar()
         ln_top_rf.drawPolySectBars()
         ln_top_rf.drawLstRebar()
         return ln_top_rf
     
+    def drawSideXminRF(self):
+        ''' Draw and return the side refinforcement in face Xmin'''
+        pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
+        tr_bl,tr_br=self.getYmaxTransvBottPnts()
+        tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+        vDir=(tr_tl-tr_bl).normalize()
+        self.initRFdefVvars(self.sideXminRb)
+        self.checkPosition(self.sideXminRb)
+        self.checkId(self.sideXminRb)
+        if 'coverSectBars' in self.sideXminRb.keys():
+            coverSectBars=self.sideXminRb['coverSectBars']
+        else:
+            coverSectBars=self.reinfCfg.cover
+        side_xmin_rf=rb.rebarFamily(
+            reinfCfg=self.reinfCfg,
+            identifier=self.sideXminRb['id'],
+            diameter=self.sideXminRb['fi'],
+            nmbBars=self.sideXminRb['nmbBars'],
+            lstPtsConcrSect=[pl_xmin_ymin,pl_xmin_ymax],
+            rightSideCover=True,
+            fromToExtPts=[tr_bl+self.sideXminRb['distRFstart']*vDir,tr_tl-self.sideXminRb['distRFend']*vDir],
+            coverSectBars=coverSectBars,
+            rightSideSectBars=True,
+            position=self.sideXminRb['position'],
+            )
+        self.setFRoptions(RF=side_xmin_rf,RFdef=self.sideXminRb)
+        side_xmin_rf.createLstRebar()
+        side_xmin_rf.drawPolySectBars()
+        side_xmin_rf.drawLstRebar()
+        return side_xmin_rf
+          
+    def drawSideXmaxRF(self):
+        ''' Draw and return the side refinforcement in face Xmax'''
+        pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
+        tr_bl,tr_br=self.getYmaxTransvBottPnts()
+        tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+        vDir=(tr_tr-tr_br).normalize()
+        self.initRFdefVvars(self.sideXmaxRb)
+        self.checkPosition(self.sideXmaxRb)
+        self.checkId(self.sideXmaxRb)
+        if 'coverSectBars' in self.sideXmaxRb.keys():
+            coverSectBars=self.sideXmaxRb['coverSectBars']
+        else:
+            coverSectBars=self.reinfCfg.cover
+        side_xmax_rf=rb.rebarFamily(
+            reinfCfg=self.reinfCfg,
+            identifier=self.sideXmaxRb['id'],
+            diameter=self.sideXmaxRb['fi'],
+            nmbBars=self.sideXmaxRb['nmbBars'],
+            lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax],
+            rightSideCover=False,
+            fromToExtPts=[tr_br+self.sideXmaxRb['distRFstart']*vDir,tr_tr-self.sideXmaxRb['distRFend']*vDir],
+            coverSectBars=coverSectBars,
+            rightSideSectBars=False,
+            position=self.sideXmaxRb['position'],
+            )
+        self.setFRoptions(RF=side_xmax_rf,RFdef=self.sideXmaxRb)
+        side_xmax_rf.createLstRebar()
+        side_xmax_rf.drawPolySectBars()
+        side_xmax_rf.drawLstRebar()
+        return side_xmax_rf
+          
+    def drawSideYminRF(self):
+        ''' Draw and return the side refinforcement in face Ymin'''
+        pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
+        ln_bl,ln_br=self.getXmaxLongBottPnts()
+        ln_tl,ln_tr=self.getXmaxLongTopPnts()
+        vDir=(ln_tl-ln_bl).normalize()
+        self.initRFdefVvars(self.sideYminRb)
+        self.checkPosition(self.sideYminRb)
+        self.checkId(self.sideYminRb)
+        if 'coverSectBars' in self.sideYminRb.keys():
+            coverSectBars=self.sideYminRb['coverSectBars']
+        else:
+            coverSectBars=self.reinfCfg.cover
+        side_ymin_rf=rb.rebarFamily(
+            reinfCfg=self.reinfCfg,
+            identifier=self.sideYminRb['id'],
+            diameter=self.sideYminRb['fi'],
+            nmbBars=self.sideYminRb['nmbBars'],
+            lstPtsConcrSect=[pl_xmin_ymin,pl_xmax_ymin],
+            rightSideCover=False,
+            fromToExtPts=[ln_bl+self.sideYminRb['distRFstart']*vDir,ln_tl-self.sideYminRb['distRFend']*vDir],
+            coverSectBars=coverSectBars,
+            rightSideSectBars=True,
+            position=self.sideYminRb['position'],
+            )
+        self.setFRoptions(RF=side_ymin_rf,RFdef=self.sideYminRb)
+        side_ymin_rf.createLstRebar()
+        side_ymin_rf.drawPolySectBars()
+        side_ymin_rf.drawLstRebar()
+        return side_ymin_rf
+          
+    def drawSideYmaxRF(self):
+        ''' Draw and return the side refinforcement in face Ymax'''
+        pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
+        ln_bl,ln_br=self.getXmaxLongBottPnts()
+        ln_tl,ln_tr=self.getXmaxLongTopPnts()
+        vDir=(ln_tr-ln_br).normalize()
+        self.initRFdefVvars(self.sideYmaxRb)
+        self.checkPosition(self.sideYmaxRb)
+        self.checkId(self.sideYmaxRb)
+        if 'coverSectBars' in self.sideYmaxRb.keys():
+            coverSectBars=self.sideYmaxRb['coverSectBars']
+        else:
+            coverSectBars=self.reinfCfg.cover
+        side_ymax_rf=rb.rebarFamily(
+            reinfCfg=self.reinfCfg,
+            identifier=self.sideYmaxRb['id'],
+            diameter=self.sideYmaxRb['fi'],
+            nmbBars=self.sideYmaxRb['nmbBars'],
+            lstPtsConcrSect=[pl_xmin_ymax,pl_xmax_ymax],
+            rightSideCover=True,
+            fromToExtPts=[ln_br+self.sideYmaxRb['distRFstart']*vDir,ln_tr-self.sideYmaxRb['distRFend']*vDir],
+            coverSectBars=coverSectBars,
+            rightSideSectBars=False,
+            position=self.sideYmaxRb['position'],
+            )
+        self.setFRoptions(RF=side_ymax_rf,RFdef=self.sideYmaxRb)
+        side_ymax_rf.createLstRebar()
+        side_ymax_rf.drawPolySectBars()
+        side_ymax_rf.drawLstRebar()
+        return side_ymax_rf
+          
     def drawStirrHoldingTransvSF(self):
         ''' Draw and retrurn the stirrup family that  holds the transverse top and bottom rebar families '''
         ln_bl,ln_br=self.getXminLongBottPnts()
@@ -603,9 +791,18 @@ The data of the family is given as a dictionary of type:
         p=Part.show(s)
         FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
         return s
+
+    def drawClosedPlanConcrView(self):
+        " Draw the concrete plan view (usually used when side reinforcement is defined) "
+        pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
+        s=Part.makePolygon([pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax,pl_xmin_ymin])
+        p=Part.show(s)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
+        return s
+        
       
 
-def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
+def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -630,6 +827,10 @@ def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtL
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
+    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
     :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
@@ -645,11 +846,11 @@ The data of the family is given as a dictionary of type:
     :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
-    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -658,6 +859,14 @@ The data of the family is given as a dictionary of type:
         lstRebFam+=[brick.drawBottomLongRF()]
     if topLnRb:
         lstRebFam+=[brick.drawTopLongRF()]
+    if sideXminRb:
+        lstRebFam+=[brick.drawSideXminRF()]
+    if sideXmaxRb:
+        lstRebFam+=[brick.drawSideXmaxRF()]
+    if sideYminRb:
+        lstRebFam+=[brick.drawSideYminRF()]
+    if sideYmaxRb:
+        lstRebFam+=[brick.drawSideYmaxRF()]
     if lstStirrHoldTrReinf:
         lstStirrFam+=[brick.drawStirrHoldingTransvSF()]
     if lstStirrHoldLnReinf:
@@ -666,10 +875,12 @@ The data of the family is given as a dictionary of type:
         brick.drawClosedTransvConcrSectYmax()
     if drawConcrLnSect:
         brick.drawClosedLongConcrSectXmax()
+    if drawPlan:
+        brick.drawClosedPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
-    return lstRebFam,lstStirrFam
+    return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
+def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -694,6 +905,10 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
+    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
     :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
@@ -711,11 +926,12 @@ The data of the family is given as a dictionary of type:
     :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
-    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+       :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -724,14 +940,24 @@ The data of the family is given as a dictionary of type:
         lstRebFam+=[brick.drawBottomLongRF()]
     if topLnRb:
         lstRebFam+=[brick.drawTopLongRF()]
+    if sideXminRb:
+        lstRebFam+=[brick.drawSideXminRF()]
+    if sideXmaxRb:
+        lstRebFam+=[brick.drawSideXmaxRF()]
+    if sideYminRb:
+        lstRebFam+=[brick.drawSideYminRF()]
+    if sideYmaxRb:
+        lstRebFam+=[brick.drawSideYmaxRF()]
     if drawConcrTrSect:
         brick.drawClosedTransvConcrSectYmax()
     if drawConcrLnSect:
         brick.drawClosedLongConcrSectXmax()
+    if drawPlan:
+        brick.drawClosedPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
-    return lstRebFam,lstStirrFam
+    return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
+def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness with an sloped edge 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -756,6 +982,10 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
+    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
     :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
 The data of the family is given as a dictionary of type:
             {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
@@ -772,11 +1002,14 @@ The data of the family is given as a dictionary of type:
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :iparam slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
+    :param drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -787,6 +1020,14 @@ The data of the family is given as a dictionary of type:
     if topLnRb:
         lstRebFam+=[brick.drawTopLongRF()]
         lstRebFam+=[brick.drawTopVarLongRF()]
+    if sideXminRb:
+        lstRebFam+=[brick.drawSideXminRF()]
+    if sideXmaxRb:
+        lstRebFam+=[brick.drawSideXmaxRF()]
+    if sideYminRb:
+        lstRebFam+=[brick.drawSideYminRF()]
+    if sideYmaxRb:
+        lstRebFam+=[brick.drawSideYmaxRF()]
     if drawConcrTrSect:
         brick.drawClosedTransvConcrSectYmax()
     if drawConcrLnSect:
@@ -794,10 +1035,12 @@ The data of the family is given as a dictionary of type:
             brick.drawClosedLongConcrSectXmax()
         else:
             brick.drawClosedLongConcrSectXmin()
+    if drawPlan:
+        brick.drawClosedPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
-    return lstRebFam,lstStirrFam
+    return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1):
+def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick with an sloped edge and sloped faces
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -825,10 +1068,18 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
+    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
+    :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
+    :param drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
      '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -841,293 +1092,28 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
         lstRebFam+=[brick.drawTopVarLongRF()]
     if drawConcrTrSect:
         brick.drawClosedTransvConcrSectYmax()
+    if sideXminRb:
+        lstRebFam+=[brick.drawSideXminRF()]
+    if sideXmaxRb:
+        lstRebFam+=[brick.drawSideXmaxRF()]
+    if sideYminRb:
+        lstRebFam+=[brick.drawSideYminRF()]
+    if sideYmaxRb:
+        lstRebFam+=[brick.drawSideYmaxRF()]
     if drawConcrLnSect:
         if slopeEdge>0:
             brick.drawClosedLongConcrSectXmax()
         else:
             brick.drawClosedLongConcrSectXmin()
+    if drawPlan:
+        brick.drawClosedPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
-    return lstRebFam,lstStirrFam
+    return lstRebFam,lstStirrFam,brick.startId
 
-def closed_slab(width,length,thickness,botTrnsRb,topTrnsRb,botLnRb,topLnRb,anchPtTrnsSect,anchPtLnSect,reinfCfg,drawConcrTrSect=True,drawConcrLnSect=True,factGap=1,coverLat=None,startId=1):
-    '''Typical reinforcement arrangement of a closed slab
-    Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
-
-    :param width: dimension of the slab in the direction of the transverse rebars
-    :param length: dimension of the slab in the direction of the longitudinal rebars
-    :param thickness: thickness of the slab
-    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family(if not defined, startId is used), 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the slab (as it is drawn in the section) (0 if not defined),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the slab (as it is drawn in the section) (0 if not defined)
-    :param topTrnsRb: same for the top transverse rebar family
-    :param botLnRb: same for the bottom longitudinal rebar family
-    :param topLnRb: same for the top longitudinal rebar family
-    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
-    :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
-    :param reinfCfg: instance of the reinfConf class
-    :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
-    :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
-    :param factGap: the gapSart and gapEnd are made equal to factGap*cover
-    :param coverLat: lateral cover (if None, reinfCfg.cover is used)
-    '''
-    cover=reinfCfg.cover
-    if not coverLat:
-        coverLat=reinfCfg.cover
-   # Concrete points of the transverse section
-    tr_bl=anchPtTrnsSect
-    tr_tl=tr_bl+Vector(0,thickness)
-    tr_tr=tr_tl+Vector(width,0)
-    tr_br= tr_bl+Vector(width,0)
-    # Concrete points of the longitudinal section
-    ln_bl=anchPtLnSect
-    ln_tl=ln_bl+Vector(0,thickness)
-    ln_tr=ln_tl+Vector(length,0)
-    ln_br= ln_bl+Vector(length,0)
-    # Families of rebars
-    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
-    # transverse bottom rebar family
-    init_RFdef_vars(botTrnsRb)
-    tr_bot_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=botTrnsRb['id'],
-        diameter=botTrnsRb['fi'],
-        spacing=botTrnsRb['s'],
-        lstPtsConcrSect=[tr_tl,tr_bl,tr_br,tr_tr],
-        lstCover=[coverLat,cover,coverLat],
-        rightSideCover=False,
-        vectorLRef=Vector(-0.15,-0.35),
-        fromToExtPts=[ln_bl+Vector(botTrnsRb['distRFstart'],0),ln_br-Vector(botTrnsRb['distRFend'],0)],
-        rightSideSectBars=False,
-        gapStart=-factGap*reinfCfg.cover,
-        gapEnd=-factGap*reinfCfg.cover,
-        position='good',
-        )
-    set_FR_options(RF=tr_bot_rf,RFdef=botTrnsRb)
-    tr_bot_rf.createLstRebar()
-    tr_bot_rf.drawPolySectBars()
-    tr_bot_rf.drawLstRebar()
-    # transverse top rebar family
-    init_RFdef_vars(topTrnsRb)
-    tr_top_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=topTrnsRb['id'],
-        diameter=topTrnsRb['fi'],
-        spacing=topTrnsRb['s'],
-        lstPtsConcrSect=[tr_bl,tr_tl,tr_tr,tr_br],
-        lstCover=[coverLat,cover,coverLat],
-        rightSideCover=True,
-        vectorLRef=Vector(-0.15,0.35),
-        fromToExtPts=[ln_tl+Vector(topTrnsRb['distRFstart'],0),ln_tr-Vector(topTrnsRb['distRFend'],0)],
-        rightSideSectBars=True,
-        gapStart=-factGap*reinfCfg.cover,
-        gapEnd=-factGap*reinfCfg.cover,
-        position='poor',
-         )
-    set_FR_options(RF=tr_top_rf,RFdef=topTrnsRb)
-    tr_top_rf.createLstRebar()
-    tr_top_rf.drawPolySectBars()
-    tr_top_rf.drawLstRebar()
-    # longitudinal bottom rebar family
-    init_RFdef_vars(botLnRb)
-    ln_bot_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=botLnRb['id'],
-        diameter=botLnRb['fi'],
-        spacing=botLnRb['s'],
-        lstPtsConcrSect=[ln_tl,ln_bl,ln_br,ln_tr],
-        rightSideCover=False,
-        lstCover=[coverLat,reinfCfg.cover+botTrnsRb['fi'],coverLat],
-        vectorLRef=Vector(-0.3,-0.4),
-        fromToExtPts=[tr_bl+Vector(botLnRb['distRFstart'],0),tr_br-Vector(botLnRb['distRFend'],0)],
-        coverSectBars=reinfCfg.cover+botTrnsRb['fi'],
-        rightSideSectBars=False,
-        gapStart=-factGap*reinfCfg.cover,
-        gapEnd=-factGap*reinfCfg.cover,
-        position='good',
-        )
-    set_FR_options(RF=ln_bot_rf,RFdef=botLnRb)
-    ln_bot_rf.createLstRebar()
-    ln_bot_rf.drawPolySectBars()
-    ln_bot_rf.drawLstRebar()
-    # Concrete transverse cross-section
-    # longitudinal top rebar family
-    init_RFdef_vars(topLnRb)
-    ln_top_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=topLnRb['id'],
-        diameter=topLnRb['fi'],
-        spacing=topLnRb['s'],
-        lstPtsConcrSect=[ln_bl,ln_tl,ln_tr,ln_br],
-        rightSideCover=True,
-        lstCover=[coverLat,reinfCfg.cover+topTrnsRb['fi'],coverLat],
-        vectorLRef=Vector(-0.3,0.4),
-        fromToExtPts=[tr_tl+Vector(topLnRb['distRFstart'],0),tr_tr-Vector(topLnRb['distRFend'],0)],
-        coverSectBars=reinfCfg.cover+topTrnsRb['fi'],
-        rightSideSectBars=True,
-        gapStart=-factGap*reinfCfg.cover,
-        gapEnd=-factGap*reinfCfg.cover,
-        position='poor',
-         )
-    set_FR_options(RF=ln_top_rf,RFdef=topLnRb)
-    ln_top_rf.createLstRebar()
-    ln_top_rf.drawPolySectBars()
-    ln_top_rf.drawLstRebar()
-    if drawConcrTrSect:
-        s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    if drawConcrLnSect:
-        s=Part.makePolygon([ln_bl,ln_tl,ln_tr,ln_br,ln_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    FreeCAD.ActiveDocument.recompute()
-    return [tr_bot_rf,tr_top_rf,ln_bot_rf,ln_top_rf]
     
 
-def wall(height,length,thickness,leftVertRb,rightVertRb,leftHorRb,rightHorRb,anchPtVertSect,anchPtHorSect,reinfCfg,drawConcrVertSect=True,drawConcrHorSect=True,startId=1):
-    '''Typical reinforcement arrangement of a closed slab
-    Nomenclature: l-left, r-right, vert-vertical, hor-horizontal
 
-    :param height: dimension of the wall in the direction of the vertical rebars
-    :param length: dimension of the wall in the direction of the horizontal rebars
-    :param thickness: thickness of the wall
-    :param leftVertRb: data for left vertical rebar family expressed as a dictionary of type {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1}, where 'id' is the identificacion of the rebar family (if not defined, startId is used), 'fi' is the diameter of the rebar, 's' is the spacement, 'distRFstart' is the distance from the first rebar of the family to the left extremity of the wall (as it is drawn in the section),   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the wall (as it is drawn in the section)
-    :param rightVertRb: same for the right vertical rebar family
-    :param leftHorRb: same for the left horizontal rebar family
-    :param rightHorRb: same for the right horizontal rebar family
-    :param anchPtVertSect: anchor point to place the left left corner of the concrete vertical cross-section
-    :param anchPtHorSect:  anchor point to place the left left corner of the concrete horizontal cross-section
-    :param reinfCfg: instance of the reinfConf class
-    :param drawConcrVertSect: 'Y' to draw the vertical concrete cross-section  (defaults to 'Y')
-    :param drawConcrHorSect: 'Y' to draw the horizontal concrete cross-section  (defaults to 'Y')
-    '''
-           
-    # Concrete points of the vertical section
-    vert_bl=anchPtVertSect
-    vert_tl=vert_bl+Vector(0,height)
-    vert_tr=vert_tl+Vector(thickness,0)
-    vert_br= vert_bl+Vector(thickness,0)
-    # Concrete points of the horizontal section
-    hor_bl=anchPtHorSect
-    hor_tl=hor_bl+Vector(0,length)
-    hor_tr=hor_tl+Vector(thickness,0)
-    hor_br= hor_bl+Vector(thickness,0)
-    # Families of rebars
-    check_id([botTrnsRb,topTrnsRb,botLnRb,topLnRb],startId)
-    # vertical left rebar family
-    init_RFdef_vars(leftVertRb)
-    vert_left_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=leftVertRb['id'],
-        diameter=leftVertRb['fi'],
-        spacing=leftVertRb['s'],
-        lstPtsConcrSect=[vert_bl,vert_tl,vert_tr],
-        rightSideCover=True,
-        vectorLRef=Vector(-0.3,-0.4),
-        fromToExtPts=[hor_bl+Vector(0,leftVertRb['distRFstart']),hor_tl-Vector(0,leftVertRb['distRFend'])],
-        rightSideSectBars=True,
-        )
-    set_FR_options(RF=vert_left_rf,RFdef=leftVertRb)
-    vert_left_rf.createLstRebar()
-    vert_left_rf.drawPolySectBars()
-    vert_left_rf.drawLstRebar()
-    # vertical right rebar family
-    init_RFdef_vars(rightVertRb)
-    vert_right_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=rightVertRb['id'],
-        diameter=rightVertRb['fi'],
-        spacing=rightVertRb['s'],
-        lstPtsConcrSect=[vert_br,vert_tr,vert_tl],
-        rightSideCover=False,
-        vectorLRef=Vector(-0.3,0.4),
-        fromToExtPts=[hor_br+Vector(0,rightVertRb['distRFstart']),hor_tr-Vector(0,rightVertRb['distRFend'])],
-        rightSideSectBars=False,
-        position='good',
-        )
-    set_FR_options(RF=vert_right_rf,RFdef=rightVertRb)
-    vert_right_rf.createLstRebar()
-    vert_right_rf.drawPolySectBars()
-    vert_right_rf.drawLstRebar()
-    # horizontal left rebar family
-    init_RFdef_vars(leftHorRb)
-    hor_left_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=leftHorRb['id'],
-        diameter=leftHorRb['fi'],
-        spacing=leftHorRb['s'],
-        lstPtsConcrSect=[hor_br,hor_bl,hor_tl,hor_tr],
-        rightSideCover=True,
-        lstCover=[reinfCfg.cover,reinfCfg.cover+leftVertRb['fi'],reinfCfg.cover],
-        vectorLRef=Vector(-0.3,-0.4),
-        fromToExtPts=[vert_bl+Vector(0,leftHorRb['distRFstart']),vert_tl-Vector(0,leftHorRb['distRFend'])],
-        coverSectBars=reinfCfg.cover+leftVertRb['fi'],
-        rightSideSectBars=True,
-        position='good',
-        )
-    set_FR_options(RF=hor_left_rf,RFdef=leftHorRb)
-    hor_left_rf.createLstRebar()
-    hor_left_rf.drawPolySectBars()
-    hor_left_rf.drawLstRebar()
-    # horizontal right rebar family
-    init_RFdef_vars(rightHorRb)
-    hor_right_rf=rb.rebarFamily(
-        reinfCfg=reinfCfg,
-        identifier=rightHorRb['id'],
-        diameter=rightHorRb['fi'],
-        spacing=rightHorRb['s'],
-        lstPtsConcrSect=[hor_bl,hor_br,hor_tr,hor_tl],
-        rightSideCover=False,
-        lstCover=[reinfCfg.cover,reinfCfg.cover+rightVertRb['fi'],reinfCfg.cover],
-        vectorLRef=Vector(0.3,0.4),
-        fromToExtPts=[vert_br+Vector(0,rightHorRb['distRFstart']),vert_tr-Vector(0,rightHorRb['distRFend'])],
-        coverSectBars=reinfCfg.cover+rightVertRb['fi'],
-        rightSideSectBars=False,
-        position='good',
-        )
-    set_FR_options(RF=hor_right_rf,RFdef=rightHorRb)
-    hor_right_rf.createLstRebar()
-    hor_right_rf.drawPolySectBars()
-    hor_right_rf.drawLstRebar()
-    # Concrete vertical cross-section
-    if drawConcrVertSect:
-        s=Part.makePolygon([vert_bl,vert_tl,vert_tr,vert_br,vert_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    if drawConcrHorSect:
-        s=Part.makePolygon([hor_bl,hor_tl,hor_tr,hor_br,hor_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-    FreeCAD.ActiveDocument.recompute()
-    return [vert_left_rf,vert_right_rf,hor_left_rf,hor_right_rf]
-    
-def set_FR_options(RF,RFdef):
-    '''Set optional attributes of RF rebar family that has been defined in dictionary RFdef
-    '''
-    if 'gapStart' in RFdef.keys(): RF.gapStart=RFdef['gapStart']
-    if 'gapEnd' in RFdef.keys(): RF.gapEnd=RFdef['gapEnd']
-    if 'extrShapeStart' in RFdef.keys(): RF.extrShapeStart=RFdef['extrShapeStart']
-    if 'extrShapeEnd' in RFdef.keys(): RF.extrShapeEnd=RFdef['extrShapeEnd']
-    if 'fixLengthStart' in RFdef.keys(): RF.fixLengthStart=RFdef['fixLengthStart']
-    if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
-    if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
-
-def init_RFdef_vars(RFdef):
-    ''' Set default values of 'distRFstart' and 'distRFend' if not defined in dictionary RFdef'''
-    if 'distRFstart' not in RFdef.keys(): RFdef['distRFstart']=0.0
-    if 'distRFend' not in RFdef.keys(): RFdef['distRFend']=0.0
-    if 'closedStart' not in RFdef.keys(): RFdef['closedStart']=False
-    if 'closedEnd' not in RFdef.keys(): RFdef['closedEnd']=False
-
-def check_position(RFdef):
-    if 'position' not in RFdef.keys(): lmsg.error("can't guess position of rebar family id:"+ RFdef['id']+ " 'position' key, good or poor, must be defined")
         
-def check_id(lstRFdef, startId):
-    ''' Checks if 'id' has been defined for each of the dictionaries in list lstRFdef and, otherwise,
-       sets the value of 'id' based on startId'''
-    for RFdef in lstRFdef:
-        if RFdef:
-             if 'id' not in RFdef.keys() or not RFdef['id']:
-                 RFdef['id']=str(startId)
-                 startId+=1
              
     
 

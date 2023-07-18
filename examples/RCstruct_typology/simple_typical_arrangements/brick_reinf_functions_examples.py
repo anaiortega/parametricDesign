@@ -42,7 +42,7 @@ lstRebarFam=list()
 lstStirrupFam=list()
 
 # orthohedron
-lstRebarFam1,lstStirrupFam1=trcm.constant_thickness_brick_reinf(
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(
     width=width,
     length=length,
     thickness=thickness,
@@ -69,7 +69,7 @@ botTrnsRb['id']=None; topTrnsRb['id']=None
 botLnRb['id']=None;topLnRb['id']=None
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
-lstRebarFam2,lstStirrupFam2=trcm.sloped_faces_brick_reinf(
+lstRebarFam2,lstStirrupFam2,newStartId=trcm.sloped_faces_brick_reinf(
     width=width,
     length=length,
     thickness=thickness,
@@ -97,7 +97,7 @@ botTrnsRb['id']=None; topTrnsRb['id']=None
 botLnRb['id']=None;topLnRb['id']=None
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
-lstRebarFam3,lstStirrupFam3=trcm.sloped_edge_constant_thickness_brick_reinf(
+lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick_reinf(
    width=width,
     length=length,
     thickness=thickness,
@@ -127,7 +127,7 @@ botLnRb['closedStart']=True; botLnRb['closedEnd']=True
 topLnRb['closedStart']=True; topLnRb['closedEnd']=True
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
-lstRebarFam4,lstStirrupFam4=trcm.sloped_edge_sloped_faces_brick_reinf(
+lstRebarFam4,lstStirrupFam4,newStartId=trcm.sloped_edge_sloped_faces_brick_reinf(
     width=width,
     length=length,
     thickness=thickness,
