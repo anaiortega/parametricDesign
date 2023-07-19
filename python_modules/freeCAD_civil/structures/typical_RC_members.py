@@ -65,11 +65,12 @@ The data of the family is given as a dictionary of type:
     :ivar drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
     :ivar drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
     :ivar anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :ivar angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
     :ivar drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
     :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
 
-    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
+    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
         self.width=width
         self.length=length
         self.thickness=thickness
@@ -94,6 +95,7 @@ The data of the family is given as a dictionary of type:
         self.drawConcrTrSect=drawConcrTrSect
         self.drawConcrLnSect=drawConcrLnSect
         self.anchPtPlan=anchPtPlan
+        self.angPlan=angPlan
         self.drawPlan=drawPlan
         self.startId=startId
         
@@ -208,7 +210,6 @@ The data of the family is given as a dictionary of type:
         tr_tl,tr_tr=self.getTransvTopPnts(maxWidth)
         return tr_tl,tr_tr
 
-
     def getLongBottPnts(self,x):
         ''' return the left and right bottom points of the longtudinal concrete 
         section in function of the X coordinate (X in transverse direction)'''
@@ -277,13 +278,17 @@ The data of the family is given as a dictionary of type:
         if not self.anchPtPlan:
             lmsg.error('the point to anchor the plan view (anchPlan) is not defined')
         else:
+            angP=math.radians(self.angPlan)
+            vtr=Vector(math.cos(angP),math.sin(angP))
+            vln=Vector(-vtr.y,vtr.x)
             pl_xmin_ymin=self.anchPtPlan
-            pl_xmax_ymin=pl_xmin_ymin+Vector(self.width,0)
-            pl_xmax_ymax=pl_xmax_ymin+Vector(0,self.length)
+            pl_xmax_ymin=pl_xmin_ymin+self.width*vtr
+            pl_xmax_ymax=pl_xmax_ymin+self.length*vln
             if not self.slopeEdge:
-                pl_xmin_ymax=pl_xmin_ymin+Vector(0,self.length)
+                pl_xmin_ymax=pl_xmin_ymin+self.length*vln
             else:
-                pl_xmin_ymax=pl_xmin_ymin+Vector(-self.slopeEdge*self.length,self.length)
+                pl_xmin_ymax=pl_xmax_ymax-(self.width+self.length*self.slopeEdge)*vtr
+            print(pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax)
             return pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax
         
             
@@ -802,7 +807,7 @@ The data of the family is given as a dictionary of type:
         
       
 
-def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
+def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -847,10 +852,11 @@ The data of the family is given as a dictionary of type:
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
-    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+   :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
+   :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -880,7 +886,7 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
+def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -927,11 +933,12 @@ The data of the family is given as a dictionary of type:
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
     :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
-       :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
+    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -957,7 +964,7 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
+def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness with an sloped edge 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -1005,11 +1012,12 @@ The data of the family is given as a dictionary of type:
     :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
     :param drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
     :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
@@ -1040,7 +1048,7 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,drawPlan=False,startId=1):
+def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick with an sloped edge and sloped faces
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -1075,11 +1083,12 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
     :param drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
     :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
      '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,drawPlan=drawPlan,startId=startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,trSlopeBottFace=trSlopeBottFace,trSlopeTopFace=trSlopeTopFace,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
