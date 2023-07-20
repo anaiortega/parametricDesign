@@ -1235,3 +1235,36 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
             stFam.drawLnRebars(vTranslation)
 
 
+def drawProjectedRebar(reinfCfg,pntsRebar,pntsDim,text,vLRef=Vector(0.3,0.3)):
+    ''' Draws a projected rebar defined by two points (for example in a plan view
+
+    :param reinfCfg: config
+    :param pntsRebar: [pt1,pt2] points that define the extemities of the rebar
+    :param pntsDim: [pt1,pt2] points that define the extemities of the dimension line
+    :param text: text to label
+    :param vLRef: reference line
+    '''
+    vDir=(pntsRebar[1]-pntsRebar[0]).normalize()
+    cover=reinfCfg.cover
+    hText=reinfCfg.texSize
+    l=Part.makeLine(pntsRebar[0]+cover*vDir,pntsRebar[1]-cover*vDir)
+    p=Part.show(l)
+    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorRebars
+    dim.dim_lst_pnts(lstPnts=pntsDim,spacDimLine=0)
+    pCentCirc=geom_utils.int2lines(pntsRebar[0],pntsRebar[1],pntsDim[0],pntsDim[1])
+    print(pCentCirc)
+    pl=FreeCAD.Placement()
+    pl.move(pCentCirc)
+    c=Draft.make_circle(radius=hText/2,placement=pl)
+    FreeCADGui.ActiveDocument.getObject(c.Name).LineColor = cfg.colorRefLines
+    signo=1.0*vLRef.x/abs(vLRef.x)
+    p1=pCentCirc+vLRef
+    p2=p1+Vector(signo*hText,0)
+    pText=p2 + Vector(signo*hText/2.0,-hText/2.0)
+    w=Draft.makeWire([pCentCirc,p1,p2])
+    FreeCADGui.ActiveDocument.getObject(w.Name).LineColor = cfg.colorRefLines
+    if vLRef.x >0:
+        justif="Left" ; txtColor=cfg.colorTextLeft
+    else:
+        justif="Right" ; txtColor=cfg.colorTextRight
+    dt.put_text_in_pnt(text=text,point=pText,hText=hText,color=txtColor,justif=justif)

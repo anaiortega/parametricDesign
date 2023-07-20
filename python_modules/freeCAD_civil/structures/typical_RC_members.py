@@ -8,8 +8,6 @@ from FreeCAD import Vector
 import FreeCADGui
 from misc_utils import log_messages as lmsg
 
-colorConcrete=(0.00,1.00,1.00) #cyan
-
 class genericBrickReinf(object):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
@@ -62,11 +60,11 @@ The data of the family is given as a dictionary of type:
     :ivar trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :ivar trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :ivar slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
-    :ivar drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
-    :ivar drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
+    :ivar drawConcrTrSect: True if a closed concrete transverse cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
+    :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
     :ivar anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
     :ivar angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :ivar drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+    :ivar drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
     :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
 
@@ -288,10 +286,8 @@ The data of the family is given as a dictionary of type:
                 pl_xmin_ymax=pl_xmin_ymin+self.length*vln
             else:
                 pl_xmin_ymax=pl_xmax_ymax-(self.width+self.length*self.slopeEdge)*vtr
-            print(pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax)
             return pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax
-        
-            
+              
     def drawBottomTransvRF(self):
         ''' Draw and return the bottom transverse rebar family '''
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
@@ -758,53 +754,91 @@ The data of the family is given as a dictionary of type:
             hold_ln_sf.drawLnRebars()
             return hold_ln_sf
 
-    def drawClosedTransvConcrSectYmax(self):
+    def drawTransvConcrSectYmax(self):
         ''' Draw concrete transverse cross-section
         placed at maximum Y coordinate'''
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
-        s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-        return s
+        lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
+        if self.drawConcrTrSect == True: #closed section
+            s=Part.makePolygon(lstPnts)
+            p=Part.show(s)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        elif  type(self.drawConcrTrSect) == list:
+            for n_edge in self.drawConcrTrSect:
+                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
+                p=Part.show(l)
+                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        else:
+            lmsg.error(" 'drawConcrTrSect' must be 'True' for closed section or a list of the edges you want draw")
 
-    def drawClosedTransvConcrSectYmin(self):
+    def drawTransvConcrSectYmin(self):
         ''' Draw concrete transverse cross-section
         placed at minimum Y coordinate'''
         tr_tl,tr_tr=self.getYminTransvTopPnts()
         tr_bl,tr_br=self.getYminTransvBottPnts()
-        s=Part.makePolygon([tr_bl,tr_tl,tr_tr,tr_br,tr_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-        return s
+        lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
+        if self.drawConcrTrSect == True: #closed section
+            s=Part.makePolygon(lstPnts)
+            p=Part.show(s)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        elif  type(self.drawConcrTrSect) == list:
+            for n_edge in self.drawConcrTrSect:
+                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
+                p=Part.show(l)
+                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        else:
+            lmsg.error(" 'drawConcrTrSect' must be 'True' for closed section or a list of the edges you want draw")
 
-
-    def drawClosedLongConcrSectXmin(self):
+    def drawLongConcrSectXmin(self):
         ''' Draw the concrete longitudinal section at minimum X coordinate'''
         minXln_bl,minXln_br=self.getXminLongBottPnts()
         minXln_tl,minXln_tr=self.getXminLongTopPnts()
-        s=Part.makePolygon([minXln_bl,minXln_tl,minXln_tr,minXln_br,minXln_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-        return s
+        lstPnts=[minXln_bl,minXln_tl,minXln_tr,minXln_br,minXln_bl]
+        if self.drawConcrLnSect == True: #closed section
+            s=Part.makePolygon(lstPnts)
+            p=Part.show(s)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        elif  type(self.drawConcrLnSect) == list:
+            for n_edge in self.drawConcrLnSect:
+                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
+                p=Part.show(l)
+                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        else:
+            lmsg.error(" 'drawConcrLnSect' must be 'True' for closed section or a list of the edges you want draw")
       
-    def drawClosedLongConcrSectXmax(self):
+    def drawLongConcrSectXmax(self):
         ''' Draw the concrete longitudinal section at maximum X coordinate'''
         maxXln_bl,maxXln_br=self.getXmaxLongBottPnts()
         maxXln_tl,maxXln_tr=self.getXmaxLongTopPnts()
-        s=Part.makePolygon([maxXln_bl,maxXln_tl,maxXln_tr,maxXln_br,maxXln_bl])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-        return s
+        lstPnts=[maxXln_bl,maxXln_tl,maxXln_tr,maxXln_br,maxXln_bl]
+        if self.drawConcrLnSect == True: #closed section
+            s=Part.makePolygon(lstPnts)
+            p=Part.show(s)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        elif  type(self.drawConcrLnSect) == list:
+            for n_edge in self.drawConcrLnSect:
+                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
+                p=Part.show(l)
+                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        else:
+            lmsg.error(" 'drawConcrLnSect' must be 'True' for closed section or a list of the edges you want draw")
 
-    def drawClosedPlanConcrView(self):
+    def drawPlanConcrView(self):
         " Draw the concrete plan view (usually used when side reinforcement is defined) "
         pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
-        s=Part.makePolygon([pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax,pl_xmin_ymin])
-        p=Part.show(s)
-        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =colorConcrete
-        return s
-        
+        lstPnts=[pl_xmin_ymin,pl_xmin_ymax,pl_xmax_ymax,pl_xmax_ymin,pl_xmin_ymin]
+        if self.drawPlan == True: #closed section
+            s=Part.makePolygon(lstPnts)
+            p=Part.show(s)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        elif  type(self.drawPlan) == list:
+            for n_edge in self.drawPlan:
+                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
+                p=Part.show(l)
+                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
+        else:
+            lmsg.error(" 'drawPlan' must be 'True' for closed section or a list of the edges you want draw")
       
 
 def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
@@ -849,11 +883,12 @@ The data of the family is given as a dictionary of type:
                   'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
                   'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
     :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
-    :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
-    :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
+  (defaults to True)
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
-   :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-   :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+    :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
@@ -878,11 +913,11 @@ The data of the family is given as a dictionary of type:
     if lstStirrHoldLnReinf:
         lstStirrFam+=[brick.drawStirrHoldingLongSFf()]
     if drawConcrTrSect:
-        brick.drawClosedTransvConcrSectYmax()
+        brick.drawTransvConcrSectYmax()
     if drawConcrLnSect:
-        brick.drawClosedLongConcrSectXmax()
+        brick.drawLongConcrSectXmax()
     if drawPlan:
-        brick.drawClosedPlanConcrView()
+        brick.drawPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
@@ -930,11 +965,11 @@ The data of the family is given as a dictionary of type:
     :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
-    :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
-    :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
+  (defaults to True)
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
@@ -956,11 +991,11 @@ The data of the family is given as a dictionary of type:
     if sideYmaxRb:
         lstRebFam+=[brick.drawSideYmaxRF()]
     if drawConcrTrSect:
-        brick.drawClosedTransvConcrSectYmax()
+        brick.drawTransvConcrSectYmax()
     if drawConcrLnSect:
-        brick.drawClosedLongConcrSectXmax()
+        brick.drawLongConcrSectXmax()
     if drawPlan:
-        brick.drawClosedPlanConcrView()
+        brick.drawPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
@@ -1009,11 +1044,10 @@ The data of the family is given as a dictionary of type:
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :iparam slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
-    :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
-    :param drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
@@ -1037,14 +1071,14 @@ The data of the family is given as a dictionary of type:
     if sideYmaxRb:
         lstRebFam+=[brick.drawSideYmaxRF()]
     if drawConcrTrSect:
-        brick.drawClosedTransvConcrSectYmax()
+        brick.drawTransvConcrSectYmax()
     if drawConcrLnSect:
         if slopeEdge>0:
-            brick.drawClosedLongConcrSectXmax()
+            brick.drawLongConcrSectXmax()
         else:
-            brick.drawClosedLongConcrSectXmin()
+            brick.drawLongConcrSectXmin()
     if drawPlan:
-        brick.drawClosedPlanConcrView()
+        brick.drawPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
@@ -1081,10 +1115,10 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
     :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
     :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
-    :param drawConcrLnSect: True if the concrete longitudinal cross-section is drawn (defaults to True)
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the concrete plan view is drawn (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
      '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
@@ -1100,7 +1134,7 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
         lstRebFam+=[brick.drawTopLongRF()]
         lstRebFam+=[brick.drawTopVarLongRF()]
     if drawConcrTrSect:
-        brick.drawClosedTransvConcrSectYmax()
+        brick.drawTransvConcrSectYmax()
     if sideXminRb:
         lstRebFam+=[brick.drawSideXminRF()]
     if sideXmaxRb:
@@ -1111,11 +1145,11 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
         lstRebFam+=[brick.drawSideYmaxRF()]
     if drawConcrLnSect:
         if slopeEdge>0:
-            brick.drawClosedLongConcrSectXmax()
+            brick.drawLongConcrSectXmax()
         else:
-            brick.drawClosedLongConcrSectXmin()
+            brick.drawLongConcrSectXmin()
     if drawPlan:
-        brick.drawClosedPlanConcrView()
+        brick.drawPlanConcrView()
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
