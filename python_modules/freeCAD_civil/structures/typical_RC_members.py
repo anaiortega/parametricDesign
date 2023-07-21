@@ -300,12 +300,21 @@ The data of the family is given as a dictionary of type:
         if self.botTrnsRb['closedStart'] or self.botTrnsRb['closedEnd']: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         if self.botTrnsRb['closedStart']: lstPtsConcrSect.insert(0,tr_tl)
         if self.botTrnsRb['closedEnd']: lstPtsConcrSect.append(tr_tr)
+        if self.slopeEdge:
+            tr_bl2,tr_br2=self.getYminTransvBottPnts()
+            lstPtsConcrSect2=[tr_bl2,tr_br2]
+            if self.botTrnsRb['closedStart'] or self.botTrnsRb['closedEnd']: tr_tl2,tr_tr2=self.getYminTransvTopPnts()
+            if self.botTrnsRb['closedStart']: lstPtsConcrSect2.insert(0,tr_tl2)
+            if self.botTrnsRb['closedEnd']: lstPtsConcrSect2.append(tr_tr2)
+        else:
+            lstPtsConcrSect2=None
         tr_bot_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.botTrnsRb['id'],
             diameter=self.botTrnsRb['fi'],
             spacing=self.botTrnsRb['s'],
             lstPtsConcrSect=lstPtsConcrSect,
+            lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=False,
             fromToExtPts=[ln_bl+self.botTrnsRb['distRFstart']*vdirLn,ln_br-self.botTrnsRb['distRFend']*vdirLn],
             rightSideSectBars=False,
@@ -329,12 +338,21 @@ The data of the family is given as a dictionary of type:
         if self.topTrnsRb['closedStart'] or self.topTrnsRb['closedEnd']: tr_bl,tr_br=self.getYmaxTransvBottPnts()
         if self.topTrnsRb['closedStart']: lstPtsConcrSect.insert(0,tr_bl)
         if self.topTrnsRb['closedEnd']: lstPtsConcrSect.append(tr_br)
+        if self.slopeEdge:
+            tr_tl2,tr_tr2=self.getYminTransvTopPnts()
+            lstPtsConcrSect2=[tr_tl2,tr_tr2]
+            if self.topTrnsRb['closedStart'] or self.topTrnsRb['closedEnd']: tr_bl2,tr_br2=self.getYminTransvBottPnts()
+            if self.topTrnsRb['closedStart']: lstPtsConcrSect2.insert(0,tr_bl2)
+            if self.topTrnsRb['closedEnd']: lstPtsConcrSect2.append(tr_br2)
+        else:
+            lstPtsConcrSect2=None
         tr_top_rf=rb.rebarFamily(
             reinfCfg=self.reinfCfg,
             identifier=self.topTrnsRb['id'],
             diameter=self.topTrnsRb['fi'],
             spacing=self.topTrnsRb['s'],
             lstPtsConcrSect=lstPtsConcrSect,
+            lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=True,
             fromToExtPts=[ln_tl+self.topTrnsRb['distRFstart']*vdirLn,ln_tr-self.topTrnsRb['distRFend']*vdirLn],
             rightSideSectBars=True,
