@@ -109,6 +109,13 @@ The data of the family is given as a dictionary of type:
         
     def initRFdefVvars(self,RFdef):
         ''' Set default values of 'distRFstart' and 'distRFend' if not defined in dictionary RFdef'''
+        if 's' in RFdef.keys():
+            RFdef['nmbBars']=None
+        elif 'nmbBars' in RFdef.keys():
+            RFdef['s']=None
+            RFdef['nmbBars']=RFdef['nmbBars']
+        else:
+            lmsg.error("either spacing 's' of number of rebars 'nmbBars' must be defined")
         if 'distRFstart' not in RFdef.keys(): RFdef['distRFstart']=0.0
         if 'distRFend' not in RFdef.keys(): RFdef['distRFend']=0.0
         if 'closedStart' not in RFdef.keys(): RFdef['closedStart']=False
@@ -313,6 +320,7 @@ The data of the family is given as a dictionary of type:
             identifier=self.botTrnsRb['id'],
             diameter=self.botTrnsRb['fi'],
             spacing=self.botTrnsRb['s'],
+            nmbBars=self.botTrnsRb['nmbBars'],
             lstPtsConcrSect=lstPtsConcrSect,
             lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=False,
@@ -351,6 +359,7 @@ The data of the family is given as a dictionary of type:
             identifier=self.topTrnsRb['id'],
             diameter=self.topTrnsRb['fi'],
             spacing=self.topTrnsRb['s'],
+            nmbBars=self.topTrnsRb['nmbBars'],
             lstPtsConcrSect=lstPtsConcrSect,
             lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=True,
@@ -398,6 +407,7 @@ The data of the family is given as a dictionary of type:
             identifier=self.botLnRb['id'],
             diameter=self.botLnRb['fi'],
             spacing=self.botLnRb['s'],
+            nmbBars=self.botLnRb['nmbBars'],
             lstPtsConcrSect=lstPtsConcrSect,
             rightSideCover=False,
             lstCover=lstCover,
@@ -445,6 +455,7 @@ The data of the family is given as a dictionary of type:
             identifier=self.topLnRb['id'],
             diameter=self.topLnRb['fi'],
             spacing=self.topLnRb['s'],
+            nmbBars=self.topLnRb['nmbBars'],
             lstPtsConcrSect=lstPtsConcrSect,
             rightSideCover=True,
             lstCover=lstCover,
@@ -491,6 +502,7 @@ The data of the family is given as a dictionary of type:
             identifier=self.botLnRb['id']+'v',
             diameter=self.botLnRb['fi'],
             spacing=self.botLnRb['s'],
+            nmbBars=self.botLnRb['nmbBars'],
             lstPtsConcrSect=lstPtsConcrSect,
             lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=False,
@@ -538,6 +550,7 @@ The data of the family is given as a dictionary of type:
             identifier=self.topLnRb['id']+'v',
             diameter=self.topLnRb['fi'],
             spacing=self.topLnRb['s'],
+            nmbBars=self.topLnRb['nmbBars'],
             lstPtsConcrSect=lstPtsConcrSect,
             lstPtsConcrSect2=lstPtsConcrSect2,
             rightSideCover=True,
