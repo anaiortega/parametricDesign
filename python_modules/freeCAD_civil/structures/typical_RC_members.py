@@ -701,6 +701,7 @@ The data of the family is given as a dictionary of type:
         vdirTr=self.getVdirTransv()
         vdirLn=self.getVdirLong()
         for stirrHoldTrReinf in self.lstStirrHoldTrReinf:
+            self.checkId(stirrHoldLnReinf)
             stDic=stirrHoldTrReinf
             bStirr=stDic['widthStirr']+stDic['fi']
             coverStirr=self.reinfCfg.cover-stDic['fi']
@@ -746,9 +747,10 @@ The data of the family is given as a dictionary of type:
         vdirTr=self.getVdirTransv()
         vdirLn=self.getVdirLong()
         for stirrHoldLnReinf in self.lstStirrHoldLnReinf:
+            self.checkId(stirrHoldLnReinf)
             stDic=stirrHoldLnReinf
             bStirr=stDic['widthStirr']+stDic['fi']
-            coverStirr=self.reinfCfg.cover-stDic['fi']
+#            coverStirr=self.reinfCfg.cover-stDic['fi']
             if stDic['dispRealSh']<0: # stirrups rigth towards left
                 lstPtsConcrSect=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr,tr_br]
             else: # stirrups left towards right
@@ -760,8 +762,14 @@ The data of the family is given as a dictionary of type:
                 lstPtsConcrLong=[ln_tl,ln_bl]
                 vDirLong=vdirLn
 #            stDic=stirrHoldLnReinf
-            bStirr=stDic['widthStirr']+stDic['fi']
-            coverStirr=self.reinfCfg.cover+min(self.topTrnsRb['fi'],self.botTrnsRb['fi'])-stDic['fi']
+#            bStirr=stDic['widthStirr']+stDic['fi']
+            coverStirr=self.reinfCfg.cover-stDic['fi']
+            if self.topTrnsRb and self.botTrnsRb:
+                coverStirr+=min(self.topTrnsRb['fi'],self.botTrnsRb['fi'])
+            elif self.topTrnsRb:
+                coverStirr+=self.topTrnsRb['fi']
+            elif self.botTrnsRb:
+                overStirr+=self.botTrnsRb['fi']
             hold_ln_sf=rb.stirrupFamily(
                 reinfCfg=self.reinfCfg,
                 identifier=stDic['id'],
