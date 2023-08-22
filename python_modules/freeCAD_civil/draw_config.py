@@ -85,7 +85,8 @@ class scheduleConf(tableConf):
          self.hTextSketch=hTextSketch
 
         
-XC_scheduleCfg=scheduleConf(wColumns=[10,30,20,10,12,12],hRows=12,hText=2.5,hTextSketch=2.0)
+XC_scheduleCfg=scheduleConf(wColumns=[10,30,20,12,12,16],hRows=12,hText=2.5,hTextSketch=2.0)
+XC_scheduleLvarCfg=scheduleConf(wColumns=[10,30,20,12,20,16],hRows=12,hText=2.5,hTextSketch=2.0)
 
 
 
