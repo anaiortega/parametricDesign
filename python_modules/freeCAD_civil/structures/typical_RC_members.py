@@ -700,8 +700,9 @@ The data of the family is given as a dictionary of type:
         tr_bl,tr_br=self.getYminTransvBottPnts()
         vdirTr=self.getVdirTransv()
         vdirLn=self.getVdirLong()
+        lst_hold_tr_sf=list()
         for stirrHoldTrReinf in self.lstStirrHoldTrReinf:
-            self.checkId(stirrHoldLnReinf)
+            self.checkId(stirrHoldTrReinf)
             stDic=stirrHoldTrReinf
             bStirr=stDic['widthStirr']+stDic['fi']
             coverStirr=self.reinfCfg.cover-stDic['fi']
@@ -736,9 +737,11 @@ The data of the family is given as a dictionary of type:
                 hold_tr_sf.rightSideCover=stDic['rightSideCover']
             hold_tr_sf.drawPolyRebars()
             hold_tr_sf.drawLnRebars()
-            return hold_tr_sf
+            lst_hold_tr_sf+=[hold_tr_sf]
+        return lst_hold_tr_sf
         
-    def drawStirrHoldingLongSFf(self):
+        
+    def drawStirrHoldingLongSF(self):
         ''' Draw and return the stirrup family  that holds the longitudinal top and bottom rebar families'''
         ln_bl,ln_br=self.getXminLongBottPnts()
         ln_tl,ln_tr=self.getXminLongTopPnts()
@@ -746,6 +749,7 @@ The data of the family is given as a dictionary of type:
         tr_bl,tr_br=self.getYminTransvBottPnts()
         vdirTr=self.getVdirTransv()
         vdirLn=self.getVdirLong()
+        lst_hold_ln_sf=list()
         for stirrHoldLnReinf in self.lstStirrHoldLnReinf:
             self.checkId(stirrHoldLnReinf)
             stDic=stirrHoldLnReinf
@@ -791,7 +795,8 @@ The data of the family is given as a dictionary of type:
                 hold_ln_sf.rightSideCover=stDic['rightSideCover']
             hold_ln_sf.drawPolyRebars()
             hold_ln_sf.drawLnRebars()
-            return hold_ln_sf
+            lst_hold_ln_sf+=[hold_ln_sf]
+        return hold_ln_sf
 
     def drawTransvConcrSectYmax(self):
         ''' Draw concrete transverse cross-section
@@ -950,7 +955,7 @@ The data of the family is given as a dictionary of type:
     if lstStirrHoldTrReinf:
         lstStirrFam+=[brick.drawStirrHoldingTransvSF()]
     if lstStirrHoldLnReinf:
-        lstStirrFam+=[brick.drawStirrHoldingLongSFf()]
+        lstStirrFam+=[brick.drawStirrHoldingLongSF()]
     if drawConcrTrSect:
         brick.drawTransvConcrSectYmax()
     if drawConcrLnSect:
