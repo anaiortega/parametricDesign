@@ -1043,7 +1043,7 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,minSlope2varHorRF=4e-2,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness with an sloped edge 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -1088,6 +1088,7 @@ The data of the family is given as a dictionary of type:
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :iparam slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :param minSlope2varHorRF: minimum slope of the edge to draw variable horizontal reinforcement (defaults to 4%)
     :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
@@ -1095,17 +1096,19 @@ The data of the family is given as a dictionary of type:
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId,)
     if botTrnsRb:
         lstRebFam+=[brick.drawBottomTransvRF()]
     if topTrnsRb:
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
         lstRebFam+=[brick.drawBottomLongRF()]
-        lstRebFam+=[brick.drawBottomVarLongRF()]
+        if slopeEdge > minSlope2varHorRF:
+            lstRebFam+=[brick.drawBottomVarLongRF()]
     if topLnRb:
         lstRebFam+=[brick.drawTopLongRF()]
-        lstRebFam+=[brick.drawTopVarLongRF()]
+        if slopeEdge > minSlope2varHorRF:
+            lstRebFam+=[brick.drawTopVarLongRF()]
     if sideXminRb:
         lstRebFam+=[brick.drawSideXminRF()]
     if sideXmaxRb:
@@ -1126,7 +1129,7 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,minSlope2varHorRF=4e-2,trSlopeBottFace=None,trSlopeTopFace=None,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick with an sloped edge and sloped faces
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -1138,6 +1141,7 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
     :param reinfCfg: instance of the cfg.reinfConf class
     :param slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :param minSlope2varHorRF: minimum slope of the edge to draw variable horizontal reinforcement (defaults to 4%)
     :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :param angTrns: angle (degrees) between the horizontal and the brick width dim    :param angLn: angle (degrees) between the horizontal and the brick length dimension
@@ -1173,10 +1177,12 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
         lstRebFam+=[brick.drawTopTransvRF()]
     if botLnRb:
         lstRebFam+=[brick.drawBottomLongRF()]
-        lstRebFam+=[brick.drawBottomVarLongRF()]
+        if slopeEdge > minSlope2varHorRF:
+            lstRebFam+=[brick.drawBottomVarLongRF()]
     if topLnRb:
         lstRebFam+=[brick.drawTopLongRF()]
-        lstRebFam+=[brick.drawTopVarLongRF()]
+        if slopeEdge > minSlope2varHorRF:
+            lstRebFam+=[brick.drawTopVarLongRF()]
     if drawConcrTrSect:
         brick.drawTransvConcrSectYmax()
     if sideXminRb:
