@@ -5,7 +5,7 @@ __author__= "Ana Ortega (AO_O) "
 __copyright__= "Copyright 2017, AO_O"
 __license__= "GPL"
 __version__= "1.0"
-__email__= "ana.ortega@xcengineering.xyz "
+__email__= "ana.ortega@xcingenieria.com"
 
 import math
 import bisect
@@ -18,7 +18,8 @@ from freeCAD_utils import geom_utils
 from freeCAD_utils import drawing_tools as dt
 from RC_utils import reinf_bars_arrang_sets as RCutils
 import DraftVecUtils
-from materials.ec2 import EC2_limit_state_checking as Lcalc
+from materials.ec2 import EC2_limit_state_checking as EC2lsc
+from materials.ehe import EHE_limit_state_checking as EHElsc
 from misc_utils import data_struct_utils as dsu
 from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import tables
@@ -116,20 +117,34 @@ class rebarFamilyBase(object):
                 eta1=0.7
             else:
                 print('rebar familly ', self.identifier,' must be in "good" or "poor" position')
-            contrReb=Lcalc.RebarController(concreteCover=self.reinfCfg.cover, spacing=self.spacing, eta1=eta1, compression= compression) # create rebar controllers to calculate anchor or gap lengths
+            if self.reinfCfg.code == 'EC2':
+                contrReb=EC2lsc.RebarController(concreteCover=self.reinfCfg.cover, spacing=self.spacing, eta1=eta1, compression= compression) # create rebar controllers to calculate anchor or gap lengths
+            elif self.reinfCfg.code == 'EHE':
+                posEHE='I' if pos=='good' else 'II'
+                contrReb=EHElsc.RebarController(concreteCover=self.reinfCfg.cover, pos=posEHE, compression= compression)
+            else:
+                lmsg.error('code '+ self.reinfCfg.code + 'is not supported') 
         elif rbEndType in ['fix']:
-            rbEndLenght=eval(paramAnc[1].replace('len',''))/1000 # longitud en metros
+            rbEndLength=eval(paramAnc[1].replace('len',''))/1000 # longitud en metros
         else:
             print('rebar end in family ', self.identifier,' must be of type "anc" (anchoring), "lap" (lapping) or "fix" (fixed length)')
         if rbEndType=='anc': # anchor length is calculated
             barShape='bent' if (angle>0) else 'straight'
-            rbEndLenght=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape)
+            if self.reinfCfg.code == 'EC2':
+                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape)
+            elif self.reinfCfg.code == 'EHE':
+                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
         elif rbEndType[:4]=='lap': #lap length id calculated
             ratio=1.0
             if len(paramAnc)>3:
                 ratio=eval(paramAnc[3].replace('perc',''))/100
-            rbEndLenght=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
-        return (angle,rbEndLenght)
+            if self.reinfCfg.code == 'EC2':
+                rbEndLength=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
+            elif self.reinfCfg.code == 'EHE':
+                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
+        if self.reinfCfg.roundAncLap:
+            rbEndLength=math.ceil(rbEndLength/self.reinfCfg.roundAncLap)*self.reinfCfg.roundAncLap
+        return (angle,rbEndLength)
     
     def getInitPntRebLref(self,rebarDraw):
         '''Return the initial point to start the reference line for labeling the rebar
@@ -357,7 +372,7 @@ class rebarFamily(rebarFamilyBase):
             extremity. It can be an straight or hook shape with anchor (anc) length, 
             lap length or a given fixed length.
             The anchor or lap length are automatically 
-            calculated from the code (for now only EC2), material, and rebar configuration.
+            calculated from the code, material, and rebar configuration.
             It's defined as a string parameter that can be read as:
           For anchor end:
             'anc[angle]_position_stressState', where:
@@ -681,7 +696,7 @@ class rebarFamily(rebarFamilyBase):
             rebarWire=Part.Wire(lstLinRebar)
             lstRebars.append(rebarWire)
         else:
-            # calculate slap length
+            # calculate lap length
             eta1=1.0 if 'good' in self.position else 0.7
             if not(self.spacing):
                 if self.fromToExtPts:
@@ -690,12 +705,24 @@ class rebarFamily(rebarFamilyBase):
                 elif self.extensionLength:
                     self.spacing=self.extensionLength/(self.nmbBars-1)
                 elif self.sectBarsConcrRadius:
-                    self.spacing=2*math.pi*self.sectBarsConcrRadius/self.nmbBars
+                    self.spacing=2*math.pi*self.sectBarsConcrRadius/(self.nmbBars-1)
                 else:
                     lmsg.error('for rebar family:'+ self.identifier+ "can't  calculate the spacing, either 'fromToExtPts', 'extensionLength' or 'sectBarsConcrRadius' must be defined")
-            contrReb=Lcalc.RebarController(concreteCover=self.reinfCfg.cover, spacing=self.spacing, eta1=eta1, compression= self.compression) # create rebar controllers to calculate anchor or gap lengths
-            lapLenght=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= 1.0)
-            
+            if self.reinfCfg.code == 'EC2':
+                contrReb=EC2lsc.RebarController(concreteCover=self.reinfCfg.cover, spacing=self.spacing, eta1=eta1, compression= self.compression) # create rebar controllers to calculate anchor or gap lengths
+                lapLength=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= 1.0)
+            elif self.reinfCfg.code == 'EHE':
+                posEHE='I' if self.position=='good' else 'II'
+                print('posEHE=',posEHE)
+                print('compression=',self.compression)
+                print('spacing=',self.spacing)
+                contrReb=EHElsc.RebarController(concreteCover=self.reinfCfg.cover, pos=posEHE, compression= self.compression)
+                lapLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=self.spacing,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff) # lateralConcreteCover is set to 0 for using old EHE beta calculation (beta=1, no reduction for lateral cover)
+                print('lapLength=',lapLength)
+            else:
+                lmsg.error('code '+ self.reinfCfg.code + 'is not supported')
+            if self.reinfCfg.roundAncLap:
+                lapLength=math.ceil(lapLength/self.reinfCfg.roundAncLap)*self.reinfCfg.roundAncLap
             lstCumDist=[0]+[sum(lstDist[:y]) for y in range(1, len(lstDist) + 1)] # cummulated lengths
             while lstCumDist[-1] > self.maxLrebar:
                 indLmax=bisect.bisect_left(lstCumDist,self.maxLrebar)# find the position of maxLrebar in lstCumDist
@@ -710,7 +737,7 @@ class rebarFamily(rebarFamilyBase):
                 lstRebars.append(Part.Wire(lstLinRebar1))
                 # next rebar (rest)
                 lstPtsRebar=lstPtsRebar[indLmax:]
-                firstPnt=lastPnt1.add(-lapLenght*vaux)
+                firstPnt=lastPnt1.add(-lapLength*vaux)
                 lstPtsRebar.insert(0,firstPnt)
                 self.lstPairDimPnts+=[[firstPnt,lastPnt1]]
                 lstDist=[lstPtsRebar[i].distanceToPoint(lstPtsRebar[i+1]) for i in range(len(lstPtsRebar)-1)]

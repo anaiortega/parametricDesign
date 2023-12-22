@@ -39,8 +39,10 @@ class reinfConf(object):
                        relative to the text size (defaults to 5)
     :ivar factPosLabelSectReb: factor to locate labels of section-rebars (defaults to 2/3)
     :ivar factDispReflinSectReb: factor to locate reference lines of section-rebars (defaults to 1)
+    :ivar roundAncLap: base, expressed in meters (ex. 0.05 to round up to 5 cm), to round lengths of 
+                       anchoring and lapping (always rounds up) (defaults to None: not rounding)
     '''
-    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3,factDispReflinSectReb=1.0):
+    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3,factDispReflinSectReb=1.0,roundAncLap=None):
         self.cover=cover
         self.texSize=texSize
         self.xcConcr=xcConcr
@@ -51,9 +53,10 @@ class reinfConf(object):
         self.sketchScale=sketchScale
         self.factPosLabelSectReb=factPosLabelSectReb
         self.factDispReflinSectReb=factDispReflinSectReb
-        if Code == 'EC2':
-            from materials.ec2 import EC2_limit_state_checking as Lcalc # doesn't work if only imported here
+        self.code=Code
+        self.roundAncLap=roundAncLap
         print('texSize', texSize)
+        
 
             
 class tableConf(object):
