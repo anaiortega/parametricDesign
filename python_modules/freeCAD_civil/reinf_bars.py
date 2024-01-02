@@ -141,7 +141,8 @@ class rebarFamilyBase(object):
             if self.reinfCfg.code == 'EC2':
                 rbEndLength=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
             elif self.reinfCfg.code == 'EHE':
-                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
+                rbEndLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=self.spacing,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
+#                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
         if self.reinfCfg.roundAncLap:
             rbEndLength=math.ceil(rbEndLength/self.reinfCfg.roundAncLap)*self.reinfCfg.roundAncLap
         return (angle,rbEndLength)
@@ -705,7 +706,7 @@ class rebarFamily(rebarFamilyBase):
                 elif self.extensionLength:
                     self.spacing=self.extensionLength/(self.nmbBars-1)
                 elif self.sectBarsConcrRadius:
-                    self.spacing=2*math.pi*self.sectBarsConcrRadius/(self.nmbBars-1)
+                    self.spacing=2*math.pi*self.sectBarsConcrRadius/self.nmbBars
                 else:
                     lmsg.error('for rebar family:'+ self.identifier+ "can't  calculate the spacing, either 'fromToExtPts', 'extensionLength' or 'sectBarsConcrRadius' must be defined")
             if self.reinfCfg.code == 'EC2':
