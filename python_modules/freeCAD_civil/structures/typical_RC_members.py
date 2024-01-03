@@ -796,7 +796,7 @@ The data of the family is given as a dictionary of type:
             hold_ln_sf.drawPolyRebars()
             hold_ln_sf.drawLnRebars()
             lst_hold_ln_sf+=[hold_ln_sf]
-        return hold_ln_sf
+        return lst_hold_ln_sf
 
     def drawTransvConcrSectYmax(self):
         ''' Draw concrete transverse cross-section
@@ -953,9 +953,9 @@ The data of the family is given as a dictionary of type:
     if sideYmaxRb:
         lstRebFam+=[brick.drawSideYmaxRF()]
     if lstStirrHoldTrReinf:
-        lstStirrFam+=[brick.drawStirrHoldingTransvSF()]
+        lstStirrFam+=brick.drawStirrHoldingTransvSF()
     if lstStirrHoldLnReinf:
-        lstStirrFam+=[brick.drawStirrHoldingLongSF()]
+        lstStirrFam+=brick.drawStirrHoldingLongSF()
     if drawConcrTrSect:
         brick.drawTransvConcrSectYmax()
     if drawConcrLnSect:
