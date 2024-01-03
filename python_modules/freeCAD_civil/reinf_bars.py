@@ -714,12 +714,8 @@ class rebarFamily(rebarFamilyBase):
                 lapLength=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= 1.0)
             elif self.reinfCfg.code == 'EHE':
                 posEHE='I' if self.position=='good' else 'II'
-                print('posEHE=',posEHE)
-                print('compression=',self.compression)
-                print('spacing=',self.spacing)
                 contrReb=EHElsc.RebarController(concreteCover=self.reinfCfg.cover, pos=posEHE, compression= self.compression)
                 lapLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=self.spacing,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff) # lateralConcreteCover is set to 0 for using old EHE beta calculation (beta=1, no reduction for lateral cover)
-                print('lapLength=',lapLength)
             else:
                 lmsg.error('code '+ self.reinfCfg.code + 'is not supported')
             if self.reinfCfg.roundAncLap:
@@ -844,6 +840,7 @@ class stirrupFamily(rebarFamilyBase):
     :ivar vectorLRef: vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
     :ivar rightSideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to True right)
     :ivar closed: if closed stirrup True (defaults to True)
+    :ivar addL2closed: length to add to closed stirrups (defaults to 0.20)
     :ivar fixAnchorStart, fixAnchorEnd: anchor definition at start and end, respectively (defaults to None) The anchors are defined as follows:
             fix[angle]= is a positive number, expresed in sexagesimal degrees, 
                         that represents the counterclokwise angle from the first segment 
@@ -852,7 +849,7 @@ class stirrupFamily(rebarFamilyBase):
             Examples: 'fix45_len150'
     
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,fixAnchorStart=None,fixAnchorEnd=None):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None):
         super(stirrupFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
         self.lstPtsConcrLong=lstPtsConcrLong
         self.concrSectRadius=concrSectRadius
@@ -868,6 +865,7 @@ class stirrupFamily(rebarFamilyBase):
         self.vectorLRef=vectorLRef
         self.rightSideLabelLn=rightSideLabelLn
         self.closed=closed
+        self.addL2closed=addL2closed
         self.fixAnchorStart=fixAnchorStart
         self.fixAnchorEnd=fixAnchorEnd
         self.rebarWire=None
@@ -1127,6 +1125,11 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
             pEsq=pLinea.add(Vector(wColumns[0] + wColumns[1]/2.0,0))
             rW2=rbFam.wireSect2[i] if rbFam.wireSect2 else None
             barLength,barLengthTxt=drawSketchRebarShape(rbFam.lstWire[i],pEsq,wColumns[1],hRows,hTextSketch,rbFam.reinfCfg.decLengths,rW2)
+            # in case of closed stirrup add length addL2closed
+            if hasattr(rbFam,'closed') and hasattr(rbFam,'addL2closed'):
+                if rbFam.closed:
+                    barLength+=rbFam.addL2closed
+                    barLengthTxt=formatLength %barLength
             pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
             tx=rbFam.getTextFiSpacing()
             dt.put_text_in_pnt(tx,pFiSep, hText,cfg.colorTextLeft)
@@ -1137,6 +1140,7 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
             pbarLength=pLinea.add(Vector(sum(wColumns[:5])-hText/2.0,-hText/2.0))
             dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, cfg.colorTextRight,"Right")
             pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
+            print(rbFam.getUnitWeight())
             peso=nBar*barLength*rbFam.getUnitWeight()
             dt.put_text_in_pnt(formatLength %peso,pPeso, hText, cfg.colorTextRight,"Right")
             pesoTotal += peso
