@@ -26,7 +26,7 @@ class genericBrickReinf(object):
     :ivar botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
            {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'},
            optionally can be defined: {'gapStart','gapEnd','extrShapeStart','extrShapeEnd', 'fixLengthStart','fixLengthEnd','vectorLRef',
-                                                  'closedStart','closedEnd'}
+                                                  'closedStart','closedEnd','nMembers'}
            where 'id' is the identificacion of the rebar family, 
                   'fi' is the diameter of the rebar, 
                    's' is the spacement, 
@@ -37,6 +37,7 @@ class genericBrickReinf(object):
                                    (ignored in transverse rebars when sloped edge is defined)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
                               slap length when splitting rebars)
+                   
     :ivar topTrnsRb: same for the top transverse rebar family
     :ivar botLnRb: same for the bottom longitudinal rebar family
     :ivar topLnRb: same for the top longitudinal rebar family
@@ -131,6 +132,18 @@ The data of the family is given as a dictionary of type:
         if 'fixLengthStart' in RFdef.keys(): RF.fixLengthStart=RFdef['fixLengthStart']
         if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
         if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
+        if 'nMembers' in RFdef.keys(): RF.nMembers=RFdef['nMembers']
+        
+    def setFSoptions(self,SF,SFdef):
+        '''Set optional attributes SF stirrup family that has been defined in dictionary SFdef
+        '''
+        if 'rightSideCover' in SFdef.keys():
+            SF.rightSideCover=SFdef['rightSideCover']
+        if 'nMembers' in SFdef.keys():
+            SF.nMembers=SFdef['nMembers']
+        if 'addL2closed' in SFdef.keys():
+            SF.closed=True
+            SF.addL2closed=SFdef['addL2closed']
         
     def getVdirTransv(self):
         vdirTr=Vector(math.cos(math.radians(self.angTrns)),math.sin(math.radians(self.angTrns)))
@@ -733,8 +746,7 @@ The data of the family is given as a dictionary of type:
                 vectorLRef=stDic['vectorLRef'],
                 rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
-            if 'rightSideCover' in stDic.keys():
-                hold_tr_sf.rightSideCover=stDic['rightSideCover']
+            self.setFSoptions(hold_tr_sf,stDic)
             hold_tr_sf.drawPolyRebars()
             hold_tr_sf.drawLnRebars()
             lst_hold_tr_sf+=[hold_tr_sf]
@@ -791,8 +803,7 @@ The data of the family is given as a dictionary of type:
                 vectorLRef=stDic['vectorLRef'],
                 rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
-            if 'rightSideCover' in stDic.keys():
-                hold_ln_sf.rightSideCover=stDic['rightSideCover']
+            self.setFSoptions(hold_ln_sf,stDic)
             hold_ln_sf.drawPolyRebars()
             hold_ln_sf.drawLnRebars()
             lst_hold_ln_sf+=[hold_ln_sf]
