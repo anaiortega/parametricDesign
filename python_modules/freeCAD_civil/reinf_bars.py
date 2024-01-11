@@ -421,8 +421,9 @@ class rebarFamily(rebarFamilyBase):
             Is used to calculate lap lengths when splitting bars- (defaults to False)  
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text 
             (defaults to True)
+    :ivar nMembers: number of identic members. The calculated number of bars is multiplied by nMembers (defaults to 1)
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1):
         super(rebarFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
         self.spacing=spacing 
         self.vectorLRef= vectorLRef
@@ -447,7 +448,9 @@ class rebarFamily(rebarFamilyBase):
         self.position=position.lower()
         self.compression=compression
         self.drawSketch=drawSketch
+        self.nMembers=nMembers
         self.nbarsAux=None # auxiliar attribute (number of bars)
+        
     
     def drawPolySectBars(self,vTranslation=Vector(0,0,0)):
         '''Draw the rebar family as sectioned bars represented by circles in 
@@ -847,9 +850,10 @@ class stirrupFamily(rebarFamilyBase):
                         of the rebar towards the hook.
             len[number]: number is the length of the segment to add (in mm)
             Examples: 'fix45_len150'
+    :ivar nMembers: number of identic members. The calculated number of stirrups is multiplied by nMembers (defaults to 1)
     
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1):
         super(stirrupFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
         self.lstPtsConcrLong=lstPtsConcrLong
         self.concrSectRadius=concrSectRadius
@@ -871,6 +875,7 @@ class stirrupFamily(rebarFamilyBase):
         self.rebarWire=None
         self.lstWire=None
         self.wireSect2=None
+        self.nMembers=nMembers
 
     def getVdirTrans(self):
         '''return a unitary direction vector in transversal section'''
@@ -1135,12 +1140,11 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
             dt.put_text_in_pnt(tx,pFiSep, hText,cfg.colorTextLeft)
             #number of bars
             pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
-            nBar=rbFam.getNumberOfBars()
+            nBar=rbFam.getNumberOfBars()*rbFam.nMembers
             dt.put_text_in_pnt(str(nBar),pNbarras, hText, cfg.colorTextRight,"Right")
             pbarLength=pLinea.add(Vector(sum(wColumns[:5])-hText/2.0,-hText/2.0))
             dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, cfg.colorTextRight,"Right")
             pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
-            print(rbFam.getUnitWeight())
             peso=nBar*barLength*rbFam.getUnitWeight()
             dt.put_text_in_pnt(formatLength %peso,pPeso, hText, cfg.colorTextRight,"Right")
             pesoTotal += peso
@@ -1284,7 +1288,7 @@ def drawProjectedRebar(reinfCfg,pntsRebar,pntsDim,text,vLRef=Vector(0.3,0.3)):
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorRebars
     dim.dim_lst_pnts(lstPnts=pntsDim,spacDimLine=0)
     pCentCirc=geom_utils.int2lines(pntsRebar[0],pntsRebar[1],pntsDim[0],pntsDim[1])
-    print(pCentCirc)
+#    print(pCentCirc)
     pl=FreeCAD.Placement()
     pl.move(pCentCirc)
     c=Draft.make_circle(radius=hText/2,placement=pl)
