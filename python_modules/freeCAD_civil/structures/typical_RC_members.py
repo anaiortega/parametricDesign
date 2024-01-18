@@ -20,6 +20,7 @@ class genericBrickReinf(object):
     :ivar thickness: thickness of the brick at the start (at point anchPtTrnsSect)
     :ivar anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :ivar anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
+    :ivar anchPtPlan: anchor point to place the bottom left corner of the concrete plan view
     :ivar reinfCfg: instance of the cfg.reinfConf class
     :ivar angTrns: angle (degrees) between the horizontal and the brick width dimension
     :ivar angLn: angle (degrees) between the horizontal and the brick length dimension
@@ -144,6 +145,8 @@ The data of the family is given as a dictionary of type:
         if 'addL2closed' in SFdef.keys():
             SF.closed=True
             SF.addL2closed=SFdef['addL2closed']
+        if 'vectorLRef' in SFdef.keys(): SF.vectorLRef=SFdef['vectorLRef']
+        if 'rightSideLabelLn' in SFdef.keys(): SF.rightSideLabelLn=SFdef['rightSideLabelLn']
         
     def getVdirTransv(self):
         vdirTr=Vector(math.cos(math.radians(self.angTrns)),math.sin(math.radians(self.angTrns)))
@@ -294,7 +297,7 @@ The data of the family is given as a dictionary of type:
 
     def getPntsPlan(self):
         if not self.anchPtPlan:
-            lmsg.error('the point to anchor the plan view (anchPlan) is not defined')
+            lmsg.error('the point to anchor the plan view (anchPtPlan) is not defined')
         else:
             angP=math.radians(self.angPlan)
             vtr=Vector(math.cos(angP),math.sin(angP))
@@ -495,7 +498,7 @@ The data of the family is given as a dictionary of type:
         Lsect2=self.botLnRb['s']/abs(self.slopeEdge)
         lstPtsConcrSect=[ln_bl,ln_br]
         lstPtsConcrSect2=[ln_bl,ln_bl+Lsect2*vdirLnBott]
-        if self.botLnRb:
+        if self.botTrnsRb:
             lstCover=[self.reinfCfg.cover+self.botTrnsRb['fi']]
             coverSectBars=self.reinfCfg.cover+self.botTrnsRb['fi']
         else:
@@ -582,7 +585,7 @@ The data of the family is given as a dictionary of type:
         return ln_top_rf
     
     def drawSideXminRF(self):
-        ''' Draw and return the side refinforcement in face Xmin'''
+        ''' Draw and return the side reinforcement in face Xmin'''
         pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
@@ -743,8 +746,8 @@ The data of the family is given as a dictionary of type:
                 nmbStrpLong=stDic['nStirrPerp'],
                 dispStrpTransv=abs(stDic['dispRealSh']),
                 dispStrpLong=abs(stDic['dispPerp']),
-                vectorLRef=stDic['vectorLRef'],
-                rightSideLabelLn=stDic['rightSideLabelLn'],
+#                vectorLRef=stDic['vectorLRef'],
+#                rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
             self.setFSoptions(hold_tr_sf,stDic)
             hold_tr_sf.drawPolyRebars()
@@ -800,8 +803,8 @@ The data of the family is given as a dictionary of type:
                 nmbStrpLong=stDic['nStirrPerp'],
                 dispStrpTransv=abs(stDic['dispRealSh']),
                 dispStrpLong=abs(stDic['dispPerp']),
-                vectorLRef=stDic['vectorLRef'],
-                rightSideLabelLn=stDic['rightSideLabelLn'],
+#                vectorLRef=stDic['vectorLRef'],
+#                rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
             self.setFSoptions(hold_ln_sf,stDic)
             hold_ln_sf.drawPolyRebars()

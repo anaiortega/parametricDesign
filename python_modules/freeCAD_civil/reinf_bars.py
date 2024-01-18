@@ -135,6 +135,7 @@ class rebarFamilyBase(object):
             elif self.reinfCfg.code == 'EHE':
                 rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
         elif rbEndType[:4]=='lap': #lap length id calculated
+            print('****************')
             ratio=1.0
             if len(paramAnc)>3:
                 ratio=eval(paramAnc[3].replace('perc',''))/100
@@ -142,6 +143,7 @@ class rebarFamilyBase(object):
                 rbEndLength=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
             elif self.reinfCfg.code == 'EHE':
                 rbEndLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=self.spacing,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
+                print('rbEndLength=',rbEndLength)
 #                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
         if self.reinfCfg.roundAncLap:
             rbEndLength=math.ceil(rbEndLength/self.reinfCfg.roundAncLap)*self.reinfCfg.roundAncLap
