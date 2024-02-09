@@ -93,10 +93,6 @@ XC_scheduleLvarCfg=scheduleConf(wColumns=[10,30,20,12,20,16],hRows=12,hText=2.5,
 
 
 
-
-
-
-
 # The following classes are written in order to substitute the colors' code
 # by layers' code (for now, it has nor been achieved, see paramDesignBranch)
 # Colors

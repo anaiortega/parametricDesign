@@ -381,8 +381,6 @@ The data of the family is given as a dictionary of type:
             rightSideCover=True,
             fromToExtPts=[ln_tl+self.topTrnsRb['distRFstart']*vdirLn,ln_tr-self.topTrnsRb['distRFend']*vdirLn],
             rightSideSectBars=True,
-            gapStart=0,
-            gapEnd=0,
             position=self.topTrnsRb['position'],
             )
         self.setFRoptions(RF=tr_top_rf,RFdef=self.topTrnsRb)    
@@ -430,8 +428,6 @@ The data of the family is given as a dictionary of type:
             fromToExtPts=[fromExtPt,tr_br-self.botLnRb['distRFend']*vdirTrBott],
             coverSectBars=coverSectBars,
             rightSideSectBars=False,
-            gapStart=0,
-            gapEnd=0,
             position=self.botLnRb['position'],
            )
         self.setFRoptions(RF=ln_bot_rf,RFdef=self.botLnRb)
@@ -478,8 +474,6 @@ The data of the family is given as a dictionary of type:
             fromToExtPts=[fromExtPt,tr_tr-self.topLnRb['distRFend']*vdirTrTop],
             coverSectBars=coverSectBars,
             rightSideSectBars=True,
-            gapStart=0,
-            gapEnd=0,
             position=self.topLnRb['position'],
             )
         self.setFRoptions(RF=ln_top_rf,RFdef=self.topLnRb)
@@ -526,8 +520,6 @@ The data of the family is given as a dictionary of type:
             fromToExtPts=[tr_bl,self.getTransitionBottPnt()],
             coverSectBars=coverSectBars,
             rightSideSectBars=False,
-            gapStart=0,
-            gapEnd=0,
             position=self.botLnRb['position'],
            )
         self.setFRoptions(RF=ln_bot_rf,RFdef=self.botLnRb)
@@ -574,8 +566,6 @@ The data of the family is given as a dictionary of type:
             fromToExtPts=[tr_tl,self.getTransitionTopPnt()],
             coverSectBars=coverSectBars,
             rightSideSectBars=True,
-            gapStart=0,
-            gapEnd=0,
             position=self.topLnRb['position'],
             )
         self.setFRoptions(RF=ln_top_rf,RFdef=self.topLnRb)
@@ -721,7 +711,7 @@ The data of the family is given as a dictionary of type:
             self.checkId(stirrHoldTrReinf)
             stDic=stirrHoldTrReinf
             bStirr=stDic['widthStirr']+stDic['fi']
-            coverStirr=self.reinfCfg.cover-stDic['fi']
+            coverStirr=self.reinfCfg.cover#-stDic['fi']
             if stDic['dispRealSh']<0: # stirrups rigth towards left
                 lstPtsConcrSect=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr,ln_br]
             else: # stirrups left towards right
@@ -746,8 +736,6 @@ The data of the family is given as a dictionary of type:
                 nmbStrpLong=stDic['nStirrPerp'],
                 dispStrpTransv=abs(stDic['dispRealSh']),
                 dispStrpLong=abs(stDic['dispPerp']),
-#                vectorLRef=stDic['vectorLRef'],
-#                rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
             self.setFSoptions(hold_tr_sf,stDic)
             hold_tr_sf.drawPolyRebars()
@@ -782,13 +770,14 @@ The data of the family is given as a dictionary of type:
                 vDirLong=vdirLn
 #            stDic=stirrHoldLnReinf
 #            bStirr=stDic['widthStirr']+stDic['fi']
-            coverStirr=self.reinfCfg.cover-stDic['fi']
+            coverStirr=self.reinfCfg.cover#-stDic['fi']
             if self.topTrnsRb and self.botTrnsRb:
                 coverStirr+=min(self.topTrnsRb['fi'],self.botTrnsRb['fi'])
             elif self.topTrnsRb:
                 coverStirr+=self.topTrnsRb['fi']
             elif self.botTrnsRb:
-                overStirr+=self.botTrnsRb['fi']
+                coverStirr+=self.botTrnsRb['fi']
+            print('coverStirr=',coverStirr)
             hold_ln_sf=rb.stirrupFamily(
                 reinfCfg=self.reinfCfg,
                 identifier=stDic['id'],
@@ -803,8 +792,6 @@ The data of the family is given as a dictionary of type:
                 nmbStrpLong=stDic['nStirrPerp'],
                 dispStrpTransv=abs(stDic['dispRealSh']),
                 dispStrpLong=abs(stDic['dispPerp']),
-#                vectorLRef=stDic['vectorLRef'],
-#                rightSideLabelLn=stDic['rightSideLabelLn'],
                 )
             self.setFSoptions(hold_ln_sf,stDic)
             hold_ln_sf.drawPolyRebars()

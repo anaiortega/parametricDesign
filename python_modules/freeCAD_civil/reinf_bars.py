@@ -452,6 +452,10 @@ class rebarFamily(rebarFamilyBase):
         self.drawSketch=drawSketch
         self.nMembers=nMembers
         self.nbarsAux=None # auxiliar attribute (number of bars)
+        if not(extensionLength) and not(fromToExtPts) and not(sectBarsConcrRadius):
+            raise ValueError("either parameter 'fromToExtPts' or 'extensionLength' or 'sectBarsConcrRadius' must be defined for rebar family: " + identifier)
+        if not(spacing) and not(nmbBars):
+            raise ValueError("either parameter 'spacing' or 'nmbBars'  must be defined for rebar family: " + identifier)
         
     
     def drawPolySectBars(self,vTranslation=Vector(0,0,0)):
@@ -878,7 +882,14 @@ class stirrupFamily(rebarFamilyBase):
         self.lstWire=None
         self.wireSect2=None
         self.nMembers=nMembers
+        if not(lstPtsConcrSect) and not(concrSectRadius):
+            raise ValueError("either parameter 'lstPtsConcrSect' or 'concrSectRadius' must be defined for stirrup family: " + identifier)
+        if nmbStrpTransv > 1 and  not(spacStrpTransv):
+            raise ValueError("parameter 'spacStrpTransv'  must be defined for stirrup family: " + identifier)
+        if nmbStrpLong > 1 and  not(spacStrpLong):
+            raise ValueError("parameter 'spacStrpLong'  must be defined for stirrup family: " + identifier)
 
+        
     def getVdirTrans(self):
         '''return a unitary direction vector in transversal section'''
         if self.vDirTrans is None:
