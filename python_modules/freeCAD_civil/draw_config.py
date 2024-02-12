@@ -56,6 +56,28 @@ class reinfConf(object):
         self.code=Code
         self.roundAncLap=roundAncLap
         print('texSize', texSize)
+        if Code not in ['EHE','EC2']:
+            raise ValueError("Code " + Code + " is not supported")
+
+    def getMinClearDistRebars(self,fiMax,dg):
+        '''
+        Return the minimum clear (horizontal and vertical) distance (in m) between individual parallel bars or horizontal 
+        layers of parallel bars. Note: according to Calavera's manual, The 20-mm limit for the horizontal and vertical 
+        clear distance is too narrow to ensure satisfactory concrete casting. For single layers, a 25-mm space is suggested, 
+        and 35 mm for two or more: the horizontal distance  should be 2.5 times the diameter of the vibrator needle for bars 
+        in any other than the bottom layer in the beam.
+
+        :param fiMax: bar diameter or diameter of the largest bar if bars vary in size (m)
+        :param dg: maximum aggregate size (in m)
+        
+        '''
+        if self.code == 'EHE':
+            clearDistBars=max(fiMax,20e-3,125*dg)
+        elif self.code == 'EC2':
+            clearDistBars=max(fiMax,20e-3,dg+5e-3)
+        return clearDistBars
+        
+        
         
 
             
