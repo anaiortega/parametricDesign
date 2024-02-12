@@ -134,6 +134,11 @@ The data of the family is given as a dictionary of type:
         if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
         if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
         if 'nMembers' in RFdef.keys(): RF.nMembers=RFdef['nMembers']
+        if 'extensionLength' in RFdef.keys(): RF.nMembers=RFdef['extensionLength']
+        if 'compression' in RFdef.keys(): RF.nMembers=RFdef['compression']
+        if 'drawSketch' in RFdef.keys(): RF.nMembers=RFdef['drawSketch']
+        if 'maxLRebar' in RFdef.keys(): RF.nMembers=RFdef['maxLRebar']
+        if 'lateralCover' in RFdef.keys(): RF.lateralCover=RFdef['lateralCover']
         
     def setFSoptions(self,SF,SFdef):
         '''Set optional attributes SF stirrup family that has been defined in dictionary SFdef
@@ -591,6 +596,7 @@ The data of the family is given as a dictionary of type:
             reinfCfg=self.reinfCfg,
             identifier=self.sideXminRb['id'],
             diameter=self.sideXminRb['fi'],
+            spacing=self.sideXminRb['s'],
             nmbBars=self.sideXminRb['nmbBars'],
             lstPtsConcrSect=[pl_xmin_ymin,pl_xmin_ymax],
             rightSideCover=True,
@@ -622,6 +628,7 @@ The data of the family is given as a dictionary of type:
             reinfCfg=self.reinfCfg,
             identifier=self.sideXmaxRb['id'],
             diameter=self.sideXmaxRb['fi'],
+            spacing=self.sideXminRb['s'],
             nmbBars=self.sideXmaxRb['nmbBars'],
             lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax],
             rightSideCover=False,
@@ -1204,6 +1211,104 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
+def beam_reinf(width,height,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,lstBotRb=[],lstTopRb=[],lstLeftLatlRb=[],lstRightLatlRb=[],lstStirrReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1,clearDistRbLayers=None,aggrSize=20e-3):
+    '''Typical reinforcement arrangement of a brick of constant height
+    Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
+                  RF-rebar family, SF-stirrup family, Ly: layer of rebars
+
+    :param width: beam cross-section width
+    :param height:  beam cross-section height
+    :param length: beam length
+    :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
+    :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
+    :param reinfCfg: instance of the cfg.reinfConf class
+    :param angTrns: angle (degrees) between the horizontal and the cross-section width dimension
+    :param angLn: angle (degrees) between the horizontal and the length dimension
+    :param lstBotRb: list of data for bottom rebar layers. Each element of the list represents a layer of rebars (first element is the outermost)
+                       (defaults to [])
+                       Each rebar family (layer) is  expressed as a dictionary of type 
+                       {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'} or any other parameter supported by rebarFamily class.
+    :paramlstTopRb: same for the top rebar layers
+    :param lstLeftLatlRb: same for the lateral rebar layers in the left side of the cross-section
+    :param lstRigthtLatlRb: ame for the lateral rebar layers in the right side of the cross-section
+    :param lstStirrReinf: list of stirrup families. Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+The data of the family is given as a dictionary of type:
+            {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
+            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
+                  'fi' is the diameter of the stirrup, 
+                  'sRealSh' is the spacement between stirrups represented as real shape,
+                  'sPerp'  is the spacement between stirrups in the orthogonal direction,
+                  'widthStirr' is the width of the stirrup (internal),
+                  'nStirrRealSh' is the number of stirrups in real shape
+                  'nStirrPerp' is the number of stirrups in orthogonal direction
+                  'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
+                  'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
+    :param clearDistRbLayers: clear (horizontal and vertical) distance (in m) between layers of parallel bars. Defaults to None,
+                            in which case this distance is calculated in function of the maximum aggregate size and the maximum 
+                            diameter of the defined families of rebars  
+    :param aggrSize: maximum aggregate size (in m) (used to calculate the clear distance between rebar layers (if not defined by parameter clearDistRebars)
+    '''
+    if not(lstBotRb): lstBotRb=list()
+    if not(lstTopRb): lstTopRb=list() 
+    if not(lstLeftLatlRb): lstLeftLatlRb=list()
+    if not(lstRightLatlRb): lstRightLatlRb=list() 
+    lstRebFam=list(); lstStirrFam=list() # Families of rebars
+    allRF=lstBotRb+lstTopRb+lstLeftLatlRb+lstRightLatlRb
+    if not(clearDistRbLayers):
+        # maximum rebar diameter
+        fisRb=[rb['fi'] for rb in allRF]
+        maxFi=max(fisRb)
+        clearDistRbLayers=reinfCfg.getMinClearDistRebars(maxFi,aggrSize)
+    # maximum dimension of the list of rebar layers
+    maxNlayers=max(len(lstBotRb),len(lstTopRb),len(lstLeftLatlRb),len(lstRightLatlRb))
+    # make the four lists of the maximum dimension
+    lstBotRb+=(maxNlayers-len(lstBotRb))*[None]
+    lstTopRb+=(maxNlayers-len(lstTopRb))*[None]
+    lstLeftLatlRb+=(maxNlayers-len(lstLeftLatlRb))*[None]
+    lstRightLatlRb+=(maxNlayers-len(lstRightLatlRb))*[None]
+    if lstStirrReinf and len(lstStirrReinf)>0:
+        # maximum stirrup diameter
+        fisStirr=[rb['fi'] for rb in lstStirrReinf]
+        maxFiStirr=max(fisStirr)
+        # Add diameter of stirrups to default cover
+        reinfCfg.cover=reinfCfg.cover+maxFi
+    # init lateral cover if not defined
+    for rb in allRF:
+        if 'lateralCover' not in rb.keys(): rb['lateralCover']=reinfCfg.cover
+    for ly in range(maxNlayers):
+        botLnRb=lstBotRb[ly]
+        topLnRb=lstTopRb[ly]
+        sideXminRb=lstLeftLatlRb[ly]
+        sideXmaxRb=lstRightLatlRb[ly]
+        brick=genericBrickReinf(width=width,length=length,thickness=height,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,lstStirrHoldTrReinf=lstStirrReinf,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
+        if botLnRb:
+            lstRebFam+=[brick.drawBottomLongRF()]
+        if topLnRb:
+            lstRebFam+=[brick.drawTopLongRF()]
+        if sideXminRb:
+            lstRebFam+=[brick.drawSideXminRF()]
+        if sideXmaxRb:
+            lstRebFam+=[brick.drawSideXmaxRF()]
+        if lstStirrReinf:
+            lstStirrFam+=brick.drawStirrHoldingTransvSF()
+        # if lstStirrHoldLnReinf:
+        #     lstStirrFam+=brick.drawStirrHoldingLongSF()
+        fisRb=[rb['fi'] for rb in [botLnRb,topLnRb,sideXminRb,sideXmaxRb] if rb]
+        # add cover for the next layer
+        reinfCfg.cover=reinfCfg.cover+max(fisRb)+clearDistRbLayers
+    if drawConcrTrSect:     # 
+        brick.drawTransvConcrSectYmax()
+    if drawConcrLnSect:
+        brick.drawLongConcrSectXmax()
+    if drawPlan:
+        brick.drawPlanConcrView()
+    FreeCAD.ActiveDocument.recompute()
+    return lstRebFam,lstStirrFam,brick.startId
     
 
 
