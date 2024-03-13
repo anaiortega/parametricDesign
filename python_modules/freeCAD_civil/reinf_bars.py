@@ -109,7 +109,7 @@ class rebarFamilyBase(object):
             angle=0
         if rbEndType in ['anc','lap']:    
             stress=paramAnc[2]
-            compression= True if (stress in 'compr') else False
+            compression= True if (stress in ['compr']) else False
             pos=paramAnc[1].replace('pos','').lower()
             if pos=='good':
                 eta1=1.0
@@ -135,7 +135,6 @@ class rebarFamilyBase(object):
             elif self.reinfCfg.code == 'EHE':
                 rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
         elif rbEndType[:4]=='lap': #lap length id calculated
-            print('****************')
             ratio=1.0
             if len(paramAnc)>3:
                 ratio=eval(paramAnc[3].replace('perc',''))/100
@@ -1301,7 +1300,6 @@ def drawProjectedRebar(reinfCfg,pntsRebar,pntsDim,text,vLRef=Vector(0.3,0.3)):
     FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorRebars
     dim.dim_lst_pnts(lstPnts=pntsDim,spacDimLine=0)
     pCentCirc=geom_utils.int2lines(pntsRebar[0],pntsRebar[1],pntsDim[0],pntsDim[1])
-#    print(pCentCirc)
     pl=FreeCAD.Placement()
     pl.move(pCentCirc)
     c=Draft.make_circle(radius=hText/2,placement=pl)

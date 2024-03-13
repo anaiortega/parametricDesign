@@ -37,7 +37,7 @@ class genericBrickReinf(object):
                                    if not defined, default is 0   
                                    (ignored in transverse rebars when sloped edge is defined)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              slap length when splitting rebars)
+                              lap length when splitting rebars)
                    
     :ivar topTrnsRb: same for the top transverse rebar family
     :ivar botLnRb: same for the bottom longitudinal rebar family
@@ -914,7 +914,7 @@ def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtL
                    'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
                    'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              slap length when splitting rebars
+                              lap length when splitting rebars
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
@@ -994,7 +994,7 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
                    'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
                    'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              slap length when splitting rebars
+                              lap length when splitting rebars
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
@@ -1072,7 +1072,7 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
                    'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
                    'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              slap length when splitting rebars
+                              lap length when splitting rebars
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
@@ -1162,7 +1162,7 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
                    'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
                                    (ignored in transverse rebars when sloped edge is defined)
                    'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              slap length when splitting rebars
+                              lap length when splitting rebars
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
