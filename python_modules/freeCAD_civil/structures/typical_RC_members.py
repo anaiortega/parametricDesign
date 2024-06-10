@@ -134,10 +134,10 @@ The data of the family is given as a dictionary of type:
         if 'fixLengthEnd' in RFdef.keys(): RF.fixLengthEnd=RFdef['fixLengthEnd']
         if 'vectorLRef' in RFdef.keys(): RF.vectorLRef=RFdef['vectorLRef']
         if 'nMembers' in RFdef.keys(): RF.nMembers=RFdef['nMembers']
-        if 'extensionLength' in RFdef.keys(): RF.nMembers=RFdef['extensionLength']
-        if 'compression' in RFdef.keys(): RF.nMembers=RFdef['compression']
-        if 'drawSketch' in RFdef.keys(): RF.nMembers=RFdef['drawSketch']
-        if 'maxLRebar' in RFdef.keys(): RF.nMembers=RFdef['maxLRebar']
+        if 'extensionLength' in RFdef.keys(): RF.extensionLength=RFdef['extensionLength']
+        if 'compression' in RFdef.keys(): RF.compression=RFdef['compression']
+        if 'drawSketch' in RFdef.keys(): RF.drawSketch=RFdef['drawSketch']
+        if 'maxLrebar' in RFdef.keys(): RF.maxLrebar=RFdef['maxLrebar']
         if 'lateralCover' in RFdef.keys(): RF.lateralCover=RFdef['lateralCover']
         
     def setFSoptions(self,SF,SFdef):
