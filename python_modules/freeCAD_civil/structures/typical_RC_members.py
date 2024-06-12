@@ -628,7 +628,7 @@ The data of the family is given as a dictionary of type:
             reinfCfg=self.reinfCfg,
             identifier=self.sideXmaxRb['id'],
             diameter=self.sideXmaxRb['fi'],
-            spacing=self.sideXminRb['s'],
+            spacing=self.sideXmaxRb['s'],
             nmbBars=self.sideXmaxRb['nmbBars'],
             lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax],
             rightSideCover=False,
@@ -784,7 +784,6 @@ The data of the family is given as a dictionary of type:
                 coverStirr+=self.topTrnsRb['fi']
             elif self.botTrnsRb:
                 coverStirr+=self.botTrnsRb['fi']
-            print('coverStirr=',coverStirr)
             hold_ln_sf=rb.stirrupFamily(
                 reinfCfg=self.reinfCfg,
                 identifier=stDic['id'],
@@ -1253,6 +1252,7 @@ The data of the family is given as a dictionary of type:
                             diameter of the defined families of rebars  
     :param aggrSize: maximum aggregate size (in m) (used to calculate the clear distance between rebar layers (if not defined by parameter clearDistRebars)
     '''
+    initCover=reinfCfg.cover
     if not(lstBotRb): lstBotRb=list()
     if not(lstTopRb): lstTopRb=list() 
     if not(lstLeftLatlRb): lstLeftLatlRb=list()
@@ -1276,7 +1276,7 @@ The data of the family is given as a dictionary of type:
         fisStirr=[rb['fi'] for rb in lstStirrReinf]
         maxFiStirr=max(fisStirr)
         # Add diameter of stirrups to default cover
-        reinfCfg.cover=reinfCfg.cover+maxFi
+        reinfCfg.cover=reinfCfg.cover+maxFiStirr
     # init lateral cover if not defined
     for rb in allRF:
         if 'lateralCover' not in rb.keys(): rb['lateralCover']=reinfCfg.cover
@@ -1285,7 +1285,7 @@ The data of the family is given as a dictionary of type:
         topLnRb=lstTopRb[ly]
         sideXminRb=lstLeftLatlRb[ly]
         sideXmaxRb=lstRightLatlRb[ly]
-        brick=genericBrickReinf(width=width,length=length,thickness=height,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,lstStirrHoldTrReinf=lstStirrReinf,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
+        brick=genericBrickReinf(width=width,length=length,thickness=height,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,lstStirrHoldLnReinf=lstStirrReinf,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId)
         if botLnRb:
             lstRebFam+=[brick.drawBottomLongRF()]
         if topLnRb:
@@ -1294,13 +1294,14 @@ The data of the family is given as a dictionary of type:
             lstRebFam+=[brick.drawSideXminRF()]
         if sideXmaxRb:
             lstRebFam+=[brick.drawSideXmaxRF()]
-        if lstStirrReinf:
-            lstStirrFam+=brick.drawStirrHoldingTransvSF()
-        # if lstStirrHoldLnReinf:
-        #     lstStirrFam+=brick.drawStirrHoldingLongSF()
+        #if lstStirrReinf:
+        #    lstStirrFam+=brick.drawStirrHoldingTransvSF()
         fisRb=[rb['fi'] for rb in [botLnRb,topLnRb,sideXminRb,sideXmaxRb] if rb]
         # add cover for the next layer
         reinfCfg.cover=reinfCfg.cover+max(fisRb)+clearDistRbLayers
+    reinfCfg.cover=initCover # revert cover to the the value defined in config 
+    if lstStirrReinf:
+        lstStirrFam+=brick.drawStirrHoldingLongSF()
     if drawConcrTrSect:     # 
         brick.drawTransvConcrSectYmax()
     if drawConcrLnSect:
