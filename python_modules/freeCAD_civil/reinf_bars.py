@@ -141,7 +141,8 @@ class rebarFamilyBase(object):
             if self.reinfCfg.code == 'EC2':
                 rbEndLength=contrReb.getLapLength(concrete= self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, ratioOfOverlapedTensionBars= ratio)
             elif self.reinfCfg.code == 'EHE':
-                rbEndLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=self.spacing,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
+                distBetweenNearestSplices=self.spacing if self.spacing else 9*self.diameter # if spacement is defined by number of bars, it's assumed that spacing is less than 10 times the diameter of the rebar
+                rbEndLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=distBetweenNearestSplices,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
                 print('rbEndLength=',rbEndLength)
 #                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
         if self.reinfCfg.roundAncLap:
@@ -723,7 +724,8 @@ class rebarFamily(rebarFamilyBase):
             elif self.reinfCfg.code == 'EHE':
                 posEHE='I' if self.position=='good' else 'II'
                 contrReb=EHElsc.RebarController(concreteCover=self.reinfCfg.cover, pos=posEHE, compression= self.compression)
-                lapLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=self.spacing,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff) # lateralConcreteCover is set to 0 for using old EHE beta calculation (beta=1, no reduction for lateral cover)
+                distBetweenNearestSplices=self.spacing if self.spacing else 9*self.diameter # if spacement is defined by number of bars, it's assumed that spacing is less than 10 times the diameter of the rebar
+                lapLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=distBetweenNearestSplices,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff) # lateralConcreteCover is set to 0 for using old EHE beta calculation (beta=1, no reduction for lateral cover)
             else:
                 lmsg.error('code '+ self.reinfCfg.code + 'is not supported')
             if self.reinfCfg.roundAncLap:

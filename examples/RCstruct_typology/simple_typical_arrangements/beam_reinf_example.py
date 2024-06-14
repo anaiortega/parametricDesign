@@ -92,10 +92,10 @@ lstRebarFam1,lstStirrupFam1,newStartId=trcm.beam_reinf(
     startId=1,
     clearDistRbLayers=None,
     aggrSize=20e-3)
-'''
+
 doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam1+lstStirrupFam1,
                title=titSchedule,
                doc=doc
 )
-'''
+
