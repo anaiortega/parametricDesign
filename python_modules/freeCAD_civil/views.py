@@ -1,12 +1,12 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division
 
 import Part, FreeCAD, FreeCADGui, math, TechDraw
 
 
 def vistaSuperior(tamHoja,orientacion):
-    #tamHoja: tamaño de la hoja, a elegir entre 'A4', 'A3', 'A1'
-    #orientacion: orientación de la hoja, puede ser 'vertical' o 'apaisado'
+    #tamHoja: tamaÃ±o de la hoja, a elegir entre 'A4', 'A3', 'A1'
+    #orientacion: orientaciÃ³n de la hoja, puede ser 'vertical' o 'apaisado'
     CreaHoja(tamHoja,orientacion)
     figura=Gui.Selection.getSelectionEx()[0]
     App.activeDocument().addObject('TechDraw::FeatureViewPart','topView')

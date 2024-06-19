@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 import Part, FreeCAD, math
 from freeCAD_civil import  draw_config as cfg

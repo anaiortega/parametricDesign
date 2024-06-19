@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 import Part, FreeCAD, math
 from freeCAD_civil import  draw_config as cfg
@@ -60,11 +60,11 @@ cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
 # chamfers' longitudinal rebar definition (diameter, spacement)
 ch_rb={'fi':12e-3,'s':0.30}
-# armadura longitudinal muretes (no se dibujan, sólo aparecen en despiece)
+# armadura longitudinal muretes (no se dibujan, sÃ³lo aparecen en despiece)
 muret_ln={'fi':0.016,'id':'15','nmBars':2*3,'gap':0.15} # diameter, ID, number of rebars, extension of the rebar through the deck of the box
 
 # Stirrup definition (see interpretartion of variables in handwritten notes)
-# Cercos losa de cimentación (envolviendo a armadura transversal)
+# Cercos losa de cimentaciÃ³n (envolviendo a armadura transversal)
 sRS=0.30
 nRS=int(boxL/sRS)
 dispRS=(boxL-nRS*sRS)/2

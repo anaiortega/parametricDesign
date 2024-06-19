@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 import Part, FreeCAD, math, TechDraw, FreeCADGui
 from FreeCAD import Base
@@ -6,14 +6,14 @@ from FreeCAD import Base
 def prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura):
     # Devuelve un prisma en un sistema de coordenadas general, definido por:
     # vOrigenL: vector que define el pto. origen del sistema de coordenadas local
-    # vDirXL: vector en la direcciÛn X del SC local
-    # vDirYL: vector en la direcciÛn Y del SC local
-    # vDirZL: vector en la direcciÛn Z del SC local
-    # listaCoordL: ptos. ordenados para definir la base del prisma (que estar· contenida en el plano XY local). Las coordenadas de estos ptos. se dan en el SC local en la forma: [[x1,y1],[x2,y2],[x3,y3],...].
-    # altura: altura del prisma (en direcciÛn vDirZL)
-    vDirXL.normalize() #vector de direcciÛn X local
-    vDirYL.normalize() #vector de direcciÛn Y local
-    vDirZL.normalize() #vector de direcciÛn Z local
+    # vDirXL: vector en la direcci√≥n X del SC local
+    # vDirYL: vector en la direcci√≥n Y del SC local
+    # vDirZL: vector en la direcci√≥n Z del SC local
+    # listaCoordL: ptos. ordenados para definir la base del prisma (que estar√° contenida en el plano XY local). Las coordenadas de estos ptos. se dan en el SC local en la forma: [[x1,y1],[x2,y2],[x3,y3],...].
+    # altura: altura del prisma (en direcci√≥n vDirZL)
+    vDirXL.normalize() #vector de direcci√≥n X local
+    vDirYL.normalize() #vector de direcci√≥n Y local
+    vDirZL.normalize() #vector de direcci√≥n Z local
     vertPolig=[]
     for i in range(0,len(listaCoordL)):
         vuX=Base.Vector(vDirXL.x,vDirXL.y,vDirXL.z)
@@ -29,15 +29,15 @@ def prismaSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordL,altura):
 def conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,altura,tol=1e-5):
     # Devuelve un conjunto de cilindros en un sistema de coordenadas general, definido por:
     # vOrigenL: vector que define el pto. origen del sistema de coordenadas local
-    # vDirXL: vector en la direcciÛn X del SC local
-    # vDirYL: vector en la direcciÛn Y del SC local
-    # vDirZL: vector en la direcciÛn Z del SC local
-    # listaCoordCentrosL: ptos. en los centros de la base de los cilindros (que estar·n contenidas en el plano XY local). Las coordenadas de estos ptos. se dan en el SC local en la forma: [[x1,y1],[x2,y2],[x3,y3],...].
-    # diametro: di·metro de los cilindros.
-    # altura: altura de los cilindros (en direcciÛn vDirZL)
-    vDirXL.normalize() #vector de direcciÛn X local
-    vDirYL.normalize() #vector de direcciÛn Y local
-    vDirZL.normalize() #vector de direcciÛn Z local
+    # vDirXL: vector en la direcci√≥n X del SC local
+    # vDirYL: vector en la direcci√≥n Y del SC local
+    # vDirZL: vector en la direcci√≥n Z del SC local
+    # listaCoordCentrosL: ptos. en los centros de la base de los cilindros (que estar√°n contenidas en el plano XY local). Las coordenadas de estos ptos. se dan en el SC local en la forma: [[x1,y1],[x2,y2],[x3,y3],...].
+    # diametro: di√°metro de los cilindros.
+    # altura: altura de los cilindros (en direcci√≥n vDirZL)
+    vDirXL.normalize() #vector de direcci√≥n X local
+    vDirYL.normalize() #vector de direcci√≥n Y local
+    vDirZL.normalize() #vector de direcci√≥n Z local
     for i in range(0,len(listaCoordCentrosL)):
         vuX=Base.Vector(vDirXL.x,vDirXL.y,vDirXL.z)
         vuY=Base.Vector(vDirYL.x,vDirYL.y,vDirYL.z)
@@ -50,22 +50,22 @@ def conjCilindSCgen(vOrigenL,vDirXL,vDirYL,vDirZL,listaCoordCentrosL,diametro,al
     return conjCilind
 
 def simXYPto(pto):
-    #Devuelve el pto. simÈtrico del dado respecto al plano XY
+    #Devuelve el pto. sim√©trico del dado respecto al plano XY
     ptoSim=Base.Vector(pto.x,pto.y,-pto.z)
     return ptoSim
 
 def simXZPto(pto):
-    #Devuelve el pto. simÈtrico del dado respecto al plano XZ
+    #Devuelve el pto. sim√©trico del dado respecto al plano XZ
     ptoSim=Base.Vector(pto.x,-pto.y,pto.z)
     return ptoSim
 
 def simYZPto(pto):
-    #Devuelve el pto. simÈtrico del dado respecto al plano YZ
+    #Devuelve el pto. sim√©trico del dado respecto al plano YZ
     ptoSim=Base.Vector(-pto.x,pto.y,pto.z)
     return ptoSim
 
 def simXYlistaCoord(listaCoord):
-    #Devuelve otra lista de coordenadas simÈtricas de las dadas respecto al plano XY
+    #Devuelve otra lista de coordenadas sim√©tricas de las dadas respecto al plano XY
     listaSim=[0]*len(listaCoord)       #creamos una lista inicial
     for i in range(0,len(listaCoord)):
         listaSim[i]=listaCoord[i][:]
@@ -73,7 +73,7 @@ def simXYlistaCoord(listaCoord):
     return listaSim
 
 def simXZlistaCoord(listaCoord):
-    #Devuelve otra lista de coordenadas simÈtricas de las dadas respecto al plano XZ
+    #Devuelve otra lista de coordenadas sim√©tricas de las dadas respecto al plano XZ
     listaSim=[0]*len(listaCoord)       #creamos una lista inicial
     for i in range(0,len(listaCoord)):
         listaSim[i]=listaCoord[i][:]
@@ -81,7 +81,7 @@ def simXZlistaCoord(listaCoord):
     return listaSim
 
 def simYZlistaCoord(listaCoord):
-    #Devuelve otra lista de coordenadas simÈtricas de las dadas respecto al plano YZ
+    #Devuelve otra lista de coordenadas sim√©tricas de las dadas respecto al plano YZ
     listaSim=[0]*len(listaCoord)       #creamos una lista inicial
     for i in range(0,len(listaCoord)):
         listaSim[i]=listaCoord[i][:]
@@ -89,7 +89,7 @@ def simYZlistaCoord(listaCoord):
     return listaSim
 
 def vistasIsom(App,escala,Pieza):
-#Perspectiva isomÈtrica. Vista anterosuperior
+#Perspectiva isom√©trica. Vista anterosuperior
 #    App.ActiveDocument().addObject('TechDraw::FeaturePage','IsoAnterosup')
     App.ActiveDocument.addObject('TechDraw::DrawPage','IsoAnterosup')
 #    App.ActiveDocument().IsoAnterosup.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
@@ -104,7 +104,7 @@ def vistasIsom(App,escala,Pieza):
 #    App.ActiveDocument.IsoAsup.ShowHiddenLines=False
     App.ActiveDocument.IsoAnterosup.addObject(App.ActiveDocument.IsoAsup)
     App.ActiveDocument.recompute()
-#Perspectiva isomÈtrica. Vista posteroinferior
+#Perspectiva isom√©trica. Vista posteroinferior
     App.ActiveDocument.addObject('TechDraw::DrawPage','IsoPosteroinf')
     App.ActiveDocument.IsoPosteroinf.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
     App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPinf')
@@ -120,7 +120,7 @@ def vistasIsom(App,escala,Pieza):
     return
 
 def vistaIsoAnterosup(App,escala,Pieza):
-#Perspectiva isomÈtrica. Vista anterosuperior
+#Perspectiva isom√©trica. Vista anterosuperior
     IsoAnterosup=App.ActiveDocument.addObject('TechDraw::DrawPage','IsoAnterosup')
     template = FreeCAD.ActiveDocument.addObject('TechDraw::DrawSVGTemplate','Template')
     template.Template=App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
@@ -138,7 +138,7 @@ def vistaIsoAnterosup(App,escala,Pieza):
     App.ActiveDocument.recompute()
     return
 def vistaIsoAnteroinf(App,escala,Pieza):
-#Perspectiva isomÈtrica. Vista anteroinferior
+#Perspectiva isom√©trica. Vista anteroinferior
     App.ActiveDocument.addObject('TechDraw::DrawPage','IsoAnteroinf')
     App.ActiveDocument.IsoAnteroinf.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
     App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoAinf')
@@ -154,7 +154,7 @@ def vistaIsoAnteroinf(App,escala,Pieza):
     return
 #
 def vistaIsoPosterosup(App,escala,Pieza):
-#Perspectiva isomÈtrica. Vista posteroinferior
+#Perspectiva isom√©trica. Vista posteroinferior
     App.ActiveDocument.addObject('TechDraw::DrawPage','IsoPosterosup')
     App.ActiveDocument.IsoPosterosup.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
     App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPsup')
@@ -170,7 +170,7 @@ def vistaIsoPosterosup(App,escala,Pieza):
     return
 
 def vistaIsoPosteroinf(App,escala,Pieza):
-#Perspectiva isomÈtrica. Vista posteroinferior
+#Perspectiva isom√©trica. Vista posteroinferior
     App.ActiveDocument.addObject('TechDraw::DrawPage','IsoPosteroinf')
     App.ActiveDocument.IsoPosteroinf.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
     App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPinf')
@@ -186,7 +186,7 @@ def vistaIsoPosteroinf(App,escala,Pieza):
     return
 
 def vistaIsoGeneral(App,escala,Pieza,vectorDir,angulo):
-#Perspectiva isomÈtrica. Vista general seg˙n la direcciÛn vectorDir
+#Perspectiva isom√©trica. Vista general seg√∫n la direcci√≥n vectorDir
     App.ActiveDocument.addObject('TechDraw::DrawPage','IsoGeneral')
     App.ActiveDocument.IsoGeneral.Template = App.getResourceDir()+'Mod/TechDraw/Templates/A3_Landscape_blank.svg'
     App.ActiveDocument.addObject('TechDraw::DrawViewPart','IsoPinf')

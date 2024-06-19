@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division
 
 __author__= "Ana Ortega (AO_O) "
@@ -1105,7 +1105,7 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
     numRows=sum([len(rb.lstWire) for rb in lstBarFamilies])
     totalWidth=sum(wColumns)
     p1=tables.drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc)
-    #Títulos para la tabla de despiece
+    #TÃ­tulos para la tabla de despiece
     pLinea=p1.add(Vector(0,hRows/2.0))
     pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
     dt.put_text_in_pnt('POS.',pPos,hText,cfg.colorTextLeft)

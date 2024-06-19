@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 import Part, FreeCAD, math
 import Draft
@@ -491,51 +491,51 @@ R1S=reinf_bars.rebarFamily(
 # Plan of sections
 App.newDocument("planRCsections")
 #SECCIONES LONGITUDINALES
-#secci髇 A-A
+#secci贸n A-A
 lstPtsConcrSect=[[Pl1i,Pl1,Pl2,Pl2i],[Pl8i,Pl3i,Pl3,Pl9,Pl9i]]
 lstShapeRebarFam=[F4S,F4I,F5S,F5I]
 lstSectRebarFam=[F11S,F9I,F10I,F12S,F12I,F13S,F13I,F14S,F14I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,30,0))
 
-#secci髇 B-B
+#secci贸n B-B
 lstPtsConcrSect=[[Pl1i,Pl1,Pl9,Pl9i],[Pl2i,Pl8i]]
 lstShapeRebarFam=[F4S,F4I,F5S,F5I,F15S,F15I]
 lstSectRebarFam=[F11S,F9I,F10I,F12S,F12I,F13S,F13I,F14S,F14I,F17]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,25,0))
 
-#secci髇 C-C
+#secci贸n C-C
 lstPtsConcrSect=[[Pl1i,Pl1,Pl2,Pl2i],[Pl8i,Pl3i,Pl3,Pl9,Pl9i]]
 lstShapeRebarFam=[F4S,F4I,F5S,F5I]
 lstSectRebarFam=[F11S,F9I,F10I,F12S,F12I,F13S,F13I,F14S,F14I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,20,0))
 
-#secci髇 D-D
+#secci贸n D-D
 lstPtsConcrSect=[[Pl1i,Pl1,Pl2,Pl2i],[Pl3,Pl5,Pl5i,Pl3i,Pl3]]
 [Pl8i,Pl6i,Pl6,Pl9,Pl9i],
 lstShapeRebarFam=[F3S,F3I,F6S,F6I]
 lstSectRebarFam=[F11S,F9I,F10I,F13S,F13I,F14S,F14I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,15,0))
 
-#secci髇 E-E
+#secci贸n E-E
 lstPtsConcrSect=[[Pl1i,Pl1,Pl5,Pl5i,Pl2i],[Pl8i,Pl6i,Pl6,Pl9,Pl9i]]
 lstShapeRebarFam=[F2S,F2I,F6S,F6I]
 lstSectRebarFam=[F8S,F8I,F9S,F9I,F10S,F10I,F13S,F13I,F14S,F14I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,10,0))
 
-#secci髇 F-F
+#secci贸n F-F
 lstPtsConcrSect=[[Pl1i,Pl1,Pl5,Pl5i,Pl2i],[Pl6,Pl7,Pl7i,Pl6i,Pl6]]
 [Pl8i,Pl8,Pl9,Pl9i],
 lstShapeRebarFam=[F2S,F2I,F7]
 lstSectRebarFam=[F8S,F8I,F9S,F9I,F10S,F10I,F13S,F13I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
 
-#secci髇 G-G
+#secci贸n G-G
 lstPtsConcrSect=[[Pl1i,Pl1,Pl4,Pl4i,Pl2i],[Pl8i,Pl6i,Pl6,Pl9,Pl9i]]
 lstShapeRebarFam=[F1S,F1I,F7,F16S,F16I]
 lstSectRebarFam=[F8S,F8I,F9S,F9I,F13S,F13I,R1S,18]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))
 
-#secci髇 H-H
+#secci贸n H-H
 lstPtsConcrSect=[[Pl1i,Pl1,Pl4,Pl4i,Pl2i],[Pl6,Pl7,Pl7i,Pl6i,Pl6]]
 [Pl8i,Pl8,Pl9,Pl9i],
 lstShapeRebarFam=[F1S,F1I,F7]
@@ -543,38 +543,38 @@ lstSectRebarFam=[F8S,F8I,F9S,F9I,F13S,F13I,R1S]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,-5,0))
 
 #SECCIONES TRANSVERSALES
-#secci髇 1-1
+#secci贸n 1-1
 lstPtsConcrSect=[[Pt1i,Pt1,Pt7,Pt7i,Pt2i],[Pt9,Pt10,Pt10i,Pt9i,Pt9],[Pt11i,Pt11,Pt12,Pt12i]]
 lstShapeRebarFam=[F14S,F14I,F18]
 lstSectRebarFam=[F5S,F5I,F6S,F6I,F16S,F16I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(30,30,0))
 
 
-#secci髇 2-2
+#secci贸n 2-2
 lstPtsConcrSect=[[Pt1i,Pt1,Pt12,Pt12i],[Pt2i,Pt11i]]
 lstShapeRebarFam=[F13S,F13I]
 lstSectRebarFam=[F5S,F5I,F6S,F6I,F7]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(30,25,0))
 
-#secci髇 3-3
+#secci贸n 3-3
 lstPtsConcrSect=[[Pt1i,Pt1,Pt5,Pt5i,Pt2i],[Pt11i,Pt11,Pt12,Pt12i]]
 lstShapeRebarFam=[F12S,F12I]
 lstSectRebarFam=[F4S,F4I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(30,20,0))
 
-#secci髇 4-4
+#secci贸n 4-4
 lstPtsConcrSect=[[Pt1i,Pt1,Pt8,Pt8i,Pt2i],[Pt11i,Pt11,Pt12,Pt12i]]
 lstShapeRebarFam=[F11S,F10S,F10I]
 lstSectRebarFam=[F4S,F4I,F3S,F3I,F2S,F2I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(30,15,0))
 
-#secci髇 5-5
+#secci贸n 5-5
 lstPtsConcrSect=[[Pt1i,Pt1,Pt12,Pt12i],[Pt2i,Pt11i]]
 lstShapeRebarFam=[F11S,F9S,F9I,R1S]
 lstSectRebarFam=[F4S,F4I,F3S,F3I,F2S,F2I,F1S,F1I]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(30,10,0))
 
-#secci髇 6-6
+#secci贸n 6-6
 lstPtsConcrSect=[[Pt1i,Pt1,Pt2,Pt2i],[Pt3,Pt4,Pt4i,Pt3i,Pt3],[Pt11i,Pt6i,Pt6,Pt12,Pt12i]]
 lstShapeRebarFam=[F8S,F8I,F17]
 lstSectRebarFam=[F2S,F2I,F1S,F1I,F15S,F15I]

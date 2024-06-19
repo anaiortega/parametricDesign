@@ -1,11 +1,11 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 import Part, FreeCAD, math
 import Draft
 from FreeCAD import Base
 
 def int2rectas(P1,P2,P3,P4,tol=1e-5):
-    ''' Devuelve el punto de intersección de 2 rectas 2D
+    ''' Devuelve el punto de intersecciÃ³n de 2 rectas 2D
 
     :param P1 y P2: ptos. que definen la 1a. recta
     :param P3 y P4: ptos. que definen la 2a. recta
@@ -44,22 +44,22 @@ def int2rectas(P1,P2,P3,P4,tol=1e-5):
 def fillet2D(Pini,P2recta1,P1recta2,Pfin,radioConSigno):
     '''Devuelve dos segmentos de las rectas definidas por los ptos Pini-P2recta1 y P1recta2-Pfin y el arco de circunferencia de radio igual al valor absoluto de radioConSigno que es tangente a ellas.
 
-    :param Pini: pto. 1 de la recta 1, será el 1er pto. de la línea que devuelve la función
+    :param Pini: pto. 1 de la recta 1, serÃ¡ el 1er pto. de la lÃ­nea que devuelve la funciÃ³n
     :param P2recta1: pto. 2 de la recta 1
     :param P1recta2:  pto. 1 de la recta 2
-    :param Pfin: pto. 2 de la recta 2, será el último pto. de la línea que devuelve la función
+    :param Pfin: pto. 2 de la recta 2, serÃ¡ el Ãºltimo pto. de la lÃ­nea que devuelve la funciÃ³n
     :param radioConSigno: radio del arco de circunferencia tangente signo + si de Pini a Pfin gira en el sentido contrario a las agujas del reloj, - en caso contrario.
     '''
     signo=radioConSigno/abs(radioConSigno)
     v1=P2recta1.sub(Pini)
-    v1.normalize() #vector de dirección de la recta 1
+    v1.normalize() #vector de direcciÃ³n de la recta 1
     v2=Pfin.sub(P1recta2)
-    v2.normalize() #vector de dirección de la recta 2
+    v2.normalize() #vector de direcciÃ³n de la recta 2
     vP1=Base.Vector(-1*signo*v1.y,signo*v1.x)
-    vP1.normalize() #vector de dirección perpendicular a la recta 1
+    vP1.normalize() #vector de direcciÃ³n perpendicular a la recta 1
     vP1.multiply(abs(radioConSigno))
     vP2=Base.Vector(-1*signo*v2.y,signo*v2.x)
-    vP2.normalize() #vector de dirección perpendicular a la recta 2
+    vP2.normalize() #vector de direcciÃ³n perpendicular a la recta 2
     vP2.multiply(abs(radioConSigno))
     Paux1=Pini.add(vP1)
     Paux2=Paux1.add(v1)
@@ -85,7 +85,7 @@ def fillet2D(Pini,P2recta1,P1recta2,Pfin,radioConSigno):
     
 def angVector2DEjeX(vector2D,tol=1e-5):
     '''
-    Devuelve el ángulo en grados (entre 0 y 360) que forma el vector con el eje X. Los ángulos crecen en sentido contrario a las agujas del reloj
+    Devuelve el Ã¡ngulo en grados (entre 0 y 360) que forma el vector con el eje X. Los Ã¡ngulos crecen en sentido contrario a las agujas del reloj
     '''
     abcisa=vector2D.x
     ordenada=vector2D.y
@@ -112,11 +112,11 @@ def arcoCoronaCircular(rInt,rExt,vectorCentro,angIni,angFin):
 
     :param rInt: radio interior
     :param rExt: radio exterior
-    :param vectorCentro: centro del círculo (coordenadas x,y)
-    :param angIni: ángulo inicial (0 a 360º)
-    :param angFin: ángulo final (0 a 360º)
+    :param vectorCentro: centro del cÃ­rculo (coordenadas x,y)
+    :param angIni: Ã¡ngulo inicial (0 a 360Âº)
+    :param angFin: Ã¡ngulo final (0 a 360Âº)
 
-    Los ángulos crecen en sentido contrario a las agujas del reloj
+    Los Ã¡ngulos crecen en sentido contrario a las agujas del reloj
     '''
     arcoExt=Part.makeCircle(rExt,vectorCentro,Base.Vector(0,0,1),angIni,angFin)
     arcoInt=Part.makeCircle(rInt,vectorCentro,Base.Vector(0,0,1),angIni,angFin)

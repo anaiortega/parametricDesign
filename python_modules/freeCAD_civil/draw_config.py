@@ -92,6 +92,10 @@ class tableConf(object):
         self.wColumns=wColumns
         self.hRows=hRows
         self.hText=hText
+        
+    def getWidthTable(self):
+        wTable=sum(self.wColumns)
+        return wTable
 
 setoutCfg=tableConf(wColumns=[15,25,25,18],hRows=5,hText=2.5)
 

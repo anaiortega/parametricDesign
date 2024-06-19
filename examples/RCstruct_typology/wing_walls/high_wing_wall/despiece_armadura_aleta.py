@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 import Part, FreeCAD, math
 import Draft
@@ -24,11 +24,11 @@ cover=0.06
 hTexts=0.125
 wToe=1.45  #ancho de la puntera
 
-#  Muro (intrad髎=cara visible, trasd髎= cara en contacto con tierras)
-wTop=0.30  #espesor del muro en coronaci髇
+#  Muro (intrad贸s=cara visible, trasd贸s= cara en contacto con tierras)
+wTop=0.30  #espesor del muro en coronaci贸n
 hWallMax=256.38-248.780
 hWallMin=2.78+(hWallMax-2.78)/(5.3+6.2)*5.3
-slopeBack=1/15.  #pendiente del trasd髎 (H/V)
+slopeBack=1/15.  #pendiente del trasd贸s (H/V)
 
 #  Armados zapata
 # armadura transversal inferior
@@ -43,7 +43,7 @@ s_Z1_3=0.20
 # armadura longitudinal superior
 fi_Z1_4=0.016
 s_Z1_4=0.20
-# armadura lateral tal髇
+# armadura lateral tal贸n
 fi_Z1_7=0.016
 s_Z1_7=0.25
 # armadura lateral puntera
@@ -56,33 +56,33 @@ Lpatas=0.40
 LsolapeTrasd=0.45
 LsolapeIntra=0.95
 LrefIntra=4.5
-# Vertical trasd髎
+# Vertical trasd贸s
 fi_M1_3=0.010
 s_M1_3=0.20
 
-# Vertical intrad髎
+# Vertical intrad贸s
 fi_M1_4=0.020
 s_M1_4=0.20
 
-# Refuerzo vertical intrad髎
+# Refuerzo vertical intrad贸s
 fi_M1_1=0.025
 s_M1_1=0.20
 
-# Horizontal trasd髎 zona inferior
+# Horizontal trasd贸s zona inferior
 fi_M1_9=0.016
 s_M1_9=0.20
 
-# Horizontal intrad髎 zona inferior
+# Horizontal intrad贸s zona inferior
 fi_M1_7=0.016
 s_M1_7=0.20
 
 
-# Horizontal intrad髎 zona superior
+# Horizontal intrad贸s zona superior
 fi_M1_6=0.016
 s_M1_6=0.20
 
 
-# Horizontal trasd髎 zona superior
+# Horizontal trasd贸s zona superior
 fi_M1_8=0.016
 s_M1_8=0.20
 
@@ -90,7 +90,7 @@ s_M1_8=0.20
 # END DATA
 
 
-#Puntos secci髇 longitudinal
+#Puntos secci贸n longitudinal
 #    zapata
 Plfoot_1=Vector(0,0)
 Plfoot_2=Vector(0,thFoot)
@@ -101,13 +101,13 @@ Plwall_1=Vector(0,thFoot+hWallMax)
 Plwall_2=Vector(lWall,thFoot+hWallMin)
 
 
-#Puntos secci髇 transversal vertical
+#Puntos secci贸n transversal vertical
 #    zapata
 Ptfoot_1=Vector(0,0)
 Ptfoot_2=Vector(0,thFoot)
 Ptfoot_3=Vector(wFoot,thFoot)
 Ptfoot_4=Vector(wFoot,0)
-#    muro: secciones de altura m醲ima (1) y m韓ima (2)
+#    muro: secciones de altura m谩xima (1) y m铆nima (2)
 Ptwall_0=Vector(wToe,0)
 Ptwall_1=Vector(wToe,thFoot)
 Ptwall1_2=Vector(wToe,thFoot+hWallMax)
@@ -197,7 +197,7 @@ Z1_7=reinf_bars.rebarFamily(
     fromToExtPts=[Ptfoot_1,Ptfoot_2],
     coverSectBars=cover+fi_Z1_1)
 
-# armadura lateral tal髇
+# armadura lateral tal贸n
 Z1_8=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='Z1/8',
@@ -211,7 +211,7 @@ Z1_8=reinf_bars.rebarFamily(
 )
 
 #Armadura muro
-# Esperas vertical trasd髎
+# Esperas vertical trasd贸s
 M1_2=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/2',
@@ -226,7 +226,7 @@ M1_2=reinf_bars.rebarFamily(
     coverSectBars=cover,
     rightSideSectBars=False,
 )
-# Armadura vertical trasd髎
+# Armadura vertical trasd贸s
 M1_3=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/3',
@@ -241,7 +241,7 @@ M1_3=reinf_bars.rebarFamily(
     lstPtsConcrSect2=[Ptwall_1,Ptwall2_2,Ptwall2_3]
     )
 
-# Esperas vertical intrad髎
+# Esperas vertical intrad贸s
 M1_5=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/5',
@@ -258,7 +258,7 @@ M1_5=reinf_bars.rebarFamily(
     rightSideSectBars=False,
 )
 
-# Armadura vertical intrad髎
+# Armadura vertical intrad贸s
 M1_4=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/4',
@@ -272,7 +272,7 @@ M1_4=reinf_bars.rebarFamily(
     lstPtsConcrSect2=[Ptwall2_4,Ptwall2_3,Ptwall2_2]    
 )
 
-# Refuerzo vertical intrad髎
+# Refuerzo vertical intrad贸s
 M1_1=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/1',
@@ -286,7 +286,7 @@ M1_1=reinf_bars.rebarFamily(
     fromToExtPts=[Ph1_2,Ph1_3],
     coverSectBars=cover+fi_M1_4+fi_M1_7,
 )
-# Horizontal trasd髎 zona inferior
+# Horizontal trasd贸s zona inferior
 M1_7=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/7',
@@ -302,7 +302,7 @@ M1_7=reinf_bars.rebarFamily(
     lstPtsConcrSect2=[Ph_1,Ph2_2,Ph2_3,Ph_4]
 )
 
-# Horizontal intrad髎 zona inferior
+# Horizontal intrad贸s zona inferior
 M1_9=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/9',
@@ -317,7 +317,7 @@ M1_9=reinf_bars.rebarFamily(
     coverSectBars=cover+fi_Z1_3,
 )
 
-# Horizontal trasd髎 zona inferior
+# Horizontal trasd贸s zona inferior
 M1_6=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/6',
@@ -333,7 +333,7 @@ M1_6=reinf_bars.rebarFamily(
     lstPtsConcrSect2=[Ph_1,Ph3_2,Ph3_3,Ph3_4]
 )
 
-# Horizontal intrad髎 zona superior
+# Horizontal intrad贸s zona superior
 M1_8=reinf_bars.rebarFamily(
     reinfCfg=aletGenConf,
     identifier='M1/8',
@@ -362,7 +362,7 @@ for fa in listafamiliasArmad:
 # Plan of sections
 App.newDocument("planRCsections")
 #SECCIONES TRANSVERSALES
-#secci髇 A-A
+#secci贸n A-A
 lstPtsConcrSect=[[Ptfoot_1,Ptfoot_2,Ptwall_1,Ptwall1_2,Ptwall1_3,Ptwall1_4,Ptfoot_3,Ptfoot_4,Ptfoot_1]]
 lstShapeRebarFam=[Z1_1,Z1_2,M1_1,M1_2,M1_3,M1_5,M1_4]
 lstSectRebarFam=[Z1_3,Z1_4,Z1_7,Z1_8,M1_9,M1_7,M1_6,M1_8]
@@ -373,7 +373,7 @@ lstSectRebarFam=[Z1_3,Z1_4,Z1_7,Z1_8,M1_9,M1_7,M1_6,M1_8]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,5,0))
 
 #SECCIONES LONGITUDINALES
-#secci髇 B-B
+#secci贸n B-B
 lstPtsConcrSect=[[Plfoot_1,Plfoot_2,Plfoot_3,Plfoot_4,Plfoot_1]]
 lstShapeRebarFam=[Z1_3,Z1_4]
 lstSectRebarFam=[Z1_1,Z1_2]
@@ -384,7 +384,7 @@ lstSectRebarFam=[Z1_1,Z1_2]
 #     rf.drawPolySectBars(vTranslation)
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(10,5,0))
 
-#SECCI覰 HORIZONTAL POR LA BASE DEL MURO
+#SECCI脫N HORIZONTAL POR LA BASE DEL MURO
 lstPtsConcrSect=[[Ph_1,Ph1_2,Ph1_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[M1_7,M1_9]
 lstSectRebarFam=[M1_3,M1_1,M1_4]
@@ -400,7 +400,7 @@ lstSectRebarFam=[M1_3,M1_1,M1_4]
 reinf_bars.drawRCSection(lstPtsConcrSect,lstShapeRebarFam,lstSectRebarFam,vTranslation=Vector(0,0,0))
 
 
-#SECCI覰 HORIZONTAL SUPERIOR
+#SECCI脫N HORIZONTAL SUPERIOR
 lstPtsConcrSect=[[Ph_1,Ph2_2,Ph2_3,Ph_4,Ph_1]]
 lstShapeRebarFam=[M1_6,M1_8]
 lstSectRebarFam=[]
