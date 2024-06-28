@@ -27,13 +27,13 @@ angTrns=0 # angle (degrees) between the horizontal and the cross-section width d
 angLn=90
 
 # Bottom rebars
-botRbLy1={'id':'1','fi':32e-3,'nmbBars':4,'position':'good','gapStart':-1.0,'gapEnd':2.0}
+botRbLy1={'id':'1','fi':32e-3,'nmbBars':4,'position':'good','gapStart':-1.0,'gapEnd':2.0,'addTxt2Label':'(CAPA 1)'}
 botRbLy2={'id':'2','fi':25e-3,'nmbBars':5,'position':'good','extrShapeStart':'fix90_len500','lateralCover':0.1}
 botRbLy3={'id':'3','fi':16e-3,'nmbBars':4,'position':'good','extrShapeEnd':'fix45_len420'}
 
 # Top rebars
 topRbLy1={'id':'4','fi':25e-3,'nmbBars':5,'position':'poor','vectorLRef':Vector(-0.5,0.5),'closedStart':True,'closedEnd':True}
-topRbLy2={'id':'5','fi':20e-3,'nmbBars':4,'position':'poor','nMembers':3,'closedStart':True}#,'extrShapeStart':'anc90_posPoor_tens'}
+topRbLy2={'id':'5','fi':20e-3,'nmbBars':4,'position':'poor','nMembers':3,'closedStart':True,'addTxt2Label':'(CAPA 2)'}#,'extrShapeStart':'anc90_posPoor_tens'}
 
 #Lateral rebars (left side)
 latLRbLy1={'id':'6','fi':12e-3,'s':0.20,'position':'good','extensionLength':0.2,'vectorLRef':Vector(-0.5,0.5)}
@@ -51,7 +51,8 @@ stirr1={'id':'9' ,
         'nStirrPerp':15 ,
         'widthStirr':width-2*cover-fiStirr ,
         'dispRealSh':-cover,
-        'dispPerp':0.30 }
+        'dispPerp':0.30,
+        'addTxt2Label':'stirrup text'}
 fiStirr2=8e-3
 stirr2={'id':'10' ,
         'fi':fiStirr2,

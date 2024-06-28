@@ -48,8 +48,9 @@ class rebarFamilyBase(object):
           defined with 'reinfCfg'
     :ivar rightSideCover: side to give cover  (False: left side, True for right side)
           (defaults to True)
+    :ivar addTxt2Label: add the specified text to the reinforcement label 
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover=None,rightSideCover=True):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover=None,rightSideCover=True,addTxt2Label=None):
         self.reinfCfg=reinfCfg
         self.identifier=identifier
         self.diameter=diameter
@@ -62,6 +63,7 @@ class rebarFamilyBase(object):
         else:
             self.lstCover= lstCover
         self.rightSideCover=rightSideCover
+        self.addTxt2Label=addTxt2Label
  
     def getNextLstCover(self):
         '''Return the list of covers for a rebar family that is tangent to the internal face of this family
@@ -298,6 +300,8 @@ class rebarFamilyBase(object):
                 tx=self.identifier + '  ' + str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter))
             else:
                 tx=self.identifier + '  %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing)
+            if self.addTxt2Label:
+                tx=tx+' '+self.addTxt2Label
             ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
             pos='l'
         else:
@@ -306,6 +310,9 @@ class rebarFamilyBase(object):
                 tx=str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter)) + '   ' + self.identifier
             else:
                 tx='%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing) +'   ' + self.identifier
+            if self.addTxt2Label:
+                tx=self.addTxt2Label+' '+tx
+           
             ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
             pos='r'
         dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
@@ -424,9 +431,10 @@ class rebarFamily(rebarFamilyBase):
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text 
             (defaults to True)
     :ivar nMembers: number of identic members. The calculated number of bars is multiplied by nMembers (defaults to 1)
+    :ivar addTxt2Label: add the specified text to the reinforcement label 
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1):
-        super(rebarFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrSect,fromToExtPts=None,sectBarsConcrRadius=None,extensionLength=None,lstCover=None,rightSideCover=True,vectorLRef=Vector(0.5,0.5),coverSectBars=None,lateralCover=None,rightSideSectBars=True,spacing=None,nmbBars=None,lstPtsConcrSect2=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None):
+        super(rebarFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover,addTxt2Label)
         self.spacing=spacing 
         self.vectorLRef= vectorLRef
         self.fromToExtPts= fromToExtPts
@@ -858,10 +866,11 @@ class stirrupFamily(rebarFamilyBase):
             len[number]: number is the length of the segment to add (in mm)
             Examples: 'fix45_len150'
     :ivar nMembers: number of identic members. The calculated number of stirrups is multiplied by nMembers (defaults to 1)
+    :ivar addTxt2Label: add the specified text to the reinforcement label 
     
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1):
-        super(stirrupFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover)
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None):
+        super(stirrupFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover,addTxt2Label)
         self.lstPtsConcrLong=lstPtsConcrLong
         self.concrSectRadius=concrSectRadius
         self.spacStrpTransv=spacStrpTransv
@@ -890,7 +899,6 @@ class stirrupFamily(rebarFamilyBase):
         if nmbStrpLong > 1 and  not(spacStrpLong):
             raise ValueError("parameter 'spacStrpLong'  must be defined for stirrup family: " + identifier)
 
-        
     def getVdirTrans(self):
         '''return a unitary direction vector in transversal section'''
         if self.vDirTrans is None:
@@ -1020,8 +1028,6 @@ class stirrupFamily(rebarFamilyBase):
         vauxn.normalize()
         self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=None)
 
-    
-
     def rebarText(self,justif,pText):
         '''Write the text that labels the rebar family
 
@@ -1032,6 +1038,8 @@ class stirrupFamily(rebarFamilyBase):
         '''
         hText=self.reinfCfg.texSize
         txt=self.getTextFiSpacing()
+        if self.addTxt2Label:
+            txt+=' '+self.addTxt2Label
         if justif=="Left":
             txtColor=cfg.colorTextLeft
             tx=self.identifier + '   '+ txt

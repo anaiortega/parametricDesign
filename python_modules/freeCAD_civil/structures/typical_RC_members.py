@@ -139,6 +139,7 @@ The data of the family is given as a dictionary of type:
         if 'drawSketch' in RFdef.keys(): RF.drawSketch=RFdef['drawSketch']
         if 'maxLrebar' in RFdef.keys(): RF.maxLrebar=RFdef['maxLrebar']
         if 'lateralCover' in RFdef.keys(): RF.lateralCover=RFdef['lateralCover']
+        if 'addTxt2Label' in RFdef.keys(): RF.addTxt2Label=RFdef['addTxt2Label']
         
     def setFSoptions(self,SF,SFdef):
         '''Set optional attributes SF stirrup family that has been defined in dictionary SFdef
@@ -152,6 +153,7 @@ The data of the family is given as a dictionary of type:
             SF.addL2closed=SFdef['addL2closed']
         if 'vectorLRef' in SFdef.keys(): SF.vectorLRef=SFdef['vectorLRef']
         if 'rightSideLabelLn' in SFdef.keys(): SF.rightSideLabelLn=SFdef['rightSideLabelLn']
+        if 'addTxt2Label' in SFdef.keys(): SF.addTxt2Label=SFdef['addTxt2Label']
         
     def getVdirTransv(self):
         vdirTr=Vector(math.cos(math.radians(self.angTrns)),math.sin(math.radians(self.angTrns)))
