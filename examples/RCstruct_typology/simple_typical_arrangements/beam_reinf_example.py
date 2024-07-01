@@ -22,7 +22,7 @@ cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 
 width=0.7 # beam cross-section width
 height=1.5 # beam cross-section height
-length=13 # beam length
+length=33 # beam length
 angTrns=0 # angle (degrees) between the horizontal and the cross-section width dimension
 angLn=90
 

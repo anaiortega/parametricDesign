@@ -118,7 +118,7 @@ class rebarFamilyBase(object):
             elif pos=='poor':
                 eta1=0.7
             else:
-                print('rebar familly ', self.identifier,' must be in "good" or "poor" position')
+                print('rebar family ', self.identifier,' must be in "good" or "poor" position')
             if self.reinfCfg.code == 'EC2':
                 contrReb=EC2lsc.RebarController(concreteCover=self.reinfCfg.cover, spacing=self.spacing, eta1=eta1, compression= compression) # create rebar controllers to calculate anchor or gap lengths
             elif self.reinfCfg.code == 'EHE':
@@ -145,7 +145,6 @@ class rebarFamilyBase(object):
             elif self.reinfCfg.code == 'EHE':
                 distBetweenNearestSplices=self.spacing if self.spacing else 9*self.diameter # if spacement is defined by number of bars, it's assumed that spacing is less than 10 times the diameter of the rebar
                 rbEndLength=contrReb.getLapLength(concrete=self.reinfCfg.xcConcr,rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel,distBetweenNearestSplices=distBetweenNearestSplices,steelEfficiency=1,ratioOfOverlapedTensionBars=1,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
-                print('rbEndLength=',rbEndLength)
 #                rbEndLength=contrReb.getDesignAnchorageLength(concrete=self.reinfCfg.xcConcr, rebarDiameter=self.diameter, steel=self.reinfCfg.xcSteel, steelEfficiency= 1.0, barShape= barShape,lateralConcreteCover=0,dynamicEffects=self.reinfCfg.dynamEff)
         if self.reinfCfg.roundAncLap:
             rbEndLength=math.ceil(rbEndLength/self.reinfCfg.roundAncLap)*self.reinfCfg.roundAncLap
@@ -1110,7 +1109,8 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
         if rf.lstWire==None:
             rf.createLstRebar()
 #    totalWidth=sum(wColumns)
-    numRows=sum([len(rb.lstWire) for rb in lstBarFamilies])
+    numRows=0
+    numRows=sum([min(len(rb.lstWire),3) for rb in lstBarFamilies])
     totalWidth=sum(wColumns)
     p1=tables.drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc)
     #Títulos para la tabla de despiece
@@ -1144,6 +1144,12 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
         formatSpacing='%.'+str(rbFam.reinfCfg.decSpacing)+'f'
         if rbFam.lstWire==None:
             rbFam.createLstRebar()
+        if len(rbFam.lstWire) > 3: #sucesión de barras que superan la longitud máxima
+            nIntermBars=len(rbFam.lstWire)-2
+            for i in range(nIntermBars-1):
+                rbFam.lstWire.pop(-2)
+        else:
+            nIntermBars=None
         for i in range(len(rbFam.lstWire)):
             #identifier
             pPos=pLinea.add(Vector(hText/2.0,-hText/2.0))
@@ -1163,11 +1169,16 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
             #number of bars
             pNbarras=pLinea.add(Vector(sum(wColumns[:4])-hText/2.0,-hText/2.0))
             nBar=rbFam.getNumberOfBars()*rbFam.nMembers
-            dt.put_text_in_pnt(str(nBar),pNbarras, hText, cfg.colorTextRight,"Right")
+            textNbar=str(nBar)
+            if nIntermBars and i==1:
+                textNbar=str(nIntermBars)+'x'+textNbar
+            dt.put_text_in_pnt(textNbar,pNbarras, hText, cfg.colorTextRight,"Right")
             pbarLength=pLinea.add(Vector(sum(wColumns[:5])-hText/2.0,-hText/2.0))
             dt.put_text_in_pnt(barLengthTxt,pbarLength, hText, cfg.colorTextRight,"Right")
             pPeso=pLinea.add(Vector(sum(wColumns[:6])-hText/2.0,-hText/2.0))
             peso=nBar*barLength*rbFam.getUnitWeight()
+            if nIntermBars and i==1:
+                peso=nIntermBars*peso
             dt.put_text_in_pnt(formatLength %peso,pPeso, hText, cfg.colorTextRight,"Right")
             pesoTotal += peso
             pLinea=pLinea.add(Vector(0,-hRows))
