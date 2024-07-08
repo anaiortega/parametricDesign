@@ -350,7 +350,7 @@ class rebarFamily(rebarFamilyBase):
             must be defined  by means of the attributes  'sectBarsConcrRadius' 
             or 'extensionLength'.
     :ivar sectBarsConcrRadius: radius of the concrete circular section to 
-            which ara attached the sectioned rebars. Defaults to None, 
+            which are attached the sectioned rebars. Defaults to None, 
             in which case the stretch of sectioned rebars must be defined 
             with attributes 'fromToExtPts' or 'extensionLength'.
     :ivar extensionLength: length of the stretch in which the rebar family extends.

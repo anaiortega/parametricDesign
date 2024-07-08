@@ -1,6 +1,8 @@
 import json
 import FreeCAD as App
 import Draft
+from materials.ec2 import EC2_materials
+
 # These variables will be substitutted  by layers in   all  modules
 colorRebars=(0.00,1.00,0.00) # green (color 3 Autocad)
 colorSectBars= (1.00,0.00,0.00) # red (color 1 Autocad)
@@ -15,7 +17,6 @@ colorFrames=(0.00,0.00,0.00) # black (color 7 Autocad)
 colorLinesTables=(1.00,0.50,0.50)# gray (color 11 Autocad)
 colorHidden=(0.5058,0.00,0.00) # color 14 Autocad
 colorAxis=(0.31,0.00,0.00) # color 12 AutoCad
-
 
 class reinfConf(object):
     '''
@@ -77,6 +78,7 @@ class reinfConf(object):
             clearDistBars=max(fiMax,20e-3,dg+5e-3)
         return clearDistBars
         
+reinfConf_C25_S500=reinfConf(cover=0.03,xcConcr=EC2_materials.C25,xcSteel=EC2_materials.S500C)
         
         
 

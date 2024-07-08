@@ -16,13 +16,13 @@ width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
 thickness=0.4  #thickness of the slab
 # bottom transverse rebars data
-botTrnsRb={'id':'1','fi':20e-3,'s':0.15,'gapStart':0.5,'extrShapeStart':'anc90_posGood_tens','extrShapeEnd':'anc90_posGood_tens','position':'good','vectorLRef':Vector(-0.3,-0.35),'closedStart':True,'closedEnd':True} 
+botTrnsRb=trcm.brkRbFam(fi=20e-3,s=0.15,Id='1',gapStart=0.5,extrShapeStart='anc90_posGood_tens',extrShapeEnd='anc90_posGood_tens',position='good',vectorLRef=Vector(-0.3,-0.35),closedStart=False,closedEnd=False) 
 # top transverse rebars data
-topTrnsRb={'id':'3','fi':16e-3,'s':0.15,'extrShapeStart':'lap270_posPoor_tens','extrShapeEnd':'lap0_posPoor_tens_perc100','position':'poor','closedStart':True,'closedEnd':True}#,'fixLengthEnd':2} 
+topTrnsRb=trcm.brkRbFam(fi=16e-3,s=0.15,Id='3',extrShapeStart='lap270_posPoor_tens',extrShapeEnd='lap0_posPoor_tens_perc100',position='poor',closedStart=False,closedEnd=False)#,fixLengthEnd=2) 
 # bottom longitudinal rebars data
-botLnRb={'id':'2','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.5,'fixLengthStart':0.5,'gapEnd':2,'extrShapeEnd':'lap45_posGood_compr','position':'good','vectorLRef':Vector(0.4,-0.20),'closedStart':True,'closedEnd':True}
+botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='2',distRFstart=0.1,distRFend=0.5,fixLengthStart=0.5,gapEnd=2,extrShapeEnd='lap45_posGood_compr',position='good',vectorLRef=Vector(0.4,-0.20),closedStart=True,closedEnd=False)
 # top longitudinal rebars data
-topLnRb={'id':'4','fi':16e-3,'s':0.20,'distRFstart':0.1,'distRFend':0.3,'extrShapeStart':'fix40_len1200','extrShapeEnd':'lap180_posPoor_tens_perc50','position':'poor','closedStart':True,'closedEnd':True}
+topLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='4',distRFstart=0.1,distRFend=0.3,extrShapeEnd='lap180_posPoor_tens_perc50',position='poor',closedStart=True,closedEnd=False)
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
@@ -50,8 +50,8 @@ brick=trcm.genericBrickReinf(
     topLnRb=topLnRb,
     )
 
-stYmax=brick.drawClosedTransvConcrSectYmax()
-lnXmax=brick.drawClosedLongConcrSectXmax()
+stYmax=brick.drawTransvConcrSectYmax()
+lnXmax=brick.drawLongConcrSectXmax()
 brick.drawBottomTransvRF()
 brick.drawTopTransvRF()
 brick.drawBottomLongRF()
@@ -62,8 +62,8 @@ brick.anchPtTrnsSect+=Vector(0,2)
 brick.anchPtLnSect+=Vector(0,2)
 brick.angTrns=30
 brick.angLn=10
-brick.drawClosedTransvConcrSectYmax()
-brick.drawClosedLongConcrSectXmax()
+brick.drawTransvConcrSectYmax()
+brick.drawLongConcrSectXmax()
 brick.drawBottomTransvRF()
 brick.drawTopTransvRF()
 brick.drawBottomLongRF()
@@ -77,8 +77,8 @@ brick.angTrns=0
 brick.angLn=0
 brick.trSlopeBottFace=-0.25/1
 brick.trSlopeTopFace=0.15/1
-brick.drawClosedTransvConcrSectYmax()
-brick.drawClosedLongConcrSectXmax()
+brick.drawTransvConcrSectYmax()
+brick.drawLongConcrSectXmax()
 brick.drawBottomTransvRF()
 brick.drawTopTransvRF()
 brick.drawBottomLongRF()
@@ -92,8 +92,8 @@ brick.angTrns=90
 brick.angLn=90
 brick.trSlopeBottFace=0.2/2
 brick.trSlopeTopFace=-0.1/2
-brick.drawClosedTransvConcrSectYmax()
-brick.drawClosedLongConcrSectXmax()
+brick.drawTransvConcrSectYmax()
+brick.drawLongConcrSectXmax()
 brick.drawBottomTransvRF()
 brick.drawTopTransvRF()
 brick.drawBottomLongRF()
@@ -108,9 +108,9 @@ brick.angLn=0
 brick.trSlopeBottFace=None
 brick.trSlopeTopFace=None
 brick.slopeEdge=1/2
-brick.drawClosedTransvConcrSectYmax()
-brick.drawClosedLongConcrSectXmax()
-brick.drawClosedTransvConcrSectYmin()
+brick.drawTransvConcrSectYmax()
+brick.drawLongConcrSectXmax()
+brick.drawTransvConcrSectYmin()
 brick.drawBottomTransvRF()
 brick.drawTopTransvRF()
 brick.drawBottomLongRF()
@@ -127,10 +127,10 @@ brick.angLn=-90
 brick.trSlopeBottFace=-0.1/1
 brick.trSlopeTopFace=0.15/1
 brick.slopeEdge=1/2
-brick.drawClosedTransvConcrSectYmax()
-brick.drawClosedTransvConcrSectYmin()
-brick.drawClosedLongConcrSectXmax()
-brick.drawClosedLongConcrSectXmin()
+brick.drawTransvConcrSectYmax()
+brick.drawTransvConcrSectYmin()
+brick.drawLongConcrSectXmax()
+brick.drawLongConcrSectXmin()
 brick.drawBottomTransvRF()
 brick.drawTopTransvRF()
 brick.drawBottomLongRF()

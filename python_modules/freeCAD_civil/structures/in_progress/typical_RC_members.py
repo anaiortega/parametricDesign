@@ -30,19 +30,8 @@ class brkRbFam(rb.rebarFamily):
             lmsg.warning('Start-extremity shape definition may not be compatible with closed start')
         if self.extrShapeEnd and self.closedEnd:
             lmsg.warning('End-extremity shape definition may not be compatible with closed send')
-            
-class brkStirrFam(rb.stirrupFamily):
-    '''Define a stirrup family for a brick reinforcement
-    '''
-    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,concrSectRadius=None,spacStrpTransv=None,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.reinfConf_C25_S500)
     
-    super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=None,concrSectRadius=concrSectRadius,spacStrpTransv=abs(dispRealSh),spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
-    self.dispRealSh=dispRealSh
-    self.dispPerp=dispPerp
-    self.nStirrRealSh=nStirrRealSh
-    self.nStirrPerp=nStirrPerp
-    self.widthStirr=widthStirr
-    
+
 class genericBrickReinf(object):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
@@ -135,7 +124,7 @@ The data of the family is given as a dictionary of type:
         self.startId=startId
 
     def checkId(self,RF):
-        ''' Checks if 'Id' has been defined for the rebar or stirrup family RF, otherwise,
+        ''' Checks if 'Id' has been defined for the rebar family RF, otherwise,
            sets the value of 'Id' based on startId'''
         if not RF.identifier:
             RF.identifier=str(self.startId)
@@ -149,6 +138,21 @@ The data of the family is given as a dictionary of type:
             RF.s=None
         else:
             lmsg.error("either spacing 's' of number of rebars 'nmbBars' must be defined")
+        
+        
+    def setFSoptions(self,SF,SFdef):
+        '''Set optional attributes SF stirrup family that has been defined in dictionary SFdef
+        '''
+        if 'rightSideCover' in SFdef.keys():
+            SF.rightSideCover=SFdef['rightSideCover']
+        if 'nMembers' in SFdef.keys():
+            SF.nMembers=SFdef['nMembers']
+        if 'addL2closed' in SFdef.keys():
+            SF.closed=True
+            SF.addL2closed=SFdef['addL2closed']
+        if 'vectorLRef' in SFdef.keys(): SF.vectorLRef=SFdef['vectorLRef']
+        if 'rightSideLabelLn' in SFdef.keys(): SF.rightSideLabelLn=SFdef['rightSideLabelLn']
+        if 'addTxt2Label' in SFdef.keys(): SF.addTxt2Label=SFdef['addTxt2Label']
         
     def getVdirTransv(self):
         vdirTr=Vector(math.cos(math.radians(self.angTrns)),math.sin(math.radians(self.angTrns)))
@@ -619,27 +623,38 @@ The data of the family is given as a dictionary of type:
         lst_hold_tr_sf=list()
         for stirrHoldTrReinf in self.lstStirrHoldTrReinf:
             self.checkId(stirrHoldTrReinf)
-            bStirr=stirrHoldTrReinf.widthStirr+stirrHoldTrReinf.diameter
+            stDic=stirrHoldTrReinf
+            bStirr=stDic['widthStirr']+stDic['fi']
             coverStirr=self.reinfCfg.cover#-stDic['fi']
-            if stirrHoldTrReinf.dispRealSh<0: # stirrups rigth towards left
+            if stDic['dispRealSh']<0: # stirrups rigth towards left
                 lstPtsConcrSect=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr,ln_br]
             else: # stirrups left towards right
                 lstPtsConcrSect=[ln_bl,ln_bl+bStirr*vdirLn,ln_tl+bStirr*vdirLn,ln_tl,ln_bl]
-            if stirrHoldTrReinf.dispPerp<0: # stirrups rigth towards left
+            if stDic['dispPerp']<0: # stirrups rigth towards left
                 lstPtsConcrLong=[tr_tr,tr_br]
                 vDirLong=-1*vdirTr
             else:
                 lstPtsConcrLong=[tr_tl,tr_bl]
                 vDirLong=vdirTr
-            def.checkId(stirrHoldTrReinf)
-            stirrHoldTrReinf.reinfCfg=self.reinfCfg
-            stirrHoldTrReinf.lstPtsConcrSect=lstPtsConcrSect
-            stirrHoldTrReinf.lstCover=[coverStirr,0,coverStirr,0]
-            stirrHoldTrReinf.lstPtsConcrLong=lstPtsConcrLong
-            stirrHoldTrReinf.vDirLong=vDirLong
-            stirrHoldTrReinf.drawPolyRebars()
-            stirrHoldTrReinf.drawLnRebars()
-            lst_hold_tr_sf+=[stirrHoldTrReinf]
+            hold_tr_sf=rb.stirrupFamily(
+                reinfCfg=self.reinfCfg,
+                identifier=stDic['id'],
+                diameter=stDic['fi'],
+                lstPtsConcrSect=lstPtsConcrSect,
+                lstCover=[coverStirr,0,coverStirr,0],
+                lstPtsConcrLong=lstPtsConcrLong,
+                spacStrpTransv=abs(stDic['sRealSh']),
+                spacStrpLong=stDic['sPerp'],
+                vDirLong=vDirLong,
+                nmbStrpTransv=stDic['nStirrRealSh'],
+                nmbStrpLong=stDic['nStirrPerp'],
+                dispStrpTransv=abs(stDic['dispRealSh']),
+                dispStrpLong=abs(stDic['dispPerp']),
+                )
+            self.setFSoptions(hold_tr_sf,stDic)
+            hold_tr_sf.drawPolyRebars()
+            hold_tr_sf.drawLnRebars()
+            lst_hold_tr_sf+=[hold_tr_sf]
         return lst_hold_tr_sf
         
         
@@ -654,13 +669,14 @@ The data of the family is given as a dictionary of type:
         lst_hold_ln_sf=list()
         for stirrHoldLnReinf in self.lstStirrHoldLnReinf:
             self.checkId(stirrHoldLnReinf)
-            bStirr=stirrHoldLnReinf.widthStirr+stirrHoldLnReinf.diameter
+            stDic=stirrHoldLnReinf
+            bStirr=stDic['widthStirr']+stDic['fi']
 #            coverStirr=self.reinfCfg.cover-stDic['fi']
-            if stirrHoldLnReinf.dispRealSh<0: # stirrups rigth towards left
+            if stDic['dispRealSh']<0: # stirrups rigth towards left
                 lstPtsConcrSect=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr,tr_br]
             else: # stirrups left towards right
                 lstPtsConcrSect=[tr_bl,tr_bl+bStirr*vdirTr,tr_tl+bStirr*vdirTr,tr_tl,tr_bl]
-            if stirrHoldLnReinf.dispPerp<0: # stirrups rigth towards left
+            if stDic['dispPerp']<0: # stirrups rigth towards left
                 lstPtsConcrLong=[ln_tr,ln_br]
                 vDirLong=-1*vdirLn
             else:
@@ -670,18 +686,29 @@ The data of the family is given as a dictionary of type:
 #            bStirr=stDic['widthStirr']+stDic['fi']
             coverStirr=self.reinfCfg.cover#-stDic['fi']
             if self.topTrnsRb and self.botTrnsRb:
-                coverStirr+=min(self.topTrnsRb.diameter,self.botTrnsRb.diameter)
+                coverStirr+=min(self.topTrnsRb['fi'],self.botTrnsRb['fi'])
             elif self.topTrnsRb:
-                coverStirr+=self.topTrnsRb.diameter
+                coverStirr+=self.topTrnsRb['fi']
             elif self.botTrnsRb:
-                coverStirr+=self.botTrnsRb.diameter
-            stirrHoldLnReinf.reinfCfg=self.reinfCfg
-            stirrHoldLnReinf.lstPtsConcrSect=lstPtsConcrSect
-            stirrHoldLnReinf.lstCover=[coverStirr,0,coverStirr,0]
-            stirrHoldLnReinf.lstPtsConcrLong=lstPtsConcrLong
-            stirrHoldLnReinf.vDirLong=vDirLong
-            stirrHoldLnReinf.drawPolyRebars()
-            stirrHoldLnReinf.hold_ln_sf.drawLnRebars()
+                coverStirr+=self.botTrnsRb['fi']
+            hold_ln_sf=rb.stirrupFamily(
+                reinfCfg=self.reinfCfg,
+                identifier=stDic['id'],
+                diameter=stDic['fi'],
+                lstPtsConcrSect=lstPtsConcrSect,
+                lstCover=[coverStirr,0,coverStirr,0],
+                lstPtsConcrLong=lstPtsConcrLong,
+                spacStrpTransv=abs(stDic['sRealSh']),
+                spacStrpLong=stDic['sPerp'],
+                vDirLong=vDirLong,
+                nmbStrpTransv=stDic['nStirrRealSh'],
+                nmbStrpLong=stDic['nStirrPerp'],
+                dispStrpTransv=abs(stDic['dispRealSh']),
+                dispStrpLong=abs(stDic['dispPerp']),
+                )
+            self.setFSoptions(hold_ln_sf,stDic)
+            hold_ln_sf.drawPolyRebars()
+            hold_ln_sf.drawLnRebars()
             lst_hold_ln_sf+=[hold_ln_sf]
         return lst_hold_ln_sf
 
