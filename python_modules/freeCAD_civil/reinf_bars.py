@@ -37,7 +37,7 @@ Other length magnitudes should be expressed in meters [m].
 class rebarFamilyBase(object):
     ''' Base class for families of reinforcement bars
 
-    :ivar reinfCfg: instance of th class reinfConf that defines generic
+    :ivar reinfCfg: instance of the reinfConf classthat defines generic
           parameters like concrete and steel type, text format, ... 
     :ivar identifier: identifier of the rebar family
     :ivar diameter: diameter of the bars of the family [m]

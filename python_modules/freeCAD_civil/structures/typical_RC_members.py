@@ -10,8 +10,79 @@ from misc_utils import log_messages as lmsg
 
 class brkRbFam(rb.rebarFamily):
     '''Define a rebar family for a brick reinforcement
+    
+    :ivar fi: diameter of the bars of the family [m]
+    :ivar s: spacing between bars [m] (defaults to None). Either s or nmbBars 
+             must be defined
+    :ivar Id: identifier of the rebar family (defaults to None)
+    :ivar nmbBars: number of rebars in the family. This parameter takes
+            precedende over 'spacing' (defaults to None)
+    :ivar distRFstart: distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section)  (defaults to 0)
+    :ivar distRFend: distance from the last rebar of the family to the right extremity of the brick (as it is drawn in the section)  (defaults to 0)
+    :ivar closedStart: the bar extends along the side of the brick before the start (defaults to False)
+    :ivar closedEnd: the bar extends along the side of the brick after the end (defaults to False)
+    :ivar vectorLRef:vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
+    :ivar lateralCover: minimal lateral cover to place the rebar family (defaults to cfg.defaultConf.cover)
+    :ivar gapStart: increment (decrement if gapStart <0) of the length of 
+            the reinforcement at its starting extremity (defaults to cfg.defaultConf.cover)
+    :ivar gapEnd:  increment (decrement if gapEnd<0) of the length of 
+            the reinforcement at its ending extremity  (defaults to fg.defaultConf.cover)
+    :ivar extrShapeStart:defines the shape of the bar at its starting 
+            extremity. It can be an straight or hook shape with anchor (anc) length, 
+            lap length or a given fixed length.
+            The anchor or lap length are automatically 
+            calculated from the code, material, and rebar configuration.
+            It's defined as a string parameter that can be read as:
+          For anchor end:
+            'anc[angle]_position_stressState', where:
+            anc[angle]= the anchor length is calculated.
+                        angle is a positive number, expresed in sexagesimal degrees, 
+                        that represents the counterclokwise angle from the first segment 
+                        of the rebar towards the hook.
+                        If angle is 0 or 180, the straight anchor length is calculated 
+                        'straight' for straight elongation,
+            position= 'posGood' if rebar in position I according to EHE definition =
+                                position 'good' according to EC2 definition.
+                      'posPoor' if rebar in position II according to EHE definition = 
+                                position 'poor'. according to EC2 definition.
+            stressState= 'tens' if rebar in tension
+                         'compr' if rebar in compression.
+            Examples: 'anc90_posGood_compr', 'anc0_posPoor_tens'
+          For lap end:
+            'lap[angle]_position_stressState_perc[percentage]', where:
+            lap[angle]= the lap length is calculated.
+                        angle is a positive number, expresed in sexagesimal degrees, 
+                        that represents the counterclokwise angle from the first segment 
+                        of the rebar towards the hook.
+            position= 'posGood' if rebar in position I according to EHE definition =
+                                position 'good' according to EC2 definition.
+                      'posPoor' if rebar in position II according to EHE definition = 
+                                position 'poor'. according to EC2 definition.
+            stressState= 'tens' if rebar in tension
+                         'compr' if rebar in compression.
+            perc[percentage]= percentage is the percentage of rebars that are lapped.
+            Examples: 'lap90_posGood_compr', 'lap0_posPoor_tens_perc50'
+          For fixed end:
+            'fix[angle]= same meaning
+            len[number]: number is the length of the segment to add (in mm)
+            Examples: 'fix45_len150'
+            (defaults to None)
+    :ivar extrShapeEnd: defines a straigth elongation or a hook at the ending 
+            extremity of the bar. Definition analogous to extrShapeStart.(defaults to None)
+    :ivar fixLengthStart: fixed length of the first segment of the rebar(defaults to None)
+    :ivar fixLengthEnd:fixed length of the last segment of the rebar (defaults to None)
+    :ivar extensionLength:length of the stretch in which the rebar family extends.(defaults to None)
+    :ivar maxLrebar: maximum length of rebars (defaults to 12 m)
+    :ivar position:  'good' or 'poor' (equivalent to posI and posII in EHE). Is used to
+             calculate lap lengths when splitting bars- (defaults to 'poor')
+    :ivar compression: True if rebars in compression, False if rebars in tension.  
+            Is used to calculate lap lengths when splitting bars- (defaults to False)
+    :ivar drawSketch: True to draw mini-sketch of the rebars besides the text(defaults to True)
+    :ivar nMembers:  number of identic members. The calculated number of bars is multiplied by nMembers(defaults to 1)
+    :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
+    :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultConf)
     '''
-    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None,reinfCfg=cfg.reinfConf_C25_S500):
+    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultConf):
         super(brkRbFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrSect=[],fromToExtPts=None,sectBarsConcrRadius=1,extensionLength=extensionLength,lstCover=None,rightSideCover=True,vectorLRef=vectorLRef,coverSectBars=None,lateralCover=lateralCover,rightSideSectBars=True,spacing=s,nmbBars=nmbBars,lstPtsConcrSect2=None,gapStart=gapStart,gapEnd=gapEnd,extrShapeStart=extrShapeStart,extrShapeEnd=extrShapeEnd,fixLengthStart=fixLengthStart,fixLengthEnd=fixLengthEnd,maxLrebar=maxLrebar,position=position,compression=compression,drawSketch=drawSketch,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.distRFstart=distRFstart
         self.distRFend=distRFend
@@ -27,7 +98,7 @@ class brkRbFam(rb.rebarFamily):
 class brkStirrFam(rb.stirrupFamily):
     '''Define a stirrup family for a brick reinforcement
     '''
-    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,concrSectRadius=None,spacStrpTransv=None,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.reinfConf_C25_S500):
+    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,concrSectRadius=None,spacStrpTransv=None,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultConf):
     
         super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=concrSectRadius,spacStrpTransv=abs(dispRealSh),spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.dispRealSh=dispRealSh
