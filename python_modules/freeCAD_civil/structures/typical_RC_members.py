@@ -7,19 +7,12 @@ from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 import FreeCADGui
 from misc_utils import log_messages as lmsg
-#lstPtsConcrSect=[],fromToExtPts=None,
-#lstCover=None
-#rightSideCover=True
-#sectBarsConcrRadius=None
-#extensionLength=None
-#rightSideSectBars=True
-#coverSectBars=None
-#lstPtsConcrSect2=None
+
 class brkRbFam(rb.rebarFamily):
     '''Define a rebar family for a brick reinforcement
     '''
-    def __init__(self,fi,s,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None,reinfCfg=cfg.reinfConf_C25_S500):
-        super(brkRbFam,self).__init__(reinfCfg,Id,fi,[],None,1,None,None,True,vectorLRef,None,lateralCover,True,s,nmbBars,None,gapStart,gapEnd,extrShapeStart,extrShapeEnd,fixLengthStart,fixLengthEnd,maxLrebar,position,compression,drawSketch,nMembers,addTxt2Label)
+    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None,reinfCfg=cfg.reinfConf_C25_S500):
+        super(brkRbFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrSect=[],fromToExtPts=None,sectBarsConcrRadius=1,extensionLength=extensionLength,lstCover=None,rightSideCover=True,vectorLRef=vectorLRef,coverSectBars=None,lateralCover=lateralCover,rightSideSectBars=True,spacing=s,nmbBars=nmbBars,lstPtsConcrSect2=None,gapStart=gapStart,gapEnd=gapEnd,extrShapeStart=extrShapeStart,extrShapeEnd=extrShapeEnd,fixLengthStart=fixLengthStart,fixLengthEnd=fixLengthEnd,maxLrebar=maxLrebar,position=position,compression=compression,drawSketch=drawSketch,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.distRFstart=distRFstart
         self.distRFend=distRFend
         self.closedStart=closedStart
@@ -34,14 +27,14 @@ class brkRbFam(rb.rebarFamily):
 class brkStirrFam(rb.stirrupFamily):
     '''Define a stirrup family for a brick reinforcement
     '''
-    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,concrSectRadius=None,spacStrpTransv=None,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.reinfConf_C25_S500)
+    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,concrSectRadius=None,spacStrpTransv=None,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.reinfConf_C25_S500):
     
-    super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=None,concrSectRadius=concrSectRadius,spacStrpTransv=abs(dispRealSh),spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
-    self.dispRealSh=dispRealSh
-    self.dispPerp=dispPerp
-    self.nStirrRealSh=nStirrRealSh
-    self.nStirrPerp=nStirrPerp
-    self.widthStirr=widthStirr
+        super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=concrSectRadius,spacStrpTransv=abs(dispRealSh),spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
+        self.dispRealSh=dispRealSh
+        self.dispPerp=dispPerp
+        self.nStirrRealSh=nStirrRealSh
+        self.nStirrPerp=nStirrPerp
+        self.widthStirr=widthStirr
     
 class genericBrickReinf(object):
     '''Typical reinforcement arrangement of an open brick 
@@ -321,9 +314,14 @@ The data of the family is given as a dictionary of type:
         self.initRFVvars(self.botTrnsRb)
         self.checkId(self.botTrnsRb)
         lstPtsConcrSect=[tr_bl,tr_br]
+        lstCover=[self.reinfCfg.cover]
         if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
-        if self.botTrnsRb.closedStart: lstPtsConcrSect.insert(0,tr_tl)
-        if self.botTrnsRb.closedEnd: lstPtsConcrSect.append(tr_tr)
+        if self.botTrnsRb.closedStart:
+            lstPtsConcrSect.insert(0,tr_tl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        if self.botTrnsRb.closedEnd:
+            lstPtsConcrSect.append(tr_tr)
+            lstCover.append(self.reinfCfg.cover)
         if self.slopeEdge:
             tr_bl2,tr_br2=self.getYminTransvBottPnts()
             lstPtsConcrSect2=[tr_bl2,tr_br2]
@@ -335,6 +333,7 @@ The data of the family is given as a dictionary of type:
         self.botTrnsRb.reinfCfg=self.reinfCfg
         self.botTrnsRb.lstPtsConcrSect=lstPtsConcrSect
         self.botTrnsRb.lstPtsConcrSect2=lstPtsConcrSect2
+        self.botTrnsRb.lstCover=lstCover
         self.botTrnsRb.rightSideCover=False
         self.botTrnsRb.fromToExtPts=[ln_bl+self.botTrnsRb.distRFstart*vdirLn,ln_br-self.botTrnsRb.distRFend*vdirLn]
         self.botTrnsRb.rightSideSectBars=False
@@ -350,9 +349,14 @@ The data of the family is given as a dictionary of type:
         self.initRFVvars(self.topTrnsRb)
         self.checkId(self.topTrnsRb)
         lstPtsConcrSect=[tr_tl,tr_tr]
+        lstCover=[self.reinfCfg.cover]
         if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl,tr_br=self.getYmaxTransvBottPnts()
-        if self.topTrnsRb.closedStart: lstPtsConcrSect.insert(0,tr_bl)
-        if self.topTrnsRb.closedEnd: lstPtsConcrSect.append(tr_br)
+        if self.topTrnsRb.closedStart:
+            lstPtsConcrSect.insert(0,tr_bl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        if self.topTrnsRb.closedEnd:
+            lstPtsConcrSect.append(tr_br)
+            lstCover.append(self.reinfCfg.cover)
         if self.slopeEdge:
             tr_tl2,tr_tr2=self.getYminTransvTopPnts()
             lstPtsConcrSect2=[tr_tl2,tr_tr2]
@@ -528,15 +532,12 @@ The data of the family is given as a dictionary of type:
         vDir=(tr_tl-tr_bl).normalize()
         self.initRFVvars(self.sideXminRb)
         self.checkId(self.sideXminRb)
-        if 'coverSectBars' in self.sideXminRb.keys():
-            coverSectBars=self.sideXminRb['coverSectBars']
-        else:
-            coverSectBars=self.reinfCfg.cover
+        if not self.sideXminRb.coverSectBars:
+            self.sideXminRb.coverSectBars=self.reinfCfg.cover
         self.sideXminRb.reinfCfg=self.reinfCfg
         self.sideXminRb.lstPtsConcrSect=[pl_xmin_ymin,pl_xmin_ymax]
         self.sideXminRb.rightSideCover=True
         self.sideXminRb.fromToExtPts=[tr_bl+self.sideXminRb.distRFstart*vDir,tr_tl-self.sideXminRb.distRFend*vDir]
-        self.sideXminRb.coverSectBars=coverSectBars
         self.sideXminRb.rightSideSectBars=True
         self.sideXminRb.createLstRebar()
         self.sideXminRb.drawPolySectBars()
@@ -550,15 +551,12 @@ The data of the family is given as a dictionary of type:
         vDir=(tr_tr-tr_br).normalize()
         self.initRFVvars(self.sideXmaxRb)
         self.checkId(self.sideXmaxRb)
-        if 'coverSectBars' in self.sideXmaxRb.keys():
-            coverSectBars=self.sideXmaxRb['coverSectBars']
-        else:
-            coverSectBars=self.reinfCfg.cover
+        if not self.sideXmaxRb.coverSectBars:
+            self.sideXmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideXmaxRb.reinfCfg=self.reinfCfg
         self.sideXmaxRb.lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax]
         self.sideXmaxRb.rightSideCover=False
         self.sideXmaxRb.fromToExtPts=[tr_br+self.sideXmaxRb.distRFstart*vDir,tr_tr-self.sideXmaxRb.distRFend*vDir]
-        self.sideXmaxRb.coverSectBars=coverSectBars
         self.sideXmaxRb.rightSideSectBars=False
         self.sideXmaxRb.createLstRebar()
         self.sideXmaxRb.drawPolySectBars()
@@ -572,15 +570,12 @@ The data of the family is given as a dictionary of type:
         vDir=(ln_tl-ln_bl).normalize()
         self.initRFVvars(self.sideYminRb)
         self.checkId(self.sideYminRb)
-        if 'coverSectBars' in self.sideYminRb.keys():
-            coverSectBars=self.sideYminRb['coverSectBars']
-        else:
-            coverSectBars=self.reinfCfg.cover
+        if not self.sideYminRb.coverSectBars:
+            self.sideYminRb.coverSectBars=self.reinfCfg.cover
         self.sideYminRb.reinfCfg=self.reinfCfg
         self.sideYminRb.lstPtsConcrSect=[pl_xmin_ymin,pl_xmax_ymin]
         self.sideYminRb.rightSideCover=False
         self.sideYminRb.fromToExtPts=[ln_bl+self.sideYminRb.distRFstart*vDir,ln_tl-self.sideYminRb.distRFend*vDir]
-        self.sideYminRb.coverSectBars=coverSectBars
         self.sideYminRb.rightSideSectBars=True
         self.sideYminRb.createLstRebar()
         self.sideYminRb.drawPolySectBars()
@@ -594,15 +589,12 @@ The data of the family is given as a dictionary of type:
         vDir=(ln_tr-ln_br).normalize()
         self.initRFVvars(self.sideYmaxRb)
         self.checkId(self.sideYmaxRb)
-        if 'coverSectBars' in self.sideYmaxRb.keys():
-            coverSectBars=self.sideYmaxRb['coverSectBars']
-        else:
-            coverSectBars=self.reinfCfg.cover
+        if not self.sideYmaxRb.coverSectBars:
+            self.sideYmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideYmaxRb.reinfCfg=self.reinfCfg
         self.sideYmaxRb.lstPtsConcrSect=[pl_xmin_ymax,pl_xmax_ymax]
         self.sideYmaxRb.rightSideCover=True
         self.sideYmaxRb.fromToExtPts=[ln_br+self.sideYmaxRb.distRFstart*vDir,ln_tr-self.sideYmaxRb.distRFend*vDir]
-        self.sideYmaxRb.coverSectBars=coverSectBars
         self.sideYmaxRb.rightSideSectBars=False
         self.sideYmaxRb.createLstRebar()
         self.sideYmaxRb.drawPolySectBars()
@@ -620,7 +612,7 @@ The data of the family is given as a dictionary of type:
         for stirrHoldTrReinf in self.lstStirrHoldTrReinf:
             self.checkId(stirrHoldTrReinf)
             bStirr=stirrHoldTrReinf.widthStirr+stirrHoldTrReinf.diameter
-            coverStirr=self.reinfCfg.cover#-stDic['fi']
+            coverStirr=self.reinfCfg.cover
             if stirrHoldTrReinf.dispRealSh<0: # stirrups rigth towards left
                 lstPtsConcrSect=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr,ln_br]
             else: # stirrups left towards right
@@ -631,7 +623,7 @@ The data of the family is given as a dictionary of type:
             else:
                 lstPtsConcrLong=[tr_tl,tr_bl]
                 vDirLong=vdirTr
-            def.checkId(stirrHoldTrReinf)
+            self.checkId(stirrHoldTrReinf)
             stirrHoldTrReinf.reinfCfg=self.reinfCfg
             stirrHoldTrReinf.lstPtsConcrSect=lstPtsConcrSect
             stirrHoldTrReinf.lstCover=[coverStirr,0,coverStirr,0]
@@ -655,7 +647,6 @@ The data of the family is given as a dictionary of type:
         for stirrHoldLnReinf in self.lstStirrHoldLnReinf:
             self.checkId(stirrHoldLnReinf)
             bStirr=stirrHoldLnReinf.widthStirr+stirrHoldLnReinf.diameter
-#            coverStirr=self.reinfCfg.cover-stDic['fi']
             if stirrHoldLnReinf.dispRealSh<0: # stirrups rigth towards left
                 lstPtsConcrSect=[tr_br,tr_br-bStirr*vdirTr,tr_tr-bStirr*vdirTr,tr_tr,tr_br]
             else: # stirrups left towards right
@@ -666,9 +657,7 @@ The data of the family is given as a dictionary of type:
             else:
                 lstPtsConcrLong=[ln_tl,ln_bl]
                 vDirLong=vdirLn
-#            stDic=stirrHoldLnReinf
-#            bStirr=stDic['widthStirr']+stDic['fi']
-            coverStirr=self.reinfCfg.cover#-stDic['fi']
+            coverStirr=self.reinfCfg.cover
             if self.topTrnsRb and self.botTrnsRb:
                 coverStirr+=min(self.topTrnsRb.diameter,self.botTrnsRb.diameter)
             elif self.topTrnsRb:
@@ -681,8 +670,8 @@ The data of the family is given as a dictionary of type:
             stirrHoldLnReinf.lstPtsConcrLong=lstPtsConcrLong
             stirrHoldLnReinf.vDirLong=vDirLong
             stirrHoldLnReinf.drawPolyRebars()
-            stirrHoldLnReinf.hold_ln_sf.drawLnRebars()
-            lst_hold_ln_sf+=[hold_ln_sf]
+            stirrHoldLnReinf.drawLnRebars()
+            lst_hold_ln_sf+=[stirrHoldLnReinf]
         return lst_hold_ln_sf
 
     def drawTransvConcrSectYmax(self):
@@ -918,7 +907,7 @@ The data of the family is given as a dictionary of type:
         lstRebFam+=[brick.botTrnsRb]
     if topTrnsRb:
         brick.drawTopTransvRF()
-        lstRebFam+=self.topTrnsRb
+        lstRebFam+=[brick.topTrnsRb]
     if botLnRb:
         brick.drawBottomLongRF()
         lstRebFam+=[brick.botLnRb]
@@ -1005,7 +994,7 @@ The data of the family is given as a dictionary of type:
         lstRebFam+=[brick.botTrnsRb]
     if topTrnsRb:
         brick.drawTopTransvRF()
-        lstRebFam+=self.topTrnsRb
+        lstRebFam+=[brick.topTrnsRb]
     if botLnRb:
         brick.drawBottomLongRF()
         lstRebFam+=[brick.botLnRb]
@@ -1089,7 +1078,7 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
         lstRebFam+=[brick.botTrnsRb]
     if topTrnsRb:
         brick.drawTopTransvRF()
-        lstRebFam+=self.topTrnsRb
+        lstRebFam+=[brick.topTrnsRb]
     if botLnRb:
         brick.drawBottomLongRF()
         lstRebFam+=[brick.botLnRb]
@@ -1198,7 +1187,7 @@ The data of the family is given as a dictionary of type:
             reinfCfg.cover=reinfCfg.cover+maxFiStirr
         # init lateral cover if not defined
         for rb in allRF:
-            if 'lateralCover' not in rb.keys(): rb['lateralCover']=reinfCfg.cover
+            if not rb.lateralCover: rb.lateralCover=reinfCfg.cover
         for ly in range(maxNlayers):
             botLnRb=lstBotRb[ly]
             topLnRb=lstTopRb[ly]

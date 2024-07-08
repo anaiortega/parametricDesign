@@ -27,42 +27,25 @@ angTrns=0 # angle (degrees) between the horizontal and the cross-section width d
 angLn=90
 
 # Bottom rebars
-botRbLy1={'id':'1','fi':32e-3,'nmbBars':4,'position':'good','gapStart':-1.0,'gapEnd':2.0,'addTxt2Label':'(CAPA 1)'}
-botRbLy2={'id':'2','fi':25e-3,'nmbBars':5,'position':'good','extrShapeStart':'fix90_len500','lateralCover':0.1}
-botRbLy3={'id':'3','fi':16e-3,'nmbBars':4,'position':'good','extrShapeEnd':'fix45_len420'}
+botRbLy1=trcm.brkRbFam(Id='1',fi=32e-3,nmbBars=4,position='good',gapStart=-1.0,gapEnd=2.0,addTxt2Label='(CAPA 1)')
+botRbLy2=trcm.brkRbFam(Id='2',fi=25e-3,nmbBars=5,position='good',extrShapeStart='fix90_len500',lateralCover=0.1)
+botRbLy3=trcm.brkRbFam(Id='3',fi=16e-3,nmbBars=4,position='good',extrShapeEnd='fix45_len420')
 
 # Top rebars
-topRbLy1={'id':'4','fi':25e-3,'nmbBars':5,'position':'poor','vectorLRef':Vector(-0.5,0.5),'closedStart':True,'closedEnd':True}
-topRbLy2={'id':'5','fi':20e-3,'nmbBars':4,'position':'poor','nMembers':3,'closedStart':True,'addTxt2Label':'(CAPA 2)'}#,'extrShapeStart':'anc90_posPoor_tens'}
+topRbLy1=trcm.brkRbFam(Id='4',fi=25e-3,nmbBars=5,position='poor',vectorLRef=Vector(-0.5,0.5),closedStart=True,closedEnd=True)
+topRbLy2=trcm.brkRbFam(Id='5',fi=20e-3,nmbBars=4,position='poor',nMembers=3,closedStart=True,addTxt2Label='(CAPA 2)')#,extrShapeStart='anc90_posPoor_tens')
 
 #Lateral rebars (left side)
-latLRbLy1={'id':'6','fi':12e-3,'s':0.20,'position':'good','extensionLength':0.2,'vectorLRef':Vector(-0.5,0.5)}
-latLRbLy2={'id':'7','fi':10e-3,'s':0.10,'position':'good','drawSketch':False,'vectorLRef':Vector(-0.5,-0.5)}
+latLRbLy1=trcm.brkRbFam(Id='6',fi=12e-3,s=0.20,position='good',extensionLength=0.2,vectorLRef=Vector(-0.5,0.5))
+latLRbLy2=trcm.brkRbFam(Id='7',fi=10e-3,s=0.10,position='good',drawSketch=False,vectorLRef=Vector(-0.5,-0.5))
 #Lateral rebars (right side)
-latRRbLy1={'id':'8','fi':16e-3,'s':0.15,'position':'good','maxLrebar':6.0,'gapSart':-0.2,'extrShapeStart':'anc90_posPoor_tens'}
+latRRbLy1=trcm.brkRbFam(Id='8',fi=16e-3,s=0.15,position='good',maxLrebar=6.0,gapStart=-0.2,extrShapeStart='anc90_posPoor_tens')
 
 # Stirrup families
 fiStirr=12e-3
-stirr1={'id':'9' ,
-        'fi':fiStirr,
-        'sRealSh':0,
-        'sPerp':0.15 ,
-        'nStirrRealSh':1 ,
-        'nStirrPerp':15 ,
-        'widthStirr':width-2*cover-fiStirr ,
-        'dispRealSh':-cover,
-        'dispPerp':0.30,
-        'addTxt2Label':'stirrup text'}
+stirr1=trcm.brkStirrFam(Id='9',fi=fiStirr,sRealSh=0,sPerp=0.15 ,nStirrRealSh=1 ,nStirrPerp=15 ,widthStirr=width-2*cover-fiStirr ,dispRealSh=-cover,dispPerp=0.30,addTxt2Label='stirrup text')
 fiStirr2=8e-3
-stirr2={'id':'10' ,
-        'fi':fiStirr2,
-        'sRealSh':0.5,
-        'sPerp':0.20 ,
-        'nStirrRealSh':2,
-        'nStirrPerp':30 ,
-        'widthStirr':0.35 ,
-        'dispRealSh':-cover-0.1,
-        'dispPerp':3.0 }
+stirr2=trcm.brkStirrFam(Id='10' ,fi=fiStirr2,sRealSh=0.5,sPerp=0.20 ,nStirrRealSh=2,nStirrPerp=30 ,widthStirr=0.35 ,dispRealSh=-cover-0.1,dispPerp=3.0 )
 
 # End data
 

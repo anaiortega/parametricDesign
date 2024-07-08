@@ -20,7 +20,7 @@ botTrnsRb=trcm.brkRbFam(fi=20e-3,s=0.15,Id='1',gapStart=0.5,extrShapeStart='anc9
 # top transverse rebars data
 topTrnsRb=trcm.brkRbFam(fi=16e-3,s=0.15,Id='3',extrShapeStart='lap270_posPoor_tens',extrShapeEnd='lap0_posPoor_tens_perc100',position='poor',closedStart=False,closedEnd=False)#,fixLengthEnd=2) 
 # bottom longitudinal rebars data
-botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='2',distRFstart=0.1,distRFend=0.5,fixLengthStart=0.5,gapEnd=2,extrShapeEnd='lap45_posGood_compr',position='good',vectorLRef=Vector(0.4,-0.20),closedStart=True,closedEnd=False)
+botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='2',distRFstart=0.1,distRFend=0.5,fixLengthStart=0.5,gapEnd=2,extrShapeEnd='lap45_posGood_compr',position='good',vectorLRef=Vector(0.4,-0.20),closedStart=True,closedEnd=True)
 # top longitudinal rebars data
 topLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='4',distRFstart=0.1,distRFend=0.3,extrShapeEnd='lap180_posPoor_tens_perc50',position='poor',closedStart=True,closedEnd=False)
 
