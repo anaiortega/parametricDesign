@@ -132,8 +132,60 @@ class brkStirrFam(rb.stirrupFamily):
         self.nStirrRealSh=nStirrRealSh
         self.nStirrPerp=nStirrPerp
         self.widthStirr=widthStirr
+        
+class genericReinfBase(object):
+    '''Base class to define generic members reinforcement
+
+    :ivar length: dimension of the member in the direction of the longitudinal rebars
+    :ivar thickness: thickness of the menber represented in the longitudinal section. In cylindric
+          elements the thicknes is tthe diameter of the cross-section
+    :ivar angLn: angle (degrees) between the horizontal and the member length dimension
+    :ivar anchPtLnSect: anchor point to place the bottom left corner of the concrete longitudinal section
+    '''
+    def __init__(self,length,thickness,angLn,anchPtLnSect):
+        self.length=length
+        self.thickness=thickness
+        self.angLn=angLn
+        self.anchPtLnSect=anchPtLnSect
+                 
+    def checkId(self,RF):
+        ''' Checks if 'Id' has been defined for the rebar or stirrup family RF, otherwise,
+           sets the value of 'Id' based on startId'''
+        if not RF.identifier:
+            RF.identifier=str(self.startId)
+            self.startId+=1
+            
+    def initRFVvars(self,RF):
+        ''' Set default values of 'distRFstart' and 'distRFend' if not defined in dictionary RF'''
+        if RF.spacing:
+            RF.nmbBars=None
+        elif RF.nmbBars:
+            RF.s=None
+        else:
+            lmsg.error("either spacing 's' of number of rebars 'nmbBars' must be defined")
+        
+    def getVdirLong(self):
+        vdirLn=Vector(math.cos(math.radians(self.angLn)),math.sin(math.radians(self.angLn)))
+        return vdirLn
+
+    def getSimplLongBottPnts(self):
+        ''' return the left and right bottom points of the simple longitudinal concrete 
+        section '''
+        vdirLn=self.getVdirLong()
+        ln_bl=self.anchPtLnSect
+        ln_br= ln_bl+self.length*self.getVdirLong()
+        return ln_bl,ln_br
     
-class genericBrickReinf(object):
+    def getSimplLongTopPnts(self):
+        ''' return the left and right top points of the simple longtudinal concrete 
+        section'''
+        vdirLn=self.getVdirLong(); vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
+        ln_tl=self.anchPtLnSect+self.thickness*vdirLnPerp
+        ln_tr= ln_tl+self.length*self.getVdirLong()
+        return ln_tl,ln_tr
+
+    
+class genericBrickReinf(genericReinfBase):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-brick rebar family
@@ -144,7 +196,7 @@ class genericBrickReinf(object):
     :ivar length: dimension of the brick in the direction of the longitudinal rebars
     :ivar thickness: thickness of the brick at the start (at point anchPtTrnsSect)
     :ivar anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
-    :ivar anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
+    :ivar anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal section
     :ivar anchPtPlan: anchor point to place the bottom left corner of the concrete plan view
     :ivar reinfCfg: instance of the cfg.reinfConf class
     :ivar angTrns: angle (degrees) between the horizontal and the brick width dimension
@@ -177,6 +229,8 @@ class genericBrickReinf(object):
     '''
 
     def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+        super(genericBrickReinf,self).__init__(length=length,thickness=thickness,angLn=angLn,anchPtLnSect=anchPtLnSect)
+        
         self.width=width
         self.length=length
         self.thickness=thickness
@@ -205,30 +259,11 @@ class genericBrickReinf(object):
         self.drawPlan=drawPlan
         self.startId=startId
 
-    def checkId(self,RF):
-        ''' Checks if 'Id' has been defined for the rebar or stirrup family RF, otherwise,
-           sets the value of 'Id' based on startId'''
-        if not RF.identifier:
-            RF.identifier=str(self.startId)
-            self.startId+=1
-        
-    def initRFVvars(self,RF):
-        ''' Set default values of 'distRFstart' and 'distRFend' if not defined in dictionary RF'''
-        if RF.spacing:
-            RF.nmbBars=None
-        elif RF.nmbBars:
-            RF.s=None
-        else:
-            lmsg.error("either spacing 's' of number of rebars 'nmbBars' must be defined")
         
     def getVdirTransv(self):
         vdirTr=Vector(math.cos(math.radians(self.angTrns)),math.sin(math.radians(self.angTrns)))
         return vdirTr
     
-    def getVdirLong(self):
-        vdirLn=Vector(math.cos(math.radians(self.angLn)),math.sin(math.radians(self.angLn)))
-        return vdirLn
-
     def getMeanThickness(self):
         '''Return the maan thickness of the brick at X axis, which occurs at the 
         longitudinal section placed at (minX+maxX)/2 coordinate.
@@ -307,10 +342,9 @@ class genericBrickReinf(object):
     def getLongBottPnts(self,x):
         ''' return the left and right bottom points of the longtudinal concrete 
         section in function of the X coordinate (X in transverse direction)'''
-        vdirLn=self.getVdirLong(); vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
-        ln_bl=self.anchPtLnSect
-        ln_br= ln_bl+self.length*self.getVdirLong()
+        ln_bl,ln_br=self.getSimplLongBottPnts()
         if self.trSlopeBottFace:
+            vdirLn=self.getVdirLong(); vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
             leftL=x
             rightL=x+self.getIncrWidth()
             ln_bl=ln_bl+leftL*self.trSlopeBottFace*vdirLnPerp
@@ -332,10 +366,9 @@ class genericBrickReinf(object):
     def getLongTopPnts(self,x):
         ''' return the left and right top points of the longtudinal concrete 
         section in function of the X coordinate (X in transverse direction)'''
-        vdirLn=self.getVdirLong(); vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
-        ln_tl=self.anchPtLnSect+self.thickness*vdirLnPerp
-        ln_tr= ln_tl+self.length*self.getVdirLong()
+        ln_tl,ln_tr=self.getSimplLongTopPnts()
         if self.trSlopeTopFace:
+            vdirLn=self.getVdirLong(); vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
             leftL=x
             rightL=x+self.getIncrWidth()
             ln_tl=ln_tl+leftL*self.trSlopeTopFace*vdirLnPerp

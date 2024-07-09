@@ -54,7 +54,7 @@ lstRebarFam=list()
 lstStirrupFam=list()
 
 # beam
-lstRebarFam1,lstStirrupFam1,newStartId=trcm.beam_reinf(
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.quad_beam_reinf(
     width=width,
     height=height,
     length=length,
