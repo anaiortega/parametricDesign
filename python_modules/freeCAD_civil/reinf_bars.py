@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division
 
 __author__= "Ana Ortega (AO_O) "
 __copyright__= "Copyright 2017, AO_O"
@@ -9,11 +8,11 @@ __email__= "ana.ortega@xcingenieria.com"
 
 import math
 import bisect
-import Part, FreeCAD
+import FreeCAD
+import Part
 import Draft
 from FreeCAD import Vector
 import FreeCADGui
-from FreeCAD import Gui
 from freeCAD_utils import geom_utils
 from freeCAD_utils import drawing_tools as dt
 from RC_utils import reinf_bars_arrang_sets as RCutils

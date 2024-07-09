@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import math
-import Part, FreeCAD
+import FreeCAD
+import Part
 from freeCAD_civil import draw_config as cfg
 from freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
@@ -22,11 +23,11 @@ class brkRbFam(rb.rebarFamily):
     :ivar closedStart: the bar extends along the side of the brick before the start (defaults to False)
     :ivar closedEnd: the bar extends along the side of the brick after the end (defaults to False)
     :ivar vectorLRef:vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
-    :ivar lateralCover: minimal lateral cover to place the rebar family (defaults to cfg.defaultConf.cover)
+    :ivar lateralCover: minimal lateral cover to place the rebar family (defaults to cfg.defaultReinfConf.cover)
     :ivar gapStart: increment (decrement if gapStart <0) of the length of 
-            the reinforcement at its starting extremity (defaults to cfg.defaultConf.cover)
+            the reinforcement at its starting extremity (defaults to cfg.defaultReinfConf.cover)
     :ivar gapEnd:  increment (decrement if gapEnd<0) of the length of 
-            the reinforcement at its ending extremity  (defaults to fg.defaultConf.cover)
+            the reinforcement at its ending extremity  (defaults to fg.defaultReinfConf.cover)
     :ivar extrShapeStart:defines the shape of the bar at its starting 
             extremity. It can be an straight or hook shape with anchor (anc) length, 
             lap length or a given fixed length.
@@ -80,9 +81,9 @@ class brkRbFam(rb.rebarFamily):
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text(defaults to True)
     :ivar nMembers:  number of identic members. The calculated number of bars is multiplied by nMembers(defaults to 1)
     :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
-    :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultConf)
+    :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultReinfConf)
     '''
-    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultConf):
+    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
         super(brkRbFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrSect=[],fromToExtPts=None,sectBarsConcrRadius=1,extensionLength=extensionLength,lstCover=None,rightSideCover=True,vectorLRef=vectorLRef,coverSectBars=None,lateralCover=lateralCover,rightSideSectBars=True,spacing=s,nmbBars=nmbBars,lstPtsConcrSect2=None,gapStart=gapStart,gapEnd=gapEnd,extrShapeStart=extrShapeStart,extrShapeEnd=extrShapeEnd,fixLengthStart=fixLengthStart,fixLengthEnd=fixLengthEnd,maxLrebar=maxLrebar,position=position,compression=compression,drawSketch=drawSketch,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.distRFstart=distRFstart
         self.distRFend=distRFend
@@ -97,10 +98,35 @@ class brkRbFam(rb.rebarFamily):
             
 class brkStirrFam(rb.stirrupFamily):
     '''Define a stirrup family for a brick reinforcement
+
+    :ivar fi: diameter of the bars of the family [m]
+    :ivar widthStirr: width of the stirrup (internal)
+    :ivar sRealSh: spacement between stirrups represented as real shape
+    :ivar sPerp: spacement between stirrups in the orthogonal direction
+    :ivar Id: identifier of the rebar family (defaults to None)
+    :ivar nStirrRealSh: spacement between stirrups represented as real shape (defaults to 1)
+    :ivar nStirrPerp: number of stirrups in orthogonal direction (defaults to 1)
+    :ivar dispRealSh: displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab (defaults to =0)
+    :ivar dispPerp: displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab (defaults to 0)
+    :ivar vDirTrans: vector to define the transversal direction (defaults to None, in which case the direction of the first side of the concrete section is taken)    :ivar vDirLong: vector to define the longitudinal direction (defaults to Vector(1,0)
+    :ivar rightSideCover: cover given to the right side (defaults to True)
+    :ivar vectorLRef: vector to draw the leader line for labeling the barVector (defaults to Vector(0.5,0.5)
+    :ivar rightSideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to True -> right)
+    :ivar closed: if closed stirrup True (defaults to True)
+    :ivar addL2closed: length to add to closed stirrups (defaults to 0.20)
+    :ivar fixAnchorStart, fixAnchorEnd: anchor definition at start and end, respectively (defaults to None) The anchors are defined as follows:
+            fix[angle]= is a positive number, expresed in sexagesimal degrees, 
+                        that represents the counterclokwise angle from the first segment 
+                        of the rebar towards the hook.
+            len[number]: number is the length of the segment to add (in mm)
+            Examples: 'fix45_len150'
+        :ivar nMembers: number of identic members. The calculated number of bars is multiplied by nMembers (defaults to 1)
+    :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
+    :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultReinfConf)cfg.defaultReinfConf
     '''
-    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,concrSectRadius=None,spacStrpTransv=None,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultConf):
+    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
     
-        super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=concrSectRadius,spacStrpTransv=abs(dispRealSh),spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
+        super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=None,spacStrpTransv=abs(sRealSh),spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.dispRealSh=dispRealSh
         self.dispPerp=dispPerp
         self.nStirrRealSh=nStirrRealSh
@@ -123,49 +149,30 @@ class genericBrickReinf(object):
     :ivar reinfCfg: instance of the cfg.reinfConf class
     :ivar angTrns: angle (degrees) between the horizontal and the brick width dimension
     :ivar angLn: angle (degrees) between the horizontal and the brick length dimension
-    :ivar botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
-           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'},
-           optionally can be defined: {'gapStart','gapEnd','extrShapeStart','extrShapeEnd', 'fixLengthStart','fixLengthEnd','vectorLRef',
-                                                  'closedStart','closedEnd','nMembers'}
-           where 'id' is the identificacion of the rebar family, 
-                  'fi' is the diameter of the rebar, 
-                   's' is the spacing, 
-                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section)
-                                     if not defined, default is 0   
-                   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
-                                   if not defined, default is 0   
-                                   (ignored in transverse rebars when sloped edge is defined)
-                   'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              lap length when splitting rebars)
-                   
+    :ivar botTrnsRb: data for bottom transverse rebar family expressed as instance of brkRbFam class
     :ivar topTrnsRb: same for the top transverse rebar family
     :ivar botLnRb: same for the bottom longitudinal rebar family
     :ivar topLnRb: same for the top longitudinal rebar family
-    :ivar sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
-    :ivar sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
-    :ivar sideYminRb: data for side reinforcement in face Ymin (defaults to None)
-    :ivar sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
-    :ivar lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-The data of the family is given as a dictionary of type:
-            {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family, 
-                  'fi' is the diameter of the stirrup, 
-                  'sRealSh' is the spacement between stirrups represented as real shape,
-                  'sPerp'  is the spacement between stirrups in the orthogonal direction,
-                  'widthStirr' is the width of the stirrup (internal),
-                  'nStirrRealSh' is the number of stirrups in real shape
-                  'nStirrPerp' is the number of stirrups in orthogonal direction
-                  'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
-                  'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
-    :ivar lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :ivar sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as instance of brkRbFam class
+    :ivar sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
+    :ivar sideYminRb: same for side reinforcement in face Ymin (defaults to None)
+    :ivar sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
+    :ivar lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
+          for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :ivar lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
+          for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :ivar trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :ivar trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :ivar slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
-    :ivar drawConcrTrSect: True if a closed concrete transverse cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
-    :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
-    :ivar anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :ivar drawConcrTrSect: True if a closed concrete transverse cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)
+          (defaults to True)
+    :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
+          (defaults to True)
+    :ivar anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
+          (defaults to None)
     :ivar angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :ivar drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :ivar drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
+          (anchPtPlan must be defined) (defaults to False)
     :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
 
@@ -845,40 +852,25 @@ def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtL
     :param reinfCfg: instance of the cfg.reinfConf class
     :param angTrns: angle (degrees) between the horizontal and the brick width dimension
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
-    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
-           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
-                  'fi' is the diameter of the rebar, 
-                   's' is the spacement, 
-                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
-                   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
-                   'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              lap length when splitting rebars
+    :param botTrnsRb: data for bottom transverse rebar family expressed as instance of brkRbFam class
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
-    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
-    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
-    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
-    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
-    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-The data of the family is given as a dictionary of type:
-            {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
-                  'fi' is the diameter of the stirrup, 
-                  'sRealSh' is the spacement between stirrups represented as real shape,
-                  'sPerp'  is the spacement between stirrups in the orthogonal direction,
-                  'widthStirr' is the width of the stirrup (internal),
-                  'nStirrRealSh' is the number of stirrups in real shape
-                  'nStirrPerp' is the number of stirrups in orthogonal direction
-                  'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
-                  'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
-    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
-  (defaults to True)
-    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
-    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as  instance of brkRbFam class
+    :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
+    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
+           (defaults to True)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
+           (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
+           (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
@@ -933,42 +925,27 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     :param reinfCfg: instance of the cfg.reinfConf class
     :param angTrns: angle (degrees) between the horizontal and the brick width dimension
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
-    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
-           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
-                  'fi' is the diameter of the rebar, 
-                   's' is the spacement, 
-                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
-                   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
-                   'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              lap length when splitting rebars
+    :param botTrnsRb: data for bottom transverse rebar family expressed as instance of brkRbFam class
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
-    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
-    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
-    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
-    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
-    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-The data of the family is given as a dictionary of type:
-            {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
-                  'fi' is the diameter of the stirrup, 
-                  'sRealSh' is the spacement between stirrups represented as real shape,
-                  'sPerp'  is the spacement between stirrups in the orthogonal direction,
-                  'widthStirr' is the width of the stirrup (internal),
-                  'nStirrRealSh' is the number of stirrups in real shape
-                  'nStirrPerp' is the number of stirrups in orthogonal direction
-                  'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
-                  'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
-    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as  instance of brkRbFam class
+    :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
+    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
+           (defaults to True)
     :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
-  (defaults to True)
-    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
-    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
+           (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
+           (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
@@ -1019,43 +996,29 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param reinfCfg: instance of the cfg.reinfConf class
     :param angTrns: angle (degrees) between the horizontal and the brick width dimension
     :param angLn: angle (degrees) between the horizontal and the brick length dimension
-    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
-           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
-                  'fi' is the diameter of the rebar, 
-                   's' is the spacement, 
-                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
-                   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
-                   'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              lap length when splitting rebars
+    :param botTrnsRb: data for bottom transverse rebar family expressed as instance of brkRbFam class
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
-    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
-    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
-    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
-    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
-    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs . Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-The data of the family is given as a dictionary of type:
-            {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
-                  'fi' is the diameter of the stirrup, 
-                  'sRealSh' is the spacement between stirrups represented as real shape,
-                  'sPerp'  is the spacement between stirrups in the orthogonal direction,
-                  'widthStirr' is the width of the stirrup (internal),
-                  'nStirrRealSh' is the number of stirrups in real shape
-                  'nStirrPerp' is the number of stirrups in orthogonal direction
-                  'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
-                  'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
-    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs. Each onr iss the data for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as  instance of brkRbFam class
+    :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
+    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
-    :iparam slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :param slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
     :param minSlope2varHorRF: minimum slope of the edge to draw variable horizontal reinforcement (defaults to 4%)
-    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
-    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
+           (defaults to True)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
+           (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
+           (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
@@ -1107,7 +1070,7 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
 
-   :param width: dimension of the brick in the direction of the transverse rebars
+    :param width: dimension of the brick in the direction of the transverse rebars
     :param length: dimension of the brick in the direction of the longitudinal rebars
     :param thickness: thickness of the brick at the start (at point anchPtTrnsSect)
     :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
@@ -1118,28 +1081,26 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :param angTrns: angle (degrees) between the horizontal and the brick width dim    :param angLn: angle (degrees) between the horizontal and the brick length dimension
-    :param botTrnsRb: data for bottom transverse rebar family expressed as a dictionary of type 
-           {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'}, 
-           where 'id' is the identificacion of the rebar family (if not defined, startId is used), 
-                  'fi' is the diameter of the rebar, 
-                   's' is the spacement, 
-                   'distRFstart' is the distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section),   
-                   'distRFend' is the distance from the last rebar of the family to the rigth extremity of the brick (as it is drawn in the section)
-                                   (ignored in transverse rebars when sloped edge is defined)
-                   'position' is the position of the rebars 'good' or 'poor' (used to calculate the 
-                              lap length when splitting rebars
+    :param botTrnsRb: data for bottom transverse rebar family expressed as instance of brkRbFam class
     :param topTrnsRb: same for the top transverse rebar family
     :param botLnRb: same for the bottom longitudinal rebar family
     :param topLnRb: same for the top longitudinal rebar family
-    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as a dictionary of type: 
-    :param sideXmaxRb: data for side reinforcement in face Xmax (defaults to None)
-    :param sideYminRb: data for side reinforcement in face Ymin (defaults to None)
-    :param sideYmaxRb: data for side reinforcement in face Ymax (defaults to None)
+    :param sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as  instance of brkRbFam class
+    :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
+    :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
+    :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
+    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
-    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
-    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
+           (defaults to True)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
+           (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
+           (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
      '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
@@ -1186,42 +1147,33 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def beam_reinf(width,height,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,lstBotRb=[],lstTopRb=[],lstLeftLatlRb=[],lstRightLatlRb=[],lstStirrReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1,clearDistRbLayers=None,aggrSize=20e-3):
-    '''Typical reinforcement arrangement of a brick of constant height
+def quad_beam_reinf(width,height,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,lstBotRb=[],lstTopRb=[],lstLeftLatlRb=[],lstRightLatlRb=[],lstStirrReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1,clearDistRbLayers=None,aggrSize=20e-3):
+    '''Typical reinforcement arrangement of a rectangular cross-section beam (or column)
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family, SF-stirrup family, Ly: layer of rebars
 
     :param width: beam cross-section width
-    :param height:  beam cross-section height
+    :param height: beam cross-section height
     :param length: beam length
     :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
     :param reinfCfg: instance of the cfg.reinfConf class
     :param angTrns: angle (degrees) between the horizontal and the cross-section width dimension
     :param angLn: angle (degrees) between the horizontal and the length dimension
-    :param lstBotRb: list of data for bottom rebar layers. Each element of the list represents a layer of rebars (first element is the outermost)
-                       (defaults to [])
-                       Each rebar family (layer) is  expressed as a dictionary of type 
-                       {'id':'3','fi':20e-3,'s':0.15,'distRFstart':0.2,'distRFend':0.1,'position':'good'} or any other parameter supported by rebarFamily class.
+    :param lstBotRb: list of data for bottom rebar layers expressed as instances of brkRbFam class. Each element of 
+           the list represents a layer of rebars (first element is the outermost) (defaults to [])
     :paramlstTopRb: same for the top rebar layers
     :param lstLeftLatlRb: same for the lateral rebar layers in the left side of the cross-section
     :param lstRigthtLatlRb: ame for the lateral rebar layers in the right side of the cross-section
-    :param lstStirrReinf: list of stirrup families. Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-The data of the family is given as a dictionary of type:
-            {'id': ,'fi': ,'sRealSh': ,'sPerp': ,'nStirrRealSh': , 'nStirrPerp': ,'widthStirr': , 'dispRealSh': , 'dispPerp': }
-            where 'id' is the identificacion of the stirrup family (if not defined, startId is used), 
-                  'fi' is the diameter of the stirrup, 
-                  'sRealSh' is the spacement between stirrups represented as real shape,
-                  'sPerp'  is the spacement between stirrups in the orthogonal direction,
-                  'widthStirr' is the width of the stirrup (internal),
-                  'nStirrRealSh' is the number of stirrups in real shape
-                  'nStirrPerp' is the number of stirrups in orthogonal direction
-                  'dispRealSh' is the displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab
-                  'dispPerp' is the displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab
-    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  (defaults to True)
-    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
+    :param lstStirrReinf: list of stirrup families expressed as instances of brkStirrFam class. Each one is the data 
+           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
+           (defaults to True)
+    :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
+           (defaults to None)
     :param angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :param drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
+           (anchPtPlan must be defined) (defaults to False)
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     :param clearDistRbLayers: clear (horizontal and vertical) distance (in m) between layers of parallel bars. Defaults to None,
                             in which case this distance is calculated in function of the maximum aggregate size and the maximum 
@@ -1229,10 +1181,6 @@ The data of the family is given as a dictionary of type:
     :param aggrSize: maximum aggregate size (in m) (used to calculate the clear distance between rebar layers (if not defined by parameter clearDistRebars)
     '''
     initCover=reinfCfg.cover
-    if not(lstBotRb): lstBotRb=list()
-    if not(lstTopRb): lstTopRb=list() 
-    if not(lstLeftLatlRb): lstLeftLatlRb=list()
-    if not(lstRightLatlRb): lstRightLatlRb=list() 
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
     allRF=lstBotRb+lstTopRb+lstLeftLatlRb+lstRightLatlRb
     if len(allRF)==0: # only stirrups or nothing
@@ -1294,9 +1242,7 @@ The data of the family is given as a dictionary of type:
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
     
-
-
-        
+     
              
     
 

@@ -1,5 +1,5 @@
 from FreeCAD import Vector
-from FreeCAD import Gui
+import FreeCADGui
 import Draft
 
 
@@ -11,7 +11,7 @@ def dim_lst_pnts(lstPnts,spacDimLine,styleName="dimStyle"):
     :ivar styleName: name of the dimension style   
            (defaults to styleName="dimStyle"))
     '''
-    Gui.activateWorkbench("DraftWorkbench")
+    FreeCADGui.activateWorkbench("DraftWorkbench")
     zVector=Vector(0,0,1)
     for i in range(len(lstPnts)-1):
         p1=lstPnts[i]
@@ -21,7 +21,7 @@ def dim_lst_pnts(lstPnts,spacDimLine,styleName="dimStyle"):
         p3=p1+spacDimLine*vNorm
         d= Draft.make_dimension(p1, p2, p3)
         Draft.autogroup(d)
-        Gui.ActiveDocument.getObject(d.Name).AnnotationStyle=styleName
+        FreeCADGui.ActiveDocument.getObject(d.Name).AnnotationStyle=styleName
 
         
     

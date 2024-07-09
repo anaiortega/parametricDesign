@@ -78,7 +78,7 @@ class reinfConf(object):
             clearDistBars=max(fiMax,20e-3,dg+5e-3)
         return clearDistBars
         
-defaultConf=reinfConf(cover=0.03,xcConcr=EC2_materials.C25,xcSteel=EC2_materials.S500C)
+defaultReinfConf=reinfConf(cover=0.03,xcConcr=EC2_materials.C25,xcSteel=EC2_materials.S500C)
         
         
 
