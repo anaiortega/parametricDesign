@@ -23,6 +23,12 @@ topTrnsRb=trcm.brkRbFam(fi=16e-3,s=0.15,Id='3',extrShapeStart='lap270_posPoor_te
 botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='2',distRFstart=0.1,distRFend=0.5,fixLengthStart=0.5,gapEnd=2,extrShapeEnd='lap45_posGood_compr',position='good',vectorLRef=Vector(0.4,-0.20),closedStart=True,closedEnd=True)
 # top longitudinal rebars data
 topLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='4',distRFstart=0.1,distRFend=0.3,extrShapeEnd='lap180_posPoor_tens_perc50',position='poor',closedStart=True,closedEnd=False)
+# stirrups holding transverse rebars
+stirrHoldTr=trcm.brkStirrFam(Id='5',fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 0,dispPerp=0.1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False)
+stirrHoldTr2=trcm.brkStirrFam(Id='5',fi=10e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 1.5,dispPerp=1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False)
+
+# stirrups holding longitudinal rebars
+stirrHoldLn=trcm.brkStirrFam(Id='6' ,fi=10e-3 ,sRealSh=0.20 ,sPerp=0.30 ,nStirrRealSh= 5 ,nStirrPerp=2 ,widthStirr= 0.40,dispRealSh= 1.5,dispPerp=1.3,vectorLRef=Vector(0.2,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='note')
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
@@ -48,6 +54,8 @@ brick=trcm.genericBrickReinf(
     topTrnsRb=topTrnsRb,
     botLnRb=botLnRb,
     topLnRb=topLnRb,
+    lstStirrHoldTrReinf=[stirrHoldTr,stirrHoldTr2],
+    lstStirrHoldLnReinf=[stirrHoldLn]
     )
 
 stYmax=brick.drawTransvConcrSectYmax()
@@ -56,6 +64,9 @@ brick.drawBottomTransvRF()
 brick.drawTopTransvRF()
 brick.drawBottomLongRF()
 brick.drawTopLongRF()
+brick.drawStirrHoldingLongSF()
+brick.drawStirrHoldingTransvSF()
+brick.drawTransvConcrSectYmax()
 
 # inclined section constant thickness
 brick.anchPtTrnsSect+=Vector(0,2)

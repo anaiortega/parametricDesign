@@ -32,7 +32,8 @@ topTrnsRb=trcm.brkRbFam(Id=None,fi=20e-3,s=0.15,distRFstart=0.2,distRFend=0.1,ex
 topLnRb=trcm.brkRbFam(Id=None,fi=16e-3,s=0.20,distRFstart=0.1,distRFend=0.3,extrShapeEnd='anc270_posGood_tens',position='poor',vectorLRef=Vector(-0.2,0.3),closedEnd=True)
 
 # stirrups holding transverse rebars
-stirrHoldTr=trcm.brkStirrFam(Id='5',fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 0.4,dispPerp=0.1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False)
+stirrHoldTr=trcm.brkStirrFam(Id='5',fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 0,dispPerp=0.1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False)
+stirrHoldTr2=trcm.brkStirrFam(Id='5',fi=10e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 1.5,dispPerp=1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False)
 
 # stirrups holding longitudinal rebars
 stirrHoldLn=trcm.brkStirrFam(Id='6' ,fi=10e-3 ,sRealSh=0.20 ,sPerp=0.30 ,nStirrRealSh= 5 ,nStirrPerp=2 ,widthStirr= 0.40,dispRealSh= 1.5,dispPerp=1.3,vectorLRef=Vector(0.2,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='note')
@@ -56,7 +57,7 @@ lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(
     topTrnsRb=topTrnsRb,
     botLnRb=botLnRb,
     topLnRb=topLnRb,
-    lstStirrHoldTrReinf=[stirrHoldTr],
+    lstStirrHoldTrReinf=[stirrHoldTr,stirrHoldTr2],
     lstStirrHoldLnReinf=[stirrHoldLn],
     drawConcrTrSect=True,
     drawConcrLnSect=True,

@@ -141,12 +141,14 @@ class genericReinfBase(object):
           elements the thicknes is tthe diameter of the cross-section
     :ivar angLn: angle (degrees) between the horizontal and the member length dimension
     :ivar anchPtLnSect: anchor point to place the bottom left corner of the concrete longitudinal section
+    :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
-    def __init__(self,length,thickness,angLn,anchPtLnSect):
+    def __init__(self,length,thickness,angLn,anchPtLnSect,startId=1):
         self.length=length
         self.thickness=thickness
         self.angLn=angLn
         self.anchPtLnSect=anchPtLnSect
+        self.startId=startId
                  
     def checkId(self,RF):
         ''' Checks if 'Id' has been defined for the rebar or stirrup family RF, otherwise,
@@ -229,16 +231,11 @@ class genericBrickReinf(genericReinfBase):
     '''
 
     def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
-        super(genericBrickReinf,self).__init__(length=length,thickness=thickness,angLn=angLn,anchPtLnSect=anchPtLnSect)
-        
+        super(genericBrickReinf,self).__init__(length=length,thickness=thickness,angLn=angLn,anchPtLnSect=anchPtLnSect,startId=startId)
         self.width=width
-        self.length=length
-        self.thickness=thickness
         self.anchPtTrnsSect=anchPtTrnsSect
-        self.anchPtLnSect=anchPtLnSect
         self.reinfCfg=reinfCfg
         self.angTrns=angTrns
-        self.angLn=angLn
         self.botTrnsRb=botTrnsRb
         self.topTrnsRb=topTrnsRb
         self.botLnRb=botLnRb
@@ -257,9 +254,23 @@ class genericBrickReinf(genericReinfBase):
         self.anchPtPlan=anchPtPlan
         self.angPlan=angPlan
         self.drawPlan=drawPlan
-        self.startId=startId
 
-        
+    def getMaxStirrHoldTrDiam(self):
+        ''' Return the maximum diameter of the stirrup families that hold the transv. rebars'''
+        if self.lstStirrHoldTrReinf:
+             fiMax=max([SF.diameter for SF in self.lstStirrHoldTrReinf])
+        else:
+            fiMax=0
+        return fiMax
+    
+    def getMaxStirrHoldLnDiam(self):
+        ''' Return the maximum diameter of the stirrup families that hold the longitucinal rebars'''
+        if self.lstStirrHoldLnReinf:
+             fiMax=max([SF.diameter for SF in self.lstStirrHoldLnReinf])
+        else:
+            fiMax=0
+        return fiMax
+    
     def getVdirTransv(self):
         vdirTr=Vector(math.cos(math.radians(self.angTrns)),math.sin(math.radians(self.angTrns)))
         return vdirTr
@@ -417,6 +428,24 @@ class genericBrickReinf(genericReinfBase):
                 pl_xmin_ymax=pl_xmax_ymax-(self.width+self.length*self.slopeEdge)*vtr
             return pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax
               
+    def getCoverBottomLongRF(self):
+        '''Return the cover of the bottom longitudinal rebars
+        '''
+        if self.botTrnsRb:
+            cover=self.reinfCfg.cover+self.botTrnsRb.diameter+self.getMaxStirrHoldTrDiam()
+        else:
+            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()
+        return cover
+        
+    def getCoverTopLongRF(self):
+        '''Return the cover of the top longitudinal rebars
+        '''
+        if self.topTrnsRb:
+            cover=self.reinfCfg.cover+self.topTrnsRb.diameter+self.getMaxStirrHoldTrDiam()
+        else:
+            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()
+        return cover
+    
     def drawBottomTransvRF(self):
         ''' Draw and return the bottom transverse rebar family '''
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
@@ -425,7 +454,8 @@ class genericBrickReinf(genericReinfBase):
         self.initRFVvars(self.botTrnsRb)
         self.checkId(self.botTrnsRb)
         lstPtsConcrSect=[tr_bl,tr_br]
-        lstCover=[self.reinfCfg.cover]
+        cover=self.reinfCfg.cover+self.getMaxStirrHoldTrDiam()
+        lstCover=[cover]
         if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         if self.botTrnsRb.closedStart:
             lstPtsConcrSect.insert(0,tr_tl)
@@ -447,6 +477,7 @@ class genericBrickReinf(genericReinfBase):
         self.botTrnsRb.lstCover=lstCover
         self.botTrnsRb.rightSideCover=False
         self.botTrnsRb.fromToExtPts=[ln_bl+self.botTrnsRb.distRFstart*vdirLn,ln_br-self.botTrnsRb.distRFend*vdirLn]
+        self.botTrnsRb.coverSectBars=cover
         self.botTrnsRb.rightSideSectBars=False
         self.botTrnsRb.createLstRebar()
         self.botTrnsRb.drawPolySectBars()
@@ -460,7 +491,8 @@ class genericBrickReinf(genericReinfBase):
         self.initRFVvars(self.topTrnsRb)
         self.checkId(self.topTrnsRb)
         lstPtsConcrSect=[tr_tl,tr_tr]
-        lstCover=[self.reinfCfg.cover]
+        cover=self.reinfCfg.cover+self.getMaxStirrHoldTrDiam()
+        lstCover=[cover]
         if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl,tr_br=self.getYmaxTransvBottPnts()
         if self.topTrnsRb.closedStart:
             lstPtsConcrSect.insert(0,tr_bl)
@@ -481,10 +513,12 @@ class genericBrickReinf(genericReinfBase):
         self.topTrnsRb.lstPtsConcrSect2=lstPtsConcrSect2
         self.topTrnsRb.rightSideCover=True
         self.topTrnsRb.fromToExtPts=[ln_tl+self.topTrnsRb.distRFstart*vdirLn,ln_tr-self.topTrnsRb.distRFend*vdirLn]
+        self.topTrnsRb.coverSectBars=cover
         self.topTrnsRb.rightSideSectBars=True
         self.topTrnsRb.createLstRebar()
         self.topTrnsRb.drawPolySectBars()
         self.topTrnsRb.drawLstRebar()
+
         
     def drawBottomLongRF(self):
         '''draw and return the  longitudinal bottom rebar family 
@@ -499,12 +533,8 @@ class genericBrickReinf(genericReinfBase):
         else:
             fromExtPt=tr_bl+self.botLnRb.distRFstart*vdirTrBott
         lstPtsConcrSect=[ln_bl,ln_br]
-        if self.botTrnsRb:
-            lstCover=[self.reinfCfg.cover+self.botTrnsRb.diameter]
-            coverSectBars=self.reinfCfg.cover+self.botTrnsRb.diameter
-        else:
-            lstCover=[self.reinfCfg.cover]
-            coverSectBars=self.reinfCfg.cover
+        cover=self.getCoverBottomLongRF()
+        lstCover=[cover]
         if self.botLnRb.closedStart or self.botLnRb.closedEnd: ln_tl,ln_tr=self.getXmaxLongTopPnts()
         if self.botLnRb.closedStart:
             lstPtsConcrSect.insert(0,ln_tl)
@@ -517,7 +547,7 @@ class genericBrickReinf(genericReinfBase):
         self.botLnRb.rightSideCover=False
         self.botLnRb.lstCover=lstCover
         self.botLnRb.fromToExtPts=[fromExtPt,tr_br-self.botLnRb.distRFend*vdirTrBott]
-        self.botLnRb.coverSectBars=coverSectBars
+        self.botLnRb.coverSectBars=cover
         self.botLnRb.rightSideSectBars=False
         self.botLnRb.createLstRebar()
         self.botLnRb.drawPolySectBars()
@@ -535,12 +565,8 @@ class genericBrickReinf(genericReinfBase):
         else:
             fromExtPt= tr_tl+self.topLnRb.distRFstart*vdirTrTop
         lstPtsConcrSect=[ln_tl,ln_tr]
-        if self.topTrnsRb:
-            lstCover=[self.reinfCfg.cover+self.topTrnsRb.diameter]
-            coverSectBars=self.reinfCfg.cover+self.topTrnsRb.diameter
-        else:
-            lstCover=[self.reinfCfg.cover]
-            coverSectBars=self.reinfCfg.cover
+        cover=self.getCoverTopLongRF()
+        lstCover=[cover]
         if self.topLnRb.closedStart or self.topLnRb.closedEnd: ln_bl,ln_br=self.getXmaxLongBottPnts()
         if self.topLnRb.closedStart:
             lstPtsConcrSect.insert(0,ln_bl)
@@ -553,7 +579,7 @@ class genericBrickReinf(genericReinfBase):
         self.topLnRb.rightSideCover=True
         self.topLnRb.lstCover=lstCover
         self.topLnRb.fromToExtPts=[fromExtPt,tr_tr-self.topLnRb.distRFend*vdirTrTop]
-        self.topLnRb.coverSectBars=coverSectBars
+        self.topLnRb.coverSectBars=cover
         self.topLnRb.rightSideSectBars=True
         self.topLnRb.createLstRebar()
         self.topLnRb.drawPolySectBars()
@@ -569,12 +595,8 @@ class genericBrickReinf(genericReinfBase):
         Lsect2=self.botLnRb.spacing/abs(self.slopeEdge)
         lstPtsConcrSect=[ln_bl,ln_br]
         lstPtsConcrSect2=[ln_bl,ln_bl+Lsect2*vdirLnBott]
-        if self.botTrnsRb:
-            lstCover=[self.reinfCfg.cover+self.botTrnsRb.diameter]
-            coverSectBars=self.reinfCfg.cover+self.botTrnsRb.diameter
-        else:
-            lstCover=[self.reinfCfg.cover]
-            coverSectBars=self.reinfCfg.cover
+        cover=self.getCoverBottomLongRF()
+        lstCover=[cover]
         if self.botLnRb.closedStart or self.botLnRb.closedEnd: ln_tl,ln_tr=self.getXmaxLongTopPnts()
         if self.botLnRb.closedStart:
             lstPtsConcrSect.insert(0,ln_tl)
@@ -591,7 +613,7 @@ class genericBrickReinf(genericReinfBase):
         self.botLnRb.rightSideCover=False
         self.botLnRb.lstCover=lstCover
         self.botLnRb.fromToExtPts=[tr_bl,self.getTransitionBottPnt()]
-        self.botLnRb.coverSectBars=coverSectBars
+        self.botLnRb.coverSectBars=cover
         self.botLnRb.rightSideSectBars=False
         self.botLnRb.createLstRebar()
         self.botLnRb.drawPolySectBars()
@@ -607,12 +629,8 @@ class genericBrickReinf(genericReinfBase):
         Lsect2=self.botLnRb.spacing/abs(self.slopeEdge)
         lstPtsConcrSect=[ln_tl,ln_tr]
         lstPtsConcrSect2=[ln_tl,ln_tl+Lsect2*vdirLnTop]
-        if self.topTrnsRb:
-            lstCover=[self.reinfCfg.cover+self.topTrnsRb.diameter]
-            coverSectBars=self.reinfCfg.cover+self.topTrnsRb.diameter
-        else:
-            lstCover=[self.reinfCfg.cover]
-            coverSectBars=self.reinfCfg.cover
+        cover=self.getCoverTopLongRF()
+        lstCover=[cover]
         if self.topLnRb.closedStart or self.topLnRb.closedEnd: ln_bl,ln_br=self.getXmaxLongBottPnts()
         if self.topLnRb.closedStart:
             lstPtsConcrSect.insert(0,ln_bl)
@@ -629,7 +647,7 @@ class genericBrickReinf(genericReinfBase):
         self.topLnRb.rightSideCover=True
         self.topLnRb.lstCover=lstCover
         self.topLnRb.fromToExtPts=[tr_tl,self.getTransitionTopPnt()]
-        self.topLnRb.coverSectBars=coverSectBars
+        self.topLnRb.coverSectBars=cover
         self.topLnRb.rightSideSectBars=True
         self.topLnRb.createLstRebar()
         self.topLnRb.drawPolySectBars()
@@ -768,16 +786,11 @@ class genericBrickReinf(genericReinfBase):
             else:
                 lstPtsConcrLong=[ln_tl,ln_bl]
                 vDirLong=vdirLn
-            coverStirr=self.reinfCfg.cover
-            if self.topTrnsRb and self.botTrnsRb:
-                coverStirr+=min(self.topTrnsRb.diameter,self.botTrnsRb.diameter)
-            elif self.topTrnsRb:
-                coverStirr+=self.topTrnsRb.diameter
-            elif self.botTrnsRb:
-                coverStirr+=self.botTrnsRb.diameter
+            stirrTopCover=self.getCoverTopLongRF()-stirrHoldLnReinf.diameter
+            stirrBottCover=self.getCoverBottomLongRF()-stirrHoldLnReinf.diameter
             stirrHoldLnReinf.reinfCfg=self.reinfCfg
             stirrHoldLnReinf.lstPtsConcrSect=lstPtsConcrSect
-            stirrHoldLnReinf.lstCover=[coverStirr,0,coverStirr,0]
+            stirrHoldLnReinf.lstCover=[stirrBottCover,0,stirrTopCover,0]
             stirrHoldLnReinf.lstPtsConcrLong=lstPtsConcrLong
             stirrHoldLnReinf.vDirLong=vDirLong
             stirrHoldLnReinf.drawPolyRebars()
@@ -966,10 +979,6 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
     :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
     :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
-    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
-           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
-           for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
            (defaults to True)
     :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
@@ -1037,10 +1046,6 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
     :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
     :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
-    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
-           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
-           for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :param slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
@@ -1122,10 +1127,6 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
     :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
     :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
-    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
-           for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
-           for a stirrup rebar family that holds longitudinal top and bottom rebar families
     :param drawConcrTrSect: True if the concrete transverse cross-section is drawn (defaults to True)
     :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
            (defaults to True)
