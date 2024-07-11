@@ -101,14 +101,16 @@ class brkStirrFam(rb.stirrupFamily):
 
     :ivar fi: diameter of the bars of the family [m]
     :ivar widthStirr: width of the stirrup (internal)
-    :ivar sRealSh: spacement between stirrups represented as real shape
-    :ivar sPerp: spacement between stirrups in the orthogonal direction
+    :ivar sRealSh: spacement between stirrups represented as real shape (defaults to None)
+    :ivar sPerp: spacement between stirrups in the orthogonal direction (defaults to None)
     :ivar Id: identifier of the rebar family (defaults to None)
-    :ivar nStirrRealSh: spacement between stirrups represented as real shape (defaults to 1)
+    :ivar sRealSh: spacement between stirrups represented as real shape 
+    :ivar sPerp: spacement between stirrups in orthogonal direction 
     :ivar nStirrPerp: number of stirrups in orthogonal direction (defaults to 1)
     :ivar dispRealSh: displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab (defaults to =0)
     :ivar dispPerp: displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab (defaults to 0)
-    :ivar vDirTrans: vector to define the transversal direction (defaults to None, in which case the direction of the first side of the concrete section is taken)    :ivar vDirLong: vector to define the longitudinal direction (defaults to Vector(1,0)
+    :ivar vDirTrans: vector to define the transversal direction (defaults to None, in which case the direction of the first side of the concrete section is taken)    
+    :ivar vDirLong: vector to define the longitudinal direction (defaults to Vector(1,0)
     :ivar rightSideCover: cover given to the right side (defaults to True)
     :ivar vectorLRef: vector to draw the leader line for labeling the barVector (defaults to Vector(0.5,0.5)
     :ivar rightSideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to True -> right)
@@ -124,9 +126,9 @@ class brkStirrFam(rb.stirrupFamily):
     :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
     :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultReinfConf)cfg.defaultReinfConf
     '''
-    def __init__(self,fi,widthStirr,sRealSh,sPerp,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
+    def __init__(self,fi,widthStirr,sRealSh=None,sPerp=None,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
     
-        super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=None,spacStrpTransv=abs(sRealSh),spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
+        super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=None,spacStrpTransv=sRealSh,spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.dispRealSh=dispRealSh
         self.dispPerp=dispPerp
         self.nStirrRealSh=nStirrRealSh
@@ -141,9 +143,10 @@ class genericReinfBase(object):
           elements the thicknes is tthe diameter of the cross-section
     :ivar angLn: angle (degrees) between the horizontal and the member length dimension
     :ivar anchPtLnSect: anchor point to place the bottom left corner of the concrete longitudinal section
-    :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
-    '''
-    def __init__(self,length,thickness,angLn,anchPtLnSect,startId=1):
+    :ivar startId: integer to successively identify the reinforcement families created for which their identifier
+           has not been defined or it is None (defaults to 1)
+   '''
+    def __init__(self,length,thickness,angLn,anchPtLnSect,drawConcrLnSect=True,startId=1):
         self.length=length
         self.thickness=thickness
         self.angLn=angLn
@@ -186,7 +189,16 @@ class genericReinfBase(object):
         ln_tr= ln_tl+self.length*self.getVdirLong()
         return ln_tl,ln_tr
 
-    
+    def getMaxDiameter(self,lstReinf):
+        '''Returns the maximum diameter of the rebars of stirrups defined in list lstReinf
+        (if lstReinf doesn't exists, return 0)
+        '''
+        if lstReinf:
+             fiMax=max([rb.diameter for rb in lstReinf])
+        else:
+            fiMax=0
+        return fiMax
+        
 class genericBrickReinf(genericReinfBase):
     '''Typical reinforcement arrangement of an open brick 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
@@ -257,18 +269,12 @@ class genericBrickReinf(genericReinfBase):
 
     def getMaxStirrHoldTrDiam(self):
         ''' Return the maximum diameter of the stirrup families that hold the transv. rebars'''
-        if self.lstStirrHoldTrReinf:
-             fiMax=max([SF.diameter for SF in self.lstStirrHoldTrReinf])
-        else:
-            fiMax=0
+        fiMax=self.getMaxDiameter(self.lstStirrHoldTrReinf)
         return fiMax
     
     def getMaxStirrHoldLnDiam(self):
         ''' Return the maximum diameter of the stirrup families that hold the longitucinal rebars'''
-        if self.lstStirrHoldLnReinf:
-             fiMax=max([SF.diameter for SF in self.lstStirrHoldLnReinf])
-        else:
-            fiMax=0
+        fiMax=self.getMaxDiameter(self.lstStirrHoldLnReinf)
         return fiMax
     
     def getVdirTransv(self):
@@ -801,89 +807,48 @@ class genericBrickReinf(genericReinfBase):
     def drawTransvConcrSectYmax(self):
         ''' Draw concrete transverse cross-section
         placed at maximum Y coordinate'''
-        tr_tl,tr_tr=self.getYmaxTransvTopPnts()
-        tr_bl,tr_br=self.getYmaxTransvBottPnts()
-        lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
-        if self.drawConcrTrSect == True: #closed section
-            s=Part.makePolygon(lstPnts)
-            p=Part.show(s)
-            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        elif  type(self.drawConcrTrSect) == list:
-            for n_edge in self.drawConcrTrSect:
-                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
-                p=Part.show(l)
-                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        else:
-            lmsg.error(" 'drawConcrTrSect' must be 'True' for closed section or a list of the edges you want draw")
+        if self.drawConcrTrSect:
+            tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+            tr_bl,tr_br=self.getYmaxTransvBottPnts()
+            lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
+            lstEdges=[] if self.drawConcrTrSect == True else self.drawConcrTrSect
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
 
     def drawTransvConcrSectYmin(self):
         ''' Draw concrete transverse cross-section
         placed at minimum Y coordinate'''
-        tr_tl,tr_tr=self.getYminTransvTopPnts()
-        tr_bl,tr_br=self.getYminTransvBottPnts()
-        lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
-        if self.drawConcrTrSect == True: #closed section
-            s=Part.makePolygon(lstPnts)
-            p=Part.show(s)
-            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        elif  type(self.drawConcrTrSect) == list:
-            for n_edge in self.drawConcrTrSect:
-                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
-                p=Part.show(l)
-                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        else:
-            lmsg.error(" 'drawConcrTrSect' must be 'True' for closed section or a list of the edges you want draw")
+        if self.drawConcrTrSect:
+            tr_tl,tr_tr=self.getYminTransvTopPnts()
+            tr_bl,tr_br=self.getYminTransvBottPnts()
+            lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
+            lstEdges=[] if self.drawConcrTrSect == True else self.drawConcrTrSect
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
 
     def drawLongConcrSectXmin(self):
         ''' Draw the concrete longitudinal section at minimum X coordinate'''
-        minXln_bl,minXln_br=self.getXminLongBottPnts()
-        minXln_tl,minXln_tr=self.getXminLongTopPnts()
-        lstPnts=[minXln_bl,minXln_tl,minXln_tr,minXln_br,minXln_bl]
-        if self.drawConcrLnSect == True: #closed section
-            s=Part.makePolygon(lstPnts)
-            p=Part.show(s)
-            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        elif  type(self.drawConcrLnSect) == list:
-            for n_edge in self.drawConcrLnSect:
-                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
-                p=Part.show(l)
-                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        else:
-            lmsg.error(" 'drawConcrLnSect' must be 'True' for closed section or a list of the edges you want draw")
+        if self.drawConcrLnSect:
+            minXln_bl,minXln_br=self.getXminLongBottPnts()
+            minXln_tl,minXln_tr=self.getXminLongTopPnts()
+            lstPnts=[minXln_bl,minXln_tl,minXln_tr,minXln_br,minXln_bl]
+            lstEdges=[] if self.drawConcrLnSect == True else self.drawConcrLnSect
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
       
     def drawLongConcrSectXmax(self):
         ''' Draw the concrete longitudinal section at maximum X coordinate'''
-        maxXln_bl,maxXln_br=self.getXmaxLongBottPnts()
-        maxXln_tl,maxXln_tr=self.getXmaxLongTopPnts()
-        lstPnts=[maxXln_bl,maxXln_tl,maxXln_tr,maxXln_br,maxXln_bl]
-        if self.drawConcrLnSect == True: #closed section
-            s=Part.makePolygon(lstPnts)
-            p=Part.show(s)
-            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        elif  type(self.drawConcrLnSect) == list:
-            for n_edge in self.drawConcrLnSect:
-                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
-                p=Part.show(l)
-                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        else:
-            lmsg.error(" 'drawConcrLnSect' must be 'True' for closed section or a list of the edges you want draw")
+        if self.drawConcrLnSect:
+            maxXln_bl,maxXln_br=self.getXmaxLongBottPnts()
+            maxXln_tl,maxXln_tr=self.getXmaxLongTopPnts()
+            lstPnts=[maxXln_bl,maxXln_tl,maxXln_tr,maxXln_br,maxXln_bl]
+            lstEdges=[] if self.drawConcrLnSect == True else self.drawConcrLnSect
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
 
     def drawPlanConcrView(self):
         " Draw the concrete plan view (usually used when side reinforcement is defined) "
-        pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
-        lstPnts=[pl_xmin_ymin,pl_xmin_ymax,pl_xmax_ymax,pl_xmax_ymin,pl_xmin_ymin]
-        if self.drawPlan == True: #closed section
-            s=Part.makePolygon(lstPnts)
-            p=Part.show(s)
-            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        elif  type(self.drawPlan) == list:
-            for n_edge in self.drawPlan:
-                l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
-                p=Part.show(l)
-                FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
-        else:
-            lmsg.error(" 'drawPlan' must be 'True' for closed section or a list of the edges you want draw")
-      
+        if self.drawPlan:
+            pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
+            lstPnts=[pl_xmin_ymin,pl_xmin_ymax,pl_xmax_ymax,pl_xmax_ymin,pl_xmin_ymin]
+            lstEdges=[] if self.drawPlan == True else self.drawPlan
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
 
 def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
@@ -1276,7 +1241,83 @@ def quad_beam_reinf(width,height,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,ang
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
     
-     
+class genericCylReinf(genericReinfBase):
+    '''Typical reinforcement arrangement of cylindrical member
+
+    :ivar radius: radius of the cylinder cross-section
+    :ivar length: cylinder length
+    :ivar anchPtTrnsSect: anchor point to place the center of the concrete transverse cross-section
+    :ivar anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal section
+    :param reinfCfg: instance of the cfg.reinfConf class
+    :ivar angLn: angle (degrees) between the horizontal and the brick length dimension 
+    :ivar lnRb: data for the longitudinal rebar family expressed as instance of brkRbFam class (defaults to None
+    :ivar lstStirrReinf: list of stirr families expressed as instances of brkStirrFam class (defaults to None)
+    :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn. 
+          Also can be a list of edges (e.g. [2,4] if only second and fourth edges are drawn) (defaults to True)
+    :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
+    '''
+    def __init__(self,radius,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,angLn=0,lnRb=None,lstStirrReinf=None,drawConcrLnSect=True,startId=1):
+        super(genericCylReinf,self).__init__(length=length,thickness=2*radius,angLn=angLn,anchPtLnSect=anchPtLnSect,startId=startId)
+        self.radius=radius
+        self.anchPtTrnsSect=anchPtTrnsSect+Vector(0,radius)
+        self.reinfCfg=reinfCfg
+        self.angLn=angLn
+        self.lnRb=lnRb
+        self.lstStirrReinf=lstStirrReinf
+        self.drawConcrLnSect=drawConcrLnSect
+
+    def getMaxStirrDiam(self):
+        ''' Return the maximum diameter of the stirrup families'''
+        fiMax=self.getMaxDiameter(self.lstStirrReinf)
+        return fiMax
+    
+    def drawLnRF(self):
+        ln_bl,ln_br=self.getSimplLongBottPnts()
+        vdirTrBott=(ln_br-ln_bl).normalize()
+        self.initRFVvars(self.lnRb)
+        self.checkId(self.lnRb)
+        self.lnRb.reinfCfg=self.reinfCfg
+        self.lnRb.lstPtsConcrSect=[ln_bl,ln_br]
+        self.lnRb.lstCover=[self.radius-self.lnRb.diameter/2]
+        self.lnRb.rightSideCover=False
+        self.lnRb.sectBarsConcrRadius=self.radius
+        self.lnRb.rightSideSectBars=True
+        self.lnRb.coverSectBars=self.reinfCfg.cover+self.getMaxStirrDiam()
+        self.lnRb.createLstRebar()
+        self.lnRb.drawCircSectBars(vTranslation=self.anchPtTrnsSect)
+        self.lnRb.drawLstRebar()
+
+    def drawStirrF(self):
+        ln_bl,ln_br=self.getSimplLongBottPnts()
+        ln_tl,ln_tr=self.getSimplLongTopPnts()
+        vDirLong=(ln_br-ln_bl).normalize()
+        lst_stirr=list()
+        for stirrF in self.lstStirrReinf:
+            self.checkId(stirrF)
+            stirrF.reinfCfg=self.reinfCfg
+            stirrF.lstPtsConcrSect=None
+            stirrF.concrSectRadius=self.radius
+            stirrF.lstPtsConcrLong=[ln_bl,ln_tl]
+            stirrF.nmbStrpTransv=1
+            stirrF.lstCover=[self.reinfCfg.cover]
+            stirrF.vDirLong=vDirLong
+            stirrF.drawCircRebar(vTranslation=self.anchPtTrnsSect)
+            stirrF.drawLnRebars()
+            lst_stirr+=[stirrF]
+        return lst_stirr
+
+    def drawTransvConcrSect(self):
+        rb.drawCircConcreteSection(radiusConcrSect=self.radius,vTranslation=self.anchPtTrnsSect)
+
+    def drawLongConcrSect(self):
+        ''' Draw the concrete longitudinal section'''
+        if self.drawConcrLnSect:
+            ln_bl,ln_br=self.getSimplLongBottPnts()
+            ln_tl,ln_tr=self.getSimplLongTopPnts()
+            lstPnts=[ln_bl,ln_tl,ln_tr,ln_br,ln_bl]
+            lstEdges=[] if self.drawConcrLnSect==True else self.drawConcrLnSect
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
+        
              
     
 

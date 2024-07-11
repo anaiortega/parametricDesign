@@ -3,11 +3,11 @@ from __future__ import division
 from FreeCAD import Vector
 from freeCAD_civil.structures import typical_RC_members as trcm
 from freeCAD_civil import  draw_config as cfg
-from freeCAD_civil import reinf_bars as rb
 from materials.ec2 import EC2_materials
 
 concr=EC2_materials.C25
 steel=EC2_materials.S500C
+cover=35e-3; cfg.defaultReinfConf.cover=cover
 
 estrName='Generic brick 2'
 titSchedule=estrName.upper()
@@ -15,6 +15,7 @@ titSchedule=estrName.upper()
 width=4 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
 thickness=0.4  #thickness of the slab
+
 # bottom transverse rebars data
 botTrnsRb=trcm.brkRbFam(fi=20e-3,s=0.15,Id='1',gapStart=0.5,extrShapeStart='anc90_posGood_tens',extrShapeEnd='anc90_posGood_tens',position='good',vectorLRef=Vector(-0.3,-0.35),closedStart=False,closedEnd=False) 
 # top transverse rebars data
@@ -36,7 +37,7 @@ anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of 
 docName='genericBrick'
 FreeCAD.newDocument(docName)
 scale=1/50
-reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
+reinfCfg=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 # set XC dimension style in current document
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp)
 

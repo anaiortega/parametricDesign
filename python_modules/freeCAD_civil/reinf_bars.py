@@ -292,12 +292,13 @@ class rebarFamilyBase(object):
         :param pText: point to place the text 
         '''
         hText=self.reinfCfg.texSize
+        ndec=self.reinfCfg.decLengths
         if justif=="Left":
             txtColor=cfg.colorTextLeft
             if self.nmbBars:
                 tx=self.identifier + '  ' + str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter))
             else:
-                tx=self.identifier + '  %%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing)
+                tx=self.identifier + '  %%C' + str(int(1000*self.diameter)) + 'c/' + str(round(self.spacing,ndec))
             if self.addTxt2Label:
                 tx=tx+' '+self.addTxt2Label
             ptoSketch=pText+Vector((len(tx)-2)*0.7*hText,0)
@@ -307,10 +308,9 @@ class rebarFamilyBase(object):
             if self.nmbBars:
                 tx=str(int(self.nmbBars)) + '%%C' + str(int(1000*self.diameter)) + '   ' + self.identifier
             else:
-                tx='%%C' + str(int(1000*self.diameter)) + 'c/' + str(self.spacing) +'   ' + self.identifier
+                tx='%%C' + str(int(1000*self.diameter)) + 'c/' + str(round(self.spacing,ndec)) +'   ' + self.identifier
             if self.addTxt2Label:
                 tx=self.addTxt2Label+' '+tx
-           
             ptoSketch=pText+Vector(-(len(tx)-2)*0.7*hText,0)
             pos='r'
         dt.put_text_in_pnt(text=tx,point=pText,hText=hText,color=txtColor,justif=justif)
@@ -539,7 +539,9 @@ class rebarFamily(rebarFamilyBase):
         :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
         the drawing (defaults to Vector(0,0,0))
         '''
+        print('coverSectBars=',self.coverSectBars)
         centersWire=Part.makeCircle(self.sectBarsConcrRadius-self.coverSectBars-self.diameter/2.0)
+        centersWire.applyTranslation(vTranslation)
         Laux=centersWire.Length
         if self.nmbBars:
             self.nbarsAux=self.nmbBars
@@ -765,7 +767,7 @@ class rebarFamily(rebarFamilyBase):
         if self.nmbBars:
             txt='%%C' + str(int(1000*self.diameter))
         else:
-            if dsu.get_number_decimal_positions(self.spacing)>self.reinfCfg.decSpacing:
+            if dsu.get_number_decimal_positions(self.spacing)<self.reinfCfg.decSpacing:
                 txSpacing=str(self.spacing) # all decimals are written
             else:
                 txSpacing=formatSpacing %self.spacing
@@ -1207,7 +1209,7 @@ def bars_quantities_for_budget(lstBarFamilies,outputFileName):
         f.write(s)
     f.close()
         
-def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete,dimConcrSect=False,spacDimLine=0.5):
+def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete,dimConcrSect=False,spacDimLine=0.5,lstEdges=[]):
     ''' Draw a section of concrete defined by a list of points in the FreeCAD 
     active document (polygonal shape)
 
@@ -1219,15 +1221,24 @@ def drawConcreteSection(lstPtsConcrSect,vTranslation=Vector(0,0,0),color=cfg.col
     :param dimConcrSect: True for dimensioning the concrete section
            (defaults to False)
     :param spacDimLine: free space between the concrete edges ane  the 
-                dimension lines (defaults to 0.5 drawing units)
-    '''
-    lst_disp=[v+vTranslation for v in lstPtsConcrSect]
-    w=Part.makePolygon(lst_disp)
-    p=Part.show(w)
-    FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
+           dimension lines (defaults to 0.5 drawing units)
+    :param lstEdges:list of edge positions to be drawn  (e.g. [2,4] if only 
+           second and fourth edges are drawn) if [] all edges are drawn
+           (defaults to [])
+     '''
+    lstPnts=[v+vTranslation for v in lstPtsConcrSect]
+    if len(lstEdges)==0:
+        w=Part.makePolygon(lstPnts)
+        p=Part.show(w)
+        FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =color
+    else:
+        for n_edge in lstEdges:
+            l=Part.makeLine(lstPnts[n_edge-1],lstPnts[n_edge])
+            p=Part.show(l)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorConcrete
     #dimension concrete section
     if dimConcrSect:
-        dim.dim_lst_pnts(lstPnts=lst_disp,spacDimLine=spacDimLine)
+        dim.dim_lst_pnts(lstPnts=lstPnts,spacDimLine=spacDimLine)
     return p
     
 def drawCircConcreteSection(radiusConcrSect,vTranslation=Vector(0,0,0),color=cfg.colorConcrete):

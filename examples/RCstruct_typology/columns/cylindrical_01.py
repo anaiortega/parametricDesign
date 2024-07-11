@@ -89,10 +89,10 @@ rb.drawRCSection(
     vTranslation=Vector(0,2*Rad+0.7),
     )
 docArm.recompute()
-
+'''
 docSch=FreeCAD.newDocument(estrName+"_schedule",estrName+"_schedule")
 rb.barSchedule(lstBarFamilies=[vert_rf1,stirr1],
                title='cylindrical column',
                doc=docSch
 )
-
+'''
