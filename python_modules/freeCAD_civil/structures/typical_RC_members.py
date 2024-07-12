@@ -18,10 +18,14 @@ class brkRbFam(rb.rebarFamily):
     :ivar Id: identifier of the rebar family (defaults to None)
     :ivar nmbBars: number of rebars in the family. This parameter takes
             precedende over 'spacing' (defaults to None)
-    :ivar distRFstart: distance from the first rebar of the family to the left extremity of the brick (as it is drawn in the section)  (defaults to 0)
-    :ivar distRFend: distance from the last rebar of the family to the right extremity of the brick (as it is drawn in the section)  (defaults to 0)
-    :ivar closedStart: the bar extends along the side of the brick before the start (defaults to False)
-    :ivar closedEnd: the bar extends along the side of the brick after the end (defaults to False)
+    :ivar distRFstart: distance from the first rebar of the family to the left extremity of the brick 
+          (as it is drawn in the section)  (not implemented in cylinders)  (defaults to 0)
+    :ivar distRFend: distance from the last rebar of the family to the right extremity of the brick 
+          (as it is drawn in the section) (not implemented in cylinders)  (defaults to 0)
+    :ivar closedStart: the bar extends along the side of the brick before the start 
+          (not implemented in cylinders) (defaults to False)
+    :ivar closedEnd: the bar extends along the side of the brick after the end 
+          (not implemented in cylinders)  (defaults to False)
     :ivar vectorLRef:vector to draw the leader line for labeling the bar (defaults to Vector(0.5,0.5)
     :ivar lateralCover: minimal lateral cover to place the rebar family (defaults to cfg.defaultReinfConf.cover)
     :ivar gapStart: increment (decrement if gapStart <0) of the length of 
@@ -100,33 +104,43 @@ class brkStirrFam(rb.stirrupFamily):
     '''Define a stirrup family for a brick reinforcement
 
     :ivar fi: diameter of the bars of the family [m]
-    :ivar widthStirr: width of the stirrup (internal)
+    :ivar widthStirr: width of the stirrup (internal) (defaults to 0.20)
     :ivar sRealSh: spacement between stirrups represented as real shape (defaults to None)
     :ivar sPerp: spacement between stirrups in the orthogonal direction (defaults to None)
     :ivar Id: identifier of the rebar family (defaults to None)
     :ivar sRealSh: spacement between stirrups represented as real shape 
     :ivar sPerp: spacement between stirrups in orthogonal direction 
     :ivar nStirrPerp: number of stirrups in orthogonal direction (defaults to 1)
-    :ivar dispRealSh: displacement of the stirrup family from the left extremity of the section (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end extremities of the slab (defaults to =0)
-    :ivar dispPerp: displacement of the stirrup family from the left extremity of the section (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end extremities of the slab (defaults to 0)
-    :ivar vDirTrans: vector to define the transversal direction (defaults to None, in which case the direction of the first side of the concrete section is taken)    
+    :ivar dispRealSh: displacement of the stirrup family from the left extremity of the section 
+          (represented in real shape). If dispRealSh<0 the stirrups are drawn from right to end 
+          extremities of the slab (defaults to =0)
+    :ivar dispPerp: displacement of the stirrup family from the left extremity of the section 
+          (in the orthogonal direction). If dispPerp<0 the stirrups are drawn from right to end 
+          extremities of the slab (defaults to 0)
+    :ivar vDirTrans: vector to define the transversal direction (defaults to None, in which case 
+          the direction of the first side of the concrete section is taken)    
     :ivar vDirLong: vector to define the longitudinal direction (defaults to Vector(1,0)
     :ivar rightSideCover: cover given to the right side (defaults to True)
-    :ivar vectorLRef: vector to draw the leader line for labeling the barVector (defaults to Vector(0.5,0.5)
-    :ivar rightSideLabelLn: side to place the label of the stirrups in longitudinal section (defaults to True -> right)
+    :ivar vectorLRef: vector to draw the leader line for labeling the barVector
+          (defaults to Vector(0.5,0.5)
+    :ivar rightSideLabelLn: side to place the label of the stirrups in longitudinal section 
+          (defaults to True -> right)
     :ivar closed: if closed stirrup True (defaults to True)
     :ivar addL2closed: length to add to closed stirrups (defaults to 0.20)
-    :ivar fixAnchorStart, fixAnchorEnd: anchor definition at start and end, respectively (defaults to None) The anchors are defined as follows:
+    :ivar fixAnchorStart, fixAnchorEnd: anchor definition at start and end, respectively 
+          (defaults to None) The anchors are defined as follows:
             fix[angle]= is a positive number, expresed in sexagesimal degrees, 
                         that represents the counterclokwise angle from the first segment 
                         of the rebar towards the hook.
             len[number]: number is the length of the segment to add (in mm)
             Examples: 'fix45_len150'
-        :ivar nMembers: number of identic members. The calculated number of bars is multiplied by nMembers (defaults to 1)
+    :ivar nMembers: number of identic members. The calculated number of bars is multiplied 
+          by nMembers (defaults to 1)
     :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
-    :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultReinfConf)cfg.defaultReinfConf
+    :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete 
+          and steel type, text format, ... (defaults to cfg.defaultReinfConf)cfg.defaultReinfConf
     '''
-    def __init__(self,fi,widthStirr,sRealSh=None,sPerp=None,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
+    def __init__(self,fi,widthStirr=0.20,sRealSh=None,sPerp=None,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
     
         super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=None,spacStrpTransv=sRealSh,spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.dispRealSh=dispRealSh
@@ -209,8 +223,10 @@ class genericBrickReinf(genericReinfBase):
     :ivar width: dimension of the brick in the direction of the transverse rebars
     :ivar length: dimension of the brick in the direction of the longitudinal rebars
     :ivar thickness: thickness of the brick at the start (at point anchPtTrnsSect)
-    :ivar anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
-    :ivar anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal section
+    :ivar anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse 
+          cross-section
+    :ivar anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal 
+          section
     :ivar anchPtPlan: anchor point to place the bottom left corner of the concrete plan view
     :ivar reinfCfg: instance of the cfg.reinfConf class
     :ivar angTrns: angle (degrees) between the horizontal and the brick width dimension
@@ -219,27 +235,31 @@ class genericBrickReinf(genericReinfBase):
     :ivar topTrnsRb: same for the top transverse rebar family
     :ivar botLnRb: same for the bottom longitudinal rebar family
     :ivar topLnRb: same for the top longitudinal rebar family
-    :ivar sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as instance of brkRbFam class
+    :ivar sideXminRb: data for side reinforcement in face Xmin  (defaults to None), expressed as 
+          instance of brkRbFam class
     :ivar sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
     :ivar sideYminRb: same for side reinforcement in face Ymin (defaults to None)
     :ivar sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
-    :ivar lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. Each one is the data 
-          for a stirrup rebar familiy that holds transverse top and bottom rebar families. Real shape is depicted in the longitudinal section
-    :ivar lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. Each one is the data 
-          for a stirrup rebar family that holds longitudinal top and bottom rebar families
+    :ivar lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam class. 
+          Each one is the data for a stirrup rebar familiy that holds transverse top and bottom rebar 
+          families. Real shape is depicted in the longitudinal section
+    :ivar lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. 
+          Each one is the data for a stirrup rebar family that holds longitudinal top and bottom rebar 
+          families
     :ivar trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :ivar trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :ivar slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
-    :ivar drawConcrTrSect: True if a closed concrete transverse cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)
-          (defaults to True)
-    :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
-          (defaults to True)
-    :ivar anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
-          (defaults to None)
+    :ivar drawConcrTrSect: True if a closed concrete transverse cross-section is drawn or a list of 
+          edges (e.g. [2,4] if only second and fourth edges are drawn) (defaults to True)
+    :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of 
+          edges (e.g. [2,4] if only second and fourth edges are drawn) (defaults to True)
+    :ivar anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing 
+          (in general, the plan drawing is only used when defining side reinforcement) (defaults to None)
     :ivar angPlan:  angle (degrees) between the horizontal and the plan view (defaults to 0)
-    :ivar drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
-          (anchPtPlan must be defined) (defaults to False)
-    :ivar startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
+    :ivar drawPlan: True if the closed concrete plan view is drawn or   a list of edges (e.g. [2,4] 
+          if only second and fourth edges are drawn) (anchPtPlan must be defined) (defaults to False)
+    :ivar startId: integer to successively identify the reinforcement families created for which 
+          their identifier has not been defined or it is None (defaults to 1)
     '''
 
     def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
@@ -1198,10 +1218,7 @@ def quad_beam_reinf(width,height,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,ang
         lstLeftLatlRb+=(maxNlayers-len(lstLeftLatlRb))*[None]
         lstRightLatlRb+=(maxNlayers-len(lstRightLatlRb))*[None]
         if lstStirrReinf and len(lstStirrReinf)>0:
-            # maximum stirrup diameter
-            fisStirr=[rb.diameter for rb in lstStirrReinf]
-            maxFiStirr=max(fisStirr)
-            # Add diameter of stirrups to default cover
+            maxFiStirr=self.getMaxDiameter(lstStirrReinf)
             reinfCfg.cover=reinfCfg.cover+maxFiStirr
         # init lateral cover if not defined
         for rb in allRF:
@@ -1318,6 +1335,62 @@ class genericCylReinf(genericReinfBase):
             lstEdges=[] if self.drawConcrLnSect==True else self.drawConcrLnSect
             rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
         
-             
+def cyl_beam_reinf(radius,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,angLn=0,lstLnRb=[],lstStirrReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1,clearDistRbLayers=None,aggrSize=20e-3):
+    '''Typical reinforcement arrangement of a cylindrical cross-section beam (or column)
+    :param radius: radius of the cylinder cross-section
+    :param length: cylinder length
+    :param anchPtTrnsSect: anchor point to place the center of the concrete transverse cross-section
+    :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal 
+           section
+    :param reinfCfg: instance of the cfg.reinfConf class
+    :param angLn: angle (degrees) between the horizontal and the brick length dimension 
+    :param lstLnRb: list of data for the longitudinal rebar familyiesexpressed as instances 
+           of brkRbFam class Each element of  the list represents a layer of rebars 
+           (first element is the outermost) (defaults to [])
+    :param lstStirrReinf: list of stirr families expressed as instances of brkStirrFam class 
+           (defaults to None)
+    :param drawConcrTrSect: True if the concrete circular cross-section is drawn. 
+          (defaults to True)
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn. 
+          Also can be a list of edges (e.g. [2,4] if only second and fourth edges are drawn) 
+          (defaults to True)
+    :param startId: integer to successively identify the reinforcement families created for 
+           which their identifier has not been defined or it is None (defaults to 1)
+    :param clearDistRbLayers: clear (horizontal and vertical) distance (in m) between layers 
+           of parallel bars. Defaults to None, in which case this distance is calculated 
+           in function of the maximum aggregate size and the maximum diameter of the defined 
+           families of rebars  
+    :param aggrSize: maximum aggregate size (in m) (used to calculate the clear distance 
+           between rebar layers (if not defined by parameter clearDistRebars)
+    '''
+    initCover=reinfCfg.cover
+    lstRebFam=list(); lstStirrFam=list() # Families of rebars
+    # Check identifiers
+    for rb in lstLnRb+lstStirrReinf:
+        if not rb.identifier:
+            rb.identifier=str(startId)
+            startId+=1
+    if lstStirrReinf and len(lstStirrReinf)>0: # Draw stirrups
+        cyl=genericCylReinf(radius=radius,length=length,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,reinfCfg=reinfCfg,angLn=angLn,lnRb=None,lstStirrReinf=lstStirrReinf,startId=startId)
+        lstStirrFam+=cyl.drawStirrF()
+        maxFiStirr=cyl.getMaxDiameter(lstStirrReinf)
+        reinfCfg.cover=reinfCfg.cover+maxFiStirr
+    if len(lstLnRb)>0:
+        if not(clearDistRbLayers):
+            maxFi=cyl.getMaxDiameter(lstLnRb)
+            clearDistRbLayers=reinfCfg.getMinClearDistRebars(maxFi,aggrSize)
+        for layer in range(len(lstLnRb)):
+            lnRb=lstLnRb[layer]
+            cyl=genericCylReinf(radius=radius,length=length,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect,reinfCfg=reinfCfg,angLn=angLn,lnRb=lnRb,lstStirrReinf=None,drawConcrLnSect=drawConcrLnSect,startId=startId)
+            cyl.checkId(lnRb)
+            cyl.drawLnRF()
+            reinfCfg.cover=reinfCfg.cover+lnRb.diameter+clearDistRbLayers
+            lstRebFam+=[lnRb]
+    if drawConcrTrSect:
+        cyl.drawTransvConcrSect()
+    if drawConcrLnSect:
+        cyl.drawLongConcrSect()
+    return lstRebFam,lstStirrFam,startId
+            
     
 
