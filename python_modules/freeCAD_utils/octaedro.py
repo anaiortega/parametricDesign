@@ -1,4 +1,5 @@
-import FreeCAD, FreeCADGui, Part
+from FreeCAD import Vector
+import FreeCADGui, Part
 
 class Octahedron:
       def __init__(self, obj):
@@ -11,12 +12,12 @@ class Octahedron:
 
       def execute(self, fp):
          # Define six vetices for the shape
-         v1 = FreeCAD.Vector(0,0,0)
-         v2 = FreeCAD.Vector(fp.Length,0,0)
-         v3 = FreeCAD.Vector(0,fp.Width,0)
-         v4 = FreeCAD.Vector(fp.Length,fp.Width,0)
-         v5 = FreeCAD.Vector(fp.Length/2,fp.Width/2,fp.Height/2)
-         v6 = FreeCAD.Vector(fp.Length/2,fp.Width/2,-fp.Height/2)
+         v1 = Vector(0,0,0)
+         v2 = Vector(fp.Length,0,0)
+         v3 = Vector(0,fp.Width,0)
+         v4 = Vector(fp.Length,fp.Width,0)
+         v5 = Vector(fp.Length/2,fp.Width/2,fp.Height/2)
+         v6 = Vector(fp.Length/2,fp.Width/2,-fp.Height/2)
          
          # Make the wires/faces
          f1 = self.make_face(v1,v2,v5)

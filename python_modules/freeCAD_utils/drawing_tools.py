@@ -9,7 +9,6 @@ __email__= "ana.ortega@xcengineering.xyz "
 
 import Part, FreeCAD, math
 import Draft
-from FreeCAD import Vector
 import FreeCADGui
 
 def put_text_in_pnt(text,point,hText,color=(1.00,0.00,0.00),justif="Left",rotation=None):

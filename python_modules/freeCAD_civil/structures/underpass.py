@@ -7,7 +7,7 @@ __version__= "1.0"
 __email__= "l.pereztato@gmail.com  ana.Ortega.Ort@gmail.com"
 '''
 import math
-import FreeCAD, Part, Draft
+import Part, Draft
 from FreeCAD import Vector
 
 def PlaceShpPtVect(shapeId,ptOrig,vDirOrig,ptDest,vDirDest):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import Part, FreeCAD, math
+import Part, math
 from FreeCAD import Vector
 
 def vectorUnitario(pto1,pto2):

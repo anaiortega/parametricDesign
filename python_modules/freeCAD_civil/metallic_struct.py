@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import Part, FreeCAD, math
-import Draft
+import Part, math
+from FreeCAD import Base
+from Draft import *
 from parametric_design.freeCAD_civil import metallic_profiles
 from parametric_design.freeCAD_civil import geometry_2D
 from parametric_design.freeCAD_civil import geometry_3D
-from FreeCAD import Base
-from Draft import *
 
 def barra2Ptos(ptoIni,ptoFin,perfil,tamPerfil,incrIni,incrFin,giroSec=0,tol=1e-5):
     # dibuja el perfil metálico perfil.tamPerfil entre los puntos 3D ptoIni y ptoFin

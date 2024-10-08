@@ -1,5 +1,5 @@
 import json
-import FreeCAD as App
+import FreeCAD
 import Draft
 from materials.ec2 import EC2_materials
 
@@ -351,9 +351,9 @@ def set_dim_style(scale,dimStyProp=XCdimProp):
     :ivar dimStyProp: properties of the dimension style (defaults to sx_dim_prop)
     '''
     dimStyProp["ScaleMultiplier"]= 1e-3/scale
-    meta = App.ActiveDocument.Meta
+    meta = FreeCAD.ActiveDocument.Meta
     meta["Draft_Style_dimStyle"]=json.dumps(dimStyProp)
-    App.ActiveDocument.Meta = meta
+    FreeCAD.ActiveDocument.Meta = meta
     
 
 

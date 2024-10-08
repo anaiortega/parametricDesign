@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import Part, FreeCAD, math
 from Draft import makeWire
 from FreeCAD import Base
 

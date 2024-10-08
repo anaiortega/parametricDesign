@@ -9,11 +9,11 @@ def vistaSuperior(tamHoja,orientacion):
     #orientacion: orientación de la hoja, puede ser 'vertical' o 'apaisado'
     CreaHoja(tamHoja,orientacion)
     figura=Gui.Selection.getSelectionEx()[0]
-    App.activeDocument().addObject('TechDraw::FeatureViewPart','topView')
-    App.activeDocument().topView.Source = figura.Object
+    FreeCAD.activeDocument().addObject('TechDraw::FeatureViewPart','topView')
+    FreeCAD.activeDocument().topView.Source = figura.Object
 
 
 def CreaHoja(tamHoja,orientacion):
-    App.activeDocument().addObject('TechDraw::FeaturePage','vista')
-    App.activeDocument().vista.Template = App.getResourceDir()+'Mod/TechDraw/Templates/'+tamHoja+'_'+orientacion+'.svg'
+    FreeCAD.activeDocument().addObject('TechDraw::FeaturePage','vista')
+    FreeCAD.activeDocument().vista.Template = App.getResourceDir()+'Mod/TechDraw/Templates/'+tamHoja+'_'+orientacion+'.svg'
 

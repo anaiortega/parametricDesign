@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import Part, FreeCAD, math
+import Part, math
 import Draft
 from FreeCAD import Base
 
