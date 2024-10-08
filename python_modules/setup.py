@@ -30,8 +30,10 @@ from __future__ import print_function
 # 
 
 
-from distutils.core import setup
+from setuptools import setup
+from setuptools import find_packages
 import sys
+import version
 
 myPrefix = sys.prefix
 if len (sys.argv) > 2:
@@ -51,7 +53,40 @@ if not myPrefix and "PREFIX" in os.environ:
 if not myPrefix or not len (myPrefix):
     myPrefix = "/usr/local"
 
+parametric_design_packages= ['freeCAD_civil','freeCAD_civil.structures','freeCAD_utils','geometry_utils','landXMLtoFreeCAD','RC_utils','setting_out','layout_utils']
+
+# Get version
+pD_version= version.__version__
+pD_deb_pkg_folder= None
+pD_installation_target= None
+usr_local_pth= None
+with open('./pd_installation_target.txt','r') as f:
+    pd_version= f.readline().strip()
+    sys_arch= f.readline().strip()
+    pd_deb_pkg_folder= f.readline().strip()
+    pd_installation_target= f.readline().strip()
+    usr_local_pth= f.readline().strip()
+if (pd_version is None):
+    logging.error('PD_VERSION not set.')
+    exit(1)
+if (sys_arch is None):
+    logging.error('SYS_ARCH not set.')
+    exit(1)
+if (pd_deb_pkg_folder is None):
+    logging.error('PD_DEB_PKG_FOLDER not set.')
+    exit(1)
+if (pd_installation_target is None):
+    logging.error('PD_INSTALLATION_TARGET not set.')
+    exit(1)
+if (usr_local_pth is None):
+    logging.error('USR_LOCAL not set.')
+    exit(1)
+    
+print('PD temporary folder: '+pd_deb_pkg_folder)
+print('PD temporary installation target: '+pd_installation_target)
+
 setup(name='parametricDesign',
+      version= pd_version,
       author='Ana Ortega',
-      packages=['freeCAD_civil','freeCAD_civil/structures','freeCAD_utils','geometry_utils','landXMLtoFreeCAD','RC_utils','setting_out','layout_utils']
+      packages= find_packages(include= parametric_design_packages),
       )
