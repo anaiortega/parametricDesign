@@ -2,7 +2,7 @@
 
 import FreeCAD
 import math
-from freeCAD_utils import drawing_tools as dt
+from parametric_design.freeCAD_utils import drawing_tools as dt
 from FreeCAD import Vector
 
 import sys

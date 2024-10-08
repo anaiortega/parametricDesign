@@ -14,7 +14,7 @@ import numpy as np
 import math
 import sys
 sys.path.append('./tools')
-from setting_out import sett_out_tools as too
+from parametric_design.setting_out import sett_out_tools as too
 from tabulate import tabulate
 
 # DATA
@@ -64,7 +64,7 @@ points_aleta1=too.sett_out_aleta(start_point,azimuthAleta,azimuthPuntera,wCoron,
 #Plotting of results in FreeCAD
 import Part, FreeCAD, math
 from Draft import *
-from freeCAD_civil import plot_tools as plot
+from parametric_design.freeCAD_civil import plot_tools as plot
 App.newDocument("aleta")
 aleta1found=plot.create_wire_lstPt(lstPoints=points_aleta1,closed=True)
 aleta1wall=plot.create_wire_lstPt(lstPoints=[start_point,pt_end_aleta1],closed=False)

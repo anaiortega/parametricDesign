@@ -13,17 +13,17 @@ import Part
 import Draft
 from FreeCAD import Vector
 import FreeCADGui
-from freeCAD_utils import geom_utils
-from freeCAD_utils import drawing_tools as dt
-from RC_utils import reinf_bars_arrang_sets as RCutils
+from parametric_design.freeCAD_utils import geom_utils
+from parametric_design.freeCAD_utils import drawing_tools as dt
+from parametric_design.RC_utils import reinf_bars_arrang_sets as RCutils
 import DraftVecUtils
 from materials.ec2 import EC2_limit_state_checking as EC2lsc
 from materials.ehe import EHE_limit_state_checking as EHElsc
 from misc_utils import data_struct_utils as dsu
-from freeCAD_civil import draw_config as cfg
-from freeCAD_civil import tables
+from parametric_design.freeCAD_civil import draw_config as cfg
+from parametric_design.freeCAD_civil import tables
 from misc_utils import log_messages as lmsg
-from layout_utils import dimensioning as dim
+from parametric_design.layout_utils import dimensioning as dim
 
 '''Classes to generate in FreeCAD drawings to represent  a reinforced-concrete 
 structure and the bar schedule associated.

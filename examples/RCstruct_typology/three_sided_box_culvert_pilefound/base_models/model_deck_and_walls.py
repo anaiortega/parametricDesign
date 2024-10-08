@@ -1,7 +1,7 @@
 # Model the deck and walls
 from FreeCAD import Vector
 from data import geomData as gd
-from freeCAD_civil.structures import underpass
+from parametric_design.freeCAD_civil.structures import underpass
 import Part
 from aux_sharing import sharing_parts as shp
 from aux_sharing import sharing_vars as shv

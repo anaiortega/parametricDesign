@@ -2,8 +2,8 @@
 
 import math
 import Part, FreeCAD
-from freeCAD_civil import draw_config as cfg
-from freeCAD_civil import reinf_bars as rb
+from parametric_design.freeCAD_civil import draw_config as cfg
+from parametric_design.freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 import FreeCADGui
 from misc_utils import log_messages as lmsg

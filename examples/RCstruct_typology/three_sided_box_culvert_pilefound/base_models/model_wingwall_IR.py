@@ -1,8 +1,8 @@
 from aux_sharing import sharing_parts as shp
-from freeCAD_utils import geom_utils as gu
-from freeCAD_civil.structures import underpass
+from parametric_design.freeCAD_utils import geom_utils as gu
+from parametric_design.freeCAD_civil.structures import underpass
 from FreeCAD import Vector
-from freeCAD_utils import drawing_tools as dt
+from parametric_design.freeCAD_utils import drawing_tools as dt
 import Part
 from aux_sharing import sharing_IR_wingwall as IR
 from aux_sharing import sharing_vars as shv

@@ -2,9 +2,9 @@
 from __future__ import division
 
 from FreeCAD import Vector
-from freeCAD_civil.structures import typical_RC_members as trcm
-from freeCAD_civil import  draw_config as cfg
-from freeCAD_civil import reinf_bars as rb
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcm
+from parametric_design.freeCAD_civil import  draw_config as cfg
+from parametric_design.freeCAD_civil import reinf_bars as rb
 from materials.ec2 import EC2_materials
 
 concr=EC2_materials.C25

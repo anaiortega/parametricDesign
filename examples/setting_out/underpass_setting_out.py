@@ -14,7 +14,7 @@ import numpy as np
 import math
 import sys
 sys.path.append('./tools')
-from setting_out import sett_out_tools as too
+from parametric_design.setting_out import sett_out_tools as too
 from tabulate import tabulate
 
 # DATA
@@ -110,7 +110,7 @@ too.write_points_to_file(title='ALETA 4',pointsArr=points_aleta4,nDecimalP=3,fil
 #Plotting of results in FreeCAD
 import Part, FreeCAD, math
 from Draft import *
-from freeCAD_civil import plot_tools as plot
+from parametric_design.freeCAD_civil import plot_tools as plot
 App.newDocument("marco3")
 marco=plot.create_wire_lstPt(lstPoints=points_cuadr_repl[0:4],closed=True)
 #FreeCADGui.ActiveDocument.getObject(marco.Name).LineColor = (0.00,1.00,0.00)

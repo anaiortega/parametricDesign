@@ -2,7 +2,7 @@
 import math
 import Part,
 from FreeCAD import Vector
-from layout_utils import views 
+from parametric_design.layout_utils import views 
 
 docGeom=App.newDocument('pipeBifurc3D','pipeBifurc3D')
 #Datos

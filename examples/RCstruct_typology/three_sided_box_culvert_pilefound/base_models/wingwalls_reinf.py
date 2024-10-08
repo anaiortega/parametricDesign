@@ -1,8 +1,7 @@
-mport Part, FreeCAD, math
+import Part, FreeCAD, math
 import Draft
-import freeCAD_civil 
-from freeCAD_civil import draw_config as cfg
-from freeCAD_civil import reinf_bars as rb
+from parametric_design.freeCAD_civil import draw_config as cfg
+from parametric_design.freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
 from Draft import *
 from materials.ec2 import EC2_materials

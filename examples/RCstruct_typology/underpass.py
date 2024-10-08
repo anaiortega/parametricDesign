@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Example of underpass modelized with FreeCAD
-from freeCAD_civil.structures import underpass
+from parametric_design.freeCAD_civil.structures import underpass
 import Part
 from FreeCAD import Vector
 

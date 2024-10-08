@@ -8,8 +8,8 @@ from base_models import reinf_deck_plus_walls as rdpw
 import FreeCAD
 from FreeCAD import Vector
 from data import geomData as gd
-from freeCAD_civil import reinf_bars as rb
-from freeCAD_civil import draw_config as cfg
+from parametric_design.freeCAD_civil import reinf_bars as rb
+from parametric_design.freeCAD_civil import draw_config as cfg
 
 docName=gd.obraNm.replace(' ','')+'_despiece'
 docDespiece=FreeCAD.newDocument(docName,docName)

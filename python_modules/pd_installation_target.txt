@@ -3,5 +3,5 @@ amd64
 ./debian-pkg
 ./debian-pkg/usr/local/tmp
 /usr/local
-./debian-pkg/usr/local/lib/python3.10/dist-packages/parametric_design
+./debian-pkg/usr/local/lib/python3.12/dist-packages/parametric_design
 pd-python-modules_0.9.2_amd64.deb

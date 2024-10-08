@@ -2,9 +2,9 @@
 
 import Part, FreeCAD, math
 import Draft
-from freeCAD_civil import metallic_profiles
-from freeCAD_civil import geometry_2D
-from freeCAD_civil import geometry_3D
+from parametric_design.freeCAD_civil import metallic_profiles
+from parametric_design.freeCAD_civil import geometry_2D
+from parametric_design.freeCAD_civil import geometry_3D
 from FreeCAD import Base
 from Draft import *
 

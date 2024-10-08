@@ -4,13 +4,12 @@
 
 import Part, FreeCAD, math, TechDraw, FreeCADGui
 import Draft
-import freeCAD_civil 
-from freeCAD_civil  import geometry_3D
-from freeCAD_civil  import metallic_profiles
-from freeCAD_civil  import metallic_struct
+from parametric_design.freeCAD_civil  import geometry_3D
+from parametric_design.freeCAD_civil  import metallic_profiles
+from parametric_design.freeCAD_civil  import metallic_struct
 from FreeCAD import Base
 from Draft import *
-from layout_utils import views 
+from parametric_design.layout_utils import views 
 #Empalme atornillado entre 2 tramos del mismo perfil. El eje longitudinal del perfil
 #se representa en la dirección del eje Y global y el eje fuerte de la sección en la
 #dirección del eje Z global

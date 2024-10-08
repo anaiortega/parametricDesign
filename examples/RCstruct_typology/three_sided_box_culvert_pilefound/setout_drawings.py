@@ -3,11 +3,11 @@
 # structure characteristics.
 
 import FreeCAD
-from freeCAD_civil import tables
+from parametric_design.freeCAD_civil import tables
 from aux_sharing import sharing_parts as shp
 from aux_sharing import sharing_docs as shd
 from aux_sharing import sharing_vars as shv
-from freeCAD_civil import draw_config as cfg
+from parametric_design.freeCAD_civil import draw_config as cfg
 from data import geomData as gd
 
 shd.docSetout=FreeCAD.newDocument(gd.obraNm+'_REPL',gd.obraNm+'_REPL')

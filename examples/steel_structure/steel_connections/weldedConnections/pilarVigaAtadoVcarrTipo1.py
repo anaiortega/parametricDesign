@@ -4,10 +4,9 @@
 
 import Part, FreeCAD, math, TechDraw, FreeCADGui
 import Draft
-import freeCAD_civil
-from freeCAD_civil import geometry_3D
-from freeCAD_civil import metallic_profiles
-from freeCAD_civil import metallic_struct
+from parametric_design.freeCAD_civil import geometry_3D
+from parametric_design.freeCAD_civil import metallic_profiles
+from parametric_design.freeCAD_civil import metallic_struct
 from FreeCAD import Base
 from Draft import *
 

@@ -1,6 +1,6 @@
 # Replanteo alzado aleta
 from FreeCAD import Vector
-from freeCAD_civil import tables
+from parametric_design.freeCAD_civil import tables
 from aux_sharing import sharing_docs as shd
 from aux_sharing import sharing_vars as shv
 

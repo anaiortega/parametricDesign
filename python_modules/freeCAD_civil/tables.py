@@ -1,8 +1,8 @@
 import FreeCAD, Draft
 from FreeCAD import Vector
 import FreeCADGui
-from freeCAD_civil import draw_config as cfg
-from freeCAD_utils import drawing_tools as dt
+from parametric_design.freeCAD_civil import draw_config as cfg
+from parametric_design.freeCAD_utils import drawing_tools as dt
 
 
 def drawBoxWtitle(pntTLcorner,wColumns,title,hText,hRows,numRows,doc):

@@ -457,7 +457,7 @@ nave=Part.makeCompound([muros,Porticos,vigaCarrileraI,vigaCarrileraD,vigaAcompI,
 
 Part.show(nave,'nave')
 
-from layout_utils import views 
+from parametric_design.layout_utils import views 
 views.basic_views(docGeom=docGeom,title=docName,lstObjects=[docGeom.nave],scale=0.01,pageTemplate='A1_Landscape_blank.svg')
 
 '''
