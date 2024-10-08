@@ -35,24 +35,6 @@ from setuptools import find_packages
 import sys
 import version
 
-myPrefix = sys.prefix
-if len (sys.argv) > 2:
-    i = 0
-    for o in sys.argv:
-        if o.startswith ("--prefix"):
-            if o == "--prefix":
-                if len (sys.argv) >= i:
-                    myPrefix = sys.argv[i + 1]
-                sys.argv.remove (prefix)
-            elif o.startswith ("--prefix=") and len (o[9:]):
-                myPrefix = o[9:]
-            sys.argv.remove (o)
-        i += 1
-if not myPrefix and "PREFIX" in os.environ:
-    myPrefix = os.environ["PREFIX"]
-if not myPrefix or not len (myPrefix):
-    myPrefix = "/usr/local"
-
 parametric_design_packages= ['freeCAD_civil','freeCAD_civil.structures','freeCAD_utils','geometry_utils','landXMLtoFreeCAD','RC_utils','setting_out','layout_utils']
 
 # Get version
