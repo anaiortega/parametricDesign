@@ -77,7 +77,7 @@ lstRebarFam1,lstStirrupFam1,newStartId=trcm.quad_beam_reinf(
     clearDistRbLayers=None,
     aggrSize=20e-3)
 
-doc=App.newDocument("despiece")
+doc=FreeCAD.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam1+lstStirrupFam1,
                title=titSchedule,
                doc=doc

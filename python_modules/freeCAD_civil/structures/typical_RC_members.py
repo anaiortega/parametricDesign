@@ -1218,7 +1218,7 @@ def quad_beam_reinf(width,height,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,ang
         lstLeftLatlRb+=(maxNlayers-len(lstLeftLatlRb))*[None]
         lstRightLatlRb+=(maxNlayers-len(lstRightLatlRb))*[None]
         if lstStirrReinf and len(lstStirrReinf)>0:
-            maxFiStirr=self.getMaxDiameter(lstStirrReinf)
+            maxFiStirr=max([rb.diameter for rb in lstStirrReinf])
             reinfCfg.cover=reinfCfg.cover+maxFiStirr
         # init lateral cover if not defined
         for rb in allRF:
