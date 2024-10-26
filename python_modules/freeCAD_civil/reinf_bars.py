@@ -119,7 +119,13 @@ class rebarFamilyBase(object):
             else:
                 print('rebar family ', self.identifier,' must be in "good" or "poor" position')
             if self.reinfCfg.code == 'EC2':
-                contrReb=EC2lsc.RebarController(concreteCover=self.reinfCfg.cover, spacing=self.spacing, eta1=eta1, compression= compression) # create rebar controllers to calculate anchor or gap lengths
+                if self.spacing:
+                    spac=self.spacing
+                else:
+                    p=Part.makePolygon(self.fromToExtPts)
+                    spac=p.Length//(self.nmbBars-1)
+                
+                contrReb=EC2lsc.RebarController(concreteCover=self.reinfCfg.cover, spacing=spac, eta1=eta1, compression= compression) # create rebar controllers to calculate anchor or gap lengths
             elif self.reinfCfg.code == 'EHE':
                 posEHE='I' if pos=='good' else 'II'
                 contrReb=EHElsc.RebarController(concreteCover=self.reinfCfg.cover, pos=posEHE, compression= compression)
