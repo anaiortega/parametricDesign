@@ -540,6 +540,7 @@ class genericBrickReinf(genericReinfBase):
         self.topTrnsRb.rightSideCover=True
         self.topTrnsRb.fromToExtPts=[ln_tl+self.topTrnsRb.distRFstart*vdirLn,ln_tr-self.topTrnsRb.distRFend*vdirLn]
         self.topTrnsRb.coverSectBars=cover
+        self.topTrnsRb.lstCover=lstCover
         self.topTrnsRb.rightSideSectBars=True
         self.topTrnsRb.createLstRebar()
         self.topTrnsRb.drawPolySectBars()

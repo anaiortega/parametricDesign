@@ -11,7 +11,7 @@ from FreeCAD import Base
 from Draft import *
 from parametric_design.layout_utils import views 
 
-#Placa base tipo 2
+#Placa base tipo 3
 #El origen de coordenadas (X,Y) se sitúa sobre el eje del pilar. El
 #origen de Z está en la cara inferior de la placa base.
 
