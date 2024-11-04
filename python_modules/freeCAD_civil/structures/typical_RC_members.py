@@ -440,19 +440,23 @@ class genericBrickReinf(genericReinfBase):
 
     def getPntsPlan(self):
         if not self.anchPtPlan:
-            lmsg.error('the point to anchor the plan view (anchPtPlan) is not defined')
-        else:
-            angP=math.radians(self.angPlan)
-            vtr=Vector(math.cos(angP),math.sin(angP))
-            vln=Vector(-vtr.y,vtr.x)
-            pl_xmin_ymin=self.anchPtPlan
-            pl_xmax_ymin=pl_xmin_ymin+self.width*vtr
-            pl_xmax_ymax=pl_xmax_ymin+self.length*vln
-            if not self.slopeEdge:
-                pl_xmin_ymax=pl_xmin_ymin+self.length*vln
+            if self.anchPtTrnsSect:
+                self.anchPtPlan=self.anchPtTrnsSect-2*Vector(self.width,0)
+            elif self.anchPtLnSect:
+                self.anchPtPlan=self.anchPtLnSect-2*Vector(self.width,0)
             else:
-                pl_xmin_ymax=pl_xmax_ymax-(self.width+self.length*self.slopeEdge)*vtr
-            return pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax
+                lmsg.error('either anchPtPlan or anchPtTrnsSectn or anchPtLnSect must be defined')
+        angP=math.radians(self.angPlan)
+        vtr=Vector(math.cos(angP),math.sin(angP))
+        vln=Vector(-vtr.y,vtr.x)
+        pl_xmin_ymin=self.anchPtPlan
+        pl_xmax_ymin=pl_xmin_ymin+self.width*vtr
+        pl_xmax_ymax=pl_xmax_ymin+self.length*vln
+        if not self.slopeEdge:
+            pl_xmin_ymax=pl_xmin_ymin+self.length*vln
+        else:
+            pl_xmin_ymax=pl_xmax_ymax-(self.width+self.length*self.slopeEdge)*vtr
+        return pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax
               
     def getCoverBottomLongRF(self):
         '''Return the cover of the bottom longitudinal rebars
