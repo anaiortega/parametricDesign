@@ -17,6 +17,11 @@ cover=0.035
 estrName='Generic beam'
 titSchedule=estrName.upper()
 FreeCAD.newDocument(estrName+'genericBeam')
+## Config parameters (cfg.reinfConf) and default values:
+# cover,                    xcConcr,                   xcSteel,
+# texSize=0.125,            Code='EC2',                dynamEff=False,
+# decLengths=2,             decSpacing=2,              sketchScale=5,
+# factPosLabelSectReb=2/3,  factDispReflinSectReb=1.0, roundAncLap=None
 scale=1/25
 reinfCfg=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 # set XC dimension style in current document

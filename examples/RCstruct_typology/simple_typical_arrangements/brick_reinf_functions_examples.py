@@ -17,6 +17,11 @@ estrName='Generic brick'
 titSchedule=estrName.upper()
 FreeCAD.newDocument(estrName+'genericBrick')
 scale=1/50
+## Config parameters (cfg.reinfConf) and default values:
+# cover,                    xcConcr,                   xcSteel,
+# texSize=0.125,            Code='EC2',                dynamEff=False,
+# decLengths=2,             decSpacing=2,              sketchScale=5,
+# factPosLabelSectReb=2/3,  factDispReflinSectReb=1.0, roundAncLap=None
 reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2',dynamEff=False,decLengths=2,decSpacing=2)
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp) # set XC dimension style in current document
 
