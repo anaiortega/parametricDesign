@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+import copy
 import FreeCAD
 import Part
 from parametric_design.freeCAD_civil import draw_config as cfg
@@ -268,16 +269,16 @@ class genericBrickReinf(genericReinfBase):
         self.anchPtTrnsSect=anchPtTrnsSect
         self.reinfCfg=reinfCfg
         self.angTrns=angTrns
-        self.botTrnsRb=botTrnsRb
-        self.topTrnsRb=topTrnsRb
-        self.botLnRb=botLnRb
-        self.topLnRb=topLnRb
-        self.sideXminRb=sideXminRb
-        self.sideXmaxRb=sideXmaxRb
-        self.sideYminRb=sideYminRb
-        self.sideYmaxRb=sideYmaxRb
-        self.lstStirrHoldTrReinf=lstStirrHoldTrReinf
-        self.lstStirrHoldLnReinf=lstStirrHoldLnReinf
+        self.botTrnsRb=copy.copy(botTrnsRb)
+        self.topTrnsRb=copy.copy(topTrnsRb)
+        self.botLnRb=copy.copy(botLnRb)
+        self.topLnRb=copy.copy(topLnRb)
+        self.sideXminRb=copy.copy(sideXminRb)
+        self.sideXmaxRb=copy.copy(sideXmaxRb)
+        self.sideYminRb=copy.copy(sideYminRb)
+        self.sideYmaxRb=copy.copy(sideYmaxRb)
+        self.lstStirrHoldTrReinf=copy.copy(lstStirrHoldTrReinf)
+        self.lstStirrHoldLnReinf=copy.copy(lstStirrHoldLnReinf)
         self.trSlopeBottFace=trSlopeBottFace
         self.trSlopeTopFace=trSlopeTopFace
         self.slopeEdge=slopeEdge
