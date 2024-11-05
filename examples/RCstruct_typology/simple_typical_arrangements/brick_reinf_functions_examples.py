@@ -45,9 +45,9 @@ botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,distRFstart=0.1,distRFend=0.5,extrShapeSta
 topLnRb=trcm.brkRbFam(Id=None,fi=16e-3,s=0.20,distRFstart=0.1,fixLengthStart=0.7,distRFend=0.3,extrShapeEnd='anc270_posGood_tens',position='poor',vectorLRef=Vector(-0.2,0.3),closedEnd=True,maxLrebar=4.0,addTxt2Label='topLnRb')
 # lateral rebar family Xmin 
 sideXminRb=trcm.brkRbFam(Id=None,fi=12e-3,nmbBars=3,gapStart=-0.05,extrShapeStart='anc0_posPoor_compr',position='good',vectorLRef=Vector(0.3,-0.2),closedStart=False,closedEnd=True,addTxt2Label='sideXminRb',nMembers=2)
-sideXmaxRb=None,
-sideYminRb=None,
-sideYmaxRb=None
+sideXmaxRb=trcm.brkRbFam(fi=10e-3,nmbBars=4,distRFstart=0.01,distRFend=0.05,extrShapeStart='anc0_posPoor_compr',position='good',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=True,compression=True,drawSketch=True,addTxt2Label='sideXmaxRb')
+sideYminRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='anc90_posPoor_tens',position='poor',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=False,compression=False,drawSketch=True,addTxt2Label='sideYminRb')
+sideYmaxRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='fix45_len300',fixLengthEnd=1.45,position='poor',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=False,compression=False,drawSketch=True,addTxt2Label='sideYmaxRb')
 
 # Stirrup families definition. Parameters and default values:
 # fi,                    widthStirr=0.20,        sRealSh=None,
@@ -59,20 +59,21 @@ sideYmaxRb=None
 # nMembers=1,            addTxt2Label=None,      reinfCfg=cfg.defaultReinfConf
 
 # stirrups holding transverse rebars
-stirrHoldTr=trcm.brkStirrFam(Id='5',fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 0,dispPerp=0.1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='stirrHoldTr')
-stirrHoldTr2=trcm.brkStirrFam(Id='5',fi=10e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 1.5,dispPerp=1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='stirrHoldTr-Family2')
+stirrHoldTr=trcm.brkStirrFam(Id=None,fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 0,dispPerp=0.1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='stirrHoldTr')
+stirrHoldTr2=trcm.brkStirrFam(Id=None,fi=10e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 1.5,dispPerp=1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='stirrHoldTr-Family2')
 
 # stirrups holding longitudinal rebars
-stirrHoldLn=trcm.brkStirrFam(Id='6' ,fi=10e-3 ,sRealSh=0.20 ,sPerp=0.30 ,nStirrRealSh= 5 ,nStirrPerp=2 ,widthStirr= 0.40,dispRealSh= 1.5,dispPerp=1.3,vectorLRef=Vector(0.2,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='stirrHoldLn')
+stirrHoldLn=trcm.brkStirrFam(Id=None ,fi=10e-3 ,sRealSh=0.20 ,sPerp=0.30 ,nStirrRealSh= 5 ,nStirrPerp=2 ,widthStirr= 0.40,dispRealSh= 1.5,dispPerp=1.3,vectorLRef=Vector(0.2,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='stirrHoldLn')
 
 anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transversal cross-section
 anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete longitudinal cross-section
 
+lstFam=[botTrnsRb,topTrnsRb,botLnRb,topLnRb,sideXminRb,sideXmaxRb,sideYminRb,sideYmaxRb,stirrHoldTr,stirrHoldTr2,stirrHoldLn]
 #           *** END DATA ***
 
 lstRebarFam=list()
 lstStirrupFam=list()
-
+startId=1
 # orthohedron
 lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(
     width=width,
@@ -88,24 +89,23 @@ lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(
     botLnRb=botLnRb,
     topLnRb=topLnRb,
     sideXminRb=sideXminRb,
-    sideXmaxRb=None,
-    sideYminRb=None,
-    sideYmaxRb=None,
+    sideXmaxRb=sideXmaxRb,
+    sideYminRb=sideYminRb,
+    sideYmaxRb=sideYmaxRb,
     lstStirrHoldTrReinf=[stirrHoldTr,stirrHoldTr2],
     lstStirrHoldLnReinf=[stirrHoldLn],
     drawConcrTrSect=True,
     drawConcrLnSect=True,
-    drawPlan=False,
+    drawPlan=True,
     anchPtPlan=None, # Vector(-5,0),
     angPlan=0,
-    startId=1,
+    startId=startId,
 )
 lstRebarFam+=lstRebarFam1
 lstStirrupFam+=lstStirrupFam1
-
+ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
+print(ids)
 # sloped faces brick
-botTrnsRb.identifier=None; topTrnsRb.identifier=None
-botLnRb.identifier=None;topLnRb.identifier=None
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
 lstRebarFam2,lstStirrupFam2,newStartId=trcm.sloped_faces_brick_reinf(
@@ -123,24 +123,22 @@ lstRebarFam2,lstStirrupFam2,newStartId=trcm.sloped_faces_brick_reinf(
     topTrnsRb=topTrnsRb,
     botLnRb=botLnRb,
     topLnRb=topLnRb,
-    sideXminRb=None,
-    sideXmaxRb=None,
-    sideYminRb=None,
-    sideYmaxRb=None
+    sideXminRb=sideXminRb,
+    sideXmaxRb=sideXmaxRb,
+    sideYminRb=sideYminRb,
+    sideYmaxRb=sideYmaxRb,
     drawConcrTrSect=True,
     drawConcrLnSect=True,
-    drawPlan=False,
+    drawPlan=True,
     anchPtPlan=None,
     angPlan=0,
-    startId=11
+    startId=newStartId
 )
 lstRebarFam+=lstRebarFam2
 lstStirrupFam+=lstStirrupFam2
+ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
+print(ids)
 
-
-# constant thickness, sloped edge brick
-botTrnsRb.identifier=None; topTrnsRb.identifier=None
-botLnRb.identifier=None;topLnRb.identifier=None
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
 lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick_reinf(
@@ -158,27 +156,22 @@ lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick
     topTrnsRb=topTrnsRb,
     botLnRb=botLnRb,
     topLnRb=topLnRb,
-    sideXminRb=None,
-    sideXmaxRb=None,
-    sideYminRb=None,
-    sideYmaxRb=None
+    sideXminRb=sideXminRb,
+    sideXmaxRb=sideXmaxRb,
+    sideYminRb=sideYminRb,
+    sideYmaxRb=sideYmaxRb,
     drawConcrTrSect=True,
     drawConcrLnSect=True,
-    drawPlan=False,
+    drawPlan=True,
     anchPtPlan=None,
     angPlan=0,
-    startId=21
+    startId=newStartId
 )
 lstRebarFam+=lstRebarFam3
 lstStirrupFam+=lstStirrupFam3
+ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
+print(ids)
 
-# sloped edge and faces brick
-botTrnsRb.identifier=None; topTrnsRb.identifier=None
-botLnRb.identifier=None;topLnRb.identifier=None
-botTrnsRb.closedStart=True; botTrnsRb.closedEnd=True
-topTrnsRb.closedStart=False; topTrnsRb.closedEnd=False
-botLnRb.closedStart=False; botLnRb.closedEnd=True
-topLnRb.closedStart=True; topLnRb.closedEnd=True
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
 lstRebarFam4,lstStirrupFam4,newStartId=trcm.sloped_edge_sloped_faces_brick_reinf(
@@ -197,20 +190,22 @@ lstRebarFam4,lstStirrupFam4,newStartId=trcm.sloped_edge_sloped_faces_brick_reinf
     botTrnsRb=botTrnsRb,
     topTrnsRb=topTrnsRb,
     botLnRb=botLnRb,
-    topLnRb=topLnRb,
-    sideXminRb=None,
-    sideXmaxRb=None,
-    sideYminRb=None,
-    sideYmaxRb=None
+#    topLnRb=topLnRb, # this rebar fails when generating the  schedule 
+    sideXminRb=sideXminRb,
+    sideXmaxRb=sideXmaxRb,
+    sideYminRb=sideYminRb,
+    sideYmaxRb=sideYmaxRb,
     drawConcrTrSect=True,
     drawConcrLnSect=True,
-    drawPlan=False,
+    drawPlan=True,
     anchPtPlan=None,
     angPlan=0,
-    startId=31
+    startId=newStartId
 )
 lstRebarFam+=lstRebarFam4
 lstStirrupFam+=lstStirrupFam4
+ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
+print(ids)
  
 doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam+lstStirrupFam,
