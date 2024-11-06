@@ -205,11 +205,11 @@ class genericReinfBase(object):
         return ln_tl,ln_tr
 
     def getMaxDiameter(self,lstReinf):
-        '''Returns the maximum diameter of the rebars of stirrups defined in list lstReinf
+        '''Returns the maximum diameter of the rebars or stirrups defined in list lstReinf
         (if lstReinf doesn't exists, return 0)
         '''
         if lstReinf:
-             fiMax=max([rb.diameter for rb in lstReinf])
+             fiMax=max([rb.diameter for rb in lstReinf if rb])
         else:
             fiMax=0
         return fiMax
@@ -696,7 +696,19 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideXminRb.coverSectBars:
             self.sideXminRb.coverSectBars=self.reinfCfg.cover
         self.sideXminRb.reinfCfg=self.reinfCfg
-        self.sideXminRb.lstPtsConcrSect=[pl_xmin_ymin,pl_xmin_ymax]
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+        lstCover=[cover]
+        lstPtsConcrSect=[pl_xmin_ymin,pl_xmin_ymax]
+        if self.sideXminRb.closedStart:
+            lstPtsConcrSect.insert(0,pl_xmax_ymin)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+            lstCover.insert(0,coverClose)
+        if self.sideXminRb.closedEnd:
+            lstPtsConcrSect.append(pl_xmax_ymax)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+            lstCover.append(coverClose)
+        self.sideXminRb.lstPtsConcrSect=lstPtsConcrSect
+        self.sideXminRb.lstCover=lstCover
         self.sideXminRb.rightSideCover=True
         self.sideXminRb.fromToExtPts=[tr_bl+self.sideXminRb.distRFstart*vDir,tr_tl-self.sideXminRb.distRFend*vDir]
         self.sideXminRb.rightSideSectBars=True
@@ -715,7 +727,19 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideXmaxRb.coverSectBars:
             self.sideXmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideXmaxRb.reinfCfg=self.reinfCfg
-        self.sideXmaxRb.lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax]
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+        lstCover=[cover]
+        lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax]
+        if self.sideXmaxRb.closedStart:
+            lstPtsConcrSect.insert(0,pl_xmin_ymin)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+            lstCover.insert(0,coverClose)
+        if self.sideXmaxRb.closedEnd:
+            lstPtsConcrSect.append(pl_xmin_ymax)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+            lstCover.append(coverClose)
+        self.sideXmaxRb.lstPtsConcrSect=lstPtsConcrSect
+        self.sideXmaxRb.lstCover=lstCover
         self.sideXmaxRb.rightSideCover=False
         self.sideXmaxRb.fromToExtPts=[tr_br+self.sideXmaxRb.distRFstart*vDir,tr_tr-self.sideXmaxRb.distRFend*vDir]
         self.sideXmaxRb.rightSideSectBars=False
@@ -734,7 +758,19 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideYminRb.coverSectBars:
             self.sideYminRb.coverSectBars=self.reinfCfg.cover
         self.sideYminRb.reinfCfg=self.reinfCfg
-        self.sideYminRb.lstPtsConcrSect=[pl_xmin_ymin,pl_xmax_ymin]
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+        lstCover=[cover]
+        lstPtsConcrSect=[pl_xmin_ymin,pl_xmax_ymin]
+        if self.sideYminRb.closedStart:
+            lstPtsConcrSect.insert(0,pl_xmin_ymax)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+            lstCover.insert(0,coverClose)
+        if self.sideYminRb.closedEnd:
+            lstPtsConcrSect.append(pl_xmax_ymax)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+            lstCover.append(coverClose)
+        self.sideYminRb.lstPtsConcrSect=lstPtsConcrSect
+        self.sideYminRb.lstCover=lstCover
         self.sideYminRb.rightSideCover=False
         self.sideYminRb.fromToExtPts=[ln_bl+self.sideYminRb.distRFstart*vDir,ln_tl-self.sideYminRb.distRFend*vDir]
         self.sideYminRb.rightSideSectBars=True
@@ -753,7 +789,19 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideYmaxRb.coverSectBars:
             self.sideYmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideYmaxRb.reinfCfg=self.reinfCfg
-        self.sideYmaxRb.lstPtsConcrSect=[pl_xmin_ymax,pl_xmax_ymax]
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+        lstCover=[cover]
+        lstPtsConcrSect=[pl_xmin_ymax,pl_xmax_ymax]
+        if self.sideYmaxRb.closedStart:
+            lstPtsConcrSect.insert(0,pl_xmin_ymin)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+            lstCover.insert(0,coverClose)
+        if self.sideYmaxRb.closedEnd:
+            lstPtsConcrSect.append(pl_xmax_ymin)
+            coverClose=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+            lstCover.append(coverClose)
+        self.sideYmaxRb.lstPtsConcrSect=lstPtsConcrSect
+        self.sideYmaxRb.lstCover=lstCover
         self.sideYmaxRb.rightSideCover=True
         self.sideYmaxRb.fromToExtPts=[ln_br+self.sideYmaxRb.distRFstart*vDir,ln_tr-self.sideYmaxRb.distRFend*vDir]
         self.sideYmaxRb.rightSideSectBars=False

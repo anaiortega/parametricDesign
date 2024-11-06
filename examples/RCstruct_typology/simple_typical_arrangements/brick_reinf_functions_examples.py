@@ -50,8 +50,8 @@ botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,distRFstart=0.1,distRFend=0.5,extrShapeSta
 topLnRb=trcm.brkRbFam(Id=None,fi=16e-3,s=0.20,distRFstart=0.1,fixLengthStart=0.7,distRFend=0.3,extrShapeEnd='anc270_posGood_tens',position='poor',vectorLRef=Vector(-0.2,0.3),closedEnd=True,maxLrebar=4.0,addTxt2Label='topLnRb')
 # lateral rebar family Xmin 
 sideXminRb=trcm.brkRbFam(Id=None,fi=12e-3,nmbBars=3,gapStart=-0.05,extrShapeStart='anc0_posPoor_compr',position='good',vectorLRef=Vector(0.3,-0.2),closedStart=False,closedEnd=True,addTxt2Label='sideXminRb',nMembers=2)
-sideXmaxRb=trcm.brkRbFam(fi=10e-3,nmbBars=4,distRFstart=0.01,distRFend=0.05,extrShapeStart='anc0_posPoor_compr',position='good',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=True,compression=True,drawSketch=True,addTxt2Label='sideXmaxRb')
-sideYminRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='anc90_posPoor_tens',position='poor',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=False,compression=False,drawSketch=True,addTxt2Label='sideYminRb')
+sideXmaxRb=trcm.brkRbFam(fi=10e-3,nmbBars=4,distRFstart=0.01,distRFend=0.05,extrShapeEnd='anc90_posPoor_compr',position='good',vectorLRef=Vector(0.1,-0.3),closedStart=True,closedEnd=False,compression=True,drawSketch=True,addTxt2Label='sideXmaxRb')
+sideYminRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='anc90_posPoor_tens',position='poor',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=True,compression=False,drawSketch=True,addTxt2Label='sideYminRb')
 sideYmaxRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='fix45_len300',fixLengthEnd=1.45,position='poor',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=False,compression=False,drawSketch=True,addTxt2Label='sideYmaxRb')
 
 # Stirrup families definition. Parameters and default values:
@@ -108,8 +108,6 @@ lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(
 )
 lstRebarFam+=lstRebarFam1
 lstStirrupFam+=lstStirrupFam1
-ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
-print(ids)
 # sloped faces brick
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
@@ -141,8 +139,6 @@ lstRebarFam2,lstStirrupFam2,newStartId=trcm.sloped_faces_brick_reinf(
 )
 lstRebarFam+=lstRebarFam2
 lstStirrupFam+=lstStirrupFam2
-ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
-print(ids)
 
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
@@ -174,8 +170,6 @@ lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick
 )
 lstRebarFam+=lstRebarFam3
 lstStirrupFam+=lstStirrupFam3
-ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
-print(ids)
 
 anchPtTrnsSect+=Vector(0,4)
 anchPtLnSect+=Vector(0,4)
@@ -209,8 +203,6 @@ lstRebarFam4,lstStirrupFam4,newStartId=trcm.sloped_edge_sloped_faces_brick_reinf
 )
 lstRebarFam+=lstRebarFam4
 lstStirrupFam+=lstStirrupFam4
-ids=[rb.identifier for rb in lstRebarFam+lstStirrupFam]
-print(ids)
  
 doc=App.newDocument("despiece")
 rb.barSchedule(lstBarFamilies=lstRebarFam+lstStirrupFam,
