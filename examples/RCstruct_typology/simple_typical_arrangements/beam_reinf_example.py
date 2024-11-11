@@ -42,7 +42,7 @@ angLn=90
 # extrShapeEnd=None,    fixLengthStart=None,        fixLengthEnd=None,
 # extensionLength=None, maxLrebar=12,               position='poor',
 # compression=False,    drawSketch=True,            nMembers=1,
-# addTxt2Label=None,    reinfCfg=cfg.defaultReinfConf)
+# addCover=0,           addTxt2Label=None,    reinfCfg=cfg.defaultReinfConf)
 
 # Bottom rebars
 botRbLy1=trcm.brkRbFam(Id='1',fi=32e-3,nmbBars=4,position='good',gapStart=-1.0,gapEnd=2.0,addTxt2Label='(CAPA 1)')
@@ -66,7 +66,8 @@ latRRbLy1=trcm.brkRbFam(Id='8',fi=16e-3,s=0.15,position='good',maxLrebar=6.0,gap
 # vDirTrans=None,        vDirLong=Vector(1,0),   rightSideCover=True,
 # vectorLRef=Vector(0.5,0.5), rightSideLabelLn=True,  closed=True,
 # addL2closed=0.20,      fixAnchorStart=None,    fixAnchorEnd=None,
-# nMembers=1,            addTxt2Label=None,      reinfCfg=cfg.defaultReinfConf
+# nMembers=1,            addCover=0,             addTxt2Label=None,
+# reinfCfg=cfg.defaultReinfConf
 
 fiStirr=12e-3
 stirr1=trcm.brkStirrFam(Id='9',fi=fiStirr,sRealSh=0,sPerp=0.15 ,nStirrRealSh=1 ,nStirrPerp=15 ,widthStirr=width-2*cover-fiStirr ,dispRealSh=-cover,dispPerp=0.30,addTxt2Label='stirrup text',vectorLRef=Vector(-0.3,-0.3))

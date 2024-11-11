@@ -16,10 +16,29 @@ titSchedule=estrName.upper()
 radius=1
 length=15
 
+## Rebar families definition. Parameters and default values:
+# fi,     s=None,       Id=None,                    nmbBars=None,
+# distRFstart=0,        distRFend=0,                closedStart=False,
+# closedEnd=False,      vectorLRef=Vector(0.5,0.5), lateralCover=None,
+# gapStart=None,        gapEnd=None,                extrShapeStart=None,
+# extrShapeEnd=None,    fixLengthStart=None,        fixLengthEnd=None,
+# extensionLength=None, maxLrebar=12,               position='poor',
+# compression=False,    drawSketch=True,            nMembers=1,
+# addCover=0,           addTxt2Label=None,    reinfCfg=cfg.defaultReinfConf)
+
 # longitudinal rebars
 lnRb=trcm.brkRbFam(fi=20e-3,nmbBars=15,vectorLRef=Vector(0.5,radius+0.3),extrShapeStart='fix90_len200',maxLrebar=10,position='good')
 lnRb2=trcm.brkRbFam(fi=25e-3,s=0.15,distRFstart=1,closedStart=False,lateralCover=0.15,vectorLRef=Vector(-1.2,0.5),gapStart=1,gapEnd=0,extrShapeStart='fix90_len200',maxLrebar=9,position='good',compression=True,drawSketch=False)
-# stirrups
+
+# Stirrup families definition. Parameters and default values:
+# fi,                    widthStirr=0.20,        sRealSh=None,
+# sPerp=None,            Id=None,                nStirrRealSh=1,
+# nStirrPerp=1,          dispRealSh=0,           dispPerp=0,
+# vDirTrans=None,        vDirLong=Vector(1,0),   rightSideCover=True,
+# vectorLRef=Vector(0.5,0.5), rightSideLabelLn=True,  closed=True,
+# addL2closed=0.20,      fixAnchorStart=None,    fixAnchorEnd=None,
+# nMembers=1,            addCover=0,             addTxt2Label=None,
+# reinfCfg=cfg.defaultReinfConf
 stirrF_1=trcm.brkStirrFam(fi=8e-3,sPerp=0.15,nStirrPerp=10,dispPerp=0.5,rightSideLabelLn=True,addL2closed=0.20,closed=True,vectorLRef=Vector(0.3,0.3))
 stirrF_2=trcm.brkStirrFam(fi=10e-3,sPerp=0.20,nStirrPerp=8,dispPerp=6,rightSideLabelLn=True,addL2closed=0.20,closed=True,vectorLRef=Vector(0.3,-0.3))
 stirrF_3=trcm.brkStirrFam(fi=12e-3,sPerp=0.55,nStirrPerp=20,dispPerp=0.1,rightSideLabelLn=True,addL2closed=0.20,closed=True,fixAnchorStart='fix45_len150',vectorLRef=Vector(0.3,-0.3))

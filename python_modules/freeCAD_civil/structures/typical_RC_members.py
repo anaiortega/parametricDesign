@@ -86,14 +86,16 @@ class brkRbFam(rb.rebarFamily):
     :ivar drawSketch: True to draw mini-sketch of the rebars besides the text(defaults to True)
     :ivar nMembers:  number of identic members. The calculated number of bars is multiplied by nMembers(defaults to 1)
     :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
+    :ivar addCover: add positive or negative cover to the default calculates cover (defaults to 0)
     :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultReinfConf)
     '''
-    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
+    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addCover=0,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
         super(brkRbFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrSect=[],fromToExtPts=None,sectBarsConcrRadius=1,extensionLength=extensionLength,lstCover=None,rightSideCover=True,vectorLRef=vectorLRef,coverSectBars=None,lateralCover=lateralCover,rightSideSectBars=True,spacing=s,nmbBars=nmbBars,lstPtsConcrSect2=None,gapStart=gapStart,gapEnd=gapEnd,extrShapeStart=extrShapeStart,extrShapeEnd=extrShapeEnd,fixLengthStart=fixLengthStart,fixLengthEnd=fixLengthEnd,maxLrebar=maxLrebar,position=position,compression=compression,drawSketch=drawSketch,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.distRFstart=distRFstart
         self.distRFend=distRFend
         self.closedStart=closedStart
         self.closedEnd=closedEnd
+        self.addCover=addCover
     
     def checkInconsitency(self):
         if self.extrShapeStart and self.closedStart:
@@ -137,18 +139,19 @@ class brkStirrFam(rb.stirrupFamily):
             Examples: 'fix45_len150'
     :ivar nMembers: number of identic members. The calculated number of bars is multiplied 
           by nMembers (defaults to 1)
+    :ivar addCover: add positive or negative cover to the default calculates cover (defaults to 0)
     :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
     :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete 
           and steel type, text format, ... (defaults to cfg.defaultReinfConf)cfg.defaultReinfConf
     '''
-    def __init__(self,fi,widthStirr=0.20,sRealSh=None,sPerp=None,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
-    
+    def __init__(self,fi,widthStirr=0.20,sRealSh=None,sPerp=None,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addCover=0,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
         super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=None,spacStrpTransv=sRealSh,spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.dispRealSh=dispRealSh
         self.dispPerp=dispPerp
         self.nStirrRealSh=nStirrRealSh
         self.nStirrPerp=nStirrPerp
         self.widthStirr=widthStirr
+        self.addCover=addCover
         
 class genericReinfBase(object):
     '''Base class to define generic members reinforcement
@@ -459,25 +462,54 @@ class genericBrickReinf(genericReinfBase):
         else:
             pl_xmin_ymax=pl_xmax_ymax-(self.width+self.length*self.slopeEdge)*vtr
         return pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax
+
+    def getCoverBottomTransvRF(self):
+        cover=self.reinfCfg.cover+self.getMaxStirrHoldTrDiam()+self.botTrnsRb.addCover
+        return cover
+
+    def getCoverTopTransvRF(self):
+        cover=self.reinfCfg.cover+self.getMaxStirrHoldTrDiam()+self.topTrnsRb.addCover
+        return cover
               
     def getCoverBottomLongRF(self):
         '''Return the cover of the bottom longitudinal rebars
         '''
         if self.botTrnsRb:
-            cover=self.reinfCfg.cover+self.botTrnsRb.diameter+self.getMaxStirrHoldTrDiam()
+            cover=self.reinfCfg.cover+self.botTrnsRb.diameter+self.getMaxStirrHoldTrDiam()+self.botTrnsRb.addCover
         else:
-            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()
+            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()+self.botTrnsRb.addCover
         return cover
         
     def getCoverTopLongRF(self):
         '''Return the cover of the top longitudinal rebars
         '''
         if self.topTrnsRb:
-            cover=self.reinfCfg.cover+self.topTrnsRb.diameter+self.getMaxStirrHoldTrDiam()
+            cover=self.reinfCfg.cover+self.topTrnsRb.diameter+self.getMaxStirrHoldTrDiam()+self.topTrnsRb.addCover
         else:
-            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()
+            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()+self.topTrnsRb.addCover
+        return cover
+
+    def getCoverSideXminRF(self):
+        '''Return the cover of the side reinforcement in face Xmin'''
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])+self.sideXminRb.addCover
         return cover
     
+    def getCoverSideXmaxRF(self):
+        '''Return the cover of the side reinforcement in face Xmax'''
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])+self.sideXmaxRb.addCover
+        return cover
+    
+    def getCoverSideYminRF(self):
+        '''Return the cover of the side reinforcement in face Ymin'''
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.sideYminRb.addCover
+        return cover
+    
+    def getCoverSideYmaxRF(self):
+        '''Return the cover of the side reinforcement in face Ymax'''
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.sideYmaxRb.addCover
+        return cover
+   
+        
     def drawBottomTransvRF(self):
         ''' Draw and return the bottom transverse rebar family '''
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
@@ -486,7 +518,7 @@ class genericBrickReinf(genericReinfBase):
         self.initRFVvars(self.botTrnsRb)
         self.checkId(self.botTrnsRb)
         lstPtsConcrSect=[tr_bl,tr_br]
-        cover=self.reinfCfg.cover+self.getMaxStirrHoldTrDiam()
+        cover= self.getCoverBottomTransvRF()
         lstCover=[cover]
         if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         if self.botTrnsRb.closedStart:
@@ -523,7 +555,7 @@ class genericBrickReinf(genericReinfBase):
         self.initRFVvars(self.topTrnsRb)
         self.checkId(self.topTrnsRb)
         lstPtsConcrSect=[tr_tl,tr_tr]
-        cover=self.reinfCfg.cover+self.getMaxStirrHoldTrDiam()
+        cover=self.getCoverTopTransvRF()
         lstCover=[cover]
         if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl,tr_br=self.getYmaxTransvBottPnts()
         if self.topTrnsRb.closedStart:
@@ -697,7 +729,7 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideXminRb.coverSectBars:
             self.sideXminRb.coverSectBars=self.reinfCfg.cover
         self.sideXminRb.reinfCfg=self.reinfCfg
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+        cover=self.getCoverSideXminRF()
         lstCover=[cover]
         lstPtsConcrSect=[pl_xmin_ymin,pl_xmin_ymax]
         if self.sideXminRb.closedStart:
@@ -728,7 +760,7 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideXmaxRb.coverSectBars:
             self.sideXmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideXmaxRb.reinfCfg=self.reinfCfg
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])
+        cover=self.getCoverSideXmaxRF()
         lstCover=[cover]
         lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax]
         if self.sideXmaxRb.closedStart:
@@ -759,7 +791,7 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideYminRb.coverSectBars:
             self.sideYminRb.coverSectBars=self.reinfCfg.cover
         self.sideYminRb.reinfCfg=self.reinfCfg
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+        cover=self.getCoverSideYminRF()
         lstCover=[cover]
         lstPtsConcrSect=[pl_xmin_ymin,pl_xmax_ymin]
         if self.sideYminRb.closedStart:
@@ -790,7 +822,7 @@ class genericBrickReinf(genericReinfBase):
         if not self.sideYmaxRb.coverSectBars:
             self.sideYmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideYmaxRb.reinfCfg=self.reinfCfg
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])
+        cover=self.getCoverSideYmaxRF()
         lstCover=[cover]
         lstPtsConcrSect=[pl_xmin_ymax,pl_xmax_ymax]
         if self.sideYmaxRb.closedStart:
@@ -822,7 +854,7 @@ class genericBrickReinf(genericReinfBase):
         for stirrHoldTrReinf in self.lstStirrHoldTrReinf:
             self.checkId(stirrHoldTrReinf)
             bStirr=stirrHoldTrReinf.widthStirr+stirrHoldTrReinf.diameter
-            coverStirr=self.reinfCfg.cover
+            coverStirr=self.reinfCfg.cover+stirrHoldTrReinf.addCover
             if stirrHoldTrReinf.dispRealSh<0: # stirrups rigth towards left
                 lstPtsConcrSect=[ln_br,ln_br-bStirr*vdirLn,ln_tr-bStirr*vdirLn,ln_tr,ln_br]
             else: # stirrups left towards right
@@ -867,8 +899,8 @@ class genericBrickReinf(genericReinfBase):
             else:
                 lstPtsConcrLong=[ln_tl,ln_bl]
                 vDirLong=vdirLn
-            stirrTopCover=self.getCoverTopLongRF()-stirrHoldLnReinf.diameter
-            stirrBottCover=self.getCoverBottomLongRF()-stirrHoldLnReinf.diameter
+            stirrTopCover=self.getCoverTopLongRF()-stirrHoldLnReinf.diameter+stirrHoldLnReinf.addCover
+            stirrBottCover=self.getCoverBottomLongRF()-stirrHoldLnReinf.diameter+stirrHoldLnReinf.addCover
             stirrHoldLnReinf.reinfCfg=self.reinfCfg
             stirrHoldLnReinf.lstPtsConcrSect=lstPtsConcrSect
             stirrHoldLnReinf.lstCover=[stirrBottCover,0,stirrTopCover,0]

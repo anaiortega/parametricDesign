@@ -38,14 +38,14 @@ thickness=0.4  #thickness of the slab
 # extrShapeEnd=None,    fixLengthStart=None,        fixLengthEnd=None,
 # extensionLength=None, maxLrebar=12,               position='poor',
 # compression=False,    drawSketch=True,            nMembers=1,
-# addTxt2Label=None,    reinfCfg=cfg.defaultReinfConf)
+# addCover=0            addTxt2Label=None,        reinfCfg=cfg.defaultReinfConf)
 
 # bottom transverse rebars data
 botTrnsRb=trcm.brkRbFam(Id=None,fi=20e-3,nmbBars=30,distRFstart=0.2,distRFend=0,gapStart=-2,extrShapeStart='anc0_posPoor_compr',position='good',vectorLRef=Vector(0.3,-0.2),closedStart=False,closedEnd=True,addTxt2Label='botTrnsRb',nMembers=2)
 # top transverse rebars data
 topTrnsRb=trcm.brkRbFam(Id=None,fi=20e-3,s=0.15,lateralCover=3*reinfCfg.cover,distRFstart=0.2,distRFend=0.1,extrShapeEnd='anc90_posPoor_compr',position='poor',vectorLRef=Vector(-0.3,0.15),closedStart=True,addTxt2Label='topTrnsRb')
 # bottom longitudinal rebars data
-botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,distRFstart=0.1,distRFend=0.5,extrShapeStart='anc0_posPoor_compr',position='good',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=True,compression=True,drawSketch=True,addTxt2Label='botLnRb')
+botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,distRFstart=0.1,distRFend=0.5,extrShapeStart='anc0_posPoor_compr',position='good',vectorLRef=Vector(0.1,-0.3),closedStart=False,closedEnd=True,compression=True,drawSketch=True,addCover=30e-3,addTxt2Label='botLnRb')
 # top longitudinal rebars data
 topLnRb=trcm.brkRbFam(Id=None,fi=16e-3,s=0.20,distRFstart=0.1,fixLengthStart=0.7,distRFend=0.3,extrShapeEnd='anc270_posGood_tens',position='poor',vectorLRef=Vector(-0.2,0.3),closedEnd=True,maxLrebar=4.0,addTxt2Label='topLnRb')
 # lateral rebar family Xmin 
@@ -61,7 +61,8 @@ sideYmaxRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='fix45_len300',fixLengthE
 # vDirTrans=None,        vDirLong=Vector(1,0),   rightSideCover=True,
 # vectorLRef=Vector(0.5,0.5), rightSideLabelLn=True,  closed=True,
 # addL2closed=0.20,      fixAnchorStart=None,    fixAnchorEnd=None,
-# nMembers=1,            addTxt2Label=None,      reinfCfg=cfg.defaultReinfConf
+# nMembers=1,            addCover=0,             addTxt2Label=None,
+# reinfCfg=cfg.defaultReinfConf
 
 # stirrups holding transverse rebars
 stirrHoldTr=trcm.brkStirrFam(Id=None,fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPerp=4 ,widthStirr=0.25,dispRealSh= 0,dispPerp=0.1,vectorLRef=Vector(0.3,-0.5),rightSideLabelLn=False,rightSideCover=False,addTxt2Label='stirrHoldTr')
