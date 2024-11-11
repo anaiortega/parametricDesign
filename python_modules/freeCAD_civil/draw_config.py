@@ -56,7 +56,6 @@ class reinfConf(object):
         self.factDispReflinSectReb=factDispReflinSectReb
         self.code=Code
         self.roundAncLap=roundAncLap
-        print('texSize', texSize)
         if Code not in ['EHE','EC2']:
             raise ValueError("Code " + Code + " is not supported")
 

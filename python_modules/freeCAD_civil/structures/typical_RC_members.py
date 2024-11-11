@@ -208,10 +208,11 @@ class genericReinfBase(object):
         '''Returns the maximum diameter of the rebars or stirrups defined in list lstReinf
         (if lstReinf doesn't exists, return 0)
         '''
+        fiMax=0
         if lstReinf:
-             fiMax=max([rb.diameter for rb in lstReinf if rb])
-        else:
-            fiMax=0
+            lstDiam=[rb.diameter for rb in lstReinf if rb]
+            if len(lstDiam)>0:
+                fiMax=max(lstDiam)
         return fiMax
         
 class genericBrickReinf(genericReinfBase):

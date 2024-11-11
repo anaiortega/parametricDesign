@@ -545,7 +545,6 @@ class rebarFamily(rebarFamilyBase):
         :param vTranslation: Vector (Vector(x,y,z)) to apply a traslation to 
         the drawing (defaults to Vector(0,0,0))
         '''
-        print('coverSectBars=',self.coverSectBars)
         centersWire=Part.makeCircle(self.sectBarsConcrRadius-self.coverSectBars-self.diameter/2.0)
         centersWire.applyTranslation(vTranslation)
         Laux=centersWire.Length
@@ -1141,7 +1140,6 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
     pesoTotal=0
     # order list of rebar families by identifications
     lstIdsOrig=[rbFam.identifier for rbFam in lstBarFamilies]
-    print(lstIdsOrig)
     lstOrdered=[i for i in lstIdsOrig]
     dsu.sort_human(lstOrdered)
 #    orderLstBarFamilies=[x for x,_ in sorted(zip(lstBarFamilies,lstIds),key=lambda x: x[1])]
