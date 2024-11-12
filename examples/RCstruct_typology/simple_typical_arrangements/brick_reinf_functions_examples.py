@@ -26,7 +26,7 @@ reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scal
 cfg.set_dim_style(scale=scale,dimStyProp=cfg.XCdimProp) # set XC dimension style in current document
 
 # Geometry of the block
-width=4 #dimension of the slab in the direction of the transversal rebars
+width=14 #dimension of the slab in the direction of the transversal rebars
 length=5 #dimension of the slab in the direction of the longitudinal rebars
 thickness=0.4  #thickness of the slab
 
@@ -162,6 +162,8 @@ lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick
     sideXmaxRb=sideXmaxRb,
     sideYminRb=sideYminRb,
     sideYmaxRb=sideYmaxRb,
+    lstStirrHoldTrReinf=[stirrHoldTr,stirrHoldTr2],
+    lstStirrHoldLnReinf=[stirrHoldLn],
     drawConcrTrSect=True,
     drawConcrLnSect=True,
     drawPlan=True,

@@ -1097,7 +1097,7 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,minSlope2varHorRF=4e-2,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,minSlope2varHorRF=4e-2,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness with an sloped edge 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -1118,6 +1118,16 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param sideXmaxRb: same for side reinforcement in face Xmax (defaults to None)
     :param sideYminRb: same for side reinforcement in face Ymin (defaults to None)
     :param sideYmaxRb: same for side reinforcement in face Ymax (defaults to None)
+    :param lstStirrHoldTrReinf: list of stirrHoldTrReinfs expressed as instances of brkStirrFam
+           class. Each one is the data for a stirrup rebar familiy that holds transverse top
+           and bottom rebar families. Real shape is depicted in the longitudinal section
+           (defaults to [])
+    :param lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam
+           class. Each one is the data for a stirrup rebar family that holds longitudinal top
+           and bottom rebar families (defaults to [])
+    :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list
+           of edges (e.g. [2,4] if only second and fourth edges are drawn)  
+           (defaults to True)
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :param slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
@@ -1132,7 +1142,7 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId,)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId,)
     if botTrnsRb:
         brick.drawBottomTransvRF()
         lstRebFam+=[brick.botTrnsRb]
@@ -1165,6 +1175,10 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
         lstRebFam+=[brick.sideYmaxRb]
     if drawConcrTrSect:
         brick.drawTransvConcrSectYmax()
+    if lstStirrHoldTrReinf:
+        lstStirrFam+=brick.drawStirrHoldingTransvSF()
+    if lstStirrHoldLnReinf:
+        lstStirrFam+=brick.drawStirrHoldingLongSF()
     if drawConcrLnSect:
         if slopeEdge>0:
             brick.drawLongConcrSectXmax()
