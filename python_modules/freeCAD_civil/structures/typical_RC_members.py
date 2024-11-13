@@ -251,9 +251,19 @@ class genericBrickReinf(genericReinfBase):
     :ivar lstStirrHoldLnReinf: list of stirrHoldLnReinfs expressed as instances of brkStirrFam class. 
           Each one is the data for a stirrup rebar family that holds longitudinal top and bottom rebar 
           families
-    :ivar trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
+    :ivar trSlopeBottFace: transverse slope of the brick bottom-face
+          (deltaZ/deltaX)
     :ivar trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
-    :ivar slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :ivar slopeEdge: slope of the edge of minimum X-cood (deltaX/deltaY)
+          positive when deltaX + (decrease the width in the side of Ymax).
+          (defaults to None)
+    :ivar lapSlopeEdge: when sloped edge is defined, if the length of the
+          transverse rebar family is greater than its maxLrebar, two rebar
+          families are drawn: the first one, with suffix V corresponds
+          to the variable length family at the sloped edge. The
+          second one is defined for a constant length zone. In this case, the variable-length
+          penetrates the constant-length zone a lapSlopeEdge length (defaults to 1.0).
+          From this point, rebars are overlapped.
     :ivar drawConcrTrSect: True if a closed concrete transverse cross-section is drawn or a list of 
           edges (e.g. [2,4] if only second and fourth edges are drawn) (defaults to True)
     :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of 
@@ -267,7 +277,7 @@ class genericBrickReinf(genericReinfBase):
           their identifier has not been defined or it is None (defaults to 1)
     '''
 
-    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,slopeEdge=None,lapSlopeEdge=1.0,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
         super(genericBrickReinf,self).__init__(length=length,thickness=thickness,angLn=angLn,anchPtLnSect=anchPtLnSect,startId=startId)
         self.width=width
         self.anchPtTrnsSect=anchPtTrnsSect
@@ -281,11 +291,14 @@ class genericBrickReinf(genericReinfBase):
         self.sideXmaxRb=copy.copy(sideXmaxRb)
         self.sideYminRb=copy.copy(sideYminRb)
         self.sideYmaxRb=copy.copy(sideYmaxRb)
+        self.botTrnsRbVar=None
+        self.topTrnsRbVar=None
         self.lstStirrHoldTrReinf=copy.copy(lstStirrHoldTrReinf)
         self.lstStirrHoldLnReinf=copy.copy(lstStirrHoldLnReinf)
         self.trSlopeBottFace=trSlopeBottFace
         self.trSlopeTopFace=trSlopeTopFace
         self.slopeEdge=slopeEdge
+        self.lapSlopeEdge=lapSlopeEdge
         self.drawConcrTrSect=drawConcrTrSect
         self.drawConcrLnSect=drawConcrLnSect
         self.anchPtPlan=anchPtPlan
@@ -327,14 +340,24 @@ class genericBrickReinf(genericReinfBase):
          transverse  section with maximum Y coordinate'''
         maxWidth=self.width
         if self.slopeEdge:
-            maxWidth=self.width+self.length*abs(self.slopeEdge)
+            deltaX=self.slopeEdge*self.length #(+ in positive direction of the X-axis
+            maxWidth=max(maxWidth,maxWidth-deltaX)
         return maxWidth
 
     def getIncrWidth(self):
-        ''' return the width increment due to the edge slope '''
-        incrWidth=self.getMaxWidth()-self.width
+        ''' return the width increment due to the edge slope
+        + when slopeEdge is negative 
+        '''
+        incrWidth=-self.slopeEdge*self.length
         return incrWidth
 
+    def getYmaxWidth(self):
+        ''' return the width of the brick edge at maximum Y coordinate '''
+        ymaxW=self.width
+        if self.slopeEdge:
+            ymaxW+=self.slopeEdge*self.length
+        return ymaxW
+    
     def getTransvBottPnts(self,width):
         '''return the left and right bottom points of the trasverse concrete section
         as function of the section width'''
@@ -354,8 +377,7 @@ class genericBrickReinf(genericReinfBase):
     def getYmaxTransvBottPnts(self):
         ''' return the left and right bottom points of the trasverse concrete section
         at maximum Y coordinate '''
-        maxWidth=self.getMaxWidth()
-        tr_bl,tr_br=self.getTransvBottPnts(maxWidth)
+        tr_bl,tr_br=self.getTransvBottPnts(self.getYmaxWidth())
         return tr_bl,tr_br
 
     def getTransvTopPnts(self,width):
@@ -377,8 +399,7 @@ class genericBrickReinf(genericReinfBase):
     def getYmaxTransvTopPnts(self):
         ''' return the left and right top points of the trasverse concrete section
         at maximum Y coordinate '''
-        maxWidth=self.getMaxWidth()
-        tr_tl,tr_tr=self.getTransvTopPnts(maxWidth)
+        tr_tl,tr_tr=self.getTransvTopPnts(self.getYmaxWidth())
         return tr_tl,tr_tr
 
     def getLongBottPnts(self,x):
@@ -508,26 +529,79 @@ class genericBrickReinf(genericReinfBase):
         '''Return the cover of the side reinforcement in face Ymax'''
         cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.sideYmaxRb.addCover
         return cover
-   
+
+    def drawBottomVarTransvRF(self):
+        vdirTr=self.getVdirTransv()
+        vdirLn=self.getVdirLong()
+        tr_bl,tr_br=self.getYmaxTransvBottPnts()
+        ln_bl,ln_br=self.getXmaxLongBottPnts()
+        self.botTrnsRbVar=copy.copy(self.botTrnsRb)
+        self.botTrnsRbVar.identifier=self.botTrnsRb.identifier + 'V'
+        self.botTrnsRbVar.closedEnd=None
+        self.botTrnsRbVar.gapEnd=0
+        self.botTrnsRbVar.extrShapeEnd='lap0_posGood_tens_perc100' # lapping with constant-lenght family
+        deltaW=self.getIncrWidth()
+        tr_br=tr_bl+self.lapSlopeEdge*vdirTr if deltaW > 0 else tr_bl+(self.lapSlopeEdge-deltaW)*vdirTr
+        cover= self.getCoverBottomTransvRF()
+        lstCover=[cover]
+        lstPtsConcrSect=[tr_bl,tr_br]
+        if self.botTrnsRbVar.closedStart:
+            tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+#            tr_tr=tr_tl+self.lapSlopeEdge*vdirTr if deltaW > 0 else tr_tl+(self.lapSlopeEdge-deltaW)*vdirTr
+            lstPtsConcrSect.insert(0,tr_tl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        self.botTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
+        tr_bl2,tr_br2=self.getYminTransvBottPnts()
+        tr_br2=tr_bl2+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_bl2+(self.lapSlopeEdge+deltaW)*vdirTr
+        lstPtsConcrSect2=[tr_bl2,tr_br2]
+        if self.botTrnsRbVar.closedStart:
+            tr_tl2,tr_tr2=self.getYminTransvTopPnts()
+            lstPtsConcrSect2.insert(0,tr_tl2)
+        self.botTrnsRbVar.lstPtsConcrSect2=lstPtsConcrSect2
+        self.botTrnsRbVar.lstCover=lstCover
+        self.botTrnsRbVar.rightSideCover=False
+        self.botTrnsRbVar.fromToExtPts=[ln_bl+self.botTrnsRb.distRFstart*vdirLn,ln_br-self.botTrnsRb.distRFend*vdirLn]
+        self.botTrnsRbVar.coverSectBars=cover
+        self.botTrnsRbVar.rightSideSectBars=False
+        self.botTrnsRbVar.createLstRebar()
+        self.botTrnsRbVar.drawPolySectBars()
+        self.botTrnsRbVar.drawLstRebar()
+                          
+    def drawTopVarTransvRF(self):
+        self.topTrnsRbVar=copy.copy(self.topTrnsRb)
+        self.topTrnsRbVar.identifier=self.topTrnsRb.identifier + 'V'
+        
         
     def drawBottomTransvRF(self):
-        ''' Draw and return the bottom transverse rebar family '''
+        ''' Create and draw the bottom transverse rebar family.'''
         tr_bl,tr_br=self.getYmaxTransvBottPnts()
         ln_bl,ln_br=self.getXmaxLongBottPnts()
         vdirLn=self.getVdirLong()
+        vdirTr=self.getVdirTransv()
         self.initRFVvars(self.botTrnsRb)
         self.checkId(self.botTrnsRb)
-        lstPtsConcrSect=[tr_bl,tr_br]
+        if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+        if self.slopeEdge:
+             deltaW=self.length*self.slopeEdge
+             maxW=self.getMaxWidth()
+             if maxW > self.botTrnsRb.maxLrebar: # maximum width of the brick is greater than the allowed rebar length
+                 self.drawBottomVarTransvRF() # variable rebars
+                 tr_bl=tr_bl+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_bl+(self.lapSlopeEdge+deltaW)*vdirTr
+                 tr_tl=tr_bl+Vector(0,self.thickness)
+                 # the constant-length rebar family overlaps the variable-length RF
+                 self.botTrnsRb.gapStart=0
+                 self.botTrnsRb.closedStart=None
+                 self.botTrnsRb.extrShapeStart=None 
         cover= self.getCoverBottomTransvRF()
         lstCover=[cover]
-        if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+        lstPtsConcrSect=[tr_bl,tr_br]
         if self.botTrnsRb.closedStart:
             lstPtsConcrSect.insert(0,tr_tl)
             lstCover.insert(0,self.reinfCfg.cover)
         if self.botTrnsRb.closedEnd:
             lstPtsConcrSect.append(tr_tr)
             lstCover.append(self.reinfCfg.cover)
-        if self.slopeEdge:
+        if self.slopeEdge and maxW <= self.botTrnsRb.maxLrebar: # a single family is created with variable length
             tr_bl2,tr_br2=self.getYminTransvBottPnts()
             lstPtsConcrSect2=[tr_bl2,tr_br2]
             if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl2,tr_tr2=self.getYminTransvTopPnts()
@@ -546,9 +620,12 @@ class genericBrickReinf(genericReinfBase):
         self.botTrnsRb.createLstRebar()
         self.botTrnsRb.drawPolySectBars()
         self.botTrnsRb.drawLstRebar()
+            
 
     def drawTopTransvRF(self):
-        '''draw and return  the transverse top rebar family'''
+        '''draw and return  the transverse top rebar family
+        NOTE: Variable rebars are  not splitted if they exceed maxLrebar
+        '''
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         vdirLn=self.getVdirLong()
@@ -1097,7 +1174,7 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,minSlope2varHorRF=4e-2,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,slopeEdge,minSlope2varHorRF=4e-2,lapSlopeEdge=1.0,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness with an sloped edge 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -1130,8 +1207,18 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
            (defaults to True)
     :param drawConcrTrSect: True to draw the transverse concrete cross-section  (defaults to True)
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
-    :param slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
-    :param minSlope2varHorRF: minimum slope of the edge to draw variable horizontal reinforcement (defaults to 4%)
+    :ivar slopeEdge: slope of the edge of minimum X-cood (deltaX/deltaY)
+          positive when deltaX + (decrease the width in the side of Ymax).
+          (defaults to None)
+    :param lapSlopeEdge: when sloped edge is defined, if the length of the
+          transverse rebar family is greater than its maxLrebar, two rebar
+          families are drawn: the first one, with suffix V corresponds
+          to the variable length family at the sloped edge. The
+          second one is defined for a constant length zone. In this case, the variable-length
+          penetrates the constant-length zone a lapSlopeEdge length (defaults to 1.0).
+          From this point, rebars are overlapped.
+    :param minSlope2varHorRF: minimum slope of the edge to draw variable horizontal
+           reinforcement (defaults to 4%)
     :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
            (defaults to True)
     :param anchPtPlan: anchor point to place the (xmin,ymin) point of the plan drawing (in general, the plan drawing is only used when defining side reinforcement) 
@@ -1142,10 +1229,12 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,slopeEdge=slopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId,)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,slopeEdge=slopeEdge,lapSlopeEdge=lapSlopeEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId,)
     if botTrnsRb:
         brick.drawBottomTransvRF()
         lstRebFam+=[brick.botTrnsRb]
+        if brick.botTrnsRbVar:
+            lstRebFam+=[brick.botTrnsRbVar]
     if topTrnsRb:
         brick.drawTopTransvRF()
         lstRebFam+=[brick.topTrnsRb]
@@ -1200,7 +1289,9 @@ def sloped_edge_sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,a
     :param anchPtTrnsSect: anchor point to place the bottom left corner of the concrete transverse cross-section
     :param anchPtLnSect:  anchor point to place the bottom left corner of the concrete longitudinal cross-section
     :param reinfCfg: instance of the cfg.reinfConf class
-    :param slopeEdge: slope of the edge of minimum X-cood (deltaY/deltaX)
+    :ivar slopeEdge: slope of the edge of minimum X-cood (deltaX/deltaY)
+          positive when deltaX + (decrease the width in the side of Ymax).
+          (defaults to None)
     :param minSlope2varHorRF: minimum slope of the edge to draw variable horizontal reinforcement (defaults to 4%)
     :param trSlopeBottFace: transverse slope of the brick bottom-face (deltaZ/deltaX)
     :param trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
