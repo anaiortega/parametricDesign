@@ -344,9 +344,9 @@ class genericBrickReinf(genericReinfBase):
             maxWidth=max(maxWidth,maxWidth-deltaX)
         return maxWidth
 
-    def getIncrWidth(self):
-        ''' return the width increment due to the edge slope
-        + when slopeEdge is negative 
+    def getIncrWidthYmaxEdge(self):
+        ''' return the width increment in Ymax edge (positive or negative) due
+        to the slope in Xmin edge
         '''
         incrWidth=-self.slopeEdge*self.length
         return incrWidth
@@ -409,7 +409,7 @@ class genericBrickReinf(genericReinfBase):
         if self.trSlopeBottFace:
             vdirLn=self.getVdirLong(); vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
             leftL=x
-            rightL=x+self.getIncrWidth()
+            rightL=x+self.getIncrWidthYmaxEdge()
             ln_bl=ln_bl+leftL*self.trSlopeBottFace*vdirLnPerp
             ln_br=ln_br+rightL*self.trSlopeBottFace*vdirLnPerp
         return ln_bl,ln_br
@@ -433,7 +433,7 @@ class genericBrickReinf(genericReinfBase):
         if self.trSlopeTopFace:
             vdirLn=self.getVdirLong(); vdirLnPerp=Vector(-1*vdirLn.y,vdirLn.x)
             leftL=x
-            rightL=x+self.getIncrWidth()
+            rightL=x+self.getIncrWidthYmaxEdge()
             ln_tl=ln_tl+leftL*self.trSlopeTopFace*vdirLnPerp
             ln_tr=ln_tr+rightL*self.trSlopeTopFace*vdirLnPerp
         return ln_tl,ln_tr
@@ -454,14 +454,14 @@ class genericBrickReinf(genericReinfBase):
         ''' return the bottom point in the transverse section at Ymax 
         where the transition between constant and variable transverse
         reinforcement occurs '''
-        startP,trns_bot=self.getTransvBottPnts(self.getIncrWidth())
+        startP,trns_bot=self.getTransvBottPnts(self.getIncrWidthYmaxEdge())
         return trns_bot
 
     def getTransitionTopPnt(self):
         ''' return the top point in the transverse section at Ymax 
         where the transition between constant and variable transverse
         reinforcement occurs '''
-        startP,trns_top=self.getTransvTopPnts(self.getIncrWidth())
+        startP,trns_top=self.getTransvTopPnts(self.getIncrWidthYmaxEdge())
         return trns_top
 
     def getPntsPlan(self):
@@ -529,48 +529,6 @@ class genericBrickReinf(genericReinfBase):
         '''Return the cover of the side reinforcement in face Ymax'''
         cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.sideYmaxRb.addCover
         return cover
-
-    def drawBottomVarTransvRF(self):
-        vdirTr=self.getVdirTransv()
-        vdirLn=self.getVdirLong()
-        tr_bl,tr_br=self.getYmaxTransvBottPnts()
-        ln_bl,ln_br=self.getXmaxLongBottPnts()
-        self.botTrnsRbVar=copy.copy(self.botTrnsRb)
-        self.botTrnsRbVar.identifier=self.botTrnsRb.identifier + 'V'
-        self.botTrnsRbVar.closedEnd=None
-        self.botTrnsRbVar.gapEnd=0
-        self.botTrnsRbVar.extrShapeEnd='lap0_posGood_tens_perc100' # lapping with constant-lenght family
-        deltaW=self.getIncrWidth()
-        tr_br=tr_bl+self.lapSlopeEdge*vdirTr if deltaW > 0 else tr_bl+(self.lapSlopeEdge-deltaW)*vdirTr
-        cover= self.getCoverBottomTransvRF()
-        lstCover=[cover]
-        lstPtsConcrSect=[tr_bl,tr_br]
-        if self.botTrnsRbVar.closedStart:
-            tr_tl,tr_tr=self.getYmaxTransvTopPnts()
-#            tr_tr=tr_tl+self.lapSlopeEdge*vdirTr if deltaW > 0 else tr_tl+(self.lapSlopeEdge-deltaW)*vdirTr
-            lstPtsConcrSect.insert(0,tr_tl)
-            lstCover.insert(0,self.reinfCfg.cover)
-        self.botTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
-        tr_bl2,tr_br2=self.getYminTransvBottPnts()
-        tr_br2=tr_bl2+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_bl2+(self.lapSlopeEdge+deltaW)*vdirTr
-        lstPtsConcrSect2=[tr_bl2,tr_br2]
-        if self.botTrnsRbVar.closedStart:
-            tr_tl2,tr_tr2=self.getYminTransvTopPnts()
-            lstPtsConcrSect2.insert(0,tr_tl2)
-        self.botTrnsRbVar.lstPtsConcrSect2=lstPtsConcrSect2
-        self.botTrnsRbVar.lstCover=lstCover
-        self.botTrnsRbVar.rightSideCover=False
-        self.botTrnsRbVar.fromToExtPts=[ln_bl+self.botTrnsRb.distRFstart*vdirLn,ln_br-self.botTrnsRb.distRFend*vdirLn]
-        self.botTrnsRbVar.coverSectBars=cover
-        self.botTrnsRbVar.rightSideSectBars=False
-        self.botTrnsRbVar.createLstRebar()
-        self.botTrnsRbVar.drawPolySectBars()
-        self.botTrnsRbVar.drawLstRebar()
-                          
-    def drawTopVarTransvRF(self):
-        self.topTrnsRbVar=copy.copy(self.topTrnsRb)
-        self.topTrnsRbVar.identifier=self.topTrnsRb.identifier + 'V'
-        
         
     def drawBottomTransvRF(self):
         ''' Create and draw the bottom transverse rebar family.'''
@@ -581,12 +539,13 @@ class genericBrickReinf(genericReinfBase):
         self.initRFVvars(self.botTrnsRb)
         self.checkId(self.botTrnsRb)
         if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+        
         if self.slopeEdge:
-             deltaW=self.length*self.slopeEdge
+             deltaW=self.getIncrWidthYmaxEdge()
              maxW=self.getMaxWidth()
              if maxW > self.botTrnsRb.maxLrebar: # maximum width of the brick is greater than the allowed rebar length
                  self.drawBottomVarTransvRF() # variable rebars
-                 tr_bl=tr_bl+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_bl+(self.lapSlopeEdge+deltaW)*vdirTr
+                 tr_bl=tr_bl+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_bl+(self.lapSlopeEdge+abs(deltaW))*vdirTr # Ymax edge
                  tr_tl=tr_bl+Vector(0,self.thickness)
                  # the constant-length rebar family overlaps the variable-length RF
                  self.botTrnsRb.gapStart=0
@@ -620,8 +579,45 @@ class genericBrickReinf(genericReinfBase):
         self.botTrnsRb.createLstRebar()
         self.botTrnsRb.drawPolySectBars()
         self.botTrnsRb.drawLstRebar()
-            
 
+    def drawBottomVarTransvRF(self):
+        vdirTr=self.getVdirTransv()
+        vdirLn=self.getVdirLong()
+        tr_bl,tr_br=self.getYmaxTransvBottPnts()
+        ln_bl,ln_br=self.getXmaxLongBottPnts()
+        self.botTrnsRbVar=copy.copy(self.botTrnsRb)
+        self.botTrnsRbVar.identifier=self.botTrnsRb.identifier + 'V'
+        self.botTrnsRbVar.closedEnd=None
+        self.botTrnsRbVar.gapEnd=0
+        self.botTrnsRbVar.extrShapeEnd='lap0_posGood_tens_perc100' # lapping with constant-lenght family
+        deltaW=self.getIncrWidthYmaxEdge()
+        tr_br=tr_bl+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_bl+(self.lapSlopeEdge+abs(deltaW))*vdirTr # Ymax edge
+        cover= self.getCoverBottomTransvRF()
+        lstCover=[cover]
+        lstPtsConcrSect=[tr_bl,tr_br]
+        if self.botTrnsRbVar.closedStart:
+            tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+            lstPtsConcrSect.insert(0,tr_tl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        self.botTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
+        tr_bl2,tr_br2=self.getYminTransvBottPnts()
+        print('slope=',self.slopeEdge,'deltaW=',deltaW)
+        tr_br2=tr_bl2+self.lapSlopeEdge*vdirTr if deltaW > 0 else tr_bl2+(self.lapSlopeEdge+abs(deltaW))*vdirTr #Ymin edge
+        print('0',tr_bl2,tr_br2)
+        lstPtsConcrSect2=[tr_bl2,tr_br2]
+        if self.botTrnsRbVar.closedStart:
+            tr_tl2,tr_tr2=self.getYminTransvTopPnts()
+            lstPtsConcrSect2.insert(0,tr_tl2)
+        self.botTrnsRbVar.lstPtsConcrSect2=lstPtsConcrSect2
+        self.botTrnsRbVar.lstCover=lstCover
+        self.botTrnsRbVar.rightSideCover=False
+        self.botTrnsRbVar.fromToExtPts=[ln_bl+self.botTrnsRb.distRFstart*vdirLn,ln_br-self.botTrnsRb.distRFend*vdirLn]
+        self.botTrnsRbVar.coverSectBars=cover
+        self.botTrnsRbVar.rightSideSectBars=False
+        self.botTrnsRbVar.createLstRebar()
+        self.botTrnsRbVar.drawPolySectBars()
+        self.botTrnsRbVar.drawLstRebar()
+        
     def drawTopTransvRF(self):
         '''draw and return  the transverse top rebar family
         NOTE: Variable rebars are  not splitted if they exceed maxLrebar
@@ -629,19 +625,31 @@ class genericBrickReinf(genericReinfBase):
         tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         ln_tl,ln_tr=self.getXmaxLongTopPnts()
         vdirLn=self.getVdirLong()
+        vdirTr=self.getVdirTransv()
         self.initRFVvars(self.topTrnsRb)
         self.checkId(self.topTrnsRb)
-        lstPtsConcrSect=[tr_tl,tr_tr]
+        if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl,tr_br=self.getYmaxTransvBottPnts()
+        if self.slopeEdge:
+             deltaW=self.getIncrWidthYmaxEdge()
+             maxW=self.getMaxWidth()
+             if maxW > self.topTrnsRb.maxLrebar: # maximum width of the brick is greater than the allowed rebar length
+                 self.drawTopVarTransvRF() # variable rebars
+                 tr_tl=tr_tl+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_tl+(self.lapSlopeEdge+abs(deltaW))*vdirTr # Ymax edge
+                 tr_bl=tr_tl-Vector(0,self.thickness)
+                 # the constant-length rebar family overlaps the variable-length RF
+                 self.topTrnsRb.gapStart=0
+                 self.topTrnsRb.closedStart=None
+                 self.topTrnsRb.extrShapeStart=None
         cover=self.getCoverTopTransvRF()
         lstCover=[cover]
-        if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl,tr_br=self.getYmaxTransvBottPnts()
+        lstPtsConcrSect=[tr_tl,tr_tr]
         if self.topTrnsRb.closedStart:
             lstPtsConcrSect.insert(0,tr_bl)
             lstCover.insert(0,self.reinfCfg.cover)
         if self.topTrnsRb.closedEnd:
             lstPtsConcrSect.append(tr_br)
             lstCover.append(self.reinfCfg.cover)
-        if self.slopeEdge:
+        if self.slopeEdge and maxW <= self.topTrnsRb.maxLrebar: # a single family is created with variable length
             tr_tl2,tr_tr2=self.getYminTransvTopPnts()
             lstPtsConcrSect2=[tr_tl2,tr_tr2]
             if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl2,tr_br2=self.getYminTransvBottPnts()
@@ -660,7 +668,46 @@ class genericBrickReinf(genericReinfBase):
         self.topTrnsRb.createLstRebar()
         self.topTrnsRb.drawPolySectBars()
         self.topTrnsRb.drawLstRebar()
-
+        
+    def drawTopVarTransvRF(self):
+        vdirTr=self.getVdirTransv()
+        vdirLn=self.getVdirLong()
+        tr_tl,tr_tr=self.getYmaxTransvTopPnts()
+        ln_tl,ln_tr=self.getXmaxLongTopPnts()
+        self.topTrnsRbVar=copy.copy(self.topTrnsRb)
+        self.topTrnsRbVar.identifier=self.topTrnsRb.identifier + 'V'
+        self.topTrnsRbVar.closedEnd=None
+        self.topTrnsRbVar.gapEnd=0
+        self.topTrnsRbVar.extrShapeEnd='lap0_posPoor_tens_perc100' # lapping with constant-lenght family
+        deltaW=self.getIncrWidthYmaxEdge()
+        tr_tr=tr_tl+self.lapSlopeEdge*vdirTr if deltaW < 0 else tr_tl+(self.lapSlopeEdge+abs(deltaW))*vdirTr #Ymax edge
+        #print('0',tr_tl,tr_tr)
+        cover= self.getCoverBottomTransvRF()
+        lstCover=[cover]
+        lstPtsConcrSect=[tr_tl,tr_tr]
+        if self.topTrnsRbVar.closedStart:
+            tr_bl,tr_br=self.getYmaxTransvBottPnts()
+            lstPtsConcrSect.insert(0,tr_bl)
+            lstCover.insert(0,self.reinfCfg.cover)
+        #print('1',lstPtsConcrSect)
+        self.topTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
+        tr_tl2,tr_tr2=self.getYminTransvTopPnts()
+        tr_tr2=tr_tl2+self.lapSlopeEdge*vdirTr if deltaW > 0 else tr_tl2+(self.lapSlopeEdge+abs(deltaW))*vdirTr # Ymin edge
+        #print('2',
+        lstPtsConcrSect2=[tr_tl2,tr_tr2]
+        if self.topTrnsRbVar.closedStart:
+            tr_bl2,tr_br2=self.getYminTransvBottPnts()
+            lstPtsConcrSect2.insert(0,tr_bl2)
+        print('3',lstPtsConcrSect2)
+        self.topTrnsRbVar.lstPtsConcrSect2=lstPtsConcrSect2
+        self.topTrnsRbVar.lstCover=lstCover
+        self.topTrnsRbVar.rightSideCover=True
+        self.topTrnsRbVar.fromToExtPts=[ln_tl+self.topTrnsRb.distRFstart*vdirLn,ln_tr-self.topTrnsRb.distRFend*vdirLn]
+        self.topTrnsRbVar.coverSectBars=cover
+        self.topTrnsRbVar.rightSideSectBars=True
+        self.topTrnsRbVar.createLstRebar()
+        self.topTrnsRbVar.drawPolySectBars()
+        self.topTrnsRbVar.drawLstRebar()
         
     def drawBottomLongRF(self):
         '''draw and return the  longitudinal bottom rebar family 
@@ -1238,6 +1285,8 @@ def sloped_edge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrns
     if topTrnsRb:
         brick.drawTopTransvRF()
         lstRebFam+=[brick.topTrnsRb]
+        if brick.topTrnsRbVar:
+            lstRebFam+=[brick.topTrnsRbVar]
     if botLnRb:
         brick.drawBottomLongRF()
         lstRebFam+=[brick.botLnRb]
