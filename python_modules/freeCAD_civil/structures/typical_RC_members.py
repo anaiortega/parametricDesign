@@ -516,22 +516,22 @@ class genericBrickReinf(genericReinfBase):
 
     def getCoverSideXminRF(self):
         '''Return the cover of the side reinforcement in face Xmin'''
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])+self.sideXminRb.addCover
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])+self.getMaxDiameter(self.lstStirrHoldLnReinf)+self.sideXminRb.addCover
         return cover
     
     def getCoverSideXmaxRF(self):
         '''Return the cover of the side reinforcement in face Xmax'''
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])+self.sideXmaxRb.addCover
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botTrnsRb,self.topTrnsRb])+self.getMaxDiameter(self.lstStirrHoldLnReinf)+self.sideXmaxRb.addCover
         return cover
     
     def getCoverSideYminRF(self):
         '''Return the cover of the side reinforcement in face Ymin'''
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.sideYminRb.addCover
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.getMaxDiameter(self.lstStirrHoldTrReinf)+self.sideYminRb.addCover
         return cover
     
     def getCoverSideYmaxRF(self):
         '''Return the cover of the side reinforcement in face Ymax'''
-        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.sideYmaxRb.addCover
+        cover=self.reinfCfg.cover+self.getMaxDiameter([self.botLnRb,self.topLnRb])+self.getMaxDiameter(self.lstStirrHoldTrReinf)+self.sideYmaxRb.addCover
         return cover
         
     def drawBottomTransvRF(self):
@@ -605,9 +605,7 @@ class genericBrickReinf(genericReinfBase):
             lstCover.insert(0,self.reinfCfg.cover)
         self.botTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
         tr_bl2,tr_br2=self.getYminTransvBottPnts()
-        print('slope=',self.slopeEdge,'deltaW=',deltaW)
         tr_br2=tr_bl2+self.extVarXminEdge*vdirTr if deltaW > 0 else tr_bl2+(self.extVarXminEdge+abs(deltaW))*vdirTr #Ymin edge
-        print('0',tr_bl2,tr_br2)
         lstPtsConcrSect2=[tr_bl2,tr_br2]
         if self.botTrnsRbVar.closedStart:
             tr_tl2,tr_tr2=self.getYminTransvTopPnts()
@@ -685,7 +683,6 @@ class genericBrickReinf(genericReinfBase):
         self.topTrnsRbVar.extrShapeEnd='lap0_posPoor_tens_perc100' # lapping with constant-lenght family
         deltaW=self.getIncrWidthYmaxEdge()
         tr_tr=tr_tl+self.extVarXminEdge*vdirTr if deltaW < 0 else tr_tl+(self.extVarXminEdge+abs(deltaW))*vdirTr #Ymax edge
-        #print('0',tr_tl,tr_tr)
         cover= self.getCoverBottomTransvRF()
         lstCover=[cover]
         lstPtsConcrSect=[tr_tl,tr_tr]
@@ -693,16 +690,13 @@ class genericBrickReinf(genericReinfBase):
             tr_bl,tr_br=self.getYmaxTransvBottPnts()
             lstPtsConcrSect.insert(0,tr_bl)
             lstCover.insert(0,self.reinfCfg.cover)
-        #print('1',lstPtsConcrSect)
         self.topTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
         tr_tl2,tr_tr2=self.getYminTransvTopPnts()
         tr_tr2=tr_tl2+self.extVarXminEdge*vdirTr if deltaW > 0 else tr_tl2+(self.extVarXminEdge+abs(deltaW))*vdirTr # Ymin edge
-        #print('2',
         lstPtsConcrSect2=[tr_tl2,tr_tr2]
         if self.topTrnsRbVar.closedStart:
             tr_bl2,tr_br2=self.getYminTransvBottPnts()
             lstPtsConcrSect2.insert(0,tr_bl2)
-        print('3',lstPtsConcrSect2)
         self.topTrnsRbVar.lstPtsConcrSect2=lstPtsConcrSect2
         self.topTrnsRbVar.lstCover=lstCover
         self.topTrnsRbVar.rightSideCover=True
@@ -854,11 +848,10 @@ class genericBrickReinf(genericReinfBase):
         vDir=(tr_tl-tr_bl).normalize()
         self.initRFVvars(self.sideXminRb)
         self.checkId(self.sideXminRb)
-        if not self.sideXminRb.coverSectBars:
-            self.sideXminRb.coverSectBars=self.reinfCfg.cover
         self.sideXminRb.reinfCfg=self.reinfCfg
         cover=self.getCoverSideXminRF()
         lstCover=[cover]
+        self.sideXminRb.coverSectBars=cover
         lstPtsConcrSect=[pl_xmin_ymin,pl_xmin_ymax]
         if self.sideXminRb.closedStart:
             lstPtsConcrSect.insert(0,pl_xmax_ymin)
@@ -885,11 +878,10 @@ class genericBrickReinf(genericReinfBase):
         vDir=(tr_tr-tr_br).normalize()
         self.initRFVvars(self.sideXmaxRb)
         self.checkId(self.sideXmaxRb)
-        if not self.sideXmaxRb.coverSectBars:
-            self.sideXmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideXmaxRb.reinfCfg=self.reinfCfg
         cover=self.getCoverSideXmaxRF()
         lstCover=[cover]
+        self.sideXmaxRb.coverSectBars=cover
         lstPtsConcrSect=[pl_xmax_ymin,pl_xmax_ymax]
         if self.sideXmaxRb.closedStart:
             lstPtsConcrSect.insert(0,pl_xmin_ymin)
@@ -916,10 +908,9 @@ class genericBrickReinf(genericReinfBase):
         vDir=(ln_tl-ln_bl).normalize()
         self.initRFVvars(self.sideYminRb)
         self.checkId(self.sideYminRb)
-        if not self.sideYminRb.coverSectBars:
-            self.sideYminRb.coverSectBars=self.reinfCfg.cover
         self.sideYminRb.reinfCfg=self.reinfCfg
         cover=self.getCoverSideYminRF()
+        self.sideYminRb.coverSectBars=cover
         lstCover=[cover]
         lstPtsConcrSect=[pl_xmin_ymin,pl_xmax_ymin]
         if self.sideYminRb.closedStart:
@@ -947,10 +938,9 @@ class genericBrickReinf(genericReinfBase):
         vDir=(ln_tr-ln_br).normalize()
         self.initRFVvars(self.sideYmaxRb)
         self.checkId(self.sideYmaxRb)
-        if not self.sideYmaxRb.coverSectBars:
-            self.sideYmaxRb.coverSectBars=self.reinfCfg.cover
         self.sideYmaxRb.reinfCfg=self.reinfCfg
         cover=self.getCoverSideYmaxRF()
+        self.sideYmaxRb.coverSectBars=cover
         lstCover=[cover]
         lstPtsConcrSect=[pl_xmin_ymax,pl_xmax_ymax]
         if self.sideYmaxRb.closedStart:
