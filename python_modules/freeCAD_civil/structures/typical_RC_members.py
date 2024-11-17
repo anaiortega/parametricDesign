@@ -87,15 +87,23 @@ class brkRbFam(rb.rebarFamily):
     :ivar nMembers:  number of identic members. The calculated number of bars is multiplied by nMembers(defaults to 1)
     :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
     :ivar addCover: add positive or negative cover to the default calculates cover (defaults to 0)
+    :ivar extendVarXminEdge: when Xmin sloped edge is defined, if this sttribute is defined, 
+          two rebar families are drawn: the first one, with suffix V corresponds
+          to the variable length family at the sloped edge. The
+          second one is defined for a constant length zone. In this case, the variable-length
+          extends beyond the section change line and penetrates the constant-length zone
+          a length of exttendVarXminEdge meters . From this point, rebars are overlapped.
+          (defaults to None)
     :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete and steel type, text format, ... (defaults to cfg.defaultReinfConf)
     '''
-    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addCover=0,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
+    def __init__(self,fi,s=None,Id=None,nmbBars=None,distRFstart=0,distRFend=0,closedStart=False,closedEnd=False,vectorLRef=Vector(0.5,0.5),lateralCover=None,gapStart=None,gapEnd=None,extrShapeStart=None,extrShapeEnd=None,fixLengthStart=None,fixLengthEnd=None,extensionLength=None,maxLrebar=12,position='poor',compression=False,drawSketch=True,nMembers=1,addCover=0,addTxt2Label=None,extendVarXminEdge=None,reinfCfg=cfg.defaultReinfConf):
         super(brkRbFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrSect=[],fromToExtPts=None,sectBarsConcrRadius=1,extensionLength=extensionLength,lstCover=None,rightSideCover=True,vectorLRef=vectorLRef,coverSectBars=None,lateralCover=lateralCover,rightSideSectBars=True,spacing=s,nmbBars=nmbBars,lstPtsConcrSect2=None,gapStart=gapStart,gapEnd=gapEnd,extrShapeStart=extrShapeStart,extrShapeEnd=extrShapeEnd,fixLengthStart=fixLengthStart,fixLengthEnd=fixLengthEnd,maxLrebar=maxLrebar,position=position,compression=compression,drawSketch=drawSketch,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.distRFstart=distRFstart
         self.distRFend=distRFend
         self.closedStart=closedStart
         self.closedEnd=closedEnd
         self.addCover=addCover
+        self.extendVarXminEdge=extendVarXminEdge
     
     def checkInconsitency(self):
         if self.extrShapeStart and self.closedStart:
@@ -139,12 +147,13 @@ class brkStirrFam(rb.stirrupFamily):
             Examples: 'fix45_len150'
     :ivar nMembers: number of identic members. The calculated number of bars is multiplied 
           by nMembers (defaults to 1)
+    :ivar maxLrebar: maximum length of rebars (defaults to 12 m)
     :ivar addCover: add positive or negative cover to the default calculates cover (defaults to 0)
     :ivar addTxt2Label: add the specified text to the reinforcement label (defaults to None)
     :ivar reinfCfg: instance of the reinfConf class that defines generic parameters like concrete 
           and steel type, text format, ... (defaults to cfg.defaultReinfConf)cfg.defaultReinfConf
     '''
-    def __init__(self,fi,widthStirr=0.20,sRealSh=None,sPerp=None,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addCover=0,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
+    def __init__(self,fi,widthStirr=0.20,sRealSh=None,sPerp=None,Id=None,nStirrRealSh=1,nStirrPerp=1,dispRealSh=0,dispPerp=0,vDirTrans=None,vDirLong=Vector(1,0),rightSideCover=True,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,maxLrebar=12,addCover=0,addTxt2Label=None,reinfCfg=cfg.defaultReinfConf):
         super(brkStirrFam,self).__init__(reinfCfg=reinfCfg,identifier=Id,diameter=fi,lstPtsConcrLong=[],lstPtsConcrSect=[Vector(0,0)],concrSectRadius=None,spacStrpTransv=sRealSh,spacStrpLong=sPerp,vDirTrans=vDirTrans,vDirLong=vDirLong,nmbStrpTransv=nStirrRealSh,nmbStrpLong=nStirrPerp,lstCover=None,lstCoverLong=None,rightSideCover=rightSideCover,dispStrpTransv=abs(dispRealSh),dispStrpLong=abs(dispPerp),vectorLRef=vectorLRef,rightSideLabelLn=rightSideLabelLn,closed=closed,addL2closed=addL2closed,fixAnchorStart=fixAnchorStart,fixAnchorEnd=fixAnchorEnd,nMembers=nMembers,addTxt2Label=addTxt2Label)
         self.dispRealSh=dispRealSh
         self.dispPerp=dispPerp
@@ -256,14 +265,6 @@ class genericBrickReinf(genericReinfBase):
     :ivar trSlopeTopFace: transverse slope of the brick top-face (deltaZ/deltaX)
     :ivar angXminEdge: angle counterclockwise between the axis Y and the
           Xmin edge (degrees). (defaults to 0)
-    :ivar extVarXminEdge: when sloped edge is defined, if the length of the
-          transverse rebar family is greater than its maxLrebar, two rebar
-          families are drawn: the first one, with suffix V corresponds
-          to the variable length family at the sloped edge. The
-          second one is defined for a constant length zone. In this case, the variable-length
-          extends beyond the section change line and penetrates the constant-length zone
-          a length of extVarXminEdge meters (defaults to 1.0).
-          From this point, rebars are overlapped.
     :ivar drawConcrTrSect: True if a closed concrete transverse cross-section is drawn or a list of 
           edges (e.g. [2,4] if only second and fourth edges are drawn) (defaults to True)
     :ivar drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of 
@@ -277,7 +278,7 @@ class genericBrickReinf(genericReinfBase):
           their identifier has not been defined or it is None (defaults to 1)
     '''
 
-    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,angXminEdge=0,extVarXminEdge=1.0,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+    def __init__(self,width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,trSlopeBottFace=None,trSlopeTopFace=None,angXminEdge=0,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
         super(genericBrickReinf,self).__init__(length=length,thickness=thickness,angLn=angLn,anchPtLnSect=anchPtLnSect,startId=startId)
         self.width=width
         self.anchPtTrnsSect=anchPtTrnsSect
@@ -302,7 +303,6 @@ class genericBrickReinf(genericReinfBase):
             self.slopeEdge=None # slopeEdge attribute is kept with the purpose of using the previous development. It's a candidate to disappear when other edges are allowed to form angles with X or Y axes.
         else:
             self.slopeEdge=math.sin(math.radians(self.angXminEdge))
-        self.extVarXminEdge=extVarXminEdge
         self.drawConcrTrSect=drawConcrTrSect
         self.drawConcrLnSect=drawConcrLnSect
         self.anchPtPlan=anchPtPlan
@@ -542,14 +542,13 @@ class genericBrickReinf(genericReinfBase):
         vdirTr=self.getVdirTransv()
         self.initRFVvars(self.botTrnsRb)
         self.checkId(self.botTrnsRb)
-        if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl,tr_tr=self.getYmaxTransvTopPnts()
-        
+        if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd:
+            tr_tl,tr_tr=self.getYmaxTransvTopPnts()
         if self.slopeEdge:
              deltaW=self.getIncrWidthYmaxEdge()
-             maxW=self.getMaxWidth()
-             if maxW > self.botTrnsRb.maxLrebar: # maximum width of the brick is greater than the allowed rebar length
+             if self.botTrnsRb.extendVarXminEdge: 
                  self.drawBottomVarTransvRF() # variable rebars
-                 tr_bl=tr_bl+self.extVarXminEdge*vdirTr if deltaW < 0 else tr_bl+(self.extVarXminEdge+abs(deltaW))*vdirTr # Ymax edge
+                 tr_bl=tr_bl+self.botTrnsRb.extendVarXminEdge*vdirTr if deltaW < 0 else tr_bl+(self.botTrnsRb.extendVarXminEdge+abs(deltaW))*vdirTr # Ymax edge
                  tr_tl=tr_bl+Vector(0,self.thickness)
                  # the constant-length rebar family overlaps the variable-length RF
                  self.botTrnsRb.gapStart=0
@@ -564,10 +563,11 @@ class genericBrickReinf(genericReinfBase):
         if self.botTrnsRb.closedEnd:
             lstPtsConcrSect.append(tr_tr)
             lstCover.append(self.reinfCfg.cover)
-        if self.slopeEdge and maxW <= self.botTrnsRb.maxLrebar: # a single family is created with variable length
+        if self.slopeEdge and not(self.botTrnsRb.extendVarXminEdge): # a single family is created with variable length
             tr_bl2,tr_br2=self.getYminTransvBottPnts()
             lstPtsConcrSect2=[tr_bl2,tr_br2]
-            if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd: tr_tl2,tr_tr2=self.getYminTransvTopPnts()
+            if self.botTrnsRb.closedStart or self.botTrnsRb.closedEnd:
+                tr_tl2,tr_tr2=self.getYminTransvTopPnts()
             if self.botTrnsRb.closedStart: lstPtsConcrSect2.insert(0,tr_tl2)
             if self.botTrnsRb.closedEnd: lstPtsConcrSect2.append(tr_tr2)
         else:
@@ -583,6 +583,7 @@ class genericBrickReinf(genericReinfBase):
         self.botTrnsRb.createLstRebar()
         self.botTrnsRb.drawPolySectBars()
         self.botTrnsRb.drawLstRebar()
+        
 
     def drawBottomVarTransvRF(self):
         vdirTr=self.getVdirTransv()
@@ -595,7 +596,7 @@ class genericBrickReinf(genericReinfBase):
         self.botTrnsRbVar.gapEnd=0
         self.botTrnsRbVar.extrShapeEnd='lap0_posGood_tens_perc100' # lapping with constant-lenght family
         deltaW=self.getIncrWidthYmaxEdge()
-        tr_br=tr_bl+self.extVarXminEdge*vdirTr if deltaW < 0 else tr_bl+(self.extVarXminEdge+abs(deltaW))*vdirTr # Ymax edge
+        tr_br=tr_bl+self.botTrnsRb.extendVarXminEdge*vdirTr if deltaW < 0 else tr_bl+(self.botTrnsRb.extendVarXminEdge+abs(deltaW))*vdirTr # Ymax edge
         cover= self.getCoverBottomTransvRF()
         lstCover=[cover]
         lstPtsConcrSect=[tr_bl,tr_br]
@@ -605,7 +606,7 @@ class genericBrickReinf(genericReinfBase):
             lstCover.insert(0,self.reinfCfg.cover)
         self.botTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
         tr_bl2,tr_br2=self.getYminTransvBottPnts()
-        tr_br2=tr_bl2+self.extVarXminEdge*vdirTr if deltaW > 0 else tr_bl2+(self.extVarXminEdge+abs(deltaW))*vdirTr #Ymin edge
+        tr_br2=tr_bl2+self.botTrnsRb.extendVarXminEdge*vdirTr if deltaW > 0 else tr_bl2+(self.botTrnsRb.extendVarXminEdge+abs(deltaW))*vdirTr #Ymin edge
         lstPtsConcrSect2=[tr_bl2,tr_br2]
         if self.botTrnsRbVar.closedStart:
             tr_tl2,tr_tr2=self.getYminTransvTopPnts()
@@ -633,10 +634,9 @@ class genericBrickReinf(genericReinfBase):
         if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl,tr_br=self.getYmaxTransvBottPnts()
         if self.slopeEdge:
              deltaW=self.getIncrWidthYmaxEdge()
-             maxW=self.getMaxWidth()
-             if maxW > self.topTrnsRb.maxLrebar: # maximum width of the brick is greater than the allowed rebar length
+             if self.topTrnsRb.extendVarXminEdge: # maximum width of the brick is greater than the allowed rebar length
                  self.drawTopVarTransvRF() # variable rebars
-                 tr_tl=tr_tl+self.extVarXminEdge*vdirTr if deltaW < 0 else tr_tl+(self.extVarXminEdge+abs(deltaW))*vdirTr # Ymax edge
+                 tr_tl=tr_tl+self.topTrnsRb.extendVarXminEdge*vdirTr if deltaW < 0 else tr_tl+(self.topTrnsRb.extendVarXminEdge+abs(deltaW))*vdirTr # Ymax edge
                  tr_bl=tr_tl-Vector(0,self.thickness)
                  # the constant-length rebar family overlaps the variable-length RF
                  self.topTrnsRb.gapStart=0
@@ -651,7 +651,7 @@ class genericBrickReinf(genericReinfBase):
         if self.topTrnsRb.closedEnd:
             lstPtsConcrSect.append(tr_br)
             lstCover.append(self.reinfCfg.cover)
-        if self.slopeEdge and maxW <= self.topTrnsRb.maxLrebar: # a single family is created with variable length
+        if self.slopeEdge and not(self.topTrnsRb.extendVarXminEdge): # a single family is created with variable length
             tr_tl2,tr_tr2=self.getYminTransvTopPnts()
             lstPtsConcrSect2=[tr_tl2,tr_tr2]
             if self.topTrnsRb.closedStart or self.topTrnsRb.closedEnd: tr_bl2,tr_br2=self.getYminTransvBottPnts()
@@ -661,6 +661,7 @@ class genericBrickReinf(genericReinfBase):
             lstPtsConcrSect2=None
         self.topTrnsRb.reinfCfg=self.reinfCfg
         self.topTrnsRb.lstPtsConcrSect=lstPtsConcrSect
+        print(lstPtsConcrSect)
         self.topTrnsRb.lstPtsConcrSect2=lstPtsConcrSect2
         self.topTrnsRb.rightSideCover=True
         self.topTrnsRb.fromToExtPts=[ln_tl+self.topTrnsRb.distRFstart*vdirLn,ln_tr-self.topTrnsRb.distRFend*vdirLn]
@@ -682,8 +683,8 @@ class genericBrickReinf(genericReinfBase):
         self.topTrnsRbVar.gapEnd=0
         self.topTrnsRbVar.extrShapeEnd='lap0_posPoor_tens_perc100' # lapping with constant-lenght family
         deltaW=self.getIncrWidthYmaxEdge()
-        tr_tr=tr_tl+self.extVarXminEdge*vdirTr if deltaW < 0 else tr_tl+(self.extVarXminEdge+abs(deltaW))*vdirTr #Ymax edge
-        cover= self.getCoverBottomTransvRF()
+        tr_tr=tr_tl+self.topTrnsRb.extendVarXminEdge*vdirTr if deltaW < 0 else tr_tl+(self.topTrnsRb.extendVarXminEdge+abs(deltaW))*vdirTr #Ymax edge
+        cover= self.getCoverTopTransvRF()
         lstCover=[cover]
         lstPtsConcrSect=[tr_tl,tr_tr]
         if self.topTrnsRbVar.closedStart:
@@ -692,7 +693,7 @@ class genericBrickReinf(genericReinfBase):
             lstCover.insert(0,self.reinfCfg.cover)
         self.topTrnsRbVar.lstPtsConcrSect=lstPtsConcrSect
         tr_tl2,tr_tr2=self.getYminTransvTopPnts()
-        tr_tr2=tr_tl2+self.extVarXminEdge*vdirTr if deltaW > 0 else tr_tl2+(self.extVarXminEdge+abs(deltaW))*vdirTr # Ymin edge
+        tr_tr2=tr_tl2+self.topTrnsRb.extendVarXminEdge*vdirTr if deltaW > 0 else tr_tl2+(self.topTrnsRb.extendVarXminEdge+abs(deltaW))*vdirTr # Ymin edge
         lstPtsConcrSect2=[tr_tl2,tr_tr2]
         if self.topTrnsRbVar.closedStart:
             tr_bl2,tr_br2=self.getYminTransvBottPnts()
@@ -1215,7 +1216,7 @@ def sloped_faces_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,
     FreeCAD.ActiveDocument.recompute()
     return lstRebFam,lstStirrFam,brick.startId
 
-def sloped_XminEdge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angXminEdge,minAngle2varHorRF=5,extVarXminEdge=1.0,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
+def sloped_XminEdge_constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angXminEdge,minAngle2varHorRF=5,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness with an sloped edge 
     Nomenclature: b-bottom, t-top, l-left, r-right, tr-transverse, ln-longitudinal
                   RF-rebar family
@@ -1250,14 +1251,6 @@ def sloped_XminEdge_constant_thickness_brick_reinf(width,length,thickness,anchPt
     :param drawConcrLnSect: True to draw the longitudinal concrete cross-section  (defaults to True)
     :param angXminEdge: angle counterclockwise between the axis Y and the
           Xmin edge (degrees). (defaults to 0)
-    :param extVarXminEdge: when sloped edge is defined, if the length of the
-          transverse rebar family is greater than its maxLrebar, two rebar
-          families are drawn: the first one, with suffix V corresponds
-          to the variable length family at the sloped edge. The
-          second one is defined for a constant length zone. In this case, the variable-length
-          extends beyond the section change line and penetrates the constant-length zone
-          a length of extVarXminEdge meters (defaults to 1.0).
-          From this point, rebars are overlapped.
     :param minAngle2varHorRF: minimum angle of the edge to draw variable horizontal
            reinforcement (defaults to 5º)
     :param drawConcrLnSect: True if a closed concrete longitudinal cross-section is drawn or a list of edges (e.g. [2,4] if only second and fourth edges are drawn)  
@@ -1270,7 +1263,7 @@ def sloped_XminEdge_constant_thickness_brick_reinf(width,length,thickness,anchPt
     :param startId: integer to successively identify the reinforcement families created for which their identifier has not been defined or it is None (defaults to 1)
     '''
     lstRebFam=list(); lstStirrFam=list() # Families of rebars
-    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,angXminEdge=angXminEdge,extVarXminEdge=extVarXminEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId,)
+    brick=genericBrickReinf(width=width,length=length,thickness=thickness,anchPtTrnsSect=anchPtTrnsSect,anchPtLnSect=anchPtLnSect, reinfCfg=reinfCfg,angTrns=angTrns,angLn=angLn,botTrnsRb=botTrnsRb,topTrnsRb=topTrnsRb,botLnRb=botLnRb,topLnRb=topLnRb,sideXminRb=sideXminRb,sideXmaxRb=sideXmaxRb,sideYminRb=sideYminRb,sideYmaxRb=sideYmaxRb,lstStirrHoldTrReinf=lstStirrHoldTrReinf,lstStirrHoldLnReinf=lstStirrHoldLnReinf,angXminEdge=angXminEdge,drawConcrTrSect=drawConcrTrSect,drawConcrLnSect=drawConcrLnSect,anchPtPlan=anchPtPlan,angPlan=angPlan,drawPlan=drawPlan,startId=startId,)
     if botTrnsRb:
         brick.drawBottomTransvRF()
         lstRebFam+=[brick.botTrnsRb]

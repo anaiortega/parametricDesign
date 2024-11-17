@@ -874,7 +874,7 @@ class stirrupFamily(rebarFamilyBase):
     :ivar addTxt2Label: add the specified text to the reinforcement label 
     
     '''
-    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,nMembers=1,addTxt2Label=None):
+    def __init__(self,reinfCfg,identifier,diameter,lstPtsConcrLong,lstPtsConcrSect=None,concrSectRadius=None,spacStrpTransv=None,spacStrpLong=None,vDirTrans=None,vDirLong=Vector(1,0),nmbStrpTransv=1,nmbStrpLong=1,lstCover=None,lstCoverLong=None,rightSideCover=True,dispStrpTransv=0,dispStrpLong=0,vectorLRef=Vector(0.5,0.5),rightSideLabelLn=True,closed=True,addL2closed=0.20,fixAnchorStart=None,fixAnchorEnd=None,maxLrebar=12,nMembers=1,addTxt2Label=None):
         super(stirrupFamily,self).__init__(reinfCfg,identifier,diameter,lstPtsConcrSect,lstCover,rightSideCover,addTxt2Label)
         self.lstPtsConcrLong=lstPtsConcrLong
         self.concrSectRadius=concrSectRadius
@@ -893,6 +893,7 @@ class stirrupFamily(rebarFamilyBase):
         self.addL2closed=addL2closed
         self.fixAnchorStart=fixAnchorStart
         self.fixAnchorEnd=fixAnchorEnd
+        self.maxLrebar=maxLrebar
         self.rebarWire=None
         self.lstWire=None
         self.wireSect2=None
@@ -1169,6 +1170,8 @@ def barSchedule(lstBarFamilies,schCfg=cfg.XC_scheduleCfg,title='  ',pntTLcorner=
                 if rbFam.closed:
                     barLength+=rbFam.addL2closed
                     barLengthTxt=formatLength %barLength
+            if barLength>rbFam.maxLrebar:
+                lmsg.warning('Length of bars in family '+ str(rbFam.identifier)+ ' is greater than the maxLrebar='+  str(round(rbFam.maxLrebar,2))+ ' maybe you should set the value of attribute extVarXminEdge to split this family in variable and constant length zones')
             pFiSep=pLinea.add(Vector(sum(wColumns[:2])+hText/2.0,-hText/2.0))
             tx=rbFam.getTextFiSpacing()
             dt.put_text_in_pnt(tx,pFiSep, hText,cfg.colorTextLeft)
