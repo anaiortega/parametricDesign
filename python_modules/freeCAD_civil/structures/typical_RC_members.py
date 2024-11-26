@@ -502,7 +502,7 @@ class genericBrickReinf(genericReinfBase):
         if self.botTrnsRb:
             cover=self.reinfCfg.cover+self.botTrnsRb.diameter+self.getMaxStirrHoldTrDiam()+self.botTrnsRb.addCover
         else:
-            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()+self.botTrnsRb.addCover
+            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()
         return cover
         
     def getCoverTopLongRF(self):
@@ -511,7 +511,7 @@ class genericBrickReinf(genericReinfBase):
         if self.topTrnsRb:
             cover=self.reinfCfg.cover+self.topTrnsRb.diameter+self.getMaxStirrHoldTrDiam()+self.topTrnsRb.addCover
         else:
-            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()+self.topTrnsRb.addCover
+            cover=self.reinfCfg.cover+self.getMaxStirrHoldLnDiam()
         return cover
 
     def getCoverSideXminRF(self):
@@ -581,9 +581,9 @@ class genericBrickReinf(genericReinfBase):
         self.botTrnsRb.coverSectBars=cover
         self.botTrnsRb.rightSideSectBars=False
         self.botTrnsRb.createLstRebar()
-        self.botTrnsRb.drawPolySectBars()
         self.botTrnsRb.drawLstRebar()
-        
+        self.botTrnsRb.drawPolySectBars()
+         
 
     def drawBottomVarTransvRF(self):
         vdirTr=self.getVdirTransv()
@@ -618,8 +618,8 @@ class genericBrickReinf(genericReinfBase):
         self.botTrnsRbVar.coverSectBars=cover
         self.botTrnsRbVar.rightSideSectBars=False
         self.botTrnsRbVar.createLstRebar()
-        self.botTrnsRbVar.drawPolySectBars()
         self.botTrnsRbVar.drawLstRebar()
+        self.botTrnsRbVar.drawPolySectBars()
         
     def drawTopTransvRF(self):
         '''draw and return  the transverse top rebar family
@@ -661,7 +661,6 @@ class genericBrickReinf(genericReinfBase):
             lstPtsConcrSect2=None
         self.topTrnsRb.reinfCfg=self.reinfCfg
         self.topTrnsRb.lstPtsConcrSect=lstPtsConcrSect
-        print(lstPtsConcrSect)
         self.topTrnsRb.lstPtsConcrSect2=lstPtsConcrSect2
         self.topTrnsRb.rightSideCover=True
         self.topTrnsRb.fromToExtPts=[ln_tl+self.topTrnsRb.distRFstart*vdirLn,ln_tr-self.topTrnsRb.distRFend*vdirLn]
@@ -669,8 +668,8 @@ class genericBrickReinf(genericReinfBase):
         self.topTrnsRb.lstCover=lstCover
         self.topTrnsRb.rightSideSectBars=True
         self.topTrnsRb.createLstRebar()
-        self.topTrnsRb.drawPolySectBars()
         self.topTrnsRb.drawLstRebar()
+        self.topTrnsRb.drawPolySectBars()
         
     def drawTopVarTransvRF(self):
         vdirTr=self.getVdirTransv()
@@ -705,8 +704,8 @@ class genericBrickReinf(genericReinfBase):
         self.topTrnsRbVar.coverSectBars=cover
         self.topTrnsRbVar.rightSideSectBars=True
         self.topTrnsRbVar.createLstRebar()
-        self.topTrnsRbVar.drawPolySectBars()
         self.topTrnsRbVar.drawLstRebar()
+        self.topTrnsRbVar.drawPolySectBars()
         
     def drawBottomLongRF(self):
         '''draw and return the  longitudinal bottom rebar family 
@@ -738,8 +737,8 @@ class genericBrickReinf(genericReinfBase):
         self.botLnRb.coverSectBars=cover
         self.botLnRb.rightSideSectBars=False
         self.botLnRb.createLstRebar()
-        self.botLnRb.drawPolySectBars()
         self.botLnRb.drawLstRebar()
+        self.botLnRb.drawPolySectBars()
     
     def drawTopLongRF(self):
         ''' draw and return the  longitudinal top rebar family'''
@@ -770,8 +769,8 @@ class genericBrickReinf(genericReinfBase):
         self.topLnRb.coverSectBars=cover
         self.topLnRb.rightSideSectBars=True
         self.topLnRb.createLstRebar()
-        self.topLnRb.drawPolySectBars()
         self.topLnRb.drawLstRebar()
+        self.topLnRb.drawPolySectBars()
 
     def drawBottomVarLongRF(self):
         '''draw and return the  longitudinal bottom rebar family 
@@ -804,8 +803,8 @@ class genericBrickReinf(genericReinfBase):
         self.botLnRb.coverSectBars=cover
         self.botLnRb.rightSideSectBars=False
         self.botLnRb.createLstRebar()
-        self.botLnRb.drawPolySectBars()
         self.botLnRb.drawLstRebar()
+        self.botLnRb.drawPolySectBars()
     
     def drawTopVarLongRF(self):
         ''' draw and return the  longitudinal top rebar family
@@ -838,8 +837,8 @@ class genericBrickReinf(genericReinfBase):
         self.topLnRb.coverSectBars=cover
         self.topLnRb.rightSideSectBars=True
         self.topLnRb.createLstRebar()
-        self.topLnRb.drawPolySectBars()
         self.topLnRb.drawLstRebar()
+        self.topLnRb.drawPolySectBars()
     
     def drawSideXminRF(self):
         ''' Draw and return the side reinforcement in face Xmin'''
@@ -868,8 +867,8 @@ class genericBrickReinf(genericReinfBase):
         self.sideXminRb.fromToExtPts=[tr_bl+self.sideXminRb.distRFstart*vDir,tr_tl-self.sideXminRb.distRFend*vDir]
         self.sideXminRb.rightSideSectBars=True
         self.sideXminRb.createLstRebar()
-        self.sideXminRb.drawPolySectBars()
         self.sideXminRb.drawLstRebar()
+        self.sideXminRb.drawPolySectBars()
           
     def drawSideXmaxRF(self):
         ''' Draw and return the side refinforcement in face Xmax'''
@@ -898,8 +897,8 @@ class genericBrickReinf(genericReinfBase):
         self.sideXmaxRb.fromToExtPts=[tr_br+self.sideXmaxRb.distRFstart*vDir,tr_tr-self.sideXmaxRb.distRFend*vDir]
         self.sideXmaxRb.rightSideSectBars=False
         self.sideXmaxRb.createLstRebar()
-        self.sideXmaxRb.drawPolySectBars()
         self.sideXmaxRb.drawLstRebar()
+        self.sideXmaxRb.drawPolySectBars()
           
     def drawSideYminRF(self):
         ''' Draw and return the side refinforcement in face Ymin'''
@@ -928,8 +927,8 @@ class genericBrickReinf(genericReinfBase):
         self.sideYminRb.fromToExtPts=[ln_bl+self.sideYminRb.distRFstart*vDir,ln_tl-self.sideYminRb.distRFend*vDir]
         self.sideYminRb.rightSideSectBars=True
         self.sideYminRb.createLstRebar()
-        self.sideYminRb.drawPolySectBars()
         self.sideYminRb.drawLstRebar()
+        self.sideYminRb.drawPolySectBars()
           
     def drawSideYmaxRF(self):
         ''' Draw and return the side refinforcement in face Ymax'''
@@ -958,8 +957,8 @@ class genericBrickReinf(genericReinfBase):
         self.sideYmaxRb.fromToExtPts=[ln_br+self.sideYmaxRb.distRFstart*vDir,ln_tr-self.sideYmaxRb.distRFend*vDir]
         self.sideYmaxRb.rightSideSectBars=False
         self.sideYmaxRb.createLstRebar()
-        self.sideYmaxRb.drawPolySectBars()
         self.sideYmaxRb.drawLstRebar()
+        self.sideYmaxRb.drawPolySectBars()
           
     def drawStirrHoldingTransvSF(self):
         ''' Draw and retrurn the stirrup family that  holds the transverse top and bottom rebar families '''
@@ -990,8 +989,8 @@ class genericBrickReinf(genericReinfBase):
             stirrHoldTrReinf.lstCover=[coverStirr,0,coverStirr,0]
             stirrHoldTrReinf.lstPtsConcrLong=lstPtsConcrLong
             stirrHoldTrReinf.vDirLong=vDirLong
-            stirrHoldTrReinf.drawPolyRebars()
             stirrHoldTrReinf.drawLnRebars()
+            stirrHoldTrReinf.drawPolyRebars()
             lst_hold_tr_sf+=[stirrHoldTrReinf]
         return lst_hold_tr_sf
         
@@ -1025,8 +1024,8 @@ class genericBrickReinf(genericReinfBase):
             stirrHoldLnReinf.lstCover=[stirrBottCover,0,stirrTopCover,0]
             stirrHoldLnReinf.lstPtsConcrLong=lstPtsConcrLong
             stirrHoldLnReinf.vDirLong=vDirLong
-            stirrHoldLnReinf.drawPolyRebars()
             stirrHoldLnReinf.drawLnRebars()
+            stirrHoldLnReinf.drawPolyRebars()
             lst_hold_ln_sf+=[stirrHoldLnReinf]
         return lst_hold_ln_sf
 

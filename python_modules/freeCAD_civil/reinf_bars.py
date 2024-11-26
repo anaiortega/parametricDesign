@@ -63,6 +63,7 @@ class rebarFamilyBase(object):
             self.lstCover= lstCover
         self.rightSideCover=rightSideCover
         self.addTxt2Label=addTxt2Label
+        self.miniSketch=None
  
     def getNextLstCover(self):
         '''Return the list of covers for a rebar family that is tangent to the internal face of this family
@@ -287,6 +288,14 @@ class rebarFamilyBase(object):
         '''
         justif,pText=self.drawSectRebarLref(startPnt,endPnt,vauxn,wireCenters)
         ptoSketch,pos=self.rebarText(justif,pText)
+        if self.miniSketch:
+            auxSketch=self.miniSketch
+            cog=auxSketch.CenterOfMass
+            bound=auxSketch.BoundBox
+            ptoCDG=ptoSketch-Vector(bound.XLength/2,0) if justif=="Right" else ptoSketch+Vector(bound.XLength/2,0)
+            auxSketch.translate(ptoSketch.sub(cog))
+            p=Part.show(auxSketch)
+            FreeCADGui.ActiveDocument.getObject(p.Name).LineColor =cfg.colorRebarSketch
         return ptoSketch,pos
        
     def rebarText(self,justif,pText):
@@ -533,9 +542,11 @@ class rebarFamily(rebarFamilyBase):
             vauxn=Vector(-vaux.y,vaux.x)
         vauxn.normalize()
         if len(self.fromToExtPts) > 2:
-            self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=centersWire)
+             ptoSketch,pos=self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=centersWire)
         else:
-            self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=None) 
+             ptoSketch,pos=self.labelSectRebar(startPnt,endPnt,vauxn,wireCenters=None)
+          
+
         return
         
     def drawCircSectBars(self,vTranslation=Vector(0,0,0)):
@@ -614,6 +625,7 @@ class rebarFamily(rebarFamilyBase):
             else:
                 fScale=min(wSketch/bound.XLength,hSketch/bound.YLength)
             sketch.scale(fScale,cog)
+            self.miniSketch=sketch
             bound=sketch.BoundBox
             ptoCDG=ptoSketch-Vector(bound.XLength/2,0) if pos=='r' else ptoSketch+Vector(bound.XLength/2,0)
     #        ptoSketch=ptoTxt+Vector(0,-(self.reinfCfg.texSize+bound.YLength/2))
