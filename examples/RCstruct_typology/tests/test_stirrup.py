@@ -4,7 +4,7 @@ import Part, FreeCAD, math
 from parametric_design.freeCAD_civil import  draw_config as cfg
 from parametric_design.freeCAD_civil import reinf_bars as rb
 from FreeCAD import Vector
-from parametric_design.freeCAD_civil.structures import generic_typical_RC_members as trcm
+from parametric_design.freeCAD_civil.structures import generic_RC_members as trcm
 from materials.ec2 import EC2_materials
 
 concr=EC2_materials.C30
