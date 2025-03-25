@@ -42,8 +42,9 @@ class reinfConf(object):
     :ivar factDispReflinSectReb: factor to locate reference lines of section-rebars (defaults to 1)
     :ivar roundAncLap: base, expressed in meters (ex. 0.05 to round up to 5 cm), to round lengths of 
                        anchoring and lapping (always rounds up) (defaults to None: not rounding)
+    :ivar dimConcrSect: dimensioning of the concrete section (defaults to False)
     '''
-    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3,factDispReflinSectReb=1.0,roundAncLap=None):
+    def __init__(self,cover,xcConcr,xcSteel,texSize=0.125,Code='EC2',dynamEff=False,decLengths=2,decSpacing=2,sketchScale=5,factPosLabelSectReb=2/3,factDispReflinSectReb=1.0,roundAncLap=None,dimConcrSect=False):
         self.cover=cover
         self.texSize=texSize
         self.xcConcr=xcConcr
@@ -56,6 +57,7 @@ class reinfConf(object):
         self.factDispReflinSectReb=factDispReflinSectReb
         self.code=Code
         self.roundAncLap=roundAncLap
+        self.dimConcrSect=dimConcrSect
         if Code not in ['EHE','EC2']:
             raise ValueError("Code " + Code + " is not supported")
 

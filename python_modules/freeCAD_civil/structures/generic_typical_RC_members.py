@@ -1037,7 +1037,7 @@ class genericBrickReinf(genericReinfBase):
             tr_bl,tr_br=self.getYmaxTransvBottPnts()
             lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
             lstEdges=[] if self.drawConcrTrSect == True else self.drawConcrTrSect
-            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges,dimConcrSect=self.reinfCfg.dimConcrSect)
 
     def drawTransvConcrSectYmin(self):
         ''' Draw concrete transverse cross-section
@@ -1047,7 +1047,7 @@ class genericBrickReinf(genericReinfBase):
             tr_bl,tr_br=self.getYminTransvBottPnts()
             lstPnts=[tr_bl,tr_tl,tr_tr,tr_br,tr_bl]
             lstEdges=[] if self.drawConcrTrSect == True else self.drawConcrTrSect
-            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges,dimConcrSect=self.reinfCfg.dimConcrSect)
 
     def drawLongConcrSectXmin(self):
         ''' Draw the concrete longitudinal section at minimum X coordinate'''
@@ -1056,7 +1056,7 @@ class genericBrickReinf(genericReinfBase):
             minXln_tl,minXln_tr=self.getXminLongTopPnts()
             lstPnts=[minXln_bl,minXln_tl,minXln_tr,minXln_br,minXln_bl]
             lstEdges=[] if self.drawConcrLnSect == True else self.drawConcrLnSect
-            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges,dimConcrSect=self.reinfCfg.dimConcrSect)
       
     def drawLongConcrSectXmax(self):
         ''' Draw the concrete longitudinal section at maximum X coordinate'''
@@ -1065,7 +1065,7 @@ class genericBrickReinf(genericReinfBase):
             maxXln_tl,maxXln_tr=self.getXmaxLongTopPnts()
             lstPnts=[maxXln_bl,maxXln_tl,maxXln_tr,maxXln_br,maxXln_bl]
             lstEdges=[] if self.drawConcrLnSect == True else self.drawConcrLnSect
-            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges,dimConcrSect=self.reinfCfg.dimConcrSect)
 
     def drawPlanConcrView(self):
         " Draw the concrete plan view (usually used when side reinforcement is defined) "
@@ -1073,7 +1073,7 @@ class genericBrickReinf(genericReinfBase):
             pl_xmin_ymin,pl_xmax_ymin,pl_xmax_ymax,pl_xmin_ymax=self.getPntsPlan()
             lstPnts=[pl_xmin_ymin,pl_xmin_ymax,pl_xmax_ymax,pl_xmax_ymin,pl_xmin_ymin]
             lstEdges=[] if self.drawPlan == True else self.drawPlan
-            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges,dimConcrSect=self.reinfCfg.dimConcrSect)
 
 def constant_thickness_brick_reinf(width,length,thickness,anchPtTrnsSect,anchPtLnSect,reinfCfg,angTrns=0,angLn=0,botTrnsRb=None,topTrnsRb=None,botLnRb=None,topLnRb=None,sideXminRb=None,sideXmaxRb=None,sideYminRb=None,sideYmaxRb=None,lstStirrHoldTrReinf=None,lstStirrHoldLnReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,anchPtPlan=None,angPlan=0,drawPlan=False,startId=1):
     '''Typical reinforcement arrangement of a brick of constant thickness
@@ -1559,7 +1559,7 @@ class genericCylReinf(genericReinfBase):
             ln_tl,ln_tr=self.getSimplLongTopPnts()
             lstPnts=[ln_bl,ln_tl,ln_tr,ln_br,ln_bl]
             lstEdges=[] if self.drawConcrLnSect==True else self.drawConcrLnSect
-            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges)
+            rb.drawConcreteSection(lstPnts,lstEdges=lstEdges,dimConcrSect=self.reinfCfg.dimConcrSect)
         
 def cyl_beam_reinf(radius,length,anchPtTrnsSect,anchPtLnSect,reinfCfg,angLn=0,lstLnRb=[],lstStirrReinf=None,drawConcrTrSect=True,drawConcrLnSect=True,startId=1,clearDistRbLayers=None,aggrSize=20e-3):
     '''Typical reinforcement arrangement of a cylindrical cross-section beam (or column)

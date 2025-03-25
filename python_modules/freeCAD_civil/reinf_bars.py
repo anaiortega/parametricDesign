@@ -1309,7 +1309,7 @@ def drawRCSection(lstOfLstPtsConcrSect=None,radiusConcrSect=None,lstShapeRebarFa
                     spacDimLine=0.5
         #draw the concrete section
         for lp in lstOfLstPtsConcrSect:
-            drawConcreteSection(lstPtsConcrSect=lp,vTranslation=vTranslation,dimConcrSect=dimConcrSect,spacDimLine=spacDimLine)
+            drawConcreteSection(lstPtsConcrSect=lp,vTranslation=vTranslation,dimConcrSect=self.reinfCfg.dimConcrSect,spacDimLine=spacDimLine)
     if radiusConcrSect:
         drawCircConcreteSection(radiusConcrSect,vTranslation)
     if lstShapeRebarFam:

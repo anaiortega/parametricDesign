@@ -1,0 +1,297 @@
+
+examples/RCstruct_typology/box_culvert_reinf/chamfer_box_culvert/chamfer_boxCulvert_reinf.py,5753
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg4,52
+from parametric_design.freeCAD_civil import reinf_bars as rbrb5,116
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm7,204
+from parametric_design.freeCAD_civil import draw_config as cfgcfg9,326
+concr=EC2_materials.C30concr11,390
+steel=EC2_materials.S500Csteel12,414
+estrName='boxCulvert'estrName14,441
+titSchedule=estrName.upper()titSchedule15,463
+boxC_int_wd=3.50 # internal width of the boxboxC_int_wd39,827
+boxC_int_hg=2 # internal height of the boxboxC_int_hg40,872
+chamfer_wd=0.1 # width of the chamferchamfer_wd41,915
+chamfer_hg=0.1 # height of the chamferchamfer_hg42,953
+LW_th=0.30 # thickness of the left wallLW_th43,992
+RW_th=0.30 # thickness of the right wallRW_th44,1032
+TS_th=0.30 # thickness of the top slabTS_th45,1073
+BS_th=0.30 # thickness of the bottom slabBS_th46,1112
+boxL=25 #length of the box culvertboxL47,1154
+muret_hg=0.30muret_hg48,1189
+muret_th=0.30muret_th49,1203
+scale=1/25scale51,1218
+docName=estrName+'_armados'docName52,1229
+cover=0.03cover55,1309
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='ECreinfConf56,1320
+ch_rb={'fi':12e-3,'s':0.30}ch_rb62,1651
+muret_ln={'fi':0.016,'id':'15','nmBars':2*3,'gap':0.15} # diameter, ID, number of rebars, extensmuret_ln64,1755
+sRS=0.30sRS68,2041
+nRS=int(boxL/sRS)nRS69,2050
+dispRS=(boxL-nRS*sRS)/2dispRS70,2068
+botSlab_stTr1={'id':'20','fi':8e-3,'sRealSh':sRS,'sPerp':0.15,'nStirrRealSh':nRS,'nStirrPerp':5,botSlab_stTr171,2092
+botSlab_stTr2={'id':'21','fi':8e-3,'sRealSh':sRS,'sPerp':0.15,'nStirrRealSh':nRS,'nStirrPerp':5,botSlab_stTr276,2386
+BS_bot_ln={'fi':0.012,'s':0.30,'id':'1','distRFstart':0,'distRFend':0,'position':'good'} # bottoBS_bot_ln87,2729
+BS_bot_tr={'fi':0.016,'s':0.30,'id':'3','distRFstart':0,'distRFend':0,'position':'good'} # bottoBS_bot_tr88,2853
+BS_top_ln={'fi':0.016,'s':0.30,'id':'2','distRFstart':LW_th,'distRFend':RW_th,'position':'poor'}BS_top_ln89,2979
+BS_top_tr={'fi':0.016,'s':0.30,'id':'4','distRFstart':0,'distRFend':0,'position':'poor'} # bottoBS_top_tr90,3108
+TS_bot_ln={'fi':0.016,'s':0.30,'id':'11','distRFstart':LW_th,'distRFend':RW_th,'position':'good'TS_bot_ln92,3232
+TS_bot_tr={'fi':0.016,'s':0.30,'id':'13','distRFstart':0,'distRFend':0,'position':'good'} # top TS_bot_tr93,3362
+TS_top_ln={'fi':0.016,'s':0.30,'id':'12','distRFstart':0,'distRFend':0,'position':'poor'} # top TS_top_ln94,3486
+TS_top_tr={'fi':0.016,'s':0.30,'id':'14','distRFstart':0,'distRFend':0,'position':'poor'} # top TS_top_tr95,3605
+LW_ext_hor={'fi':0.016,LW_ext_hor99,3764
+LW_ext_ver={'fi':0.016,LW_ext_ver112,4164
+LW_int_hor={'fi':0.016,LW_int_hor123,4492
+LW_int_ver={'fi':0.016,LW_int_ver136,4898
+RW_ext_hor={'fi':0.016,RW_ext_hor149,5312
+RW_ext_ver={'fi':0.016,RW_ext_ver162,5709
+RW_int_hor={'fi':0.016,RW_int_hor174,6078
+RW_int_ver={'fi':0.016,RW_int_ver187,6487
+diam=LW_ext_ver['fi']diam200,6826
+recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']recStart201,6848
+LD_ext={'id':'6L',LD_ext203,6930
+diam=LW_int_ver['fi']diam217,7282
+LD_int={'id':'5L',LD_int218,7304
+diam=RW_ext_ver['fi']diam232,7633
+recStart=cover+BS_bot_tr['fi']+BS_bot_ln['fi']recStart233,7655
+RD_ext={'id':'6R',RD_ext235,7738
+diam=RW_int_ver['fi']diam247,8079
+RD_int={'id':'5R',RD_int248,8101
+ext_hg=BS_th+boxC_int_hg+TS_thext_hg266,8505
+ext_wd=LW_th+boxC_int_wd+RW_thext_wd267,8536
+ext_p1=Vector(0,0)ext_p1269,8595
+ext_p2=ext_p1.add(Vector(0,ext_hg))ext_p2270,8614
+ext_p3=ext_p2.add(Vector(ext_wd,0))ext_p3271,8650
+ext_p4=ext_p1.add(Vector(ext_wd,0))ext_p4272,8686
+int_p1a=ext_p1.add(Vector(LW_th+chamfer_wd,BS_th))int_p1a274,8723
+int_p1b=int_p1a.add(Vector(-chamfer_wd,chamfer_hg))int_p1b275,8774
+int_p2a=ext_p2.add(Vector(LW_th+chamfer_wd,-TS_th))int_p2a277,8827
+int_p2b=int_p2a.add(Vector(-chamfer_wd,-chamfer_hg))int_p2b278,8879
+int_p3a=ext_p3.add(Vector(-RW_th-chamfer_wd,-TS_th))int_p3a280,8933
+int_p3b=int_p3a.add(Vector(chamfer_wd,-chamfer_hg))int_p3b281,8986
+int_p4a=ext_p4.add(Vector(-RW_th-chamfer_wd,TS_th))int_p4a283,9039
+int_p4b=int_p4a.add(Vector(chamfer_wd,chamfer_hg))int_p4b284,9091
+extensionLpts=[Vector(0,0),Vector(0,boxL)]extensionLpts286,9143
+lstPtsConcrSect=[[ext_p1,ext_p2,ext_p3,ext_p4,ext_p1],[int_p1a,int_p1b,int_p2b,int_p2a,int_p3a,ilstPtsConcrSect287,9186
+    s=Part.makePolygon(lsc)s289,9343
+    p=Part.show(s)p290,9371
+lstRebarFam=list()lstRebarFam294,9483
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_wd,mainLst298,9800
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_wd,stirrLst298,9800
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_hg,mainLst320,11192
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_hg,stirrLst320,11192
+lmainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_hg,lmainLst337,12078
+lmainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=ext_hg,stirrLst337,12078
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=BS_th,mainLst355,12956
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=BS_th,stirrLst355,12956
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=BS_th,mainLst373,13864
+mainLst,stirrLst=trcm.constant_thickness_brick_reinf(width=BS_th,stirrLst373,13864
+muret_rf=rb.rebarFamily(muret_rf390,14734
+lastId=15lastId402,15082
+chamfer1_rf=rb.rebarFamily(chamfer1_rf403,15092
+chamfer2_rf=rb.rebarFamily(chamfer2_rf419,15546
+chamfer3_rf=rb.rebarFamily(chamfer3_rf435,16001
+chamfer4_rf=rb.rebarFamily(chamfer4_rf451,16457
+doc=FreeCAD.newDocument(estrName+"_despiece",estrName+"_despiece")doc479,17176
+
+examples/RCstruct_typology/simple_typical_arrangements/brick_reinf_functions_examples.py,3758
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm5,84
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg6,166
+from parametric_design.freeCAD_civil import reinf_bars as rbrb7,230
+concr=EC2_materials.C25concr12,369
+steel=EC2_materials.S500Csteel13,393
+estrName='Generic brick'estrName16,441
+titSchedule=estrName.upper()titSchedule17,466
+scale=1/50scale19,540
+reinfCfg=cfg.reinfConf(cover=35e-3,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2reinfCfg25,885
+width=14 #dimension of the slab in the direction of the transversal rebarswidth29,1151
+length=5 #dimension of the slab in the direction of the longitudinal rebarslength30,1226
+thickness=0.4  #thickness of the slabthickness31,1302
+botTrnsRb=trcm.brkRbFam(Id=None,fi=20e-3,nmbBars=30,distRFstart=0.2,distRFend=0,gapStart=-2,extrbotTrnsRb44,2000
+topTrnsRb=trcm.brkRbFam(Id=None,fi=20e-3,s=0.15,lateralCover=3*reinfCfg.cover,distRFstart=0.2,ditopTrnsRb46,2271
+botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,distRFstart=0.1,distRFend=0.5,extrShapeStart='anc0_posPoorbotLnRb48,2536
+topLnRb=trcm.brkRbFam(Id=None,fi=16e-3,s=0.20,distRFstart=0.1,fixLengthStart=0.7,distRFend=0.3,etopLnRb50,2820
+sideXminRb=trcm.brkRbFam(Id=None,fi=12e-3,nmbBars=3,gapStart=-0.05,extrShapeStart='anc0_posPoor_sideXminRb52,3076
+sideXmaxRb=trcm.brkRbFam(fi=10e-3,nmbBars=4,distRFstart=0.01,distRFend=0.05,extrShapeEnd='anc90_sideXmaxRb53,3294
+sideYminRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='anc90_posPoor_tens',position='poor',vectsideYminRb54,3542
+sideYmaxRb=trcm.brkRbFam(fi=8e-3,s=0.05,extrShapeStart='fix45_len300',fixLengthEnd=1.45,positionsideYmaxRb55,3756
+stirrHoldTr=trcm.brkStirrFam(Id=None,fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPstirrHoldTr68,4578
+stirrHoldTr2=trcm.brkStirrFam(Id=None,fi=10e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirstirrHoldTr269,4824
+stirrHoldLn=trcm.brkStirrFam(Id=None ,fi=10e-3 ,sRealSh=0.20 ,sPerp=0.30 ,nStirrRealSh= 5 ,nStirstirrHoldLn72,5120
+anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transveanchPtTrnsSect74,5372
+anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete lonanchPtLnSect75,5487
+lstFam=[botTrnsRb,topTrnsRb,botLnRb,topLnRb,sideXminRb,sideXmaxRb,sideYminRb,sideYmaxRb,stirrHollstFam77,5608
+lstRebarFam=list()lstRebarFam80,5764
+lstStirrupFam=list()lstStirrupFam81,5783
+startId=1startId82,5804
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(lstRebarFam184,5828
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(lstStirrupFam184,5828
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.constant_thickness_brick_reinf(newStartId84,5828
+lstRebarFam2,lstStirrupFam2,newStartId=trcm.sloped_faces_brick_reinf(lstRebarFam2115,6652
+lstRebarFam2,lstStirrupFam2,newStartId=trcm.sloped_faces_brick_reinf(lstStirrupFam2115,6652
+lstRebarFam2,lstStirrupFam2,newStartId=trcm.sloped_faces_brick_reinf(newStartId115,6652
+lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick_reinf(lstRebarFam3146,7399
+lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick_reinf(lstStirrupFam3146,7399
+lstRebarFam3,lstStirrupFam3,newStartId=trcm.sloped_edge_constant_thickness_brick_reinf(newStartId146,7399
+lstRebarFam4,lstStirrupFam4,newStartId=trcm.sloped_edge_sloped_faces_brick_reinf(lstRebarFam4179,8248
+lstRebarFam4,lstStirrupFam4,newStartId=trcm.sloped_edge_sloped_faces_brick_reinf(lstStirrupFam4179,8248
+lstRebarFam4,lstStirrupFam4,newStartId=trcm.sloped_edge_sloped_faces_brick_reinf(newStartId179,8248
+doc=App.newDocument("despiece")doc210,9052
+
+examples/RCstruct_typology/simple_typical_arrangements/beam_reinf_example.py,2408
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm5,84
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg6,166
+from parametric_design.freeCAD_civil import reinf_bars as rbrb7,230
+concr=EC2_materials.C25concr12,369
+steel=EC2_materials.S500Csteel13,393
+cover=0.035cover14,419
+estrName='Generic beam'estrName17,454
+titSchedule=estrName.upper()titSchedule18,478
+scale=1/25scale25,885
+reinfCfg=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2reinfCfg26,896
+width=0.7 # beam cross-section widthwidth31,1150
+height=1.5 # beam cross-section heightheight32,1187
+length=33 # beam lengthlength33,1226
+angTrns=0 # angle (degrees) between the horizontal and the cross-section width dimensionangTrns34,1250
+angLn=90angLn35,1339
+botRbLy1=trcm.brkRbFam(Id='1',fi=32e-3,nmbBars=4,position='good',gapStart=-1.0,gapEnd=2.0,addTxtbotRbLy148,1989
+botRbLy2=trcm.brkRbFam(Id='2',fi=25e-3,nmbBars=5,position='good',extrShapeStart='fix90_len500',lbotRbLy249,2104
+botRbLy3=trcm.brkRbFam(Id='3',fi=16e-3,nmbBars=4,position='good',extrShapeEnd='fix45_len420')botRbLy350,2246
+topRbLy1=trcm.brkRbFam(Id='4',fi=25e-3,nmbBars=5,position='poor',vectorLRef=Vector(-0.5,0.5),clotopRbLy153,2354
+topRbLy2=trcm.brkRbFam(Id='5',fi=20e-3,nmbBars=4,position='poor',nMembers=3,closedStart=True,addtopRbLy254,2480
+latLRbLy1=trcm.brkRbFam(Id='6',fi=12e-3,s=0.20,position='good',extensionLength=0.2,vectorLRef=VelatLRbLy157,2665
+latLRbLy2=trcm.brkRbFam(Id='7',fi=10e-3,s=0.10,position='good',drawSketch=False,vectorLRef=VectolatLRbLy258,2777
+latRRbLy1=trcm.brkRbFam(Id='8',fi=16e-3,s=0.15,position='good',maxLrebar=6.0,gapStart=-0.2,extrSlatRRbLy160,2916
+fiStirr=12e-3fiStirr72,3602
+stirr1=trcm.brkStirrFam(Id='9',fi=fiStirr,sRealSh=0,sPerp=0.15 ,nStirrRealSh=1 ,nStirrPerp=15 ,wstirr173,3616
+fiStirr2=8e-3fiStirr274,3835
+stirr2=trcm.brkStirrFam(Id='10' ,fi=fiStirr2,sRealSh=0.5,sPerp=0.20 ,nStirrRealSh=2,nStirrPerp=3stirr275,3849
+lstRebarFam=list()lstRebarFam80,4040
+lstStirrupFam=list()lstStirrupFam81,4059
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.quad_beam_reinf(lstRebarFam184,4102
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.quad_beam_reinf(lstStirrupFam184,4102
+lstRebarFam1,lstStirrupFam1,newStartId=trcm.quad_beam_reinf(newStartId84,4102
+doc=FreeCAD.newDocument("SCHEDULE")doc109,4775
+
+examples/RCstruct_typology/simple_typical_arrangements/cyl_reinf_class_examples.py,1687
+from parametric_design.freeCAD_civil import reinf_bars as rbrb4,83
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm5,144
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg6,226
+concr=EC2_materials.C25concr9,331
+steel=EC2_materials.S500Csteel10,355
+cover=0.035; cfg.defaultReinfConf.cover=covercover11,381
+estrName='Generic cylinder'estrName13,428
+titSchedule=estrName.upper()titSchedule14,456
+radius=1radius16,486
+length=15length17,495
+lnRb=trcm.brkRbFam(fi=20e-3,nmbBars=15,vectorLRef=Vector(0.5,radius+0.3),extrShapeStart='fix90_llnRb30,1152
+lnRb2=trcm.brkRbFam(fi=25e-3,s=0.15,distRFstart=1,closedStart=False,lateralCover=0.15,vectorLReflnRb231,1285
+stirrF_1=trcm.brkStirrFam(fi=8e-3,sPerp=0.15,nStirrPerp=10,dispPerp=0.5,rightSideLabelLn=True,adstirrF_142,2069
+stirrF_2=trcm.brkStirrFam(fi=10e-3,sPerp=0.20,nStirrPerp=8,dispPerp=6,rightSideLabelLn=True,addLstirrF_243,2220
+stirrF_3=trcm.brkStirrFam(fi=12e-3,sPerp=0.55,nStirrPerp=20,dispPerp=0.1,rightSideLabelLn=True,astirrF_344,2370
+docName='genericCyl'docName47,2555
+scale=1/50scale49,2605
+reinfCfg=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2reinfCfg50,2616
+lstRebarFam=list()lstRebarFam54,2858
+lstStirrupFam=list()lstStirrupFam55,2877
+anchPtTrnsSect=Vector(0,0)anchPtTrnsSect57,2899
+anchPtLnSect=anchPtTrnsSect+Vector(4*radius,0)anchPtLnSect58,2926
+cyl=trcm.genericCylReinf(radius=radius,cyl60,2974
+lstStirr=cyl.drawStirrF()lstStirr73,3485
+cyl2=trcm.genericCylReinf(radius=radius,cyl279,3628
+lstStirr2=cyl2.drawStirrF()lstStirr292,4146
+doc=App.newDocument("despiece")doc96,4225
+
+examples/RCstruct_typology/simple_typical_arrangements/cyl_reinf_functions_examples.py,1709
+from parametric_design.freeCAD_civil import reinf_bars as rbrb4,83
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm5,144
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg6,226
+concr=EC2_materials.C25concr11,376
+steel=EC2_materials.S500Csteel12,400
+estrName='Generic cylinder'estrName15,449
+titSchedule=estrName.upper()titSchedule16,477
+cover=0.035; cfg.defaultReinfConf.cover=covercover23,841
+docName='genericCyl'docName24,887
+scale=1/50scale26,937
+reinfCfg=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2reinfCfg27,948
+radius=1radius32,1202
+length=15length33,1211
+lnRb1=trcm.brkRbFam(fi=25e-3,s=0.15,distRFstart=1,closedStart=False,lateralCover=0.15,vectorLReflnRb144,1843
+lnRb2=trcm.brkRbFam(fi=16e-3,s=0.15,distRFstart=1,closedStart=False,lateralCover=0.15,vectorLReflnRb245,2070
+lnRb3=trcm.brkRbFam(fi=20e-3,nmbBars=15,vectorLRef=Vector(1,-0.8),extrShapeStart='fix90_len200',lnRb346,2295
+stirrF_1=trcm.brkStirrFam(fi=8e-3,sPerp=0.15,nStirrPerp=10,dispPerp=0.5,rightSideLabelLn=True,adstirrF_156,2957
+stirrF_2=trcm.brkStirrFam(fi=10e-3,sPerp=0.20,nStirrPerp=8,dispPerp=6,rightSideLabelLn=True,addLstirrF_257,3109
+lstRebarFam=list()lstRebarFam62,3316
+lstStirrupFam=list()lstStirrupFam63,3335
+anchPtTrnsSect=Vector(0,0)anchPtTrnsSect64,3356
+anchPtLnSect=anchPtTrnsSect+Vector(4*radius,0)anchPtLnSect65,3383
+lstRebFam,lstStirrFam,newStartId=trcm.cyl_beam_reinf(lstRebFam66,3430
+lstRebFam,lstStirrFam,newStartId=trcm.cyl_beam_reinf(lstStirrFam66,3430
+lstRebFam,lstStirrFam,newStartId=trcm.cyl_beam_reinf(newStartId66,3430
+doc=App.newDocument("despiece")doc84,3867
+
+examples/RCstruct_typology/simple_typical_arrangements/brick_reinf_class_examples.py,1994
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm4,83
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg5,165
+concr=EC2_materials.C25concr8,270
+steel=EC2_materials.S500Csteel9,294
+cover=35e-3; cfg.defaultReinfConf.cover=covercover10,320
+estrName='Generic brick 2'estrName12,367
+titSchedule=estrName.upper()titSchedule13,394
+width=4 #dimension of the slab in the direction of the transversal rebarswidth15,424
+length=5 #dimension of the slab in the direction of the longitudinal rebarslength16,498
+thickness=0.4  #thickness of the slabthickness17,574
+botTrnsRb=trcm.brkRbFam(fi=20e-3,s=0.15,Id='1',gapStart=0.5,extrShapeStart='anc90_posGood_tens',botTrnsRb20,645
+topTrnsRb=trcm.brkRbFam(fi=16e-3,s=0.15,Id='3',extrShapeStart='lap270_posPoor_tens',extrShapeEndtopTrnsRb22,886
+botLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='2',distRFstart=0.1,distRFend=0.5,fixLengthStart=0.5,gabotLnRb24,1114
+topLnRb=trcm.brkRbFam(fi=16e-3,s=0.20,Id='4',distRFstart=0.1,distRFend=0.3,extrShapeEnd='lap180_topLnRb26,1361
+stirrHoldTr=trcm.brkStirrFam(Id='5',fi=8e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrPestirrHoldTr28,1565
+stirrHoldTr2=trcm.brkStirrFam(Id='5',fi=10e-3 ,sRealSh=0.30 ,sPerp=0.15 ,nStirrRealSh= 3 ,nStirrstirrHoldTr229,1783
+stirrHoldLn=trcm.brkStirrFam(Id='6' ,fi=10e-3 ,sRealSh=0.20 ,sPerp=0.30 ,nStirrRealSh= 5 ,nStirrstirrHoldLn32,2043
+anchPtTrnsSect=Vector(0,0) #anchor point to place the bottom left corner of the concrete transveanchPtTrnsSect34,2287
+anchPtLnSect=Vector(width+1,0) #anchor point to place the bottom left corner of the concrete lonanchPtLnSect35,2402
+docName='genericBrick'docName37,2523
+scale=1/50scale39,2575
+reinfCfg=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=2.5/(scale*1e3),Code='EC2reinfCfg40,2586
+brick=trcm.genericBrickReinf(brick45,2868
+stYmax=brick.drawTransvConcrSectYmax()stYmax62,3265
+lnXmax=brick.drawLongConcrSectXmax()lnXmax63,3304
+
+examples/RCstruct_typology/tests/test_stirrup.py,705
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg4,52
+from parametric_design.freeCAD_civil import reinf_bars as rbrb5,116
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm7,204
+concr=EC2_materials.C30concr10,327
+steel=EC2_materials.S500Csteel11,351
+estrName='stirrup'estrName13,378
+B=0.20B15,398
+H=0.30H16,405
+cover=0.03cover17,412
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEreinfConf19,424
+pt1=Vector(0,H)pt122,598
+pt2=Vector(B,H)pt223,614
+pt3=Vector(B,0)pt324,630
+pt4=Vector(0,0)pt425,646
+stirrup=rb.rebarFamily(stirrup28,664
+lstRebarFam=[stirrup]lstRebarFam36,823
+
+examples/RCstruct_typology/tests/test_split_rebar.py,932
+from parametric_design.freeCAD_civil import  draw_config as cfgcfg5,66
+from parametric_design.freeCAD_civil import reinf_bars as rbrb6,130
+from parametric_design.freeCAD_civil.structures import typical_RC_members as trcmtrcm8,218
+from materials.ec2 import EC2_limit_state_checking as LcalcLcalc10,340
+concr=EC2_materials.C30concr12,401
+steel=EC2_materials.S500Csteel13,425
+estrName='split_rebar'estrName15,452
+B=28B17,476
+H=0.65H18,481
+Lmax_rebar=12 # maxium lenght of rebarLmax_rebar19,488
+cover=0cover20,527
+reinfConf=cfg.reinfConf(cover=cover,xcConcr=concr,xcSteel=steel,texSize=0.0625,Code='EC2',dynamEreinfConf22,536
+pt0=Vector(0,H)pt024,709
+pt1=Vector(0,0)pt125,725
+pt2=Vector(B,0)pt226,741
+pt3=Vector(B,H)pt327,757
+rfam=rb.rebarFamily(rfam29,774
+pts=rfam.getLstPtsRebar(rfam.lstPtsConcrSect)pts39,977
+wires=rfam.getLstRebars(pts)wires40,1023
+lstBarFamilies=[rfam]lstBarFamilies44,1097
